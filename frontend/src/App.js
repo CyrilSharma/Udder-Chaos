@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { Stage, Graphics } from '@pixi/react'
-import logo from './logo.svg';
 import './App.css';
 
 function App() {
