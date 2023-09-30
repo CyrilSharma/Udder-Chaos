@@ -1,5 +1,6 @@
 import { Application } from 'pixi.js';
-
+import { navigation } from './utils/navigation';
+import { HomeScreen } from './screens/HomeScreen';
 /** The PixiJS app Application instance, shared across the project */
 export const app = new Application<HTMLCanvasElement>({
     resolution: Math.max(window.devicePixelRatio, 2),
@@ -40,6 +41,7 @@ async function init() {
     // Trigger the first resize
     resize();
 
+    await navigation.showScreen(HomeScreen);
     // Show initial loading screen
     /* await navigation.showScreen(LoadScreen);
 
