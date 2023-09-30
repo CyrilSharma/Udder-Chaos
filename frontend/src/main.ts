@@ -1,4 +1,5 @@
 import { Application } from 'pixi.js';
+import { GameScreen } from './screens/GameScreen';
 
 /** The PixiJS app Application instance, shared across the project */
 export const app = new Application<HTMLCanvasElement>({
@@ -40,19 +41,11 @@ async function init() {
     // Trigger the first resize
     resize();
 
-    // Show initial loading screen
-    /* await navigation.showScreen(LoadScreen);
-
-    // Go to one of the screens if a shortcut is present in url params, otherwise go to home screen
-    if (getUrlParam('game') !== null) {
-        await navigation.showScreen(GameScreen);
-    } else if (getUrlParam('load') !== null) {
-        await navigation.showScreen(LoadScreen);
-    } else if (getUrlParam('result') !== null) {
-        await navigation.showScreen(ResultScreen);
-    } else {
-        await navigation.showScreen(HomeScreen);
-    } */
+    console.log("HELLLO");
+    let screen = new GameScreen();
+    screen.prepare();
+    app.stage.addChild(screen);
+    console.log("GOOD BYE");
 }
 
 // Init everything

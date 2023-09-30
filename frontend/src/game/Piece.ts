@@ -1,7 +1,4 @@
-import { Container, FederatedPointerEvent, Sprite, Texture } from 'pixi.js';
-import gsap from 'gsap';
-import { Match3Position } from './Match3Utility';
-import { app } from '../main';
+import { Container, Sprite, Texture } from 'pixi.js';
 
 /** Default piece options */
 const defaultPieceOptions = {
@@ -36,6 +33,7 @@ export class Piece extends Container {
     }
 
     public setup(options: Partial<PieceOptions> = {}) {
+        console.log("I'm about to be on the screen.");
         const opts = { ...defaultPieceOptions, ...options };
         this.visible = true;
         this.alpha = 1;
@@ -43,19 +41,16 @@ export class Piece extends Container {
         this.name = opts.name;
         this.image.alpha = 1;
         this.scale.set(1);
+        console.log(opts.name);
         this.image.texture = Texture.from(opts.name);
         this.image.width = opts.size;
         this.image.height = this.image.width;
+        console.log("I'm on the screen!");
     }
 
     /** Animation to come soon... */
     public async animateMove(x: number, y: number) {
         this.row = y;
         this.column = x;
-    }
-
-    /** Shortcut to get the grid position of the piece */
-    public getGridPosition() {
-        return { row: this.row, column: this.column };
     }
 }
