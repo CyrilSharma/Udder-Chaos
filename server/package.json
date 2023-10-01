@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "description": "First socket.io app",
     "scripts": {
-        "dev": "nodemon index.js"
+        "dev": "nodemon server.js"
     },
     "dependencies": {
         "@socket.io/admin-ui": "^0.5.1",

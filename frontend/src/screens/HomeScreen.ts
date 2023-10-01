@@ -2,7 +2,7 @@ import { Button, FancyButton } from '@pixi/ui';
 import { Container, Graphics, Sprite } from 'pixi.js';
 import { navigation } from '../utils/navigation';
 import { CreateGameScreen } from './CreateGameScreen';
-
+import server from "../server";
 
 
 /** Screen shows upon opening the website */
@@ -63,7 +63,17 @@ export class HomeScreen extends Container {
             text: "Settings"
         });
 
-        this.createGameButton.onPress.connect(() => navigation.showScreen(CreateGameScreen));
+        this.createGameButton.onPress.connect(() => {
+            server.startRoom();
+            server.socket.on("load-room", (roomCode) => {
+                navigation.showScreen(CreateGameScreen)
+                console.log(roomCode);
+                // Call create game screen with roomcode
+            });
+            server.socket.on("failed-room", () => {
+                // Show error
+            });
+        });
         this.addChild(this.background);
         this.addChild(this.createGameButton.view);
         this.addChild(this.joinGameButton.view);

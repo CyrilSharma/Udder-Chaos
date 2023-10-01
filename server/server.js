@@ -1,18 +1,14 @@
-const express = require("express");
-const app = express();
-const http = require("http");
-const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server)
+const io = new Server(3000, {
+    cors: {
+        origin: ["http://localhost:8000"]
+    }
+})
 
 const MAX_PLAYERS = 4;
 
 // Pairs client ID to their room
 var clientRooms = {}
-
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
 
 io.on('connection', (client) => {
     console.log('A user connected ' + client.id);
@@ -45,8 +41,9 @@ io.on('connection', (client) => {
         roomCode = generateRoomCode();
 
         if (moveClientToRoom(client, roomCode)) {
-            client.emit("receive-message", "Created room with code: " + roomCode);
+            client.emit("load-room", roomCode);
         }
+        console.log("Successfully created a room: " + roomCode)
     }
 
     function joinRoom(roomCode) {
@@ -71,10 +68,6 @@ io.on('connection', (client) => {
             }
         }
     }
-})
-
-server.listen(3000, () => {
-    console.log('listening on *:3000');
 })
 
 function moveClientToRoom(client, roomCode) {
