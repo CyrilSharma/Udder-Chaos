@@ -1,5 +1,7 @@
-import {Container, Graphics, Sprite, Texture, Assets } from 'pixi.js';
-import {Button, FancyButton} from '@pixi/ui';
+import { Button, FancyButton } from '@pixi/ui';
+import { Container, Graphics, Sprite } from 'pixi.js';
+import { navigation } from '../utils/navigation';
+import { CreateGameScreen } from './CreateGameScreen';
 
 
 
@@ -14,8 +16,7 @@ export class HomeScreen extends Container {
     constructor() {
         super();
 
-        Assets.add({alias: 'background', src: '../assets/mainBackground.jpg'});
-        this.background = new Sprite(Texture.from('../assets/mainBackground'));
+        this.background = Sprite.from('./src/assets/mainBackground.jpg');
 
         this.createGameButton = new FancyButton({
             defaultView: (new Button(
@@ -62,6 +63,7 @@ export class HomeScreen extends Container {
             text: "Settings"
         });
 
+        this.createGameButton.onPress.connect(() => navigation.showScreen(CreateGameScreen));
         this.addChild(this.background);
         this.addChild(this.createGameButton.view);
         this.addChild(this.joinGameButton.view);
@@ -94,8 +96,10 @@ export class HomeScreen extends Container {
         this.settingsButton.view.height = height * 0.17;
         this.settingsButton.view.width = width * 0.7;
 
-        this.background.x = width * 0.5;
-        this.background.y = height * 0.5;
+        this.background.height = height;
+        this.background.width = width;
+        this.background.x = 0;
+        this.background.y = 0;
     }
 
 }

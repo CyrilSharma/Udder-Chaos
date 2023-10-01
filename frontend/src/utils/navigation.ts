@@ -40,7 +40,44 @@ class Navigation {
         this.currentScreen?.resize?.(width, height);
     }
 
+    /** Remove screen from the stage, unlink update & resize functions */
+    private async hideAndRemoveScreen(screen: AppScreen) {
+        // Prevent interaction in the screen
+        screen.interactiveChildren = false;
+
+        // // Hide screen if method is available
+        // if (screen.hide) {
+        //     await screen.hide();
+        // }
+
+        // // Unlink update function if method is available
+        // if (screen.update) {
+        //     app.ticker.remove(screen.update, screen);
+        // }
+
+        // Remove screen from its parent (usually app.stage, if not changed)
+        if (screen.parent) {
+            screen.parent.removeChild(screen);
+        }
+
+        // Clean up the screen so that instance can be reused again later
+        if (screen.reset) {
+            screen.reset();
+        }
+    }
+
     public async showScreen(ctor: AppScreenConstructor) {
+
+        // Block interactivity in current screen
+        if (this.currentScreen) {
+            this.currentScreen.interactiveChildren = false;
+        }
+        
+        // If there is a screen already created, hide and destroy it
+        if (this.currentScreen) {
+            await this.hideAndRemoveScreen(this.currentScreen);
+        }
+
         this.currentScreen = new ctor;
         await this.addAndShowScreen(this.currentScreen);
     }
