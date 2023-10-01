@@ -1,4 +1,4 @@
-import { Container, Graphics } from 'pixi.js';
+import { Container, DisplayObject, Graphics } from 'pixi.js';
 import { Piece } from './Piece';
 import { Game } from './Game'
 import {
@@ -33,12 +33,12 @@ export class Board {
         this.game = game;
 
         this.piecesContainer = new Container();
-        this.game.addChild(this.piecesContainer);
+        this.game.addChild(this.piecesContainer as DisplayObject);
 
         this.piecesMask = new Graphics();
         this.piecesMask.beginFill(0xff0000, 0.5);
         this.piecesMask.drawRect(-2, -2, 4, 4);
-        this.game.addChild(this.piecesMask);
+        this.game.addChild(this.piecesMask as DisplayObject);
 
         this.piecesContainer.mask = this.piecesMask;
     }
@@ -71,7 +71,7 @@ export class Board {
         piece.x = viewPosition.x;
         piece.y = viewPosition.y;
         this.pieces.push(piece);
-        this.piecesContainer.addChild(piece);
+        this.piecesContainer.addChild(piece as DisplayObject);
         return piece;
     }
 

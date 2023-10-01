@@ -1,4 +1,4 @@
-import { Container, Sprite, Texture } from 'pixi.js';
+import { Container, DisplayObject, Sprite, Texture } from 'pixi.js';
 
 /** Default piece options */
 const defaultPieceOptions = {
@@ -29,7 +29,7 @@ export class Piece extends Container {
         super();
         this.image = new Sprite();
         this.image.anchor.set(0.5);
-        this.addChild(this.image);
+        this.addChild(this.image as DisplayObject);
     }
 
     public setup(options: Partial<PieceOptions> = {}) {

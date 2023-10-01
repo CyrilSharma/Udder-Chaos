@@ -1,4 +1,4 @@
-import { Container } from 'pixi.js';
+import { Container, DisplayObject } from 'pixi.js';
 import { Game } from '../game/Game';
 import { createRandomGrid } from '../game/Utils';
 export class GameScreen extends Container {
@@ -8,7 +8,7 @@ export class GameScreen extends Container {
         super();
         this.game = new Game();
         this.gameContainer = new Container();
-        this.gameContainer.addChild(this.game);
+        this.gameContainer.addChild(this.game as DisplayObject);
     }
 
     public prepare() {

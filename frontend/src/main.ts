@@ -50,7 +50,7 @@ async function init() {
     console.log("HELLO");
     let screen = new GameScreen();
     screen.prepare();
-    app.stage.addChild(screen);
+    app.stage.addChild(screen as PIXI.DisplayObject);
     console.log("GOOD BYE");
 }
 
