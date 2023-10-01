@@ -1,5 +1,6 @@
 import { Container, Graphics } from 'pixi.js';
 import { Piece } from './Piece';
+import { Game } from './Game'
 import {
     Position,
     Grid,
@@ -11,6 +12,7 @@ import {
 
 
 export class Board {
+    public game: Game;
     /** The grid state, with only numbers */
     public grid: Grid = [];
     /** All piece sprites currently being used in the grid */
@@ -26,11 +28,18 @@ export class Board {
     /** The size (width & height) of each board slot */
     public tileSize = 0;
 
-    constructor() {
+    // 
+    constructor(game: Game) {
+        this.game = game;
+
         this.piecesContainer = new Container();
+        this.game.addChild(this.piecesContainer);
+
         this.piecesMask = new Graphics();
         this.piecesMask.beginFill(0xff0000, 0.5);
         this.piecesMask.drawRect(-2, -2, 4, 4);
+        this.game.addChild(this.piecesMask);
+
         this.piecesContainer.mask = this.piecesMask;
     }
 

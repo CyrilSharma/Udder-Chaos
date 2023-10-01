@@ -1,8 +1,8 @@
-import { Application } from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import { GameScreen } from './screens/GameScreen';
 
 /** The PixiJS app Application instance, shared across the project */
-export const app = new Application<HTMLCanvasElement>({
+export const app = new PIXI.Application<HTMLCanvasElement>({
     resolution: Math.max(window.devicePixelRatio, 2),
     backgroundColor: 0xffffff,
 });
@@ -41,7 +41,13 @@ async function init() {
     // Trigger the first resize
     resize();
 
-    console.log("HELLLO");
+    /* const sprite = PIXI.Sprite.from("raw-assets/red_ufo.png");
+    sprite.anchor.set(0.5);
+    sprite.x = app.screen.width / 2;
+    sprite.y = app.screen.height / 2;
+    app.stage.addChild(sprite); */
+
+    console.log("HELLO");
     let screen = new GameScreen();
     screen.prepare();
     app.stage.addChild(screen);

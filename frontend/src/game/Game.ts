@@ -9,7 +9,7 @@ export class Game extends Container {
     public config!: GameConfig;
     constructor() {
         super();
-        this.board = new Board();
+        this.board = new Board(this);
     }
 
     public setup(config: GameConfig) {
