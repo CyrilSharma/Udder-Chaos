@@ -6,9 +6,12 @@ export class GameScreen extends Container {
     public readonly game: Game;
     constructor() {
         super();
+
         this.game = new Game();
         this.gameContainer = new Container();
         this.gameContainer.addChild(this.game);
+        
+        this.addChild(this.gameContainer);
     }
 
     public prepare() {

@@ -33,12 +33,13 @@ export class Board {
         this.game = game;
 
         this.piecesContainer = new Container();
+        this.piecesContainer.addChild(new Piece());
         this.game.addChild(this.piecesContainer);
 
         this.piecesMask = new Graphics();
-        this.piecesMask.beginFill(0xff0000, 0.5);
-        this.piecesMask.drawRect(-2, -2, 4, 4);
-        this.game.addChild(this.piecesMask);
+        this.piecesMask.beginFill(0xffffff, 0.5);
+        this.piecesMask.drawRect(0, 0, 1000, 1000);
+        this.piecesContainer.addChild(this.piecesMask);
 
         this.piecesContainer.mask = this.piecesMask;
     }

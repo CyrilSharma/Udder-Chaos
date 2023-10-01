@@ -27,8 +27,10 @@ export class Piece extends Container {
 
     constructor() {
         super();
-        this.image = new Sprite();
+        this.image = Sprite.from("raw-assets/red_ufo.png");
         this.image.anchor.set(0.5);
+        this.image.x = 500;
+        this.image.y = 500;
         this.addChild(this.image);
     }
 
