@@ -1,6 +1,7 @@
-import { Container } from 'pixi.js'
+import { Container, Sprite } from 'pixi.js'
 import { Board } from './Board'
 import { GameConfig } from './Utils'
+import { app } from '../main'
 // This seems a little redundant right now,
 // But it will house the cards as well,
 // And provide some callbacks maybe.

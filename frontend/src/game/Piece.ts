@@ -1,4 +1,5 @@
 import { Container, Sprite, Texture } from 'pixi.js';
+import { app } from '../main'
 
 /** Default piece options */
 const defaultPieceOptions = {
@@ -17,7 +18,7 @@ export type PieceOptions = typeof defaultPieceOptions;
  * The Piece class handles displaying and animating itself.
  */
 export class Piece extends Container {
-    private readonly image: Sprite;
+    public readonly image: Sprite;
     public row = 0;
     public column = 0;
     /** The piece type in the grid */
@@ -43,7 +44,7 @@ export class Piece extends Container {
         this.scale.set(1);
         this.image.texture = Texture.from(opts.name);
         this.image.width = opts.size;
-        this.image.height = this.image.width;
+        this.image.height = opts.size;
         console.log("I'm on the screen!");
     }
 

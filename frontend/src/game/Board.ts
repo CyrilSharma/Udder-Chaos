@@ -1,6 +1,7 @@
-import { Container, Graphics } from 'pixi.js';
+import { Container, Graphics, Sprite } from 'pixi.js';
 import { Piece } from './Piece';
 import { Game } from './Game'
+import { app } from '../main'
 import {
     Position,
     Grid,
@@ -32,15 +33,18 @@ export class Board {
     constructor(game: Game) {
         this.game = game;
 
-        this.piecesContainer = new Container();
-        this.game.addChild(this.piecesContainer);
-
         this.piecesMask = new Graphics();
         this.piecesMask.beginFill(0xff0000, 0.5);
         this.piecesMask.drawRect(-2, -2, 4, 4);
         this.game.addChild(this.piecesMask);
 
-        this.piecesContainer.mask = this.piecesMask;
+        //this.game.addChild(sprite);
+
+        this.piecesContainer = new Container();
+        this.game.addChild(this.piecesContainer);
+        // this.piecesContainer.addChild(sprite)
+
+        //this.piecesContainer.mask = this.piecesMask;
     }
 
     public setup(config: GameConfig) {
@@ -52,7 +56,7 @@ export class Board {
         this.piecesContainer.visible = true;
         this.grid = config.grid;
         this.createPiece(
-            { row: 10, column: 20 },
+            { row: 10, column: 10 },
             PieceEnum.Player_Red
         );
     }
@@ -60,6 +64,7 @@ export class Board {
     public createPiece(position: Position, pieceType: PieceType) {
         const name = TypeMap[pieceType];
         const piece = new Piece();
+
         const viewPosition = this.getViewPosition(position);
         piece.setup({
             name,
