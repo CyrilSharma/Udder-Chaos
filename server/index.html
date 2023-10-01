@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+      #chat-form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+      #chat-input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+      #chat-input :focus { outline: none; }
+      #chat-form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { background: #efefef; }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form id="chat-form" action="">
+      <input id="chat-input" autocomplete="off"/><button>Send</button>
+    </form>
+    <button onclick="startRoom()">Start Room</button>
+    <form id="join-form" action="">
+      <input id="join-input" autocomplete="off"/><button>Join Room</button>
+    </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+
+    var chatForm = document.getElementById('chat-form');
+    var chatInput = document.getElementById('chat-input');
+    var joinForm = document.getElementById('join-form');
+    var joinInput = document.getElementById('join-input');
+    var messages = document.getElementById('messages');
+
+    chatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (chatInput.value) {
+        socket.emit('send-message', chatInput.value);
+        showMessage(chatInput.value);
+        chatInput.value = '';
+      }
+    });
+
+    joinForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (joinInput.value) {
+        socket.emit('join-room', joinInput.value);
+        joinInput.value = '';
+      }
+    });
+
+    function showMessage(msg) {
+      var item = document.createElement('li');
+      item.textContent = msg;
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    socket.on('receive-message', function(msg) {
+      console.log(msg + " received");
+      showMessage(msg);
+    });
+
+    function startRoom() {
+      socket.emit("start-room");
+    }
+
+  </script>
+  </body>
+</html>
