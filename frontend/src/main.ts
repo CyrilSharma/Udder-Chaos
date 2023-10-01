@@ -28,6 +28,7 @@ function resize() {
 
     // Update renderer  and navigation screens dimensions
     app.renderer.resize(width, height);
+    navigation.resize(width, height);
 }
 
 /** Setup app and initialise assets */

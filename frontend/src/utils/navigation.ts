@@ -32,6 +32,8 @@ class Navigation {
     /** Current screen being displayed */
     public currentScreen?: AppScreen;
 
+ 
+
     public resize(width: number, height: number) {
         this.width = width;
         this.height = height;
