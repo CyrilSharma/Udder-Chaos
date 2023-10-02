@@ -1,11 +1,21 @@
 //-----Types-----//
+// Types of tiles and their number representations
 export const TileEnum = {
     Plain: 0,
     Pasture: 1,
     Impassible: 2,
     Destination: 3,
 };
+// Weighting of tiles when generating a random board
+export const TileWeights = {
+    0: 75,
+    1: 10,
+    2: 10,
+    3: 5
+};
 export type TileType = number;
+
+// Types of pieces and their number representations
 export const PieceEnum = {
     Cow: 0,
     Player_Red: 1,
