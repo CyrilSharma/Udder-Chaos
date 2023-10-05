@@ -1,4 +1,6 @@
-const { Server } = require("socket.io");
+import { GameServer } from "./room.js"
+
+import { Server } from "socket.io";
 const io = new Server(3000, {
     cors: {
         origin: ["http://localhost:8000"]
@@ -7,8 +9,7 @@ const io = new Server(3000, {
 
 const MAX_PLAYERS = 4;
 
-// Pairs client ID to their room
-var clientRooms = {}
+var gameServer = new GameServer();
 
 io.on('connection', (client) => {
     console.log('A user connected ' + client.id);
@@ -38,9 +39,9 @@ io.on('connection', (client) => {
     }
 
     function startRoom() {
-        roomCode = generateRoomCode();
+        roomCode = gameServer.createRoom()
 
-        if (moveClientToRoom(client, roomCode)) {
+        if (gameServer.moveClientToRoom(client, roomCode)) {
             client.emit("load-room", roomCode);
         }
         console.log("Successfully created a room: " + roomCode)
@@ -63,36 +64,9 @@ io.on('connection', (client) => {
         }
         else {
             // Room exists and isn't full
-            if (moveClientToRoom(client, roomCode)) {
+            if (gameServer.moveClientToRoom(client, roomCode)) {
                 client.emit("receive-message" , "Joined room with code: " + roomCode);
             }
         }
     }
 })
-
-function moveClientToRoom(client, roomCode) {
-    // If they are in a room
-    if (client.id in clientRooms) {
-        client.emit("receive-message", "You are already in a room!");
-        return false
-    }
-    else {
-        clientRooms[client.id] = roomCode;
-        client.join(roomCode);
-        return true
-    }
-}
-
-function generateRoomCode() {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    let roomCode = ""
-    do {
-        // Generate a 4 character room code
-        roomCode = "";
-        for (let i = 0; i < 4; i++) {
-            roomCode += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-    } while (io.of('/').adapter.rooms.has(roomCode)) // If room exists, try again
-
-    return roomCode
-}
