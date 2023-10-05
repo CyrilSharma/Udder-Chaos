@@ -27,20 +27,31 @@ export class Room {
             console.log(socket.id + " couldn't join room: " + this.roomCode);
             return;
         }
+
         let player = new Player(socket, TEAM.ALIEN, this);
         this.players.push(player);
+
+        console.log(this.players)
+
         player.joinRoom();
+        socket.to(this.roomCode).emit("player-list", this.getPlayerNames());
+        this.io.to(this.roomCode).emit("receive-message", "ROOOM")
         console.log(socket.id + " joined the room: " + this.roomCode);
     }
 
-    removePlayer(playerId) {
+    removePlayer(player) {
         // Loop through players to find the correct player to remove
-        for (let player in this.players) {
-            if (player.socketId == playerId) {
-                this.players.remove(player);
-                break;
-            }
+        let i = this.players.indexOf(player);
+        this.players.splice(i, 1);
+        player.socket.to(this.roomCode).emit("player-list", this.getPlayerNames());
+    }
+
+    getPlayerNames() {
+        let names = []
+        for (let player of this.players) {
+            names.push(player.name)
         }
+        return names;
     }
 
     startGame(io) {
@@ -68,11 +79,12 @@ class Player {
 
     joinRoom() {
         this.socket.join(this.room.roomCode);
-        this.socket.emit("load-room", this.room.roomCode);
+        this.socket.emit("load-room", this.room.roomCode, this.room.getPlayerNames());
         this.socket.emit("receive-message", "joined the room");
     }
 
     disconnectPlayer() {
         console.log(this.name + " has disconnected.")
+        this.room.removePlayer(this);
     }
 }

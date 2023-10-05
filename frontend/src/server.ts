@@ -1,4 +1,6 @@
 import { io } from "socket.io-client";
+import { navigation } from './utils/navigation';
+import { CreateGameScreen } from './screens/CreateGameScreen';
 
 class Server {
     socket;
@@ -12,6 +14,16 @@ class Server {
 
         this.socket.on("receive-message", (msg) => {
             console.log(msg);
+        });
+
+        this.socket.on("load-room", (roomCode, playerList) => {
+            navigation.showScreen(CreateGameScreen)
+            console.log(roomCode);
+            console.log(playerList);
+            // Call create game screen with roomcode
+        });
+        this.socket.on("player-list", (playerList) => {
+            console.log(playerList);
         });
     }
 
