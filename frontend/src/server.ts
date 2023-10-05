@@ -9,10 +9,18 @@ class Server {
         this.socket.on("connect", () => {
             console.log(`You connected with id: ${this.socket.id}`)
         });
+
+        this.socket.on("receive-message", (msg) => {
+            console.log(msg);
+        });
     }
 
-    public async startRoom() {
-        this.socket.emit("start-room");
+    public async createRoom() {
+        this.socket.emit("create-room");
+    }
+
+    public async joinRoom(roomCode: string) {
+        this.socket.emit("join-room", roomCode);
     }
 }
 

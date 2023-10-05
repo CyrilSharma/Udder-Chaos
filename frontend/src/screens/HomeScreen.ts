@@ -65,7 +65,7 @@ export class HomeScreen extends Container {
 
 
         this.createGameButton.onPress.connect(() => {
-            server.startRoom();
+            server.createRoom();
             server.socket.on("load-room", (roomCode) => {
                 navigation.showScreen(CreateGameScreen)
                 console.log(roomCode);
@@ -76,7 +76,10 @@ export class HomeScreen extends Container {
             });
         });
 
-        this.joinGameButton.onPress.connect(() => navigation.showScreen(JoinGameScreen));
+        this.joinGameButton.onPress.connect(() => {
+            server.joinRoom("AAAA");
+            navigation.showScreen(JoinGameScreen);
+        });
 
 
         this.addChild(this.background);

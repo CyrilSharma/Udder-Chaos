@@ -1,4 +1,3 @@
-
 const TEAM = {
     ALIEN: true,
     HUMAN: false,
@@ -11,64 +10,69 @@ const COLOR = {
     GREEN: 3,    
 }
 
-export class GameServer {
-    constructor() {
-        this.rooms = {}
-        this.clientRooms = {}
+const MAX_PLAYERS = 4;
+
+export class Room {
+    constructor(io, roomCode) {
+        this.io = io;
+        this.roomCode = roomCode;
+        this.players = [];
+        this.gameSeed = 0;
+        this.moveList;
     }
 
-    createRoom() {
-        roomCode = generateRoomCode();
-        this.rooms[roomCode] = new Room();
-        return roomCode;
-    }
-
-    moveClientToRoom(client, roomCode) {
-        // If they are in a room
-        if (client.id in clientRooms) {
-            client.emit("receive-message", "You are already in a room!");
-            return false
+    addNewPlayer(socket) {
+        if (this.players.length >= MAX_PLAYERS) {
+            socket.emit("receive-message", "This room is full!");
+            console.log(socket.id + " couldn't join room: " + this.roomCode);
+            return;
         }
-        else {
-            this.clientRooms[client.id] = roomCode;
-            this.rooms[roomCode].addPlayer(client);
-            client.join(roomCode);
-            return true
-        }
-    }
-}
-
-class Room {
-    constructor() {
-        this.players = []
-        this.gameSeed = 0
-        this.moveList
-    }
-
-    addPlayer(player) {
+        let player = new Player(socket, TEAM.ALIEN, this);
         this.players.push(player);
+        player.joinRoom();
+        console.log(socket.id + " joined the room: " + this.roomCode);
     }
-}
 
-class Player {
-    constructor(socketId, team) {
-        this.socketId = socketId
-        this.name = "Guest " + Math.floor(Math.random() * 1000)
-        this.team = team
-    }
-}
-
-
-function generateRoomCode() {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    let roomCode = ""
-    do {
-        // Generate a 4 character room code
-        roomCode = "";
-        for (let i = 0; i < 4; i++) {
-            roomCode += chars.charAt(Math.floor(Math.random() * chars.length));
+    removePlayer(playerId) {
+        // Loop through players to find the correct player to remove
+        for (let player in this.players) {
+            if (player.socketId == playerId) {
+                this.players.remove(player);
+                break;
+            }
         }
-    } while (io.of('/').adapter.rooms.has(roomCode)) // If room exists, try again
+    }
 
-    return roomCode
+    startGame(io) {
+        // Send starting game info to players
+        io.to(this.roomCode).emit('receive-message', 'Starting a new game')
+    }
+}
+
+// Each client that connects to a game will be a Player.
+class Player {
+    constructor(socket, team, room) {
+        this.socket = socket;
+        this.name = "Guest " + Math.floor(Math.random() * 1000);
+        this.team = team;
+        this.room = room;
+
+        this.initSocket();
+    }
+
+    initSocket() {
+        this.socket.on('disconnect', () => {
+            this.disconnectPlayer();
+        });
+    }
+
+    joinRoom() {
+        this.socket.join(this.room.roomCode);
+        this.socket.emit("load-room", this.room.roomCode);
+        this.socket.emit("receive-message", "joined the room");
+    }
+
+    disconnectPlayer() {
+        console.log(this.name + " has disconnected.")
+    }
 }

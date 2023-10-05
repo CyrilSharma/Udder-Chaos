@@ -1,4 +1,4 @@
-import { GameServer } from "./room.js"
+import { Room } from "./room.js"
 
 import { Server } from "socket.io";
 const io = new Server(3000, {
@@ -7,66 +7,60 @@ const io = new Server(3000, {
     }
 })
 
-const MAX_PLAYERS = 4;
-
-var gameServer = new GameServer();
+let rooms = []
 
 io.on('connection', (client) => {
     console.log('A user connected ' + client.id);
 
-    client.on('send-message', sendMessage);
-    client.on('start-room', startRoom);
+    client.on('create-room', createRoom);
     client.on('join-room', joinRoom);
 
     client.on('disconnect', () => {
         console.log('A user disconnected ' + client.id);
-        if (client.id in clientRooms) {
-            delete clientRooms[client.id];
-        }
-        console.log(clientRooms)
     });
+});
 
-    function sendMessage(msg) {
-        // Client is in a room
-        if (client.id in clientRooms) {
-            console.log("Room message " + clientRooms[client.id]);
-            client.to(clientRooms[client.id]).emit('receive-message', msg);
-        }
-        else {
-            console.log("Send message to all")
-            client.broadcast.emit('receive-message', msg)
+function createRoom() {
+    // TODO: Add already existing player checking
+    let roomCode = generateRoomCode();
+    let room = new Room(io, roomCode);
+    rooms.push(room);
+
+    room.addNewPlayer(this);
+
+    console.log(this.id + " created a room: " + roomCode)
+}
+
+function joinRoom(roomCode) {
+    let room = findRoomByCode(roomCode);
+    if (room == null) {
+        this.emit("receive-message", "Couldn't find room with code " + roomCode);
+        return;
+    }
+    room.addNewPlayer(this);
+}
+
+function findRoomByCode(code) {
+    for (let room of rooms) {
+        if (room.roomCode === code) {
+            return room;
         }
     }
+    return null;
+}
 
-    function startRoom() {
-        roomCode = gameServer.createRoom()
-
-        if (gameServer.moveClientToRoom(client, roomCode)) {
-            client.emit("load-room", roomCode);
+function generateRoomCode() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    let roomCode = ""
+    do {
+        // Generate a 4 character room code
+        roomCode = "";
+        for (let i = 0; i < 4; i++) {
+            roomCode += chars.charAt(Math.floor(Math.random() * chars.length));
         }
-        console.log("Successfully created a room: " + roomCode)
-    }
+    } while (roomCode in rooms) // If room exists, try again
+    return "AAAA"
+    return roomCode
+}
 
-    function joinRoom(roomCode) {
-        console.log(client.id + " joining room " + roomCode);
-        const room = io.of('/').adapter.rooms.get(roomCode);
 
-        let roomClients = room ? room : null;
-        let numClients = roomClients ? roomClients.size : 0;
-
-        if (numClients == 0) {
-            // Room doesn't exist
-            client.emit("receive-message", "Couldn't find room with code " + roomCode);
-        }
-        else if (numClients >= MAX_PLAYERS) {
-            // Room is already full
-            client.emit("receive-message", "That room is already full!");
-        }
-        else {
-            // Room exists and isn't full
-            if (gameServer.moveClientToRoom(client, roomCode)) {
-                client.emit("receive-message" , "Joined room with code: " + roomCode);
-            }
-        }
-    }
-})
