@@ -1,4 +1,4 @@
-//-----Types-----//
+//-----Tiles-----//
 export const TileEnum = {
     Plain: 0,
     Pasture: 1,
@@ -6,6 +6,14 @@ export const TileEnum = {
     Destination: 3,
 };
 export type TileType = number;
+export const TileMap: Record<number, string> = {};
+Object.keys(TileEnum).forEach((key) => {
+    const idx = TileEnum[key as keyof typeof TileEnum];
+    TileMap[idx] = `raw-assets/${key.toLowerCase()}.png`;
+});
+export type Grid = TileType[][];
+
+//-----Pieces-----//
 export const PieceEnum = {
     Cow: 0,
     Player_Red: 1,
@@ -18,24 +26,19 @@ export const PieceEnum = {
     Enemy_Orange: 8
 };
 export type PieceType = number;
-export const TypeMap: Record<number,string> = {
-    0: "raw-assets/cow.png",
-    1: "raw-assets/red_ufo.png",
-    2: "raw-assets/green_ufo.png",
-    3: "raw-assets/blue_ufo.png",
-    4: "raw-assets/orange_ufo.png",
-    5: "raw-assets/red_plane.png",
-    6: "raw-assets/green_plane.png",
-    7: "raw-assets/blue_plane.png",
-    8: "raw-assets/orange_plane.png",
-};
-export type Grid = TileType[][];
+export const PieceMap: Record<number, string> = {};
+Object.keys(PieceEnum).forEach((key) => {
+    const idx = PieceEnum[key as keyof typeof PieceEnum];
+    PieceMap[idx] = `raw-assets/${key.toLowerCase()}.png`;
+});
+
 export type Position = {
     row: number,
     column: number
 };
 export type GameConfig = {
-    grid: Grid
+    grid: Grid,
+    starts: Position[][];
     tileSize: number,
 };
 

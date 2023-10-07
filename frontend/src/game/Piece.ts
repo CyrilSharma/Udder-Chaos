@@ -43,8 +43,6 @@ export class Piece extends Container {
         this.image.alpha = 1;
         this.scale.set(1);
         this.image.texture = Texture.from(opts.name);
-        this.image.width = opts.size;
-        this.image.height = opts.size;
         console.log("I'm on the screen!");
     }
 

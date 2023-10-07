@@ -8,7 +8,10 @@ import {
     GameConfig,
     PieceEnum,
     PieceType,
-    TypeMap
+    TileEnum,
+    TileType,
+    TileMap,
+    PieceMap
 } from './Utils';
 
 
@@ -18,10 +21,10 @@ export class Board {
     public grid: Grid = [];
     /** All piece sprites currently being used in the grid */
     public pieces: Piece[] = [];
-    /** Mask all pieces inside board dimensions */
-    public piecesMask: Graphics;
     /** A container for the pieces sprites */
     public piecesContainer: Container;
+    /** A container for all the tile sprites */
+    public tilesContainer: Container;
     /** Number of rows in the board */
     public rows = 0;
     /** Number of columns in the board */
@@ -29,60 +32,78 @@ export class Board {
     /** The size (width & height) of each board slot */
     public tileSize = 0;
 
-    // 
+    // We pass the game to allow for callbacks...
     constructor(game: Game) {
         this.game = game;
 
-        this.piecesMask = new Graphics();
-        this.piecesMask.beginFill(0xff0000, 0.5);
-        this.piecesMask.drawRect(-2, -2, 4, 4);
-        this.game.addChild(this.piecesMask);
-
-        //this.game.addChild(sprite);
+        this.tilesContainer = new Container();
+        this.game.addChild(this.tilesContainer);
 
         this.piecesContainer = new Container();
         this.game.addChild(this.piecesContainer);
-        // this.piecesContainer.addChild(sprite)
-
-        //this.piecesContainer.mask = this.piecesMask;
     }
 
     public setup(config: GameConfig) {
         this.rows = config.grid.length;
         this.columns = config.grid[0].length;
         this.tileSize = config.tileSize;
-        this.piecesMask.width = this.getWidth();
-        this.piecesMask.height = this.getHeight();
         this.piecesContainer.visible = true;
         this.grid = config.grid;
-        this.createPiece(
-            { row: 10, column: 10 },
-            PieceEnum.Player_Red
-        );
+        this.buildGame(config);
+    }
+
+    public buildGame(config: GameConfig) {
+        //console.log(PieceMap);
+        const grid = config.grid;
+        const rows = grid.length;
+        const cols = grid[0].length;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                let position = { row: r, column: c };
+                this.createTile(position, grid[r][c]);
+            }
+        }
+
+        for (const tiletype of Object.values(PieceEnum)) {
+            console.log("Tiletype: " + tiletype);
+            console.log("PieceEnum.Player_Red: " + PieceEnum.Player_Red);
+            //if (tiletype != PieceEnum.Player_Red) continue;
+            console.log(config.starts[tiletype]);
+            for (const position of config.starts[tiletype]) {
+                this.createPiece(position, tiletype);
+            }
+        }
+    }
+
+    public createTile(position: Position, tileType: TileType) {
+        const name = TileMap[tileType];
+        const tile = Sprite.from(name);
+        const viewPosition = this.getViewPosition(position);
+        tile.x = viewPosition.x;
+        tile.y = viewPosition.y;
+        this.tilesContainer.addChild(tile);
     }
 
     public createPiece(position: Position, pieceType: PieceType) {
-        const name = TypeMap[pieceType];
+        const name = PieceMap[pieceType];
         const piece = new Piece();
-
-        const viewPosition = this.getViewPosition(position);
         piece.setup({
             name,
             type: pieceType,
             size: 50,
         });
+        const viewPosition = this.getViewPosition(position);
         piece.row = position.row;
         piece.column = position.column;
-        piece.x = viewPosition.x;
-        piece.y = viewPosition.y;
+        piece.x = viewPosition.x + this.tileSize / 2;
+        piece.y = viewPosition.y + this.tileSize / 2;
         this.pieces.push(piece);
         this.piecesContainer.addChild(piece);
-        return piece;
     }
 
     public getViewPosition(position: Position) {
-        const dx = position.row * this.tileSize;
-        const dy = position.column * this.tileSize;
+        const dy = position.row * this.tileSize;
+        const dx = position.column * this.tileSize;
         return { x: dx, y: dy };
     }
 

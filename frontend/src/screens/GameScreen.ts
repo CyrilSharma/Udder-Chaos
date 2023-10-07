@@ -1,7 +1,10 @@
-import { Container, Sprite } from 'pixi.js';
+import { Container } from 'pixi.js';
 import { Game } from '../game/Game';
-import { createRandomGrid } from '../game/Utils';
-import { app } from '../main'
+import {
+    createRandomGrid,
+    PieceEnum,
+    GameConfig
+} from '../game/Utils';
 export class GameScreen extends Container {
     public readonly gameContainer: Container;
     public readonly game: Game;
@@ -14,8 +17,37 @@ export class GameScreen extends Container {
     }
 
     public prepare() {
-        const config = {
+        const config: GameConfig = {
             grid: createRandomGrid(),
+            starts: [
+                [
+                    { row: 0, column: 0 }
+                ],
+                [
+                    { row: 0, column: 1 }
+                ],
+                [
+                    { row: 0, column: 2 }
+                ],
+                [
+                    { row: 0, column: 3 }
+                ],
+                [
+                    { row: 0, column: 4 }
+                ],
+                [
+                    { row: 0, column: 5 }
+                ],
+                [
+                    { row: 0, column: 6 }
+                ],
+                [
+                    { row: 0, column: 7 }
+                ],
+                [
+                    { row: 0, column: 7 }
+                ]
+            ],
             tileSize: 50
         }
         this.game.setup(config);
