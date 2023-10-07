@@ -19,7 +19,7 @@ npm run start
 If you're curious what everything is doing here's the gist:
 vite - spins up a server so we can see what our project looks like.
 .prettierrc.json - a code formatter.
-tsconfig.json - typescript is an extention to JS which enables typing. This configures its compiler.
+tsconfig.json - typescript is an extension to JS which enables typing. This configures its compiler.
 
 
 # Building The Game

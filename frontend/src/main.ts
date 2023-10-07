@@ -1,6 +1,7 @@
 import { Application } from 'pixi.js';
 import { navigation } from './utils/navigation';
 import { HomeScreen } from './screens/HomeScreen';
+import { GameScreen } from './screens/GameScreen';
 
 /** The PixiJS app Application instance, shared across the project */
 export const app = new Application<HTMLCanvasElement>({
@@ -57,6 +58,19 @@ async function init() {
     } else {
         await navigation.showScreen(HomeScreen);
     } */
+
+    /* const sprite = PIXI.Sprite.from("raw-assets/red_ufo.png");
+    sprite.anchor.set(0.5);
+    sprite.x = app.screen.width / 2;
+    sprite.y = app.screen.height / 2;
+    app.stage.addChild(sprite); */
+
+    console.log("HELLO");
+    let screen = new GameScreen();
+    screen.prepare();
+    app.stage.addChild(screen);
+    console.log("GOOD BYE");
+    */
 }
 
 // Init everything
