@@ -1,6 +1,6 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
 import { Piece } from './Piece';
-import { Game } from './Game'
+import { Game } from './Game';
 import {
     Position,
     Grid,
@@ -13,9 +13,8 @@ import {
     PieceMap,
     isPlayer,
     GameUpdate,
-    PieceMove
+    PieceMove,
 } from './Utils';
-
 
 export class Board {
     public game: Game;
@@ -55,28 +54,28 @@ export class Board {
     }
 
     public updateGame(update: GameUpdate) {
-        let normal_changes: { piece: Piece, dest: Position }[] = []
+        let normal_changes: { piece: Piece; dest: Position }[] = [];
         update.normal_moves.forEach((move) => {
             normal_changes.push({
                 piece: this.getPieceByPosition(move.from)!,
-                dest: move.to
+                dest: move.to,
             });
         });
-        let kill_changes: { piece: Piece, dest: Position }[] = []
+        let kill_changes: { piece: Piece; dest: Position }[] = [];
         update.kill_moves.forEach((move) => {
             normal_changes.push({
                 piece: this.getPieceByPosition(move.from)!,
-                dest: move.to
+                dest: move.to,
             });
         });
-        let score_changes: { piece: Piece, dest: Position }[] = []
+        let score_changes: { piece: Piece; dest: Position }[] = [];
         update.score_moves.forEach((move) => {
             normal_changes.push({
                 piece: this.getPieceByPosition(move.from)!,
-                dest: move.to
-            })
+                dest: move.to,
+            });
         });
-        normal_changes.forEach((c) => this.normal_move(c.piece, c.dest))
+        normal_changes.forEach((c) => this.normal_move(c.piece, c.dest));
         kill_changes.forEach((c) => this.kill_move(c.piece, c.dest));
         score_changes.forEach((c) => this.score_move(c.piece, c.dest));
     }
@@ -87,16 +86,16 @@ export class Board {
     }
 
     public kill_move(piece: Piece, dest: Position) {
-        if (isPlayer(piece.type)) return Error("Players cannot kill entities");
+        if (isPlayer(piece.type)) return Error('Players cannot kill entities');
         const target = this.getPieceByPosition(dest)!;
-        if (!isPlayer(piece.type)) return Error("Enemy cannot be killed");
+        if (!isPlayer(piece.type)) return Error('Enemy cannot be killed');
         this.removePiece(target);
         this.setPieceLocation(piece, dest);
     }
 
     // TODO: change cow to be not a piece...
     public score_move(piece: Piece, dest: Position) {
-        if (!isPlayer(piece.type)) return Error("The AI cannot score");
+        if (!isPlayer(piece.type)) return Error('The AI cannot score');
         // const target = this.getPieceByPosition(dest)!;
         // if (!isPlayer(piece.type)) return Error("Enemy cannot be killed");
         this.setPieceLocation(piece, dest);

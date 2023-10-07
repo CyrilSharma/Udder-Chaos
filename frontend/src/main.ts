@@ -47,23 +47,23 @@ async function init() {
 
     let keypress = (e: KeyboardEvent) => {
         let key = -1;
-        if (e.key === "ArrowLeft") {
-            console.log("Left arrow key was pressed");
+        if (e.key === 'ArrowLeft') {
+            console.log('Left arrow key was pressed');
             key = 2;
-        } else if (e.key === "ArrowRight") {
-            console.log("Right arrow key was pressed");
+        } else if (e.key === 'ArrowRight') {
+            console.log('Right arrow key was pressed');
             key = 0;
-        } else if (e.key === "ArrowUp") {
-            console.log("Up arrow key was pressed");
+        } else if (e.key === 'ArrowUp') {
+            console.log('Up arrow key was pressed');
             key = 1;
-        } else if (e.key === "ArrowDown") {
-            console.log("Down arrow key was pressed");
+        } else if (e.key === 'ArrowDown') {
+            console.log('Down arrow key was pressed');
             key = 3;
         }
         if (key == -1) return;
         screen.move(key);
     };
-    window.addEventListener("keydown", keypress);
+    window.addEventListener('keydown', keypress);
 }
 
 // Init everything
