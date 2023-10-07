@@ -9,7 +9,7 @@ export type TileType = number;
 export const TileMap: Record<number, string> = {};
 Object.keys(TileEnum).forEach((key) => {
     const idx = TileEnum[key as keyof typeof TileEnum];
-    TileMap[idx] = `raw-assets/${key.toLowerCase()}.png`;
+    TileMap[idx] = `images/${key.toLowerCase()}.png`;
 });
 export type Grid = TileType[][];
 
@@ -17,19 +17,19 @@ export type Grid = TileType[][];
 export const PieceEnum = {
     Cow: 0,
     Player_Red: 1,
-    Player_Green: 2,
+    Player_Yellow: 2,
     Player_Blue: 3,
-    Player_Orange: 4,
+    Player_Purple: 4,
     Enemy_Red: 5,
-    Enemy_Green: 6,
+    Enemy_Yellow: 6,
     Enemy_Blue: 7,
-    Enemy_Orange: 8
+    Enemy_Purple: 8
 };
 export type PieceType = number;
 export const PieceMap: Record<number, string> = {};
 Object.keys(PieceEnum).forEach((key) => {
     const idx = PieceEnum[key as keyof typeof PieceEnum];
-    PieceMap[idx] = `raw-assets/${key.toLowerCase()}.png`;
+    PieceMap[idx] = `images/${key.toLowerCase()}.png`;
 });
 
 export type Position = {

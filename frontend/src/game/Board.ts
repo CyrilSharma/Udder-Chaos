@@ -81,6 +81,8 @@ export class Board {
         const viewPosition = this.getViewPosition(position);
         tile.x = viewPosition.x;
         tile.y = viewPosition.y;
+        tile.width = this.tileSize;
+        tile.height = this.tileSize;
         this.tilesContainer.addChild(tile);
     }
 
