@@ -3,7 +3,8 @@ import { Game } from '../game/Game';
 import {
     createRandomGrid,
     PieceEnum,
-    GameConfig
+    GameConfig,
+    PieceMove
 } from '../game/Utils';
 export class GameScreen extends Container {
     public readonly gameContainer: Container;
@@ -17,6 +18,7 @@ export class GameScreen extends Container {
     }
 
     public prepare() {
+        // Temporary workaround until we can load maps.
         const config: GameConfig = {
             grid: createRandomGrid(),
             starts: [
@@ -51,5 +53,21 @@ export class GameScreen extends Container {
             tileSize: 50
         }
         this.game.setup(config);
+    }
+
+    public move(dir: number) {
+        let dx = [1, 0, -1, 0];
+        let dy = [0, -1, 0, 1];
+        let normal_moves: PieceMove[] = []
+        this.game.board.pieces.forEach((piece) => {
+            let cur  = { row: piece.row, column: piece.column };
+            let dest = { row: piece.row + dy[dir], column: piece.column + dx[dir]};
+            normal_moves.push({from: cur, to: dest});
+        });
+        this.game.board.updateGame({
+            normal_moves,
+            kill_moves: [],
+            score_moves: []
+        });
     }
 }

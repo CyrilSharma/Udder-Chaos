@@ -41,17 +41,29 @@ async function init() {
     // Trigger the first resize
     resize();
 
-    /* const sprite = PIXI.Sprite.from("raw-assets/red_ufo.png");
-    sprite.anchor.set(0.5);
-    sprite.x = app.screen.width / 2;
-    sprite.y = app.screen.height / 2;
-    app.stage.addChild(sprite); */
-
-    console.log("HELLO");
     let screen = new GameScreen();
     screen.prepare();
     app.stage.addChild(screen);
-    console.log("GOOD BYE");
+
+    let keypress = (e: KeyboardEvent) => {
+        let key = -1;
+        if (e.key === "ArrowLeft") {
+            console.log("Left arrow key was pressed");
+            key = 2;
+        } else if (e.key === "ArrowRight") {
+            console.log("Right arrow key was pressed");
+            key = 0;
+        } else if (e.key === "ArrowUp") {
+            console.log("Up arrow key was pressed");
+            key = 1;
+        } else if (e.key === "ArrowDown") {
+            console.log("Down arrow key was pressed");
+            key = 3;
+        }
+        if (key == -1) return;
+        screen.move(key);
+    };
+    window.addEventListener("keydown", keypress);
 }
 
 // Init everything

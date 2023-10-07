@@ -1,17 +1,19 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
 import { Piece } from './Piece';
 import { Game } from './Game'
-import { app } from '../main'
 import {
     Position,
     Grid,
     GameConfig,
     PieceEnum,
     PieceType,
-    TileEnum,
     TileType,
+    TileEnum,
     TileMap,
-    PieceMap
+    PieceMap,
+    isPlayer,
+    GameUpdate,
+    PieceMove
 } from './Utils';
 
 
@@ -52,6 +54,63 @@ export class Board {
         this.buildGame(config);
     }
 
+    public updateGame(update: GameUpdate) {
+        let normal_changes: { piece: Piece, dest: Position }[] = []
+        update.normal_moves.forEach((move) => {
+            normal_changes.push({
+                piece: this.getPieceByPosition(move.from)!,
+                dest: move.to
+            });
+        });
+        let kill_changes: { piece: Piece, dest: Position }[] = []
+        update.kill_moves.forEach((move) => {
+            normal_changes.push({
+                piece: this.getPieceByPosition(move.from)!,
+                dest: move.to
+            });
+        });
+        let score_changes: { piece: Piece, dest: Position }[] = []
+        update.score_moves.forEach((move) => {
+            normal_changes.push({
+                piece: this.getPieceByPosition(move.from)!,
+                dest: move.to
+            })
+        });
+        normal_changes.forEach((c) => this.normal_move(c.piece, c.dest))
+        kill_changes.forEach((c) => this.kill_move(c.piece, c.dest));
+        score_changes.forEach((c) => this.score_move(c.piece, c.dest));
+    }
+
+    // TODO: Learn how to animate things.
+    public normal_move(piece: Piece, dest: Position) {
+        this.setPieceLocation(piece, dest);
+    }
+
+    public kill_move(piece: Piece, dest: Position) {
+        if (isPlayer(piece.type)) return Error("Players cannot kill entities");
+        const target = this.getPieceByPosition(dest)!;
+        if (!isPlayer(piece.type)) return Error("Enemy cannot be killed");
+        this.removePiece(target);
+        this.setPieceLocation(piece, dest);
+    }
+
+    // TODO: change cow to be not a piece...
+    public score_move(piece: Piece, dest: Position) {
+        if (!isPlayer(piece.type)) return Error("The AI cannot score");
+        // const target = this.getPieceByPosition(dest)!;
+        // if (!isPlayer(piece.type)) return Error("Enemy cannot be killed");
+        this.setPieceLocation(piece, dest);
+    }
+
+    public removePiece(piece: Piece) {
+        if (this.pieces.includes(piece)) {
+            this.pieces.splice(this.pieces.indexOf(piece), 1);
+        }
+        if (piece.parent) {
+            piece.parent.removeChild(piece);
+        }
+    }
+
     public buildGame(config: GameConfig) {
         //console.log(PieceMap);
         const grid = config.grid;
@@ -61,13 +120,14 @@ export class Board {
             for (let c = 0; c < cols; c++) {
                 let position = { row: r, column: c };
                 this.createTile(position, grid[r][c]);
+                if (grid[r][c] == TileEnum.Pasture) {
+                    // this.createPiece(position,)
+                    // this.createCow(position);
+                }
             }
         }
 
         for (const tiletype of Object.values(PieceEnum)) {
-            console.log("Tiletype: " + tiletype);
-            console.log("PieceEnum.Player_Red: " + PieceEnum.Player_Red);
-            //if (tiletype != PieceEnum.Player_Red) continue;
             console.log(config.starts[tiletype]);
             for (const position of config.starts[tiletype]) {
                 this.createPiece(position, tiletype);
@@ -90,15 +150,19 @@ export class Board {
         piece.setup({
             name,
             type: pieceType,
-            size: 50,
+            size: this.tileSize,
         });
+        this.setPieceLocation(piece, position);
+        this.pieces.push(piece);
+        this.piecesContainer.addChild(piece);
+    }
+
+    public setPieceLocation(piece: Piece, position: Position) {
         const viewPosition = this.getViewPosition(position);
         piece.row = position.row;
         piece.column = position.column;
         piece.x = viewPosition.x + this.tileSize / 2;
         piece.y = viewPosition.y + this.tileSize / 2;
-        this.pieces.push(piece);
-        this.piecesContainer.addChild(piece);
     }
 
     public getViewPosition(position: Position) {

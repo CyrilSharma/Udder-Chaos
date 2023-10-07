@@ -31,7 +31,16 @@ Object.keys(PieceEnum).forEach((key) => {
     const idx = PieceEnum[key as keyof typeof PieceEnum];
     PieceMap[idx] = `raw-assets/${key.toLowerCase()}.png`;
 });
+export function isPlayer(piece_type: number) {
+    for (const key of Object.keys(PieceEnum)) {
+        const val = PieceEnum[key as keyof typeof PieceEnum];
+        if (val != piece_type) continue;
+        return key.toLowerCase().includes("player");
+    };
+    throw Error("Invalid Piece Type");
+}
 
+//----------Game-----------//
 export type Position = {
     row: number,
     column: number
@@ -41,6 +50,17 @@ export type GameConfig = {
     starts: Position[][];
     tileSize: number,
 };
+export type PieceUpdate = {
+
+}
+export type PieceMove = { from: Position, to: Position };
+// We categorize the moves to allow for unique animations.
+export type GameUpdate = {
+    normal_moves: PieceMove[], // Moves which kill nothing.
+    kill_moves:   PieceMove[], // Moves which kill a unit.
+    score_moves:  PieceMove[]  // Moves which abduct a cow.
+}
+
 
 //-----Functions-----//
 export function createRandomGrid(rows = 16, cols = 16) {
