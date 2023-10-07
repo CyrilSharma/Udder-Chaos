@@ -44,8 +44,7 @@ async function init() {
     // Trigger the first resize
     resize();
 
-    //await navigation.showScreen(HomeScreen);
-    await navigation.showScreen(GameScreen);
+    await navigation.showScreen(HomeScreen);
     // Show initial loading screen
     /* await navigation.showScreen(LoadScreen);
 
