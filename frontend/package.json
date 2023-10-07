@@ -4,14 +4,14 @@
     "type": "module",
     "scripts": {
         "start": "vite --open",
-        "build": "tsc && vite build",
+        "build": "which tsc && tsc && vite build",
         "preview": "vite preview --open"
     },
     "dependencies": {
         "pixi.js": "^7.1.1"
     },
     "devDependencies": {
-        "typescript": "^4.9.3",
+        "typescript": "^5.2.2",
         "vite": "^4.0.4"
     }
 }
