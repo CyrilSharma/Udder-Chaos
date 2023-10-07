@@ -1,8 +1,10 @@
-import * as PIXI from 'pixi.js';
+import { Application } from 'pixi.js';
+import { navigation } from './utils/navigation';
+import { HomeScreen } from './screens/HomeScreen';
 import { GameScreen } from './screens/GameScreen';
 
 /** The PixiJS app Application instance, shared across the project */
-export const app = new PIXI.Application<HTMLCanvasElement>({
+export const app = new Application<HTMLCanvasElement>({
     resolution: Math.max(window.devicePixelRatio, 2),
     backgroundColor: 0xffffff,
 });
@@ -28,6 +30,7 @@ function resize() {
 
     // Update renderer  and navigation screens dimensions
     app.renderer.resize(width, height);
+    navigation.resize(width, height);
 }
 
 /** Setup app and initialise assets */
@@ -41,6 +44,21 @@ async function init() {
     // Trigger the first resize
     resize();
 
+    await navigation.showScreen(HomeScreen);
+    // Show initial loading screen
+    /* await navigation.showScreen(LoadScreen);
+
+    // Go to one of the screens if a shortcut is present in url params, otherwise go to home screen
+    if (getUrlParam('game') !== null) {
+        await navigation.showScreen(GameScreen);
+    } else if (getUrlParam('load') !== null) {
+        await navigation.showScreen(LoadScreen);
+    } else if (getUrlParam('result') !== null) {
+        await navigation.showScreen(ResultScreen);
+    } else {
+        await navigation.showScreen(HomeScreen);
+    } */
+
     /* const sprite = PIXI.Sprite.from("raw-assets/red_ufo.png");
     sprite.anchor.set(0.5);
     sprite.x = app.screen.width / 2;
@@ -52,6 +70,7 @@ async function init() {
     screen.prepare();
     app.stage.addChild(screen);
     console.log("GOOD BYE");
+    */
 }
 
 // Init everything
