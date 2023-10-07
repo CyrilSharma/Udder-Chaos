@@ -10,7 +10,7 @@ const COLOR = {
     GREEN: 3,    
 }
 
-const MAX_PLAYERS = 4;
+const MAX_PLAYERS = 2;
 
 export class Room {
     constructor(io, roomCode) {
@@ -54,9 +54,15 @@ export class Room {
         return names;
     }
 
-    startGame(io) {
-        // Send starting game info to players
-        io.to(this.roomCode).emit('receive-message', 'Starting a new game')
+    startGame(host) {
+        if (this.players.length == MAX_PLAYERS) {
+            // Send starting game info to players
+            this.io.to(this.roomCode).emit('start-game');
+        }
+        else {
+            // Not enough players yet
+            host.emit("start-game-error", "Not enough players to start the game!");
+        }
     }
 }
 
@@ -72,7 +78,11 @@ class Player {
     }
 
     initSocket() {
-        this.socket.on('disconnect', () => {
+        this.socket.on("start-game", () => {
+            this.room.startGame(this.socket);
+        });
+
+        this.socket.on("disconnect", () => {
             this.disconnectPlayer();
         });
     }

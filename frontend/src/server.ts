@@ -22,8 +22,17 @@ class Server {
             console.log(playerList);
             // Call create game screen with roomcode
         });
+
         this.socket.on("player-list", (playerList) => {
             console.log(playerList);
+        });
+
+        this.socket.on("start-game-error", (error) => {
+            console.log(error);
+        });
+
+        this.socket.on("start-game", () => {
+            console.log("Start game!");
         });
     }
 
@@ -33,6 +42,10 @@ class Server {
 
     public async joinRoom(roomCode: string) {
         this.socket.emit("join-room", roomCode);
+    }
+
+    public async startGame() {
+        this.socket.emit("start-game");
     }
 }
 

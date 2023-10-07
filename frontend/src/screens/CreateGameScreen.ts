@@ -1,5 +1,6 @@
 import { Container, Sprite, Graphics } from 'pixi.js';
 import { FancyButton, Button } from '@pixi/ui';
+import server from "../server";
 
 /** Screen shows upon opening the website */
 export class CreateGameScreen extends Container {
@@ -41,6 +42,10 @@ export class CreateGameScreen extends Container {
             )).view,
             text: 'Start',
             anchor: 0.5,
+        });
+
+        this.startGameButton.onPress.connect(() => {
+            server.startGame();
         });
 
         this.addChild(this.background);
