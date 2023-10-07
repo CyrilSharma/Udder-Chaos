@@ -5,6 +5,7 @@ import {
     PieceEnum,
     GameConfig
 } from '../game/Utils';
+
 export class GameScreen extends Container {
     public readonly gameContainer: Container;
     public readonly game: Game;

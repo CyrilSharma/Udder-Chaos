@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
 import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
+import { GameScreen } from "./screens/GameScreen";
 
 class Server {
     socket;
@@ -32,6 +33,7 @@ class Server {
         });
 
         this.socket.on("start-game", () => {
+            navigation.showScreen(GameScreen);
             console.log("Start game!");
         });
     }

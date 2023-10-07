@@ -57,20 +57,7 @@ async function init() {
         await navigation.showScreen(ResultScreen);
     } else {
         await navigation.showScreen(HomeScreen);
-    } */
-
-    /* const sprite = PIXI.Sprite.from("raw-assets/red_ufo.png");
-    sprite.anchor.set(0.5);
-    sprite.x = app.screen.width / 2;
-    sprite.y = app.screen.height / 2;
-    app.stage.addChild(sprite); */
-
-    console.log("HELLO");
-    let screen = new GameScreen();
-    screen.prepare();
-    app.stage.addChild(screen);
-    console.log("GOOD BYE");
-    */
+    } */    
 }
 
 // Init everything
