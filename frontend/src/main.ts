@@ -44,7 +44,7 @@ async function init() {
     // Trigger the first resize
     resize();
 
-    await navigation.showScreen(HomeScreen);
+    // await navigation.showScreen(HomeScreen);
     // Show initial loading screen
     /* await navigation.showScreen(LoadScreen);
 
@@ -58,7 +58,7 @@ async function init() {
     } else {
         await navigation.showScreen(HomeScreen);
     } */    
-    /* let screen = new GameScreen();
+    let screen = new GameScreen();
     screen.prepare();
     app.stage.addChild(screen);
 
@@ -80,7 +80,7 @@ async function init() {
         if (key == -1) return;
         screen.move(key);
     };
-    window.addEventListener('keydown', keypress); */
+    window.addEventListener('keydown', keypress);
 }
 
 // Init everything

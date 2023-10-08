@@ -84,7 +84,7 @@ export function loadMap(seed: number) {
     return grid;
 }
 
-function createRandomGrid(rows = 16, cols = 16) {
+export function createRandomGrid(rows = 16, cols = 16) {
     const grid: Grid = [];
     const tiles = [TileEnum.Plain, TileEnum.Pasture, TileEnum.Impassible, TileEnum.Destination];
     for (let r = 0; r < rows; r++) {

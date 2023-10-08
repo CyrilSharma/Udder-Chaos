@@ -1,6 +1,6 @@
 import { Container } from 'pixi.js';
 import { Game } from '../game/Game';
-import { createRandomGrid, PieceEnum, GameConfig, PieceMove } from '../game/Utils';
+import { createRandomGrid, PieceEnum, GameConfig, PieceMove, loadMap } from '../game/Utils';
 export class GameScreen extends Container {
     public readonly gameContainer: Container;
     public readonly game: Game;
@@ -15,7 +15,7 @@ export class GameScreen extends Container {
     public prepare() {
         // Temporary workaround until we can load maps.
         const config: GameConfig = {
-            grid: createRandomGrid(),
+            grid: loadMap(1),
             starts: [
                 [{ row: 0, column: 0 }],
                 [{ row: 0, column: 1 }],
