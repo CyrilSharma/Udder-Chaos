@@ -59,7 +59,6 @@ function generateRoomCode() {
             roomCode += chars.charAt(Math.floor(Math.random() * chars.length));
         }
     } while (roomCode in rooms) // If room exists, try again
-    return "AAAA"
     return roomCode
 }
 

@@ -69,12 +69,12 @@ export class JoinGameScreen extends Container {
 
         this.roomCodeInput.onChange.connect(() => {
             if (this.roomCodeInput.value.length > 4) {
-                this.roomCodeInput.value = this.roomCodeInput.value.slice(0, 5);
+                this.roomCodeInput.value = this.roomCodeInput.value.slice(0, 4);
             }
         });
 
         this.joinRoomButton.onPress.connect(() => {
-            
+            server.joinRoom(this.roomCodeInput.value);
         })
 
         this.backButton.onPress.connect(() => {

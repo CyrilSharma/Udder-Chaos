@@ -97,8 +97,6 @@ export class CreateGameScreen extends Container {
     }
 
     public async addGameCode(code: string) {
-        console.log("Screen")
-        console.log(this);
         this.gameCodeDisplay.text = "Code:\n" + code;
     }
 
@@ -114,8 +112,7 @@ export class CreateGameScreen extends Container {
         this.gameCodeDisplay.view.y = height * 0.5;
         this.gameCodeDisplay.view.height = height * 0.2;
         this.gameCodeDisplay.view.width = this.gameCodeDisplay.view.height * 1.5;
-        this.addGameCode("CHSG");
-
+    
         this.container.view.x = width * 0.5;
         this.container.view.y = height * 0.5;
         this.container.view.width = width * 0.5;

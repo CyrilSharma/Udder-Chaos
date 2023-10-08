@@ -75,7 +75,6 @@ export class HomeScreen extends Container {
         });
 
         this.joinGameButton.onPress.connect(() => {
-            //server.joinRoom("AAAA");
             navigation.showScreen(JoinGameScreen);
         });
 

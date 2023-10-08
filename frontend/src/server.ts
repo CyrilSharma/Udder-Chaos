@@ -44,7 +44,7 @@ class Server {
     }
 
     public async joinRoom(roomCode: string) {
-        this.socket.emit("join-room", roomCode);
+        this.socket.emit("join-room", roomCode.toUpperCase());
     }
 
     public async startGame() {
