@@ -12,7 +12,7 @@ import {
     TileMap,
     PieceMap,
     isPlayer,
-    GameUpdate,
+    BoardUpdate,
     PieceMove,
 } from './Utils';
 
@@ -54,7 +54,7 @@ export class Board extends Container {
         this.buildGame(config);
     }
 
-    public updateGame(update: GameUpdate) {
+    public updateGame(update: BoardUpdate) {
         let normal_changes: { piece: Piece; dest: Position }[] = [];
         update.normal_moves.forEach((move) => {
             normal_changes.push({

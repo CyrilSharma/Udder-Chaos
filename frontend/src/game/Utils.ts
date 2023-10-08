@@ -69,7 +69,7 @@ export type GameConfig = {
 export type PieceUpdate = {};
 export type PieceMove = { from: Position; to: Position };
 // We categorize the moves to allow for unique animations.
-export type GameUpdate = {
+export type BoardUpdate = {
     normal_moves: PieceMove[]; // Moves which kill nothing.
     kill_moves: PieceMove[]; // Moves which kill a unit.
     score_moves: PieceMove[]; // Moves which abduct a cow.
