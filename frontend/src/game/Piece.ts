@@ -1,5 +1,4 @@
 import { Container, Sprite, Texture } from 'pixi.js';
-import { app } from '../main'
 
 /** Default piece options */
 const defaultPieceOptions = {

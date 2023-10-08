@@ -33,15 +33,48 @@ Object.keys(PieceEnum).forEach((key) => {
     const idx = PieceEnum[key as keyof typeof PieceEnum];
     PieceMap[idx] = `images/${key.toLowerCase()}.png`;
 });
+export function isPlayer(piece_type: number) {
+    for (const key of Object.keys(PieceEnum)) {
+        const val = PieceEnum[key as keyof typeof PieceEnum];
+        if (val != piece_type) continue;
+        return key.toLowerCase().includes('player');
+    }
+    throw Error('Invalid Piece Type');
+}
 
+//---------Cards------------//
+export const DirectionEnum = {
+    RIGHT: 0,
+    UP: 1,
+    LEFT: 2,
+    DOWN: 3
+};
+export type Direction = number;
+export const ColorEnum = {
+    RED: 0,
+    GREEN: 1,
+    BLUE: 2,
+    ORANGE: 3
+};
+export type Color = number;
+
+//----------Game-----------//
 export type Position = {
-    row: number,
-    column: number
+    row: number;
+    column: number;
 };
 export type GameConfig = {
-    grid: Grid,
+    grid: Grid;
     starts: Position[][];
-    tileSize: number,
+    tileSize: number;
+};
+export type PieceUpdate = {};
+export type PieceMove = { from: Position; to: Position };
+// We categorize the moves to allow for unique animations.
+export type BoardUpdate = {
+    normal_moves: PieceMove[]; // Moves which kill nothing.
+    kill_moves: PieceMove[]; // Moves which kill a unit.
+    score_moves: PieceMove[]; // Moves which abduct a cow.
 };
 
 //-----Functions-----//
@@ -53,10 +86,7 @@ export function loadMap(seed: number) {
 
 function createRandomGrid(rows = 16, cols = 16) {
     const grid: Grid = [];
-    const tiles = [
-        TileEnum.Plain, TileEnum.Pasture,
-        TileEnum.Impassible, TileEnum.Destination
-    ];
+    const tiles = [TileEnum.Plain, TileEnum.Pasture, TileEnum.Impassible, TileEnum.Destination];
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
             let idx = Math.floor(Math.random() * tiles.length);

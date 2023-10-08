@@ -1,6 +1,7 @@
 import { Application } from 'pixi.js';
 import { navigation } from './utils/navigation';
 import { HomeScreen } from './screens/HomeScreen';
+import { GameScreen } from './screens/GameScreen';
 
 /** The PixiJS app Application instance, shared across the project */
 export const app = new Application<HTMLCanvasElement>({
@@ -57,6 +58,29 @@ async function init() {
     } else {
         await navigation.showScreen(HomeScreen);
     } */    
+    /* let screen = new GameScreen();
+    screen.prepare();
+    app.stage.addChild(screen);
+
+    let keypress = (e: KeyboardEvent) => {
+        let key = -1;
+        if (e.key === 'ArrowLeft') {
+            console.log('Left arrow key was pressed');
+            key = 2;
+        } else if (e.key === 'ArrowRight') {
+            console.log('Right arrow key was pressed');
+            key = 0;
+        } else if (e.key === 'ArrowUp') {
+            console.log('Up arrow key was pressed');
+            key = 1;
+        } else if (e.key === 'ArrowDown') {
+            console.log('Down arrow key was pressed');
+            key = 3;
+        }
+        if (key == -1) return;
+        screen.move(key);
+    };
+    window.addEventListener('keydown', keypress); */
 }
 
 // Init everything
