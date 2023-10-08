@@ -82,7 +82,7 @@ export class CreateGameScreen extends Container {
         });
         
         this.backButton.onPress.connect(() => {
-            //server.killRoom();
+            server.leaveRoom();
             navigation.showScreen(HomeScreen);
         });
 

@@ -1,3 +1,5 @@
+import { removeRoom } from "./server.js"
+
 const TEAM = {
     ALIEN: true,
     HUMAN: false,
@@ -31,8 +33,6 @@ export class Room {
         let player = new Player(socket, TEAM.ALIEN, this);
         this.players.push(player);
 
-        console.log(this.players)
-
         player.joinRoom();
         socket.to(this.roomCode).emit("player-list", this.getPlayerNames());
         this.io.to(this.roomCode).emit("receive-message", "ROOOM")
@@ -43,7 +43,15 @@ export class Room {
         // Loop through players to find the correct player to remove
         let i = this.players.indexOf(player);
         this.players.splice(i, 1);
-        player.socket.to(this.roomCode).emit("player-list", this.getPlayerNames());
+        console.log("new list" + this.getPlayerNames());
+
+        if (this.players.length > 0) {
+            // There are still players in the game
+            io.to(this.roomCode).emit("player-list", this.getPlayerNames());
+        }
+        else {
+            removeRoom(this);
+        }
     }
 
     getPlayerNames() {
@@ -82,6 +90,10 @@ class Player {
             this.room.startGame(this.socket);
         });
 
+        this.socket.on("leave-room", () => {
+            this.disconnectPlayer();
+        });
+
         this.socket.on("disconnect", () => {
             this.disconnectPlayer();
         });
@@ -96,5 +108,8 @@ class Player {
     disconnectPlayer() {
         console.log(this.name + " has disconnected.")
         this.room.removePlayer(this);
+        this.socket.removeAllListeners("start-game");
+        this.socket.removeAllListeners("leave-room");
+        this.socket.removeAllListeners("disconnect");
     }
 }

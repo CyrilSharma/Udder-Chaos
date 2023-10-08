@@ -29,6 +29,8 @@ function createRoom() {
     room.addNewPlayer(this);
 
     console.log(this.id + " created a room: " + roomCode)
+
+    //console.log("Rooms: " + rooms)
 }
 
 function joinRoom(roomCode) {
@@ -41,7 +43,9 @@ function joinRoom(roomCode) {
 }
 
 function findRoomByCode(code) {
+    console.log("Rooms: ")
     for (let room of rooms) {
+        console.log(room.roomCode);
         if (room.roomCode === code) {
             return room;
         }
@@ -62,4 +66,13 @@ function generateRoomCode() {
     return roomCode
 }
 
-
+export function removeRoom(room) {
+    console.log("Removing room:" + room.roomCode);
+    console.log(rooms);
+    let i = rooms.indexOf(room);
+    if (i >= 0) {
+        console.log(i);
+        rooms.splice(rooms.indexOf(room), 1);
+        console.log(rooms);
+    } 
+}

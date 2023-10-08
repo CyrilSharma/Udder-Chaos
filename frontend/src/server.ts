@@ -50,6 +50,10 @@ class Server {
     public async startGame() {
         this.socket.emit("start-game");
     }
+
+    public async leaveRoom() {
+        this.socket.emit("leave-room");
+    }
 }
 
 export default new Server();
