@@ -7,10 +7,11 @@ const COLOR = {
     RED: 0,
     YELLOW: 1,
     BLUE: 2,
-    GREEN: 3,    
+    PURPLE: 3,    
 }
 
 const MAX_PLAYERS = 2;
+const SEED_SIZE = 3;
 
 export class Room {
     constructor(io, roomCode) {
@@ -54,10 +55,19 @@ export class Room {
         return names;
     }
 
+    getPlayerIds() {
+        let ids = []
+        for (let player of this.players) {
+            ids.push(player.socket.id)
+        }
+        return ids;
+    }
+
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
             // Send starting game info to players
-            this.io.to(this.roomCode).emit('start-game');
+            this.gameSeed = Math.floor(Math.random()*SEED_SIZE);
+            this.io.to(this.roomCode).emit('start-game', this.gameSeed, this.getPlayerIds());
         }
         else {
             // Not enough players yet

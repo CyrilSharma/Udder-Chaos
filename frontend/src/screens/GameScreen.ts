@@ -1,7 +1,7 @@
 import { Container } from 'pixi.js';
 import { Game } from '../game/Game';
 import {
-    createRandomGrid,
+    loadMap,
     PieceEnum,
     GameConfig
 } from '../game/Utils';
@@ -19,7 +19,7 @@ export class GameScreen extends Container {
 
     public prepare() {
         const config: GameConfig = {
-            grid: createRandomGrid(),
+            grid: loadMap(1),
             starts: [
                 [
                     { row: 0, column: 0 }

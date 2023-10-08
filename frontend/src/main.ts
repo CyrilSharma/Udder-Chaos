@@ -1,7 +1,6 @@
 import { Application } from 'pixi.js';
 import { navigation } from './utils/navigation';
 import { HomeScreen } from './screens/HomeScreen';
-import { GameScreen } from './screens/GameScreen';
 
 /** The PixiJS app Application instance, shared across the project */
 export const app = new Application<HTMLCanvasElement>({
