@@ -1,3 +1,4 @@
+// If you know how to store these as CSVs which can be read, go ahead and change.
 export const MAPS = [
 `0,0,3,1,1,3,0,2,1,2,2,1,0,3,1,2
 1,2,3,2,0,2,0,1,3,0,2,1,2,1,3,1
