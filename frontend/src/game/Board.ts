@@ -16,7 +16,7 @@ import {
     PieceMove,
 } from './Utils';
 
-export class Board {
+export class Board extends Container {
     public game: Game;
     /** The grid state, with only numbers */
     public grid: Grid = [];
@@ -35,13 +35,14 @@ export class Board {
 
     // We pass the game to allow for callbacks...
     constructor(game: Game) {
+        super();
         this.game = game;
 
         this.tilesContainer = new Container();
-        this.game.addChild(this.tilesContainer);
+        this.addChild(this.tilesContainer);
 
         this.piecesContainer = new Container();
-        this.game.addChild(this.piecesContainer);
+        this.addChild(this.piecesContainer);
     }
 
     public setup(config: GameConfig) {

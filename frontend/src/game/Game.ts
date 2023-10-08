@@ -14,10 +14,14 @@ export class Game extends Container {
         super();
         this.board = new Board(this);
         this.cards = new CardQueue(this);
+        this.addChild(this.board);
+        this.addChild(this.cards);
     }
 
     public setup(config: GameConfig) {
         this.config = config;
         this.board.setup(config);
+        this.cards.setup();
+        this.cards.y = this.board.getHeight();
     }
 }

@@ -27,7 +27,7 @@ export class GameScreen extends Container {
                 [{ row: 0, column: 7 }],
                 [{ row: 0, column: 8 }],
             ],
-            tileSize: 50,
+            tileSize: 40,
         };
         this.game.setup(config);
     }
