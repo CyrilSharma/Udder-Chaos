@@ -48,7 +48,7 @@ export const DirectionEnum = {
     DOWN: 3
 };
 export type Direction = number;
-export const Color = {
+export const ColorEnum = {
     RED: 0,
     GREEN: 1,
     BLUE: 2,
