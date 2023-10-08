@@ -3,17 +3,7 @@ import { Piece } from './Piece';
 import { Game } from './Game';
 import { Card } from './Card';
 import {
-    Position,
-    GameConfig,
-    PieceEnum,
-    PieceType,
-    TileType,
-    TileEnum,
-    TileMap,
-    PieceMap,
-    isPlayer,
     DirectionEnum,
-    GameUpdate,
     ColorEnum
 } from './Utils';
 
@@ -25,6 +15,7 @@ export class CardQueue extends Container {
     public cardContainer: Container;
     public cardSize = 100;
     public ncards = 16;
+    public hand_size = 3;
 
     constructor(game: Game) {
         super();
@@ -34,25 +25,53 @@ export class CardQueue extends Container {
     }
 
     public setup() {
-        const board_width = this.game.board.getWidth();
-        const interval = board_width / this.ncards;
+        let directions = [
+            DirectionEnum.LEFT,
+            DirectionEnum.RIGHT,
+            DirectionEnum.DOWN,
+            DirectionEnum.UP,
+        ]
+        let get = () => directions[
+            Math.floor(Math.random() * directions.length)
+        ];
         for (let i = 0; i < this.ncards; i++) {
             let config = {
                 color: ColorEnum.RED,
-                dir: DirectionEnum.UP,
+                dir: get(),
                 size: 50
             };
             let card = new Card(this, config, i);
             this.cardContainer.addChild(card);
-            card.y = 0;
-            card.x = interval * i;
             if (i < 3) {
                 this.player_hand.push(card)
-            } else if (i >= this.ncards - 3) {
-                this.enemy_hand.push(card)
-            } else {
+            } else if (i < this.ncards - 3) {
                 this.queue.push(card);
+            } else {
+                this.enemy_hand.push(card)
             }
+        }
+        this.placeCards();
+    }
+
+    public playCard(input: Card) {
+        for (let i = 0; i <  this.player_hand.length; i++) {
+            let card = this.player_hand[i];
+            if (card != input) continue;;
+            this.player_hand.splice(i, 1);
+            this.player_hand.push(this.queue[0]);
+            console.log(this.queue.shift());
+            this.queue.push(card);
+            this.placeCards();
+            return;
+        }
+        for (const card of this.queue) {
+            if (card != input) continue;
+            return;
+        }
+        // For now, assume we don't animate enemy cards.
+        for (const card of this.enemy_hand) {
+            if (card != input) continue;
+            return;
         }
     }
 
@@ -60,14 +79,26 @@ export class CardQueue extends Container {
         this.cardContainer.addChild(card);
     }
 
-    public placeCardBack() {
+    public placeCards() {
+        let count = 0;
+        let index = 0;
+        const board_width = this.game.board.getWidth();
+        const interval = board_width / (this.ncards + 2);
         for (const card of this.player_hand) {
+            ///card.index = index++;
+            card.x = interval * (count++);
             this.cardContainer.addChild(card);
         }
+        count++;
         for (const card of this.queue) {
+            ///card.index = index++;
+            card.x = interval * (count++);
             this.cardContainer.addChild(card);
         }
+        count++;
         for (const card of this.enemy_hand) {
+            ///card.index = index++;
+            card.x = interval * (count++);
             this.cardContainer.addChild(card);
         }
     }

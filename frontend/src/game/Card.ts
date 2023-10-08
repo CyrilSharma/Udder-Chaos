@@ -1,5 +1,5 @@
 import { Container, FederatedPointerEvent, Graphics, Sprite } from 'pixi.js';
-import { Direction, Color } from './Utils';
+import { Direction, Color, DirectionEnum } from './Utils';
 import { CardQueue } from './CardQueue';
 
 export type CardOptions = {
@@ -9,8 +9,10 @@ export type CardOptions = {
 };
 export class Card extends Container {
     public readonly queue: CardQueue;
-    public readonly graphics: Graphics
-    public index: number
+    public readonly graphics: Graphics;
+    public readonly scale_on_focus = 1.5;
+    public index: number;
+    public scaled = false;
     constructor(queue: CardQueue, options: CardOptions, index: number) {
         super();
         this.queue = queue;
@@ -23,23 +25,87 @@ export class Card extends Container {
         this.graphics.drawRoundedRect(
             0, 0, options.size, options.size * 1.4, 10
         );
+        this.drawArrow(this.graphics, options.size / 2, options.size * 0.7,
+            options.size / 3, options.size / 10, options.dir);
         this.addChild(this.graphics);
-        console.log("YO YO YO");
-        this.graphics.interactive = true;
-        this.graphics.on('pointerup', () => console.log("ATTEMPT 1"));
-        this.graphics.on('pointerdown', () => console.log("ATTEMPT 1"));
-        this.graphics.on('pointerover', this.onPointerOver);
-        this.graphics.on('pointerout', this.onPointerOut);
-        console.log(this.graphics);
+        this.graphics.eventMode = 'static';
+        this.graphics.on('pointertap', this.onPointerTap);
+        this.graphics.on('pointerenter', this.onPointerEnter);
+        this.graphics.on('pointerleave', this.onPointerLeave);
     }
 
-    private onPointerOver = (e: FederatedPointerEvent) => {
+    private drawArrow = (g: Graphics, x: number, y: number,
+        width: number, height: number, dir: Direction) => {
+        switch (dir) {
+            case DirectionEnum.DOWN: {
+                x -= height / 2; y -= width / 2;
+                g.drawRect(x + height / 3, y, height / 3, 3 * width / 4);
+                g.drawPolygon(
+                    x, y + 3 * width / 4,
+                    x + height / 2, y + width,
+                    x + height, y + 3 * width / 4
+                );
+                break;
+            }
+            case DirectionEnum.UP: {
+                x -= height / 2; y -= width / 2;
+                g.drawRect(x + height / 3, y + width / 4, height / 3, 3 * width / 4);
+                g.drawPolygon(
+                    x, y + width / 4,
+                    x + height / 2, y,
+                    x + height, y + width / 4
+                );
+                break;
+            }
+            case DirectionEnum.LEFT: {
+                x -= width / 2; y -= height / 2;
+                g.drawRect(x + width / 4, y + height / 3, 3 * width / 4, height / 3);
+                g.drawPolygon(
+                    x + width / 4, y + 0,
+                    x, y + height / 2,
+                    x + width / 4, y + height
+                );
+                break;
+            }
+            case DirectionEnum.RIGHT: {
+                x -= width / 2; y -= height / 2;
+                g.drawRect(x, y + height / 3, 3 * width / 4, height / 3);
+                g.drawPolygon(
+                    x + 3 * width / 4, y + 0,
+                    x + width, y + height / 2,
+                    x + 3 * width / 4, y + height
+                );
+                break;
+            }
+        }
+    }
+
+    private onPointerTap = (e: FederatedPointerEvent) => {
+        console.log("Card was clicked!");
+        this.unscale();
+        this.queue.playCard(this);
+    }
+
+    private onPointerEnter = (e: FederatedPointerEvent) => {
         console.log("Hover over card " + this.index);
         this.queue.bringCardToTop(this);
+        this.position.x -= this.graphics.width / (2 * this.scale_on_focus);
+        this.position.y -= this.graphics.height / 2;
+        this.scale.set(this.scale_on_focus);
+        this.scaled = true;
     };
 
-    private onPointerOut = (e: FederatedPointerEvent) => {
+    private onPointerLeave = (e: FederatedPointerEvent) => {
         console.log("Leave over card " + this.index);
-        this.queue.placeCardBack();
+        this.unscale();
+        this.queue.placeCards();
     };
+
+    private unscale = () => {
+        if (!this.scaled) return;
+        this.scale.set(1);
+        this.position.x += this.graphics.width / (2 * this.scale_on_focus);
+        this.position.y += this.graphics.height / 2;
+        this.scaled = false;
+    }
 }
