@@ -3,6 +3,13 @@ import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 
+const COLOR = [
+    "red",
+    "yellow",
+    "blue",
+    "purple"
+];
+
 class Server {
     socket;
 
@@ -32,9 +39,11 @@ class Server {
             console.log(error);
         });
 
-        this.socket.on("start-game", () => {
+        this.socket.on("start-game", (seed, socketIds) => {
             navigation.showScreen(GameScreen);
-            console.log("Start game!");
+            console.log("Start game with " + seed);
+            let color = socketIds.indexOf(this.socket.id);
+            console.log("You are color: " + COLOR[color]);
         });
     }
 
