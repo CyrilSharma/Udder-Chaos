@@ -17,15 +17,16 @@ class Server {
             console.log(msg);
         });
 
-        this.socket.on("load-room", (roomCode, playerList) => {
-            navigation.showScreen(CreateGameScreen)
-            console.log(roomCode);
-            console.log(playerList);
-            // Call create game screen with roomcode
+        this.socket.on("load-room", async (roomCode, playerList) => {
+            await navigation.showScreen(CreateGameScreen);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.addGameCode(roomCode);
+            createGameScreen.getPlayerList().setPlayers(playerList);
         });
 
         this.socket.on("player-list", (playerList) => {
-            console.log(playerList);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.getPlayerList().setPlayers(playerList);
         });
 
         this.socket.on("start-game-error", (error) => {

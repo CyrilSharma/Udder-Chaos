@@ -19,6 +19,8 @@ export class CreateGameScreen extends Container {
     constructor() {
         super();
 
+        console.log("new screen!")
+
         this.background = Sprite.from('./src/assets/mainBackground.jpg');
         this.background.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
 
@@ -94,7 +96,9 @@ export class CreateGameScreen extends Container {
         
     }
 
-    public addGameCode(code: string) {
+    public async addGameCode(code: string) {
+        console.log("Screen")
+        console.log(this);
         this.gameCodeDisplay.text = "Code:\n" + code;
     }
 
@@ -152,4 +156,7 @@ export class CreateGameScreen extends Container {
         this.background.y = height * 0.5;
     }
 
+    public getPlayerList() {
+        return this.playerList;
+    }
 }

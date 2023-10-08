@@ -36,6 +36,11 @@ export class PlayerListDisplay extends Container {
         this.updateTheList();
     }
 
+    public setPlayers(players: string[]) {
+        this.players = players;
+        this.updateTheList();
+    }
+
     public textify(players: Array<string>) {
         let text:string;
         text = "";
