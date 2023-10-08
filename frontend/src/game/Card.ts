@@ -11,6 +11,7 @@ export class Card extends Container {
     public readonly queue: CardQueue;
     public readonly graphics: Graphics;
     public readonly scale_on_focus = 1.5;
+    public dir: Direction;
     public index: number;
     public scaled = false;
     constructor(queue: CardQueue, options: CardOptions, index: number) {
@@ -19,6 +20,7 @@ export class Card extends Container {
         this.index = index;
         this.graphics = new Graphics();
         this.graphics.beginFill(0xFFFFFF);
+        this.dir = options.dir;
         // set the line style to have a width of 5 and set the color to red
         this.graphics.lineStyle(5, 0xFF0000);
         // draw a card

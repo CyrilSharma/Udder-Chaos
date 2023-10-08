@@ -4,7 +4,8 @@ import { Game } from './Game';
 import { Card } from './Card';
 import {
     DirectionEnum,
-    ColorEnum
+    ColorEnum,
+    PieceMove
 } from './Utils';
 
 export class CardQueue extends Container {
@@ -56,7 +57,30 @@ export class CardQueue extends Container {
     public playCard(input: Card) {
         for (let i = 0; i <  this.player_hand.length; i++) {
             let card = this.player_hand[i];
-            if (card != input) continue;;
+            if (card != input) continue;
+
+            // VERY VERY TEMPORARY CHANGE.
+            let dir = -1;
+            switch(card.dir) {
+                case DirectionEnum.RIGHT: { dir=0; break; }
+                case DirectionEnum.UP:    { dir=1; break; }
+                case DirectionEnum.LEFT:  { dir=2; break; }
+                case DirectionEnum.DOWN:  { dir=3; break; }
+            }
+            let dx = [1, 0, -1, 0];
+            let dy = [0, -1, 0, 1];
+            let normal_moves: PieceMove[] = [];
+            this.game.board.pieces.forEach((piece) => {
+                let cur = { row: piece.row, column: piece.column };
+                let dest = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
+                normal_moves.push({ from: cur, to: dest });
+            });
+            this.game.board.updateGame({
+                normal_moves,
+                kill_moves: [],
+                score_moves: [],
+            });
+
             this.player_hand.splice(i, 1);
             this.player_hand.push(this.queue[0]);
             console.log(this.queue.shift());
