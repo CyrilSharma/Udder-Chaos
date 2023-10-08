@@ -79,7 +79,6 @@ export class HomeScreen extends Container {
             navigation.showScreen(JoinGameScreen);
         });
 
-
         this.addChild(this.background);
         this.addChild(this.logo);
         this.addChild(this.createGameButton.view);
