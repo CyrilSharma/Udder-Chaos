@@ -66,6 +66,7 @@ export class HomeScreen extends Container {
 
         this.createGameButton.onPress.connect(() => {
             server.createRoom();
+            navigation.showScreen(CreateGameScreen);
         });
 
         this.joinGameButton.onPress.connect(() => {

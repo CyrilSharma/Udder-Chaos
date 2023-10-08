@@ -1,5 +1,6 @@
 import { Container, Sprite, Graphics } from 'pixi.js';
 import { FancyButton, Button } from '@pixi/ui';
+import { PlayerListDisplay } from "../utils/playerListDisplay";
 import server from "../server";
 
 /** Screen shows upon opening the website */
@@ -9,6 +10,7 @@ export class CreateGameScreen extends Container {
     private gameLobbyLabel: FancyButton;
     private container: FancyButton;
     private startGameButton: FancyButton;
+    private playerList: PlayerListDisplay;
 
     constructor() {
         super();
@@ -44,15 +46,19 @@ export class CreateGameScreen extends Container {
             anchor: 0.5,
         });
 
+        this.playerList = new PlayerListDisplay;
+        this.playerList.updateTheList();
+
         this.startGameButton.onPress.connect(() => {
             server.startGame();
         });
 
+        
         this.addChild(this.background);
         this.addChild(this.container);
         this.addChild(this.gameLobbyLabel);
         this.addChild(this.startGameButton);
-        
+        this.addChild(this.playerList.theList);
         
     }
 
@@ -77,6 +83,15 @@ export class CreateGameScreen extends Container {
         this.startGameButton.view.x = this.container.view.x + this.container.view.x * 0.25;
         this.startGameButton.view.width = this.container.width * 0.3;
         this.startGameButton.view.height = this.container.height * 0.1;
+
+        this.playerList.theList.view.x = width * 0.38;
+        this.playerList.theList.view.y = height * 0.52;
+        this.playerList.theList.view.width = width * 0.2;
+        this.playerList.theList.view.height = height * 0.2;
+        // if (!(this.playerList.numPlayers() >= 4)) {
+        //     this.playerList.addPlayer("Jim");
+        // }
+        this.playerList.updateTheList();
 
         this.background.x = 0;
         this.background.y = 0;
