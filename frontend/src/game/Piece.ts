@@ -17,7 +17,7 @@ export type PieceOptions = typeof defaultPieceOptions;
  * The Piece class handles displaying and animating itself.
  */
 export class Piece extends Container {
-    private readonly image: Sprite;
+    public readonly image: Sprite;
     public row = 0;
     public column = 0;
     /** The piece type in the grid */
@@ -42,10 +42,8 @@ export class Piece extends Container {
         this.type = opts.type;
         this.name = opts.name;
         this.image.alpha = 1;
-        this.scale.set(1);
+        this.scale.set(0.1);
         this.image.texture = Texture.from(opts.name);
-        this.image.width = opts.size;
-        this.image.height = this.image.width;
         console.log("I'm on the screen!");
     }
 
