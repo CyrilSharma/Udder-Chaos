@@ -2,6 +2,7 @@ import { Button, FancyButton } from '@pixi/ui';
 import { Container, Graphics, ObservablePoint, Sprite } from 'pixi.js';
 import { navigation } from '../utils/navigation';
 import { CreateGameScreen } from './CreateGameScreen';
+import { SettingsScreen } from './SettingsScreen';
 import server from "../server";
 import { JoinGameScreen } from './JoinGameScreen';
 
@@ -74,8 +75,8 @@ export class HomeScreen extends Container {
             //navigation.showScreen(CreateGameScreen);
         });
 
-        this.joinGameButton.onPress.connect(() => {
-            navigation.showScreen(JoinGameScreen);
+        this.settingsButton.onPress.connect(() => {
+            navigation.showScreen(SettingsScreen);
         });
 
         this.addChild(this.background);

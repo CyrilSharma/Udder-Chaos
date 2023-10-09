@@ -1,6 +1,6 @@
 import { Container, Sprite, Graphics, ObservablePoint } from 'pixi.js';
 import { FancyButton, Button } from '@pixi/ui';
-import { PlayerListDisplay } from "../utils/playerListDisplay";
+import { PlayerListDisplay } from "../../ui_components/playerListDisplay";
 import { navigation } from '../utils/navigation';
 import server from "../server";
 import { HomeScreen } from './HomeScreen';
