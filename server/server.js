@@ -8,17 +8,41 @@ const io = new Server(3000, {
 })
 
 let rooms = []
+let ai_socket = null;
 
 io.on('connection', (client) => {
     console.log('A user connected ' + client.id);
 
-    client.on('create-room', createRoom);
-    client.on('join-room', joinRoom);
-
-    client.on('disconnect', () => {
-        console.log('A user disconnected ' + client.id);
+    client.on('init-connection', (playerBool) => {
+        initPlayer(playerBool, client);
     });
 });
+
+function initPlayer(playerBool, socket) {
+    if (playerBool) {
+        // Init player socket listeners
+        socket.on('create-room', createRoom);
+        socket.on('join-room', joinRoom);
+
+        socket.on('disconnect', () => {
+            console.log('A user disconnected ' + socket.id);
+        });
+    }
+    else {
+        // Connection is the AI engine
+        console.log('AI has connected.');
+        if (ai_socket != null) {
+            console.log('AI has already connected!');
+            return;
+        }
+        ai_socket = socket;
+
+        socket.on('disconnect', () => {
+            console.log('AI has disconnected.');
+            ai_socket = null;
+        });
+    }
+}
 
 function createRoom() {
     // TODO: Add already existing player checking

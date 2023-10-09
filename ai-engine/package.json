@@ -1,0 +1,12 @@
+{
+    "name": "ai-engine",
+    "version": "0.0.1",
+    "description": "ai engine to make moves",
+    "scripts": {
+        "dev": "nodemon main.js"
+    },
+    "dependencies": {
+        "nodemon": "^3.0.1",
+        "socket.io-client": "^4.7.2"
+    }
+}
