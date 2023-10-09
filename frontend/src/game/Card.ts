@@ -39,6 +39,7 @@ export class Card extends Container {
     private drawArrow = (g: Graphics, x: number, y: number,
         width: number, height: number, dir: Direction) => {
         switch (dir) {
+            // Systematically drawing arrows for cards for now, possibly sprites to come later.
             case DirectionEnum.DOWN: {
                 x -= height / 2; y -= width / 2;
                 g.drawRect(x + height / 3, y, height / 3, 3 * width / 4);

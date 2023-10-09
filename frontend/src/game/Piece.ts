@@ -18,12 +18,12 @@ export type PieceOptions = typeof defaultPieceOptions;
  */
 export class Piece extends Container {
     public readonly image: Sprite;
-    public row = 0;
-    public column = 0;
-    /** The piece type in the grid */
-    public type = 0;
+    public row: number = 0;
+    public column: number = 0;
+    /** The piece type in the grid - corresponds to Utils/PieceEnum */
+    public type: number = 0;
     /** The name of the piece - must match one of the available textures */
-    public name = '';
+    public name: string = '';
 
     constructor() {
         super();

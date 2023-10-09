@@ -79,6 +79,7 @@ export class Board extends Container {
         normal_changes.forEach((c) => this.normal_move(c.piece, c.dest));
         kill_changes.forEach((c) => this.kill_move(c.piece, c.dest));
         score_changes.forEach((c) => this.score_move(c.piece, c.dest));
+        // TODO add to game updatelist
     }
 
     // TODO: Learn how to animate things.
@@ -127,6 +128,7 @@ export class Board extends Container {
             }
         }
 
+        // TEMP initialization of each piece for visualization debug
         for (const tiletype of Object.values(PieceEnum)) {
             console.log(config.starts[tiletype]);
             for (const position of config.starts[tiletype]) {
@@ -163,8 +165,9 @@ export class Board extends Container {
         const viewPosition = this.getViewPosition(position);
         piece.row = position.row;
         piece.column = position.column;
-        piece.x = viewPosition.x + this.tileSize / 4;
-        piece.y = viewPosition.y + this.tileSize / 4;
+        // Actually display pieces at the right location
+        piece.x = viewPosition.x - 3 * this.tileSize / 4;
+        piece.y = viewPosition.y - 3 * this.tileSize / 4;
     }
 
     public getViewPosition(position: Position) {
@@ -190,5 +193,14 @@ export class Board extends Container {
     /** Get the visual height of the board */
     public getHeight() {
         return this.tileSize * this.rows;
+    }
+    
+    /** Get the tile at a position on the board */
+    public getTileAtPosition(position: Position) {
+        // handle out of bounds
+        console.log("query at: ", position);
+        if (position.row < 0 || position.row >= this.rows || position.column < 0 || position.column >= this.columns) return TileEnum.Impassible;
+        console.log(this.grid[position.row][position.column]);
+        return this.grid[position.row][position.column];
     }
 }

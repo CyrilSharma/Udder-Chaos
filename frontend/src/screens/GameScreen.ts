@@ -35,6 +35,7 @@ export class GameScreen extends Container {
         this.game.setup(config);
     }
 
+    // Move function only used for debug purposes right now (arrow key calls from main)
     public move(dir: number) {
         let dx = [1, 0, -1, 0];
         let dy = [0, -1, 0, 1];

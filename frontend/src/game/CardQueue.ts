@@ -5,7 +5,9 @@ import { Card } from './Card';
 import {
     DirectionEnum,
     ColorEnum,
-    PieceMove
+    PieceMove,
+    Position,
+    TileEnum
 } from './Utils';
 
 export class CardQueue extends Container {
@@ -59,7 +61,7 @@ export class CardQueue extends Container {
             let card = this.player_hand[i];
             if (card != input) continue;
 
-            // VERY VERY TEMPORARY CHANGE.
+            // TODO move card playing logic to logic class
             let dir = -1;
             switch(card.dir) {
                 case DirectionEnum.RIGHT: { dir=0; break; }
@@ -71,8 +73,37 @@ export class CardQueue extends Container {
             let dy = [0, -1, 0, 1];
             let normal_moves: PieceMove[] = [];
             this.game.board.pieces.forEach((piece) => {
-                let cur = { row: piece.row, column: piece.column };
-                let dest = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
+                let cur: Position = { row: piece.row, column: piece.column };
+                let dest: Position = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
+                // Collision check with board obstacle tiles - TODO move to LogicHandler
+                if (this.game.board.getTileAtPosition(dest) == TileEnum.Impassible) {
+                    console.log(cur);
+                    console.log("Piece hitting board obstacle");
+                    dest = cur;
+                }
+                
+                // Collision check with other pieces - TODO efficiency
+                else if (this.game.board.getPieceByPosition(dest) != null) {
+                    // Right now we just iteratively check every tile in the direction the piece is moving
+                    // until we either find an empty space or we find that it is blocked.
+                    let canMove : boolean = true;
+                    let check: Position = dest;
+                    while (this.game.board.getPieceByPosition(check) != null) {
+                        if (this.game.board.getTileAtPosition(check) == TileEnum.Impassible) {
+                            canMove = false;
+                            break;
+                        }
+                        check = { row: check.row + dy[dir], column: check.column + dx[dir]};
+                    }
+
+                    if (!canMove) {
+                        console.log(cur);
+                        console.log("Piece hitting other piece");
+                        dest = cur;
+                    }
+                }
+
+
                 normal_moves.push({ from: cur, to: dest });
             });
             this.game.board.updateGame({
