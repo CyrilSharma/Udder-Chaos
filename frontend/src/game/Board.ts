@@ -163,8 +163,8 @@ export class Board extends Container {
         const viewPosition = this.getViewPosition(position);
         piece.row = position.row;
         piece.column = position.column;
-        piece.x = viewPosition.x + this.tileSize / 2;
-        piece.y = viewPosition.y + this.tileSize / 2;
+        piece.x = viewPosition.x + this.tileSize / 4;
+        piece.y = viewPosition.y + this.tileSize / 4;
     }
 
     public getViewPosition(position: Position) {
