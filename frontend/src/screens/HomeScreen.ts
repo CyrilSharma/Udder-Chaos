@@ -75,6 +75,10 @@ export class HomeScreen extends Container {
             //navigation.showScreen(CreateGameScreen);
         });
 
+        this.joinGameButton.onPress.connect(() => {
+            navigation.showScreen(JoinGameScreen);
+        });
+
         this.settingsButton.onPress.connect(() => {
             navigation.showScreen(SettingsScreen);
         });
