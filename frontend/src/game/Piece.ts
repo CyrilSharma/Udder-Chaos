@@ -1,5 +1,4 @@
 import { Container, Sprite, Texture } from 'pixi.js';
-import { app } from '../main'
 
 /** Default piece options */
 const defaultPieceOptions = {
@@ -41,7 +40,7 @@ export class Piece extends Container {
         this.type = opts.type;
         this.name = opts.name;
         this.image.alpha = 1;
-        this.scale.set(1);
+        this.scale.set(0.1);
         this.image.texture = Texture.from(opts.name);
         console.log("I'm on the screen!");
     }

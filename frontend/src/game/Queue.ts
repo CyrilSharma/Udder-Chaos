@@ -1,5 +1,3 @@
-import { Container } from "pixi.js";
+import { Container } from 'pixi.js';
 
-export class Queue extends Container {
-
-}
+export class Queue extends Container {}
