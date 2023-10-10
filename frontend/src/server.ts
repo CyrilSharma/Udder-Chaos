@@ -25,15 +25,16 @@ class Server {
             console.log(msg);
         });
 
-        this.socket.on("load-room", (roomCode, playerList) => {
-            navigation.showScreen(CreateGameScreen)
-            console.log(roomCode);
-            console.log(playerList);
-            // Call create game screen with roomcode
+        this.socket.on("load-room", async (roomCode, playerList) => {
+            await navigation.showScreen(CreateGameScreen);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.addGameCode(roomCode);
+            createGameScreen.getPlayerList().setPlayers(playerList);
         });
 
         this.socket.on("player-list", (playerList) => {
-            console.log(playerList);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.getPlayerList().setPlayers(playerList);
         });
 
         this.socket.on("start-game-error", (error) => {
@@ -53,11 +54,15 @@ class Server {
     }
 
     public async joinRoom(roomCode: string) {
-        this.socket.emit("join-room", roomCode);
+        this.socket.emit("join-room", roomCode.toUpperCase());
     }
 
     public async startGame() {
         this.socket.emit("start-game");
+    }
+
+    public async leaveRoom() {
+        this.socket.emit("leave-room");
     }
 }
 
