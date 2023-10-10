@@ -1,4 +1,4 @@
-import { removeRoom } from "./server.js"
+import { removeRoom, initPlayer } from "./server.js"
 
 const TEAM = {
     ALIEN: true,
@@ -13,14 +13,12 @@ const COLOR = {
 }
 
 const MAX_PLAYERS = 2;
-const SEED_SIZE = 3;
 
 export class Room {
     constructor(io, roomCode) {
         this.io = io;
         this.roomCode = roomCode;
         this.players = [];
-        this.gameSeed = 0;
         this.moveList;
     }
 
@@ -48,7 +46,7 @@ export class Room {
 
         if (this.players.length > 0) {
             // There are still players in the game
-            io.to(this.roomCode).emit("player-list", this.getPlayerNames());
+            this.io.to(this.roomCode).emit("player-list", this.getPlayerNames());
         }
         else {
             removeRoom(this);
@@ -74,13 +72,18 @@ export class Room {
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
             // Send starting game info to players
-            this.gameSeed = Math.floor(Math.random()*SEED_SIZE);
-            this.io.to(this.roomCode).emit('start-game', this.gameSeed, this.getPlayerIds());
+            this.io.to(this.roomCode).emit('start-game', this.roomCode, this.getPlayerIds());
         }
         else {
             // Not enough players yet
             host.emit("start-game-error", "Not enough players to start the game!");
         }
+    }
+
+    // Emit move to all players
+    makeMove(socket, cardIndex) {
+        //TODO: Check if player's turn 
+        socket.to(this.roomCode).emit("share-move", cardIndex);
     }
 }
 
@@ -100,8 +103,13 @@ class Player {
             this.room.startGame(this.socket);
         });
 
+        this.socket.on("play-card", (cardIndex) => {
+            this.room.makeMove(this.socket, cardIndex);
+        })
+
         this.socket.on("leave-room", () => {
             this.disconnectPlayer();
+            initPlayer(true, this.socket);
         });
 
         this.socket.on("disconnect", () => {
@@ -118,8 +126,6 @@ class Player {
     disconnectPlayer() {
         console.log(this.name + " has disconnected.")
         this.room.removePlayer(this);
-        this.socket.removeAllListeners("start-game");
-        this.socket.removeAllListeners("leave-room");
-        this.socket.removeAllListeners("disconnect");
+        this.socket.removeAllListeners();
     }
 }

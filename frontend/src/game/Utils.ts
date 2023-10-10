@@ -1,4 +1,4 @@
-import * as maps from "../maps/Maps"
+import { MAPS } from "../maps/Maps"
 
 //-----Tiles-----//
 export const TileEnum = {
@@ -79,7 +79,7 @@ export type BoardUpdate = {
 
 //-----Functions-----//
 export function loadMap(seed: number) {
-    const grid: Grid = parseCSVGrid(maps.MAPS[seed]);
+    const grid: Grid = parseCSVGrid(MAPS[seed]);
     console.log(grid);
     return grid;
 }

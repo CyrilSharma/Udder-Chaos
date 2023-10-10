@@ -42,10 +42,16 @@ class Server {
         });
 
         this.socket.on("start-game", (seed, socketIds) => {
-            navigation.showScreen(GameScreen);
-            console.log("Start game with " + seed);
+            Math.seedrandom(seed);
             let color = socketIds.indexOf(this.socket.id);
             console.log("You are color: " + COLOR[color]);
+            navigation.showScreen(GameScreen);
+        });
+
+        this.socket.on("share-move", (cardIndex) => {
+            let gameScreen = navigation.currentScreen as GameScreen;
+            gameScreen.playCard(cardIndex);
+            console.log("Playing card " + cardIndex);
         });
     }
 
@@ -59,6 +65,10 @@ class Server {
 
     public async startGame() {
         this.socket.emit("start-game");
+    }
+
+    public async playCard(cardIndex: number) {
+        this.socket.emit("play-card", cardIndex);
     }
 
     public async leaveRoom() {

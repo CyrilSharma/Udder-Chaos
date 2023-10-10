@@ -1,6 +1,7 @@
 import { Container, FederatedPointerEvent, Graphics, Sprite } from 'pixi.js';
 import { Direction, Color, DirectionEnum } from './Utils';
 import { CardQueue } from './CardQueue';
+import server from "../server";
 
 export type CardOptions = {
     color: Color
@@ -83,13 +84,14 @@ export class Card extends Container {
     }
 
     private onPointerTap = (e: FederatedPointerEvent) => {
-        console.log("Card was clicked!");
+        //console.log("Card was clicked!");
         this.unscale();
         this.queue.playCard(this);
+        server.playCard(this.index);
     }
 
     private onPointerEnter = (e: FederatedPointerEvent) => {
-        console.log("Hover over card " + this.index);
+        //console.log("Hover over card " + this.index);
         this.queue.bringCardToTop(this);
         this.position.x -= this.graphics.width / (2 * this.scale_on_focus);
         this.position.y -= this.graphics.height / 2;
@@ -98,7 +100,7 @@ export class Card extends Container {
     };
 
     private onPointerLeave = (e: FederatedPointerEvent) => {
-        console.log("Leave over card " + this.index);
+        //console.log("Leave over card " + this.index);
         this.unscale();
         this.queue.placeCards();
     };

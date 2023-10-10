@@ -18,7 +18,7 @@ io.on('connection', (client) => {
     });
 });
 
-function initPlayer(playerBool, socket) {
+export function initPlayer(playerBool, socket) {
     if (playerBool) {
         // Init player socket listeners
         socket.on('create-room', createRoom);
@@ -53,8 +53,6 @@ function createRoom() {
     room.addNewPlayer(this);
 
     console.log(this.id + " created a room: " + roomCode)
-
-    //console.log("Rooms: " + rooms)
 }
 
 function joinRoom(roomCode) {
