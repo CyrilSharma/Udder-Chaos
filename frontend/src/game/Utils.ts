@@ -48,12 +48,16 @@ export function isPlayer(piece_type: number) {
     }
     throw Error('Invalid Piece Type');
 }
-export const Colors = [
-    "red",
-    "yellow",
-    "blue",
-    "purple"
-];
+export const Player = {
+    Player_Red: 1,
+    Player_Yellow: 2,
+    Player_Blue: 3,
+    Player_Purple: 4,
+    Enemy_Red: 5,
+    Enemy_Yellow: 6,
+    Enemy_Blue: 7,
+    Enemy_Purple: 8
+};
 
 //---------Cards------------//
 export const DirectionEnum = {
@@ -136,7 +140,8 @@ function parseCSVGrid(csvString: string) {
         const values = row.split(",");
         const tiles: TileType[] = [];
         for (const value of values) {
-            const tile: TileType = parseInt(value);
+            // const tile: TileType = parseInt(value);
+            const tile: TileType = 0; // SET NO OBSTACLES FOR DEBUGGING
             tiles.push(tile);
         }
         if (tiles.length > 0) {

@@ -2,9 +2,10 @@ import { io } from "socket.io-client";
 import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
-import { Colors } from "./game/Utils"
+import { Player } from "./game/Utils"
 
 class Server {
+    public color!: number;
     socket;
 
     constructor() {
@@ -35,18 +36,23 @@ class Server {
             console.log(error);
         });
 
-        this.socket.on("start-game", (seed, socketIds) => {
+        this.socket.on("start-game", async (seed, socketIds) => {
             Math.seedrandom(seed);
-            let color = socketIds.indexOf(this.socket.id);
-            console.log("You are color: " + Colors[color]);
-            
-            navigation.showScreen(GameScreen);
+            let color = socketIds.indexOf(this.socket.id) + 1;
+            console.log("You are color: " + color);
+
+            await navigation.showScreen(GameScreen);
+
+            let gameScreen = navigation.currentScreen as GameScreen;
+            gameScreen.setPlayerColor(color);
+
+            this.color = color;
         });
 
-        this.socket.on("share-move", (cardIndex) => {
+        this.socket.on("share-move", (cardIndex, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
-            gameScreen.playCard(cardIndex);
-            console.log("Playing card " + cardIndex);
+            gameScreen.playCard(cardIndex, color);
+            console.log("Server playing card " + cardIndex);
         });
     }
 
@@ -62,8 +68,8 @@ class Server {
         this.socket.emit("start-game");
     }
 
-    public async playCard(cardIndex: number) {
-        this.socket.emit("play-card", cardIndex);
+    public async playCard(cardIndex: number, color: number) {
+        this.socket.emit("play-card", cardIndex, color);
     }
 
     public async leaveRoom() {

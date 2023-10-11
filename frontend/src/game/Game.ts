@@ -27,4 +27,8 @@ export class Game extends Container {
         this.cards.setup();
         this.cards.y = this.board.getHeight();
     }
+
+    public setPlayerColor(color: number) {
+        this.playerColor = color;
+    }
 }

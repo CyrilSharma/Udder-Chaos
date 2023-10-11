@@ -69,26 +69,29 @@ export class CardQueue extends Container {
         return this.player_hand[0];
     }
 
-    public playCard(input: Card) {
+    public playCard(input: Card, color: number) {
         for (let i = 0; i <  this.player_hand.length; i++) {
             let card = this.player_hand[i];
             if (card != input) continue;
-            console.log(input.index);
+            // console.log(input.index);
 
-            this.logicHandler.playCard(card);
+            this.logicHandler.playCard(card, color);
 
             this.player_hand.splice(i, 1);
             this.player_hand.push(this.queue[0]);
-            console.log(this.queue.shift());
+            this.queue.shift();
+            // console.log(this.queue.shift());
             this.queue.push(card);
             this.placeCards();
             return;
         }
 
+        console.log("Card not found");
         for (const card of this.queue) {
             if (card != input) continue;
             return;
         }
+
         // For now, assume we don't animate enemy cards.
         for (const card of this.enemy_hand) {
             if (card != input) continue;

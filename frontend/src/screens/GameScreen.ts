@@ -22,15 +22,15 @@ export class GameScreen extends Container {
         const config: GameConfig = {
             grid: loadMap(Math.floor(Math.random()*MAPS.length)),
             starts: [
-                [{ row: 0, column: 0 }],
-                [{ row: 0, column: 1 }],
-                [{ row: 0, column: 2 }],
-                [{ row: 0, column: 3 }],
-                [{ row: 0, column: 4 }],
-                [{ row: 0, column: 5 }],
-                [{ row: 0, column: 6 }],
-                [{ row: 0, column: 7 }],
-                [{ row: 0, column: 8 }],
+                [{ row: 0, column: 0 }, { row: 2, column: 0 }],
+                [{ row: 0, column: 1 }, { row: 2, column: 1 }],
+                [{ row: 0, column: 2 }, { row: 2, column: 2 }],
+                [{ row: 0, column: 3 }, { row: 2, column: 3 }],
+                [{ row: 0, column: 4 }, { row: 2, column: 4 }],
+                [{ row: 0, column: 5 }, { row: 2, column: 5 }],
+                [{ row: 0, column: 6 }, { row: 2, column: 6 }],
+                [{ row: 0, column: 7 }, { row: 2, column: 7 }],
+                [{ row: 0, column: 8 }, { row: 2, column: 8 }],
             ],
             tileSize: 40,
         };
@@ -54,12 +54,12 @@ export class GameScreen extends Container {
         });
     }
 
-    public playCard(cardIndex: number) {
+    public playCard(cardIndex: number, color: number) {
         let card = this.game.cards.findCardInHand(cardIndex);
-        this.game.cards.playCard(card);
+        this.game.cards.playCard(card, color);
     }
 
-//     public setPlayerColor(color: number) {
-//         this.game.board.setPlayerColor(color);
-//     }
+    public setPlayerColor(color: number) {
+        this.game.setPlayerColor(color);
+    }
 }

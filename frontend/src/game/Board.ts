@@ -129,12 +129,14 @@ export class Board extends Container {
         }
 
         // TEMP initialization of each piece for visualization debug
-        for (const tiletype of Object.values(PieceEnum)) {
-            console.log(config.starts[tiletype]);
-            for (const position of config.starts[tiletype]) {
-                this.createPiece(position, tiletype);
+        for (const piecetype of Object.values(PieceEnum)) {
+            console.log(config.starts[piecetype]);
+            for (const position of config.starts[piecetype]) {
+                this.createPiece(position, piecetype);
             }
         }
+
+        
     }
 
     public createTile(position: Position, tileType: TileType) {

@@ -87,8 +87,8 @@ export class Card extends Container {
     private onPointerTap = (e: FederatedPointerEvent) => {
         //console.log("Card was clicked!");
         this.unscale();
-        this.queue.playCard(this);
-        server.playCard(this.index);
+        this.queue.playCard(this, this.queue.game.playerColor);
+        server.playCard(this.index, this.queue.game.playerColor);
     }
 
     private onPointerEnter = (e: FederatedPointerEvent) => {
