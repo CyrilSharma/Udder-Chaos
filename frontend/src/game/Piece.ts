@@ -27,7 +27,7 @@ export class Piece extends Container {
 
     constructor() {
         super();
-        this.image = Sprite.from("raw-assets/red_ufo.png");
+        this.image = Sprite.from("raw-assets/cow.png"); // temp assign image to something
         this.image.anchor.set(0.5);
         this.image.x = 500;
         this.image.y = 500;
@@ -35,7 +35,7 @@ export class Piece extends Container {
     }
 
     public setup(options: Partial<PieceOptions> = {}) {
-        console.log("I'm about to be on the screen.");
+        // console.log("I'm about to be on the screen.");
         const opts = { ...defaultPieceOptions, ...options };
         this.visible = true;
         this.alpha = 1;
@@ -44,7 +44,7 @@ export class Piece extends Container {
         this.image.alpha = 1;
         this.scale.set(0.1);
         this.image.texture = Texture.from(opts.name);
-        console.log("I'm on the screen!");
+        // console.log("I'm on the screen!");
     }
 
     /** Animation to come soon... */

@@ -2,13 +2,7 @@ import { io } from "socket.io-client";
 import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
-
-const COLOR = [
-    "red",
-    "yellow",
-    "blue",
-    "purple"
-];
+import { Colors } from "./game/Utils"
 
 class Server {
     socket;
@@ -44,7 +38,8 @@ class Server {
         this.socket.on("start-game", (seed, socketIds) => {
             Math.seedrandom(seed);
             let color = socketIds.indexOf(this.socket.id);
-            console.log("You are color: " + COLOR[color]);
+            console.log("You are color: " + Colors[color]);
+            
             navigation.showScreen(GameScreen);
         });
 

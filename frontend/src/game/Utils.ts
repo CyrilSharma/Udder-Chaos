@@ -48,6 +48,12 @@ export function isPlayer(piece_type: number) {
     }
     throw Error('Invalid Piece Type');
 }
+export const Colors = [
+    "red",
+    "yellow",
+    "blue",
+    "purple"
+];
 
 //---------Cards------------//
 export const DirectionEnum = {

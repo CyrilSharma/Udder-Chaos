@@ -58,4 +58,8 @@ export class GameScreen extends Container {
         let card = this.game.cards.findCardInHand(cardIndex);
         this.game.cards.playCard(card);
     }
+
+//     public setPlayerColor(color: number) {
+//         this.game.board.setPlayerColor(color);
+//     }
 }

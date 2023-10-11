@@ -11,6 +11,7 @@ export class Game extends Container {
     public board: Board;
     public cards: CardQueue;
     public config!: GameConfig;
+    public playerColor!: number;
     public updateList: GameUpdate[] = [];
     constructor() {
         super();
