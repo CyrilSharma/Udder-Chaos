@@ -77,28 +77,24 @@ export class CardQueue extends Container {
                 let dest: Position = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
                 // Collision check with board obstacle tiles - TODO move to LogicHandler
                 if (this.game.board.getTileAtPosition(dest) == TileEnum.Impassible) {
-                    console.log(cur);
-                    console.log("Piece hitting board obstacle");
                     dest = cur;
                 }
                 
-                // Collision check with other pieces - TODO efficiency
+                // Collision check with other pieces
                 else if (this.game.board.getPieceByPosition(dest) != null) {
                     // Right now we just iteratively check every tile in the direction the piece is moving
                     // until we either find an empty space or we find that it is blocked.
                     let canMove : boolean = true;
                     let check: Position = dest;
                     while (this.game.board.getPieceByPosition(check) != null) {
+                        check = { row: check.row + dy[dir], column: check.column + dx[dir]};
                         if (this.game.board.getTileAtPosition(check) == TileEnum.Impassible) {
                             canMove = false;
                             break;
                         }
-                        check = { row: check.row + dy[dir], column: check.column + dx[dir]};
                     }
-
+                    
                     if (!canMove) {
-                        console.log(cur);
-                        console.log("Piece hitting other piece");
                         dest = cur;
                     }
                 }

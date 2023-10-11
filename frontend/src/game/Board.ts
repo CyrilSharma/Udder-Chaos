@@ -198,9 +198,9 @@ export class Board extends Container {
     /** Get the tile at a position on the board */
     public getTileAtPosition(position: Position) {
         // handle out of bounds
-        console.log("query at: ", position);
+        // console.log("query at: ", position);
         if (position.row < 0 || position.row >= this.rows || position.column < 0 || position.column >= this.columns) return TileEnum.Impassible;
-        console.log(this.grid[position.row][position.column]);
+        // console.log(this.grid[position.row][position.column]);
         return this.grid[position.row][position.column];
     }
 }
