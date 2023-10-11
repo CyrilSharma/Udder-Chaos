@@ -1,6 +1,8 @@
 import { Container } from 'pixi.js';
 import { Game } from '../game/Game';
 import { createRandomGrid, PieceEnum, GameConfig, PieceMove, loadMap } from '../game/Utils';
+import { MAPS } from "../maps/Maps"
+
 export class GameScreen extends Container {
     public readonly gameContainer: Container;
     public readonly game: Game;
@@ -18,7 +20,7 @@ export class GameScreen extends Container {
     public prepare() {
         // Temporary workaround until we can load maps.
         const config: GameConfig = {
-            grid: loadMap(1),
+            grid: loadMap(Math.floor(Math.random()*MAPS.length)),
             starts: [
                 [{ row: 0, column: 0 }],
                 [{ row: 0, column: 1 }],
@@ -50,5 +52,10 @@ export class GameScreen extends Container {
             kill_moves: [],
             score_moves: [],
         });
+    }
+
+    public playCard(cardIndex: number) {
+        let card = this.game.cards.findCardInHand(cardIndex);
+        this.game.cards.playCard(card);
     }
 }

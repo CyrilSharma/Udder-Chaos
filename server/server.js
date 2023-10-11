@@ -8,17 +8,41 @@ const io = new Server(3000, {
 })
 
 let rooms = []
+let ai_socket = null;
 
 io.on('connection', (client) => {
     console.log('A user connected ' + client.id);
 
-    client.on('create-room', createRoom);
-    client.on('join-room', joinRoom);
-
-    client.on('disconnect', () => {
-        console.log('A user disconnected ' + client.id);
+    client.on('init-connection', (playerBool) => {
+        initPlayer(playerBool, client);
     });
 });
+
+export function initPlayer(playerBool, socket) {
+    if (playerBool) {
+        // Init player socket listeners
+        socket.on('create-room', createRoom);
+        socket.on('join-room', joinRoom);
+
+        socket.on('disconnect', () => {
+            console.log('A user disconnected ' + socket.id);
+        });
+    }
+    else {
+        // Connection is the AI engine
+        console.log('AI has connected.');
+        if (ai_socket != null) {
+            console.log('AI has already connected!');
+            return;
+        }
+        ai_socket = socket;
+
+        socket.on('disconnect', () => {
+            console.log('AI has disconnected.');
+            ai_socket = null;
+        });
+    }
+}
 
 function createRoom() {
     // TODO: Add already existing player checking
@@ -41,7 +65,9 @@ function joinRoom(roomCode) {
 }
 
 function findRoomByCode(code) {
+    console.log("Rooms: ")
     for (let room of rooms) {
+        console.log(room.roomCode);
         if (room.roomCode === code) {
             return room;
         }
@@ -59,8 +85,16 @@ function generateRoomCode() {
             roomCode += chars.charAt(Math.floor(Math.random() * chars.length));
         }
     } while (roomCode in rooms) // If room exists, try again
-    return "AAAA"
     return roomCode
 }
 
-
+export function removeRoom(room) {
+    console.log("Removing room:" + room.roomCode);
+    console.log(rooms);
+    let i = rooms.indexOf(room);
+    if (i >= 0) {
+        console.log(i);
+        rooms.splice(rooms.indexOf(room), 1);
+        console.log(rooms);
+    } 
+}

@@ -1,3 +1,5 @@
+import { removeRoom, initPlayer } from "./server.js"
+
 const TEAM = {
     ALIEN: true,
     HUMAN: false,
@@ -11,14 +13,12 @@ const COLOR = {
 }
 
 const MAX_PLAYERS = 2;
-const SEED_SIZE = 3;
 
 export class Room {
     constructor(io, roomCode) {
         this.io = io;
         this.roomCode = roomCode;
         this.players = [];
-        this.gameSeed = 0;
         this.moveList;
     }
 
@@ -32,8 +32,6 @@ export class Room {
         let player = new Player(socket, TEAM.ALIEN, this);
         this.players.push(player);
 
-        console.log(this.players)
-
         player.joinRoom();
         socket.to(this.roomCode).emit("player-list", this.getPlayerNames());
         this.io.to(this.roomCode).emit("receive-message", "ROOOM")
@@ -44,7 +42,15 @@ export class Room {
         // Loop through players to find the correct player to remove
         let i = this.players.indexOf(player);
         this.players.splice(i, 1);
-        player.socket.to(this.roomCode).emit("player-list", this.getPlayerNames());
+        console.log("new list" + this.getPlayerNames());
+
+        if (this.players.length > 0) {
+            // There are still players in the game
+            this.io.to(this.roomCode).emit("player-list", this.getPlayerNames());
+        }
+        else {
+            removeRoom(this);
+        }
     }
 
     getPlayerNames() {
@@ -66,13 +72,18 @@ export class Room {
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
             // Send starting game info to players
-            this.gameSeed = Math.floor(Math.random()*SEED_SIZE);
-            this.io.to(this.roomCode).emit('start-game', this.gameSeed, this.getPlayerIds());
+            this.io.to(this.roomCode).emit('start-game', this.roomCode, this.getPlayerIds());
         }
         else {
             // Not enough players yet
             host.emit("start-game-error", "Not enough players to start the game!");
         }
+    }
+
+    // Emit move to all players
+    makeMove(socket, cardIndex) {
+        //TODO: Check if player's turn 
+        socket.to(this.roomCode).emit("share-move", cardIndex);
     }
 }
 
@@ -92,6 +103,15 @@ class Player {
             this.room.startGame(this.socket);
         });
 
+        this.socket.on("play-card", (cardIndex) => {
+            this.room.makeMove(this.socket, cardIndex);
+        })
+
+        this.socket.on("leave-room", () => {
+            this.disconnectPlayer();
+            initPlayer(true, this.socket);
+        });
+
         this.socket.on("disconnect", () => {
             this.disconnectPlayer();
         });
@@ -106,5 +126,6 @@ class Player {
     disconnectPlayer() {
         console.log(this.name + " has disconnected.")
         this.room.removePlayer(this);
+        this.socket.removeAllListeners();
     }
 }

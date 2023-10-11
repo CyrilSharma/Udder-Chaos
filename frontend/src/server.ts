@@ -17,22 +17,24 @@ class Server {
         this.socket = io("http://localhost:3000");
 
         this.socket.on("connect", () => {
-            console.log(`You connected with id: ${this.socket.id}`)
+            console.log(`You connected with id: ${this.socket.id}`);
+            this.socket.emit("init-connection", true);
         });
 
         this.socket.on("receive-message", (msg) => {
             console.log(msg);
         });
 
-        this.socket.on("load-room", (roomCode, playerList) => {
-            navigation.showScreen(CreateGameScreen)
-            console.log(roomCode);
-            console.log(playerList);
-            // Call create game screen with roomcode
+        this.socket.on("load-room", async (roomCode, playerList) => {
+            await navigation.showScreen(CreateGameScreen);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.addGameCode(roomCode);
+            createGameScreen.getPlayerList().setPlayers(playerList);
         });
 
         this.socket.on("player-list", (playerList) => {
-            console.log(playerList);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.getPlayerList().setPlayers(playerList);
         });
 
         this.socket.on("start-game-error", (error) => {
@@ -40,10 +42,16 @@ class Server {
         });
 
         this.socket.on("start-game", (seed, socketIds) => {
-            navigation.showScreen(GameScreen);
-            console.log("Start game with " + seed);
+            Math.seedrandom(seed);
             let color = socketIds.indexOf(this.socket.id);
             console.log("You are color: " + COLOR[color]);
+            navigation.showScreen(GameScreen);
+        });
+
+        this.socket.on("share-move", (cardIndex) => {
+            let gameScreen = navigation.currentScreen as GameScreen;
+            gameScreen.playCard(cardIndex);
+            console.log("Playing card " + cardIndex);
         });
     }
 
@@ -52,11 +60,19 @@ class Server {
     }
 
     public async joinRoom(roomCode: string) {
-        this.socket.emit("join-room", roomCode);
+        this.socket.emit("join-room", roomCode.toUpperCase());
     }
 
     public async startGame() {
         this.socket.emit("start-game");
+    }
+
+    public async playCard(cardIndex: number) {
+        this.socket.emit("play-card", cardIndex);
+    }
+
+    public async leaveRoom() {
+        this.socket.emit("leave-room");
     }
 }
 

@@ -56,10 +56,21 @@ export class CardQueue extends Container {
         this.placeCards();
     }
 
+    public findCardInHand(index: number) {
+        for (let i = 0; i <  this.player_hand.length; i++) {
+            let card = this.player_hand[i];
+            if (card.index == index) return card;
+        }
+        //ERROR
+        console.log("COULDN'T FIND CARD");
+        return this.player_hand[0];
+    }
+
     public playCard(input: Card) {
         for (let i = 0; i <  this.player_hand.length; i++) {
             let card = this.player_hand[i];
             if (card != input) continue;
+            console.log(input.index);
 
             // TODO move card playing logic to logic class
             let dir = -1;
