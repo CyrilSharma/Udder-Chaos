@@ -43,7 +43,8 @@ export class CardQueue extends Container {
         for (let i = 0; i < this.ncards; i++) {
             let config = {
                 color: ColorEnum.RED,
-                dir: get(),
+                // dir: get(),
+                dir: i % 4,
                 size: 50
             };
             let card = new Card(this, config, i);

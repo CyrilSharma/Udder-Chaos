@@ -41,7 +41,7 @@ export class LogicHandler {
         let dest: Position = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
         let moveType: number = MoveType.Normal_Move;
 
-        // console.log(`Moving ${[cur.row, cur.column]}`);
+        console.log(`Moving ${[cur.row, cur.column]}`);
 
         // Collision check with board obstacle tiles
         if (this.game.board.getTileAtPosition(dest) == TileEnum.Impassible) {
@@ -53,26 +53,33 @@ export class LogicHandler {
             console.log(`Piece collision check`);
             // iteratively check every tile in the direction the piece is moving
             // until we find a piece that is not moving or an obstacle
-            let canMove: boolean = true;
-            let check: Position = dest;
-            while (this.game.board.getPieceByPosition(check) != null) {
+            let canMove: boolean = canMoveOver(piece.type, this.game.board.getPieceByPosition(dest)!.type);
+            console.log(`canMove: ${canMove}`);
+            let check: Position = cur;
+            do {
+                check = { row: check.row + dy[dir], column: check.column + dx[dir] };
                 if (this.game.board.getTileAtPosition(check) == TileEnum.Impassible) {
                     canMove = false;
                     break;
                 } else if (this.game.board.getPieceByPosition(check) != null) {
                     let collidePiece: Piece | null = this.game.board.getPieceByPosition(check);
-                    if (collidePiece!.type == piece.type)
-                        continue;
-                    else if (canMoveOver(piece.type, collidePiece!.type))
+                    if (collidePiece!.type == piece.type) {
+
+                    }    
+                    else if (canMoveOver(piece.type, collidePiece!.type)) {
+                        canMove = true;
                         break;
+                    }
                     else {
                         canMove = false;
                         break;
                     }
+                } else {
+                    canMove = true;
+                    break;
                 }
-                check = { row: check.row + dy[dir], column: check.column + dx[dir] };
-            }
-
+            } while (this.game.board.getPieceByPosition(check) != null);
+            
             if (!canMove) {
                 dest = cur;
             }
@@ -87,8 +94,8 @@ export class LogicHandler {
             }
         }
 
-        // console.log(`dest: ${[dest.row, dest.column]}`);
-        // console.log(`moveType: ${moveType}`);
+        console.log(`dest: ${[dest.row, dest.column]}`);
+        console.log(`moveType: ${moveType}`);
 
         if (moveType == MoveType.Normal_Move) normal_moves.push({ from: cur, to: dest });
         else if (moveType == MoveType.Kill_Move) kill_moves.push({ from: cur, to: dest });

@@ -186,6 +186,7 @@ export class Board extends Container {
     }
 
     public getPieceByPosition(position: Position) {
+        // console.log(`Getting piece at ${[position.row, position.column]}`);
         for (const piece of this.pieces) {
             if (piece.row === position.row && piece.column === position.column) {
                 return piece;
