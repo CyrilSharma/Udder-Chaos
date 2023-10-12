@@ -1,12 +1,13 @@
-import { Container, Sprite, Graphics, ObservablePoint } from "pixi.js";
+import { Container, Graphics } from "pixi.js";
 import { FancyButton, Button } from "@pixi/ui";
 import { navigation } from "../utils/navigation";
 import { HomeScreen } from "./HomeScreen";
+import { Background } from "../../ui_components/background";
 import server from "../server";
 
 export class SettingsScreen extends Container {
 
-    private background: Sprite;
+    private background: Background;
     private container: FancyButton;
     private backButton: FancyButton;
     private settingsLabel: FancyButton;
@@ -14,8 +15,8 @@ export class SettingsScreen extends Container {
     constructor() {
         super();
 
-        this.background = Sprite.from('./src/assets/mainBackground.jpg');
-        this.background.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
+        this.background = new Background();
+        this.addChild(this.background.getBackground());
 
         this.backButton = new FancyButton({
             defaultView: (new Button(
@@ -51,7 +52,6 @@ export class SettingsScreen extends Container {
             navigation.showScreen(HomeScreen);
         });
 
-        this.addChild(this.background);
         this.addChild(this.container);
         this.addChild(this.settingsLabel);
         this.addChild(this.backButton);
@@ -78,17 +78,7 @@ export class SettingsScreen extends Container {
         this.backButton.view.y = this.container.view.y - this.container.view.height * 0.5;
         this.backButton.height = this.container.height * 0.1;
 
-
-        // AR work
-        if (width/height >= 1920/768) {
-            this.background.width = width;
-            this.background.height = width * 768 / 1920;
-        } else {
-            this.background.height = height;
-            this.background.width = height * 1920 / 768;
-        }
-        this.background.x = width * 0.5;
-        this.background.y = height * 0.5;
+        this.background.resize(width, height);
     }
 
 

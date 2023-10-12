@@ -2,6 +2,7 @@ import { Button, FancyButton } from '@pixi/ui';
 import { Container, Graphics, ObservablePoint, Sprite } from 'pixi.js';
 import { navigation } from '../utils/navigation';
 import { CreateGameScreen } from './CreateGameScreen';
+import { Background } from '../../ui_components/background';
 import { SettingsScreen } from './SettingsScreen';
 import server from "../server";
 import { JoinGameScreen } from './JoinGameScreen';
@@ -9,7 +10,7 @@ import { JoinGameScreen } from './JoinGameScreen';
 /** Screen shows upon opening the website */
 export class HomeScreen extends Container {
 
-    private background: Sprite;
+    private background: Background;
     private createGameButton: FancyButton;
     private joinGameButton: FancyButton;
     private settingsButton: FancyButton;
@@ -18,8 +19,8 @@ export class HomeScreen extends Container {
     constructor() {
         super();
 
-        this.background = Sprite.from('./src/assets/mainBackground.jpg');
-        this.background.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
+        this.background = new Background();
+        this.addChild(this.background.getBackground());
 
         this.logo = Sprite.from('./src/assets/LOGO.png');
         this.logo.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
@@ -72,7 +73,6 @@ export class HomeScreen extends Container {
 
         this.createGameButton.onPress.connect(() => {
             server.createRoom();
-            //navigation.showScreen(CreateGameScreen);
         });
 
         this.joinGameButton.onPress.connect(() => {
@@ -83,11 +83,11 @@ export class HomeScreen extends Container {
             navigation.showScreen(SettingsScreen);
         });
 
-        this.addChild(this.background);
         this.addChild(this.logo);
         this.addChild(this.createGameButton.view);
         this.addChild(this.joinGameButton.view);
         this.addChild(this.settingsButton);
+        
     }
 
     public async show() {
@@ -122,16 +122,7 @@ export class HomeScreen extends Container {
         this.settingsButton.view.height = height * 0.17;
         this.settingsButton.view.width = width * 0.7;
 
-        // AR work
-        if (width/height >= 1920/768) {
-            this.background.width = width;
-            this.background.height = width * 768 / 1920;
-        } else {
-            this.background.height = height;
-            this.background.width = height * 1920 / 768;
-        }
-        this.background.x = width * 0.5;
-        this.background.y = height * 0.5;
+        this.background.resize(width, height);
     }
 
 }
