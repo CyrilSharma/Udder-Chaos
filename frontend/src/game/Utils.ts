@@ -34,6 +34,11 @@ export const PieceEnum = {
     Enemy_Blue: 7,
     Enemy_Purple: 8
 };
+export const TeamEnum = {
+    Player: 0,
+    Enemy: 1,
+    Cow: 2
+}
 export type PieceType = number;
 export const PieceMap: Record<number, string> = {};
 Object.keys(PieceEnum).forEach((key) => {
@@ -46,18 +51,32 @@ export function isPlayer(piece_type: number) {
         if (val != piece_type) continue;
         return key.toLowerCase().includes('player');
     }
-    throw Error('Invalid Piece Type');
+    throw Error('Invalid Piece Type: ' + piece_type);
 }
-export const Player = {
-    Player_Red: 1,
-    Player_Yellow: 2,
-    Player_Blue: 3,
-    Player_Purple: 4,
-    Enemy_Red: 5,
-    Enemy_Yellow: 6,
-    Enemy_Blue: 7,
-    Enemy_Purple: 8
-};
+export function getTeam(piece_type: number) {
+    for (const key of Object.keys(PieceEnum)) {
+        const val = PieceEnum[key as keyof typeof PieceEnum];
+        if (val != piece_type) continue;
+        if (key.toLowerCase().includes('player')) return TeamEnum.Player;
+        else if (key.toLowerCase().includes('enemy')) return TeamEnum.Enemy;
+        else if (key.toLowerCase().includes('cow')) return TeamEnum.Cow;
+        throw Error('Invalid Piece Type: ' + piece_type);
+    }
+}
+export function canMoveOver(attacker: number, defender: number) {
+    return getTeam(attacker) == TeamEnum.Enemy && getTeam(defender) == TeamEnum.Player ||
+        getTeam(attacker) == TeamEnum.Player && getTeam(defender) == TeamEnum.Cow;
+}
+export const Player = PieceEnum;
+// Move direction values for now
+export const dx = [1, 0, -1, 0];
+export const dy = [0, -1, 0, 1];
+// Move types
+export const MoveType = {
+    Normal_Move: 0,
+    Kill_Move: 1,
+    Score_Move: 2
+}
 
 //---------Cards------------//
 export const DirectionEnum = {

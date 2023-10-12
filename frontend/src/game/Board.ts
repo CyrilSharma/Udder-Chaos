@@ -14,6 +14,8 @@ import {
     isPlayer,
     BoardUpdate,
     PieceMove,
+    getTeam,
+    TeamEnum,
 } from './Utils';
 
 export class Board extends Container {
@@ -64,14 +66,14 @@ export class Board extends Container {
         });
         let kill_changes: { piece: Piece; dest: Position }[] = [];
         update.kill_moves.forEach((move) => {
-            normal_changes.push({
+            kill_changes.push({
                 piece: this.getPieceByPosition(move.from)!,
                 dest: move.to,
             });
         });
         let score_changes: { piece: Piece; dest: Position }[] = [];
         update.score_moves.forEach((move) => {
-            normal_changes.push({
+            score_changes.push({
                 piece: this.getPieceByPosition(move.from)!,
                 dest: move.to,
             });
@@ -98,8 +100,13 @@ export class Board extends Container {
     // TODO: change cow to be not a piece...
     public score_move(piece: Piece, dest: Position) {
         if (!isPlayer(piece.type)) return Error('The AI cannot score');
-        // const target = this.getPieceByPosition(dest)!;
-        // if (!isPlayer(piece.type)) return Error("Enemy cannot be killed");
+        
+        // TODO: actually do something when scoring
+        const target = this.getPieceByPosition(dest)!;
+        if (getTeam(target.type) != TeamEnum.Cow) return Error("Cannot score on this piece");
+        this.removePiece(target);
+        console.log("Yay you score!");
+        
         this.setPieceLocation(piece, dest);
     }
 
@@ -130,7 +137,7 @@ export class Board extends Container {
 
         // TEMP initialization of each piece for visualization debug
         for (const piecetype of Object.values(PieceEnum)) {
-            console.log(config.starts[piecetype]);
+            // console.log(config.starts[piecetype]);
             for (const position of config.starts[piecetype]) {
                 this.createPiece(position, piecetype);
             }
