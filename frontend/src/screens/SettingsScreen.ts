@@ -17,18 +17,16 @@ export class SettingsScreen extends Container {
         super();
 
         this.background = new Background();
-        this.addChild(this.background.getBackground());
+        this.addChild(this.background);
 
         this.container = new ButtonBox(1, 0.9, 10);
-        this.addChild(this.container.getBox());
+        this.addChild(this.container);
 
-        // this.settingsLabel = new MenuButton("Settings", 0.5, 0.1, 0xffcc66, 1, 0.8, 5);
-        // this.container.getBox().addChild(this.settingsLabel.getButton());
+        // this.settingsLabel = new MenuButton("Settings", 0, 0, 0xffcc66, 4, 0.8, 10);
+        // this.container.addChild(this.settingsLabel);
 
         this.settingsLabel = new MenuButton("Settings", 0.5, 0.2, 0xffcc66, 4, 0.2, 30);
-        this.addChild(this.settingsLabel.getButton());
-        
-        //console.log(this.container);
+        this.addChild(this.settingsLabel);
 
         this.backButton = new FancyButton({
             defaultView: (new Button(
@@ -44,8 +42,6 @@ export class SettingsScreen extends Container {
         this.backButton.onPress.connect(() => {
             navigation.showScreen(HomeScreen);
         });
-
-
         
         this.addChild(this.backButton);
     }
@@ -59,18 +55,12 @@ export class SettingsScreen extends Container {
     public resize(width: number, height: number) {
         this.container.resize(width, height);
         this.settingsLabel.resize(width, height);
+        // this.settingsLabel.resize(this.container.width, this.container.height);
 
         this.background.resize(width, height);
-
-        // this.settingsLabel.view.height = this.container.getBox().view.height * 0.2;
-        // this.settingsLabel.view.width = this.container.getBox().view.width * 0.8;
-        // this.settingsLabel.view.x = this.container.getBox().view.x;
-        // this.settingsLabel.view.y = this.container.getBox().view.y - this.container.getBox().view.height * 0.35;
 
         this.backButton.view.x = this.container.getBox().view.x + this.container.getBox().view.width * 0.5;
         this.backButton.view.y = this.container.getBox().view.y - this.container.getBox().view.height * 0.5;
         this.backButton.height = this.container.getBox().view.height * 0.1;
     }
-
-
 }

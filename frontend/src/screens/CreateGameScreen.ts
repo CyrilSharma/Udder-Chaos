@@ -19,27 +19,35 @@ export class CreateGameScreen extends Container {
     constructor() {
         super();
 
-        //console.log("new screen!")
-
         this.background = Sprite.from('./src/assets/mainBackground.jpg');
         this.background.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
 
         this.backButton = new FancyButton({
             defaultView: (new Button(
                 new Graphics()
-                        .beginFill(0xff0000, 0.5)
-                        .drawCircle(30, 30, 30)
+                    .beginFill(0xff0000, 0.5)
+                    .drawCircle(30, 30, 30)
             )).view,
             text: "X",
             padding: 0,
             anchor: 0.5,
         });
 
+        this.startGameButton = new FancyButton({
+            defaultView: (new Button(
+                new Graphics()
+                    .beginFill(0x6666ff)
+                    .drawRoundedRect(0, 0, 300, 150, 15)
+            )).view,
+            text: 'Start',
+            anchor: 0.5,
+        });
+
         this.container = new FancyButton({
             defaultView: (new Button(
                 new Graphics()
-                        .beginFill(0xffcc66, 0.5)
-                        .drawRoundedRect(0, 0, 300, 150, 15)
+                    .beginFill(0xffcc66, 0.5)
+                    .drawRoundedRect(0, 0, 500, 600, 15)
             )).view,
             anchor: 0.5,
         });
@@ -47,31 +55,21 @@ export class CreateGameScreen extends Container {
         this.gameLobbyLabel = new FancyButton({
             defaultView: (new Button(
                 new Graphics()
-                        .beginFill(0xffcc66)
-                        .drawRoundedRect(0, 0, 300, 150, 15)
+                    .beginFill(0xffcc66)
+                    .drawRoundedRect(0, 0, 300, 150, 15)
             )).view,
             text: 'Game Lobby',
             anchor: 0.5,
         });
 
-        this.startGameButton = new FancyButton({
-            defaultView: (new Button(
-                new Graphics()
-                        .beginFill(0x6666ff)
-                        .drawRoundedRect(0, 0, 300, 150, 15)
-            )).view,
-            text: 'Start',
-            anchor: 0.5,
-        });
 
         this.gameCodeDisplay = new FancyButton({
             defaultView: (new Button(
                 new Graphics()
-                        .beginFill(0xffcc66)
-                        .drawRoundedRect(0, 0, 300, 150, 60)
+                    .beginFill(0xffcc66)
+                    .drawRoundedRect(0, 0, 300, 150, 60)
             )).view,
             text: "",
-            anchor: 0.5,
         });
 
         this.playerList = new PlayerListDisplay;
@@ -91,7 +89,7 @@ export class CreateGameScreen extends Container {
         this.addChild(this.gameLobbyLabel);
         this.addChild(this.startGameButton);
         this.addChild(this.gameCodeDisplay);
-        this.addChild(this.playerList.theList);
+        this.addChild(this.playerList);
         this.addChild(this.backButton);
         
     }
@@ -107,39 +105,49 @@ export class CreateGameScreen extends Container {
     }
 
     public resize(width: number, height: number) {
-
-        this.gameCodeDisplay.view.x = width * 0.62;
-        this.gameCodeDisplay.view.y = height * 0.5;
-        this.gameCodeDisplay.view.height = height * 0.2;
-        this.gameCodeDisplay.view.width = this.gameCodeDisplay.view.height * 1.5;
-    
+        let scale = 0.4 * width / this.container.view.width;
         this.container.view.x = width * 0.5;
         this.container.view.y = height * 0.5;
-        this.container.view.width = width * 0.5;
-        this.container.view.height = height * 0.7;
+        this.container.view.width *= scale;
+        this.container.view.height *= scale;
+
+        let leftx = this.container.view.x - this.container.view.width / 2;
+
+        scale = 0.2 * width / this.gameLobbyLabel.width;
+        this.gameLobbyLabel.view.height *= scale;
+        this.gameLobbyLabel.view.width *= scale;
+        this.gameLobbyLabel.view.x = this.container.view.x;
+        this.gameLobbyLabel.view.y = this.container.view.y - this.container.view.height * 0.35;
+
+        let yoffset = height * 0.125;
+
+        scale = 0.15 * width / this.gameCodeDisplay.view.width;
+        this.gameCodeDisplay.view.height *= scale;
+        this.gameCodeDisplay.view.width *= scale;
+        this.gameCodeDisplay.view.x = leftx + this.container.width * 0.75 - this.gameCodeDisplay.view.width / 2;
+        this.gameCodeDisplay.view.y = this.gameLobbyLabel.y + yoffset;
+
+        scale = 0.15 * width / this.playerList.width;
+        this.playerList.width *= scale;
+        this.playerList.height *= scale;
+        this.playerList.text.x = this.playerList.width / 2;
+        this.playerList.text.y = this.playerList.height / 2;
+        this.playerList.x = leftx + this.container.width * 0.25 - this.playerList.width / 2;
+        this.playerList.y = this.gameLobbyLabel.y + yoffset;
+        this.playerList.updateTheList();
+
 
         this.backButton.view.x = this.container.view.x + this.container.view.width * 0.5;
         this.backButton.view.y = this.container.view.y - this.container.view.height * 0.5;
         this.backButton.height = this.container.height * 0.1;
+        this.backButton.width = this.container.height * 0.1;
 
-        this.gameLobbyLabel.view.height = this.container.view.height * 0.2;
-        this.gameLobbyLabel.view.width = this.container.view.width * 0.8;
-        this.gameLobbyLabel.view.x = this.container.view.x;
-        this.gameLobbyLabel.view.y = this.container.view.y - this.container.view.height * 0.35;
-
+        scale = 0.1 * width / this.startGameButton.width;
         this.startGameButton.view.y = this.container.view.y + this.container.view.height * 0.4;
         this.startGameButton.view.x = this.container.view.x + this.container.view.x * 0.25;
-        this.startGameButton.view.width = this.container.width * 0.3;
-        this.startGameButton.view.height = this.container.height * 0.1;
+        this.startGameButton.view.width *= scale;
+        this.startGameButton.view.height *= scale;
 
-        this.playerList.theList.view.x = width * 0.38;
-        this.playerList.theList.view.y = height * 0.52;
-        this.playerList.theList.view.width = width * 0.2;
-        this.playerList.theList.view.height = height * 0.2;
-        // if (!(this.playerList.numPlayers() >= 4)) {
-        //     this.playerList.addPlayer("Jim");
-        // }
-        this.playerList.updateTheList();
 
         // AR work
         if (width/height >= 1920/768) {

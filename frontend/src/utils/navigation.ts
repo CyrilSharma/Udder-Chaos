@@ -9,6 +9,8 @@ interface AppScreen extends Container {
     prepare?(): void;
     /** Reset screen, after hidden */
     reset?(): void;
+    /** Debug function, allows manual control of pieces */
+    move?(key: number): void;
     /** Resize the screen */
     resize?(width: number, height: number): void;
 }
@@ -32,6 +34,9 @@ class Navigation {
     /** Current screen being displayed */
     public currentScreen?: AppScreen;
 
+    public move(key: number) {
+        this.currentScreen?.move?.(key);
+    }
  
 
     public resize(width: number, height: number) {
@@ -110,6 +115,8 @@ class Navigation {
             screen.interactiveChildren = true;
         }
     }
+
+
 
 }
 

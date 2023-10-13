@@ -4,7 +4,7 @@ import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { Player } from "./game/Utils"
-import seedrandom from 'seedrandom'
+//import seedrandom from 'seedrandom'
 import { JoinGameScreen } from "./screens/JoinGameScreen";
 
 class Server {
@@ -36,7 +36,8 @@ class Server {
         });
         
         this.socket.on("join-error", (error) => {
-            console.log(error);
+            let joinGameScreen = navigation.currentScreen as JoinGameScreen;
+            joinGameScreen.showError(error);
         });
 
         this.socket.on("player-list", (playerList) => {
