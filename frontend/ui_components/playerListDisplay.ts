@@ -1,26 +1,22 @@
-import { Container, Graphics } from 'pixi.js';
+import { Container, Graphics, Text, TextStyle } from 'pixi.js';
 import { FancyButton, Button } from '@pixi/ui';
 
 export class PlayerListDisplay extends Container {
 
-    public theList: FancyButton;
+    public theList: Graphics;
     private players: Array<string>;
-    private theText: string;
+    public text: Text;
 
     constructor() {
         super();
         this.players = [];
-        this.theText = "";
-
-        this.theList = new FancyButton({
-            defaultView: (new Button(
-                new Graphics()
-                        .beginFill(0xffffff, 1)
-                        .drawRect(0, 0, 300, 300)
-            )).view,
-            text: "",
-            anchor: 0.5,
-        });
+        this.theList = new Graphics()
+            .beginFill(0xffffff)
+            .drawRoundedRect(0, 0, 300, 150, 100);
+        this.addChild(this.theList);
+        let style = new TextStyle({ fill: ['#000000'] });
+        this.text = new Text("", style);
+        this.addChild(this.text);
     }
 
     public addPlayer(player: string) {
@@ -41,22 +37,16 @@ export class PlayerListDisplay extends Container {
         this.updateTheList();
     }
 
-    public textify(players: Array<string>) {
-        let text:string;
-        text = "";
-        players.forEach(element => {
-            text = text + element + "\n";
-        });
-        this.theText = text;
-    }
-
     public numPlayers() : number {
         return this.players.length;
     }
 
-    updateTheList() {
-        this.textify(this.players);
-        this.theList.text = this.theText;
+    public updateTheList() {
+        let text = "";
+        this.players.forEach(element => {
+            text = text + element + "\n";
+        });
+        console.log("text: " + text);
+        this.text.text = text;
     }
-
 }
