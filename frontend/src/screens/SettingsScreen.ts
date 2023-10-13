@@ -17,10 +17,10 @@ export class SettingsScreen extends Container {
         super();
 
         this.background = new Background();
-        this.addChild(this.background.getBackground());
+        this.addChild(this.background);
 
         this.container = new ButtonBox(1, 0.9, 10);
-        this.addChild(this.container.getBox());
+        this.addChild(this.container);
 
         // this.settingsLabel = new MenuButton("Settings", 0.5, 0.1, 0xffcc66, 1, 0.8, 5);
         // this.container.getBox().addChild(this.settingsLabel.getButton());

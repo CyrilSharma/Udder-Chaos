@@ -64,7 +64,12 @@ export class JoinGameScreen extends Container {
                 .beginFill(0xffffff)
                 .drawRect(0, 0, 300, 150),
             placeholder: "Enter Room Code",
-            padding: 30
+            padding: {
+                top: 20,
+                bottom: 20,
+                right: 0,
+                left: 150
+            }
         });
 
         this.roomCodeInput.onChange.connect(() => {

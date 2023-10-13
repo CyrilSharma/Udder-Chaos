@@ -21,6 +21,7 @@ export class ButtonBox extends Container {
             )).view,
             anchor: 0.5,
         });
+        this.addChild(this.buttonBox);
 
     }
 
