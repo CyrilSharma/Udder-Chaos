@@ -35,14 +35,10 @@ export class Game extends Container {
 
     public updateTurn() {
         this.turn += 1;
-        if (this.turn > 6) this.turn -= 6;
-        console.log(`turn: ${this.turn}`);
+        if (this.turn > 4) this.turn -= 4;
     }
 
     public ourTurn() {
-        return this.playerColor == 1 && this.turn == 1 || 
-                this.playerColor == 2 && this.turn == 2 || 
-                this.playerColor == 3 && this.turn == 4 ||
-                this.playerColor == 4 && this.turn == 5;
+        return this.turn == this.playerColor;
     }
 }

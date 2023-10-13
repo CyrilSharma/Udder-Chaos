@@ -1,4 +1,4 @@
-import { removeRoom, initPlayer, ai_socket } from "./server.js"
+import { removeRoom, initPlayer } from "./server.js"
 
 const TEAM = {
     ALIEN: true,
@@ -19,7 +19,7 @@ export class Room {
         this.io = io;
         this.roomCode = roomCode;
         this.players = [];
-        this.moveList = [];
+        this.moveList;
     }
 
     addNewPlayer(socket) {
@@ -42,14 +42,14 @@ export class Room {
         // Loop through players to find the correct player to remove
         let i = this.players.indexOf(player);
         this.players.splice(i, 1);
-        //console.log("new list" + this.getPlayerNames());
+        console.log("new list" + this.getPlayerNames());
 
         if (this.players.length > 0) {
             // There are still players in the game
             this.io.to(this.roomCode).emit("player-list", this.getPlayerNames());
         }
         else {
-            removeRoom(this.roomCode);
+            removeRoom(this);
         }
     }
 
@@ -63,10 +63,9 @@ export class Room {
 
     getPlayerIds() {
         let ids = []
-        for (let index in this.players) {
-            ids.push(this.players[index].socket.id)
+        for (let player of this.players) {
+            ids.push(player.socket.id)
         }
-        ids.push("AI-player")
         return ids;
     }
 
@@ -84,13 +83,7 @@ export class Room {
     // Emit move to all players
     makeMove(socket, cardIndex, color) {
         //TODO: Check if player's turn 
-        this.moveList.push((cardIndex, color));
         socket.to(this.roomCode).emit("share-move", cardIndex, color);
-        console.log(this.moveList)
-        if (this.moveList.length % 3 == 2) {
-            console.log("Query the AI move");
-            ai_socket.emit("query-move", this.roomCode);
-        }
     }
 }
 
@@ -112,7 +105,7 @@ class Player {
 
         this.socket.on("play-card", (cardIndex, color) => {
             this.room.makeMove(this.socket, cardIndex, color);
-        });
+        })
 
         this.socket.on("leave-room", () => {
             this.disconnectPlayer();

@@ -7,8 +7,7 @@ socket.on("connect", () => {
     socket.emit("init-connection", false);
 });
 
-socket.on("query-move", (roomCode) => {
+socket.on("query-move", () => {
     let move = Math.floor(Math.random() * 3);
-    let color = Math.floor(Math.random() * 4) + 5;
-    socket.emit("make-move", roomCode, move, color);
+    socket.emit("make-move", socket.id, move);
 });
