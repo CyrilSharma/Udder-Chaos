@@ -3,12 +3,14 @@ import { Room } from "./room.js"
 import { Server } from "socket.io";
 const io = new Server(3000, {
     cors: {
-        origin: ["http://localhost:8000"]
+        origin: "*",
     }
 })
 
 let rooms = []
 let ai_socket = null;
+
+console.log("Server listening on 3000")
 
 io.on('connection', (client) => {
     console.log('A user connected ' + client.id);

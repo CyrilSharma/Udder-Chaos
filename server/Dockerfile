@@ -1,11 +1,10 @@
 FROM node:20
 
-WORKDIR /app
-COPY package*.json ./
+WORKDIR /server
+COPY ./package*.json ./
 RUN npm install
 COPY . .
 
-ENV PORT=3000
-EXPOSE 8080
+EXPOSE 3000
 
-CMD [ "node", "index.js"]
+CMD [ "npm", "run", "dev"]
