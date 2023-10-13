@@ -106,6 +106,7 @@ export class Board extends Container {
         if (getTeam(target.type) != TeamEnum.Cow) return Error("Cannot score on this piece");
         this.removePiece(target);
         console.log("Yay you score!");
+        piece.addScore();
         
         this.setPieceLocation(piece, dest);
     }
@@ -139,7 +140,7 @@ export class Board extends Container {
         for (const piecetype of Object.values(PieceEnum)) {
             // console.log(config.starts[piecetype]);
             for (const position of config.starts[piecetype]) {
-                this.createPiece(position, piecetype);
+                if (grid[position.row][position.column] != TileEnum.Impassible) this.createPiece(position, piecetype);
             }
         }
 

@@ -64,7 +64,7 @@ export class LogicHandler {
                 } else if (this.game.board.getPieceByPosition(check) != null) {
                     let collidePiece: Piece | null = this.game.board.getPieceByPosition(check);
                     if (collidePiece!.type == piece.type) {
-
+                        continue;
                     }    
                     else if (canMoveOver(piece.type, collidePiece!.type)) {
                         canMove = true;

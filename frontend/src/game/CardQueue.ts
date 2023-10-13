@@ -44,7 +44,7 @@ export class CardQueue extends Container {
             let config = {
                 color: ColorEnum.RED,
                 // dir: get(),
-                dir: i % 4,
+                dir: i % 4, // Determininistic queue for testing purposes
                 size: 50
             };
             let card = new Card(this, config, i);

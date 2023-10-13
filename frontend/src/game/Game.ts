@@ -13,6 +13,7 @@ export class Game extends Container {
     public config!: GameConfig;
     public playerColor!: number;
     public updateList: GameUpdate[] = [];
+    public turn: number = 1;
     constructor() {
         super();
         this.board = new Board(this);
@@ -30,5 +31,14 @@ export class Game extends Container {
 
     public setPlayerColor(color: number) {
         this.playerColor = color;
+    }
+
+    public updateTurn() {
+        this.turn += 1;
+        if (this.turn > 4) this.turn -= 4;
+    }
+
+    public ourTurn() {
+        return this.turn == this.playerColor;
     }
 }

@@ -86,9 +86,14 @@ export class Card extends Container {
 
     private onPointerTap = (e: FederatedPointerEvent) => {
         //console.log("Card was clicked!");
-        this.unscale();
-        this.queue.playCard(this, this.queue.game.playerColor);
-        server.playCard(this.index, this.queue.game.playerColor);
+        if (this.queue.game.ourTurn()) {
+            this.unscale();
+            this.queue.playCard(this, this.queue.game.playerColor);
+            server.playCard(this.index, this.queue.game.playerColor);
+            this.queue.game.updateTurn();
+        } else {
+            console.log("Not your turn!!");
+        }
     }
 
     private onPointerEnter = (e: FederatedPointerEvent) => {

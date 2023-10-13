@@ -12,7 +12,7 @@ const COLOR = {
     PURPLE: 3,    
 }
 
-const MAX_PLAYERS = 1;
+const MAX_PLAYERS = 4;
 
 export class Room {
     constructor(io, roomCode) {

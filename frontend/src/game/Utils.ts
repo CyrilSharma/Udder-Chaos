@@ -159,8 +159,8 @@ function parseCSVGrid(csvString: string) {
         const values = row.split(",");
         const tiles: TileType[] = [];
         for (const value of values) {
-            // const tile: TileType = parseInt(value);
-            const tile: TileType = 0; // SET NO OBSTACLES FOR DEBUGGING
+            const tile: TileType = parseInt(value);
+            // const tile: TileType = 0; // SET NO OBSTACLES FOR DEBUGGING
             tiles.push(tile);
         }
         if (tiles.length > 0) {

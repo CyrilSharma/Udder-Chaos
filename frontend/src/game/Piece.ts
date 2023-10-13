@@ -24,6 +24,7 @@ export class Piece extends Container {
     public type: number = 0;
     /** The name of the piece - must match one of the available textures */
     public name: string = '';
+    public score: number = 0;
 
     constructor() {
         super();
@@ -51,5 +52,9 @@ export class Piece extends Container {
     public async animateMove(x: number, y: number) {
         this.row = y;
         this.column = x;
+    }
+
+    public async addScore(amt: number = 1) {
+        this.score += amt;
     }
 }
