@@ -30,6 +30,10 @@ class Server {
             createGameScreen.addGameCode(roomCode);
             createGameScreen.getPlayerList().setPlayers(playerList);
         });
+        
+        this.socket.on("join-error", (error) => {
+            console.log(error);
+        });
 
         this.socket.on("player-list", (playerList) => {
             let createGameScreen = navigation.currentScreen as CreateGameScreen;

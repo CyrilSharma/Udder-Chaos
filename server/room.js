@@ -24,7 +24,7 @@ export class Room {
 
     addNewPlayer(socket, host=false) {
         if (this.players.length >= MAX_PLAYERS) {
-            socket.emit("receive-message", "This room is full!");
+            socket.emit("join-error", "This room is full!");
             console.log(socket.id + " couldn't join room: " + this.roomCode);
             return;
         }
