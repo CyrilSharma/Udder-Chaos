@@ -90,9 +90,12 @@ export class Board extends Container {
     }
 
     public kill_move(piece: Piece, dest: Position) {
+        console.log("KILLING MOVE");
+        console.log(piece);
+        console.log(dest);
         if (isPlayer(piece.type)) return Error('Players cannot kill entities');
         const target = this.getPieceByPosition(dest)!;
-        if (!isPlayer(piece.type)) return Error('Enemy cannot be killed');
+        if (!isPlayer(target.type)) return Error('Enemy cannot be killed');
         this.removePiece(target);
         this.setPieceLocation(piece, dest);
     }
@@ -123,6 +126,23 @@ export class Board extends Container {
     public buildGame(config: GameConfig) {
         //console.log(PieceMap);
         const grid = config.grid;
+        
+        // TEMP initialization of each piece for visualization debug
+        for (const piecetype of Object.values(PieceEnum)) {
+            // console.log(config.starts[piecetype]);
+            for (const position of config.starts[piecetype]) {
+                // Random generate tiles that are occupied by a piece to not be impassible or destinations
+                if (grid[position.row][position.column] == TileEnum.Impassible || grid[position.row][position.column] == TileEnum.Destination) {
+                    // console.log("Piece spawning on top of a tile...");
+                    let rand = Math.floor(Math.random() * 2);
+                    if (rand == 0) grid[position.row][position.column] = TileEnum.Plain;
+                    else grid[position.row][position.column] = TileEnum.Pasture;
+                    // console.log(`Fixed ${[position.row, position.column]} to ${grid[position.row][position.column]}`);
+                }
+                this.createPiece(position, piecetype);
+            }
+        }
+        
         const rows = grid.length;
         const cols = grid[0].length;
         for (let r = 0; r < rows; r++) {
@@ -135,21 +155,6 @@ export class Board extends Container {
                 }
             }
         }
-
-        // TEMP initialization of each piece for visualization debug
-        for (const piecetype of Object.values(PieceEnum)) {
-            // console.log(config.starts[piecetype]);
-            for (const position of config.starts[piecetype]) {
-                // Random generate tiles that are occupied by a piece to not be impassible or destinations
-                if (grid[position.row][position.column] == TileEnum.Impassible || grid[position.row][position.column] == TileEnum.Destination) {
-                    let rand = Math.floor(Math.random() * 2);
-                    if (rand == 0) grid[position.row][position.column] = TileEnum.Plain;
-                    else grid[position.row][position.column] = TileEnum.Pasture;
-                }
-                this.createPiece(position, piecetype);
-            }
-        }
-
         
     }
 
