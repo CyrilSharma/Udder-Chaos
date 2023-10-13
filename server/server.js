@@ -64,7 +64,7 @@ function createRoom() {
 function joinRoom(roomCode) {
     let room = rooms[roomCode]
     if (room == null) {
-        this.emit("receive-message", "Couldn't find room with code " + roomCode);
+        this.emit("join-error", "Couldn't find room with code " + roomCode);
         return;
     }
     room.addNewPlayer(this);

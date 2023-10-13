@@ -24,6 +24,10 @@ class Server {
             console.log(msg);
         });
 
+        this.socket.on("join-error", (error) => {
+            console.log(error);
+        });
+
         this.socket.on("load-room", async (roomCode, playerList) => {
             await navigation.showScreen(CreateGameScreen);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;

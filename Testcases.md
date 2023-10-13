@@ -17,5 +17,5 @@ Start on main menu
 Step | Directions | Expected Output
 --- | --- | ---
 1 | Click the create game button | Room lobby screen appears with your player name (random name), and a room code with 4 random characters
-2 | 
+2 | In a separate client, click the join game button and enter the room code | Room lobby screen appears with correct room code and 2 players in player list
 3 | 
