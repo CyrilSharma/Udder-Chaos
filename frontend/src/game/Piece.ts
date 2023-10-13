@@ -36,14 +36,19 @@ export class Piece extends Container {
         this.addChild(this.image);
         
         this.scoreDisplay = new Text(this.score);
-        this.image.onmouseover = () => {
+        this.scoreDisplay.scale.set(5);
+        this.scoreDisplay.x = 500;
+        this.scoreDisplay.y = 500;
+        this.scoreDisplay.visible = false;
+        this.addChild(this.scoreDisplay);
+        this.image.eventMode = 'static';
+        this.image.on('mouseover', () => {
             this.scoreDisplay.text = this.score;
             this.scoreDisplay.visible = true;
-        };
-        this.image.onmouseout = () => {
+        });
+        this.image.on('mouseout', () => {
             this.scoreDisplay.visible = false;
-        }
-        this.addChild(this.scoreDisplay);
+        });
     }
 
     public setup(options: Partial<PieceOptions> = {}) {
