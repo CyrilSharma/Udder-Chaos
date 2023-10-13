@@ -1,4 +1,5 @@
 import { Container, Sprite, Texture, Text, Graphics } from 'pixi.js';
+import { TeamEnum, getTeam } from './Utils'
 
 /** Default piece options */
 const defaultPieceOptions = {
@@ -59,6 +60,7 @@ export class Piece extends Container {
         this.addChild(this.scoreDisplay);
         this.image.eventMode = 'static';
         this.image.on('mouseover', () => {
+            if (getTeam(this.type) != TeamEnum.Player) return;
             this.scoreText.text = this.score;
             this.scoreDisplay.visible = true;
         });

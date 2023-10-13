@@ -1,19 +1,22 @@
-import { Container } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 import { Game } from '../game/Game';
-import { createRandomGrid, PieceEnum, GameConfig, PieceMove, loadMap } from '../game/Utils';
+import { createRandomGrid, PieceEnum, GameConfig, PieceMove, loadMap, getTeam, TeamEnum } from '../game/Utils';
 import { MAPS } from "../maps/Maps"
 
 export class GameScreen extends Container {
+    public readonly background: Graphics;
     public readonly gameContainer: Container;
     public readonly game: Game;
     constructor() {
         super();
-
+        this.background = new Graphics()
+            .beginFill(0x303030)
+            ;
+        this.addChild(this.background);
         this.game = new Game();
         this.gameContainer = new Container();
         this.addChild(this.gameContainer);
         this.gameContainer.addChild(this.game);
-        
         this.addChild(this.gameContainer);
     }
 
@@ -43,6 +46,7 @@ export class GameScreen extends Container {
         let dy = [0, -1, 0, 1];
         let normal_moves: PieceMove[] = [];
         this.game.board.pieces.forEach((piece) => {
+            if (piece.type != PieceEnum.Enemy_Red) return;
             let cur = { row: piece.row, column: piece.column };
             let dest = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
             normal_moves.push({ from: cur, to: dest });
@@ -70,5 +74,6 @@ export class GameScreen extends Container {
         const centerx = width / 2;
         const centery = height / 2;
         this.game.x = centerx - this.game.board.getWidth() / 2;
+        this.background.drawRect(0, 0, width, height);
     }
 }
