@@ -9,7 +9,7 @@ export class MenuButton extends Container {
     private AR: number;
     private size: number;
 
-    constructor(text: string, posx: number, posy: number, color: number, AR: number, size: number) {
+    constructor(text: string, posx: number, posy: number, color: number, AR: number, size: number, bevel: number) {
         super();
         
         this.posx = posx;
@@ -21,12 +21,12 @@ export class MenuButton extends Container {
             defaultView: (new Button(
                 new Graphics()
                         .beginFill(color)
-                        .drawRoundedRect(0, 0, AR * 100, 100, 60)
+                        .drawRoundedRect(0, 0, AR * 100, 100, bevel)
             )).view,
             pressedView: (new Button(
                 new Graphics()
                         .beginFill(color + 0x001a4d)
-                        .drawRoundedRect(0, 0, AR * 100, 100, 60)
+                        .drawRoundedRect(0, 0, AR * 100, 100, bevel)
             )).view,
             anchor: 0.5,
             text: text
