@@ -12,7 +12,7 @@ const COLOR = {
     PURPLE: 3,    
 }
 
-const MAX_PLAYERS = 2;
+const MAX_PLAYERS = 4;
 
 export class Room {
     constructor(io, roomCode) {
@@ -81,9 +81,9 @@ export class Room {
     }
 
     // Emit move to all players
-    makeMove(socket, cardIndex) {
+    makeMove(socket, cardIndex, color) {
         //TODO: Check if player's turn 
-        socket.to(this.roomCode).emit("share-move", cardIndex);
+        socket.to(this.roomCode).emit("share-move", cardIndex, color);
     }
 }
 
@@ -103,8 +103,8 @@ class Player {
             this.room.startGame(this.socket);
         });
 
-        this.socket.on("play-card", (cardIndex) => {
-            this.room.makeMove(this.socket, cardIndex);
+        this.socket.on("play-card", (cardIndex, color) => {
+            this.room.makeMove(this.socket, cardIndex, color);
         })
 
         this.socket.on("leave-room", () => {

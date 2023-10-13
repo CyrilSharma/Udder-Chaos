@@ -2,10 +2,13 @@ import { Container, Graphics, Sprite } from 'pixi.js';
 import { Piece } from './Piece';
 import { Game } from './Game';
 import { Card } from './Card';
+import { LogicHandler } from './LogicHandler';
 import {
     DirectionEnum,
     ColorEnum,
-    PieceMove
+    PieceMove,
+    Position,
+    TileEnum
 } from './Utils';
 
 export class CardQueue extends Container {
@@ -14,6 +17,7 @@ export class CardQueue extends Container {
     public player_hand: Card[] = [];
     public enemy_hand: Card[] = [];
     public cardContainer: Container;
+    public logicHandler: LogicHandler;
     public cardSize = 100;
     public ncards = 16;
     public hand_size = 3;
@@ -21,6 +25,7 @@ export class CardQueue extends Container {
     constructor(game: Game) {
         super();
         this.game = game;
+        this.logicHandler = new LogicHandler(game);
         this.cardContainer = new Container();
         this.addChild(this.cardContainer);
     }
@@ -38,7 +43,8 @@ export class CardQueue extends Container {
         for (let i = 0; i < this.ncards; i++) {
             let config = {
                 color: ColorEnum.RED,
-                dir: get(),
+                // dir: get(),
+                dir: i % 4, // Determininistic queue for testing purposes
                 size: 50
             };
             let card = new Card(this, config, i);
@@ -64,45 +70,29 @@ export class CardQueue extends Container {
         return this.player_hand[0];
     }
 
-    public playCard(input: Card) {
+    public playCard(input: Card, color: number) {
         for (let i = 0; i <  this.player_hand.length; i++) {
             let card = this.player_hand[i];
             if (card != input) continue;
-            console.log(input.index);
+            // console.log(input.index);
 
-            // VERY VERY TEMPORARY CHANGE.
-            let dir = -1;
-            switch(card.dir) {
-                case DirectionEnum.RIGHT: { dir=0; break; }
-                case DirectionEnum.UP:    { dir=1; break; }
-                case DirectionEnum.LEFT:  { dir=2; break; }
-                case DirectionEnum.DOWN:  { dir=3; break; }
-            }
-            let dx = [1, 0, -1, 0];
-            let dy = [0, -1, 0, 1];
-            let normal_moves: PieceMove[] = [];
-            this.game.board.pieces.forEach((piece) => {
-                let cur = { row: piece.row, column: piece.column };
-                let dest = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
-                normal_moves.push({ from: cur, to: dest });
-            });
-            this.game.board.updateGame({
-                normal_moves,
-                kill_moves: [],
-                score_moves: [],
-            });
+            this.logicHandler.playCard(card, color);
 
             this.player_hand.splice(i, 1);
             this.player_hand.push(this.queue[0]);
-            console.log(this.queue.shift());
+            this.queue.shift();
+            // console.log(this.queue.shift());
             this.queue.push(card);
             this.placeCards();
             return;
         }
+
+        console.log("Card not found");
         for (const card of this.queue) {
             if (card != input) continue;
             return;
         }
+
         // For now, assume we don't animate enemy cards.
         for (const card of this.enemy_hand) {
             if (card != input) continue;

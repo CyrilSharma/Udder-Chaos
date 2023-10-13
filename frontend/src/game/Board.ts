@@ -14,6 +14,8 @@ import {
     isPlayer,
     BoardUpdate,
     PieceMove,
+    getTeam,
+    TeamEnum,
 } from './Utils';
 
 export class Board extends Container {
@@ -64,14 +66,14 @@ export class Board extends Container {
         });
         let kill_changes: { piece: Piece; dest: Position }[] = [];
         update.kill_moves.forEach((move) => {
-            normal_changes.push({
+            kill_changes.push({
                 piece: this.getPieceByPosition(move.from)!,
                 dest: move.to,
             });
         });
         let score_changes: { piece: Piece; dest: Position }[] = [];
         update.score_moves.forEach((move) => {
-            normal_changes.push({
+            score_changes.push({
                 piece: this.getPieceByPosition(move.from)!,
                 dest: move.to,
             });
@@ -79,6 +81,7 @@ export class Board extends Container {
         normal_changes.forEach((c) => this.normal_move(c.piece, c.dest));
         kill_changes.forEach((c) => this.kill_move(c.piece, c.dest));
         score_changes.forEach((c) => this.score_move(c.piece, c.dest));
+        // TODO add to game updatelist
     }
 
     // TODO: Learn how to animate things.
@@ -97,8 +100,14 @@ export class Board extends Container {
     // TODO: change cow to be not a piece...
     public score_move(piece: Piece, dest: Position) {
         if (!isPlayer(piece.type)) return Error('The AI cannot score');
-        // const target = this.getPieceByPosition(dest)!;
-        // if (!isPlayer(piece.type)) return Error("Enemy cannot be killed");
+        
+        // TODO: actually do something when scoring
+        const target = this.getPieceByPosition(dest)!;
+        if (getTeam(target.type) != TeamEnum.Cow) return Error("Cannot score on this piece");
+        this.removePiece(target);
+        console.log("Yay you score!");
+        piece.addScore();
+        
         this.setPieceLocation(piece, dest);
     }
 
@@ -127,12 +136,15 @@ export class Board extends Container {
             }
         }
 
-        for (const tiletype of Object.values(PieceEnum)) {
-            console.log(config.starts[tiletype]);
-            for (const position of config.starts[tiletype]) {
-                this.createPiece(position, tiletype);
+        // TEMP initialization of each piece for visualization debug
+        for (const piecetype of Object.values(PieceEnum)) {
+            // console.log(config.starts[piecetype]);
+            for (const position of config.starts[piecetype]) {
+                if (grid[position.row][position.column] != TileEnum.Impassible) this.createPiece(position, piecetype);
             }
         }
+
+        
     }
 
     public createTile(position: Position, tileType: TileType) {
@@ -163,8 +175,9 @@ export class Board extends Container {
         const viewPosition = this.getViewPosition(position);
         piece.row = position.row;
         piece.column = position.column;
-        piece.x = viewPosition.x + this.tileSize / 2;
-        piece.y = viewPosition.y + this.tileSize / 2;
+        // Actually display pieces at the right location
+        piece.x = viewPosition.x - 3 * this.tileSize / 4;
+        piece.y = viewPosition.y - 3 * this.tileSize / 4;
     }
 
     public getViewPosition(position: Position) {
@@ -174,6 +187,7 @@ export class Board extends Container {
     }
 
     public getPieceByPosition(position: Position) {
+        // console.log(`Getting piece at ${[position.row, position.column]}`);
         for (const piece of this.pieces) {
             if (piece.row === position.row && piece.column === position.column) {
                 return piece;
@@ -190,5 +204,14 @@ export class Board extends Container {
     /** Get the visual height of the board */
     public getHeight() {
         return this.tileSize * this.rows;
+    }
+    
+    /** Get the tile at a position on the board */
+    public getTileAtPosition(position: Position) {
+        // handle out of bounds
+        // console.log("query at: ", position);
+        if (position.row < 0 || position.row >= this.rows || position.column < 0 || position.column >= this.columns) return TileEnum.Impassible;
+        // console.log(this.grid[position.row][position.column]);
+        return this.grid[position.row][position.column];
     }
 }

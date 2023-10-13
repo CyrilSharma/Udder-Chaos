@@ -40,6 +40,7 @@ export class Card extends Container {
     private drawArrow = (g: Graphics, x: number, y: number,
         width: number, height: number, dir: Direction) => {
         switch (dir) {
+            // Systematically drawing arrows for cards for now, possibly sprites to come later.
             case DirectionEnum.DOWN: {
                 x -= height / 2; y -= width / 2;
                 g.drawRect(x + height / 3, y, height / 3, 3 * width / 4);
@@ -85,9 +86,14 @@ export class Card extends Container {
 
     private onPointerTap = (e: FederatedPointerEvent) => {
         //console.log("Card was clicked!");
-        this.unscale();
-        this.queue.playCard(this);
-        server.playCard(this.index);
+        if (this.queue.game.ourTurn()) {
+            this.unscale();
+            this.queue.playCard(this, this.queue.game.playerColor);
+            server.playCard(this.index, this.queue.game.playerColor);
+            this.queue.game.updateTurn();
+        } else {
+            console.log("Not your turn!!");
+        }
     }
 
     private onPointerEnter = (e: FederatedPointerEvent) => {

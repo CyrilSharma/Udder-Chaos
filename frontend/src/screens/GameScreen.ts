@@ -8,10 +8,13 @@ export class GameScreen extends Container {
     public readonly game: Game;
     constructor() {
         super();
+
         this.game = new Game();
         this.gameContainer = new Container();
         this.addChild(this.gameContainer);
         this.gameContainer.addChild(this.game);
+        
+        this.addChild(this.gameContainer);
     }
 
     public prepare() {
@@ -19,21 +22,22 @@ export class GameScreen extends Container {
         const config: GameConfig = {
             grid: loadMap(Math.floor(Math.random()*MAPS.length)),
             starts: [
-                [{ row: 0, column: 0 }],
-                [{ row: 0, column: 1 }],
-                [{ row: 0, column: 2 }],
-                [{ row: 0, column: 3 }],
-                [{ row: 0, column: 4 }],
-                [{ row: 0, column: 5 }],
-                [{ row: 0, column: 6 }],
-                [{ row: 0, column: 7 }],
-                [{ row: 0, column: 8 }],
+                [{ row: 0, column: 0 }, { row: 2, column: 0 }],
+                [{ row: 0, column: 1 }, { row: 2, column: 1 }],
+                [{ row: 0, column: 2 }, { row: 2, column: 2 }],
+                [{ row: 0, column: 3 }, { row: 2, column: 3 }],
+                [{ row: 0, column: 4 }, { row: 2, column: 4 }],
+                [{ row: 0, column: 5 }, { row: 2, column: 5 }],
+                [{ row: 0, column: 6 }, { row: 2, column: 6 }],
+                [{ row: 0, column: 7 }, { row: 2, column: 7 }],
+                [{ row: 0, column: 8 }, { row: 2, column: 8 }],
             ],
             tileSize: 40,
         };
         this.game.setup(config);
     }
 
+    // Move function only used for debug purposes right now (arrow key calls from main)
     public move(dir: number) {
         let dx = [1, 0, -1, 0];
         let dy = [0, -1, 0, 1];
@@ -50,8 +54,14 @@ export class GameScreen extends Container {
         });
     }
 
-    public playCard(cardIndex: number) {
+    public playCard(cardIndex: number, color: number) {
         let card = this.game.cards.findCardInHand(cardIndex);
-        this.game.cards.playCard(card);
+        this.game.cards.playCard(card, color);
+
+        this.game.updateTurn();
+    }
+
+    public setPlayerColor(color: number) {
+        this.game.setPlayerColor(color);
     }
 }
