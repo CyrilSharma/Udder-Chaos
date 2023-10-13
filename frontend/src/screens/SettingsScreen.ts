@@ -3,7 +3,6 @@ import { FancyButton, Button } from "@pixi/ui";
 import { navigation } from "../utils/navigation";
 import { HomeScreen } from "./HomeScreen";
 import { Background } from "../../ui_components/background";
-import server from "../server";
 
 export class SettingsScreen extends Container {
 

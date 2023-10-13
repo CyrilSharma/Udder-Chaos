@@ -19,7 +19,7 @@ export class CreateGameScreen extends Container {
     constructor() {
         super();
 
-        console.log("new screen!")
+        //console.log("new screen!")
 
         this.background = Sprite.from('./src/assets/mainBackground.jpg');
         this.background.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
