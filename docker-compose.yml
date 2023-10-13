@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  client:
+    build: ./frontend
+    ports:
+      - "8000:8000"
+    networks:
+      - main
+  server:
+    build: ./server
+    ports: 
+      - "3000:3000"
+    networks:
+      - main
+networks:
+  main:

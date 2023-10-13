@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "type": "module",
     "scripts": {
-        "start": "vite --open",
+        "start": "vite",
         "build": "which tsc && tsc && vite build",
         "preview": "vite preview --open"
     },

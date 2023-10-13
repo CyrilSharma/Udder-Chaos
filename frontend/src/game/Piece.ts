@@ -43,7 +43,7 @@ export class Piece extends Container {
         this.type = opts.type;
         this.name = opts.name;
         this.image.alpha = 1;
-        this.scale.set(0.1);
+        this.scale.set(0.2);
         this.image.texture = Texture.from(opts.name);
         // console.log("I'm on the screen!");
     }
