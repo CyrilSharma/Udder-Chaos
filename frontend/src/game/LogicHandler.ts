@@ -18,9 +18,9 @@ export class LogicHandler {
         let dir = -1;
         switch (card.dir) {
             case DirectionEnum.RIGHT: { dir = 0; break; }
-            case DirectionEnum.UP: { dir = 1; break; }
-            case DirectionEnum.LEFT: { dir = 2; break; }
-            case DirectionEnum.DOWN: { dir = 3; break; }
+            case DirectionEnum.UP:    { dir = 1; break; }
+            case DirectionEnum.LEFT:  { dir = 2; break; }
+            case DirectionEnum.DOWN:  { dir = 3; break; }
         }
 
         // Move update lists

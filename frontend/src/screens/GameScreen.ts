@@ -51,6 +51,7 @@ export class GameScreen extends Container {
             let dest = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
             normal_moves.push({ from: cur, to: dest });
         });
+
         this.game.board.updateGame({
             normal_moves,
             kill_moves: [],
