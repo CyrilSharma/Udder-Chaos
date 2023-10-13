@@ -78,7 +78,14 @@ export const MoveType = {
     Kill_Move: 1,
     Score_Move: 2
 }
-
+export const TurnType = {
+    1: "Red",
+    2: "Green",
+    3: "AI",
+    4: "Blue",
+    5: "Orange",
+    6: "AI"
+}
 //---------Cards------------//
 export const DirectionEnum = {
     RIGHT: 0,
@@ -114,7 +121,7 @@ export type BoardUpdate = {
     score_moves: PieceMove[]; // Moves which abduct a cow.
 };
 
-//-----Functions-----//
+//-----Map Functions-----//
 export function loadMap(seed: number) {
     const grid: Grid = parseCSVGrid(MAPS[seed]);
     console.log(grid);
