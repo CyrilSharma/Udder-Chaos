@@ -1,6 +1,6 @@
 import { Container, ObservablePoint, Sprite } from 'pixi.js';
 import { navigation } from '../utils/navigation';
-import { Background } from '../../ui_components/background';
+import { Background } from '../../ui_components/Background';
 import { SettingsScreen } from './SettingsScreen';
 import server from "../server";
 import { JoinGameScreen } from './JoinGameScreen';

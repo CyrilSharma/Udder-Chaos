@@ -14,7 +14,7 @@ export class LogicHandler {
 
     /** Play a card associated with a given color */
     public playCard(card: Card, color: number) {
-        // Get direction of this card
+        // Figure out what the card does
         let dir = -1;
         switch (card.dir) {
             case DirectionEnum.RIGHT: { dir = 0; break; }

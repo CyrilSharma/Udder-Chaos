@@ -25,15 +25,15 @@ export class GameScreen extends Container {
         const config: GameConfig = {
             grid: loadMap(Math.floor(Math.random()*MAPS.length)),
             starts: [
-                [{ row: 7, column: 7 }, { row: 7, column: 8 }, { row: 8, column: 7 }, { row: 8, column: 8 }],
+                [{ row: 7, column: 7 }, { row: 7, column: 8 }, { row: 8, column: 7 }, { row: 8, column: 8 }, {row: 1, column: 2}],
                 [{ row: 0, column: 1 }, { row: 1, column: 1 }, { row: 1, column: 0 }, { row: 0, column: 0 }],
                 [{ row: 0, column: 3 }, { row: 1, column: 4 }, { row: 1, column: 3 }, { row: 0, column: 4 }],
                 [{ row: 0, column: 7 }, { row: 1, column: 6 }, { row: 1, column: 7 }, { row: 0, column: 6 }],
                 [{ row: 0, column: 9 }, { row: 1, column: 10 }, { row: 1, column: 9 }, { row: 0, column: 10 }],
-                [{ row: 15, column: 0 }, { row: 15, column: 2 }],
-                [{ row: 15, column: 4 }, { row: 15, column: 6 }],
-                [{ row: 15, column: 8 }, { row: 15, column: 10 }],
-                [{ row: 15, column: 12 }, { row: 15, column: 14 }],
+                [{ row: 15, column: 0 }, { row: 15, column: 2 }, {row: 0, column: 2}], //spawn some enemies nearby for showcase
+                [{ row: 15, column: 4 }, { row: 15, column: 6 }, {row: 0, column: 5}],
+                [{ row: 15, column: 8 }, { row: 15, column: 10 }, {row: 0, column: 8}],
+                [{ row: 15, column: 12 }, { row: 15, column: 14 }, {row: 0, column: 11}],
             ],
             tileSize: 40,
         };
@@ -59,7 +59,7 @@ export class GameScreen extends Container {
     }
 
     public playCard(cardIndex: number, color: number) {
-        let card = this.game.cards.findCardInHand(cardIndex);
+        let card = this.game.cards.findCardInHand(cardIndex, color);
         this.game.cards.playCard(card, color);
 
         this.game.updateTurn();

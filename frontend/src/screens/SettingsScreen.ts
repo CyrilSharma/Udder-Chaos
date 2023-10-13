@@ -2,7 +2,7 @@ import { Container, Graphics } from "pixi.js";
 import { FancyButton, Button } from "@pixi/ui";
 import { navigation } from "../utils/navigation";
 import { HomeScreen } from "./HomeScreen";
-import { Background } from "../../ui_components/background";
+import { Background } from "../../ui_components/Background";
 import { ButtonBox } from "../../ui_components/ButtonBox";
 import { MenuButton } from "../../ui_components/MenuButton";
 

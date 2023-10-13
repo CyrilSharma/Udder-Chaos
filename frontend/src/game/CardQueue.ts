@@ -8,7 +8,10 @@ import {
     ColorEnum,
     PieceMove,
     Position,
-    TileEnum
+    TileEnum,
+    TeamEnum,
+    getTeam,
+    shuffle
 } from './Utils';
 
 export class CardQueue extends Container {
@@ -20,7 +23,7 @@ export class CardQueue extends Container {
     public logicHandler: LogicHandler;
     public cardSize = 100;
     public ncards = 16;
-    public hand_size = 3;
+    public hand_size: number = 3;
 
     constructor(game: Game) {
         super();
@@ -37,66 +40,100 @@ export class CardQueue extends Container {
             DirectionEnum.DOWN,
             DirectionEnum.UP,
         ]
-        let get = () => directions[
-            Math.floor(Math.random() * directions.length)
-        ];
         for (let i = 0; i < this.ncards; i++) {
             let config = {
                 color: ColorEnum.RED,
-                // dir: get(),
-                dir: i % 4, // Determininistic queue for testing purposes
+                dir: i % 4, // Evenly generate a number of each card
                 size: 50
             };
             let card = new Card(this, config, i);
             this.cardContainer.addChild(card);
-            if (i < 3) {
-                this.player_hand.push(card)
-            } else if (i < this.ncards - 3) {
-                this.queue.push(card);
-            } else {
-                this.enemy_hand.push(card)
-            }
+            this.queue.push(card);
         }
+
+        // Shuffle hand
+        shuffle(this.queue);
+
+        // Distribute cards to players and enemies
+        for (let i = 0; i < this.hand_size; i++) {
+            this.player_hand.push(this.queue.shift()!);
+            this.enemy_hand.push(this.queue.shift()!);
+        }
+
+        console.log(this.player_hand);
+        console.log(this.enemy_hand);
+
         this.placeCards();
+        this.reindexCards();
     }
 
-    public findCardInHand(index: number) {
-        for (let i = 0; i <  this.player_hand.length; i++) {
-            let card = this.player_hand[i];
-            if (card.index == index) return card;
-        }
+    /** Find and return the card corresponding to the index in the correct team's hand */
+    public findCardInHand(index: number, color: number) {
+        if (getTeam(color) == TeamEnum.Player) {
+            // console.log(`Searching player hand: ${index}`)
+            // for (let i = 0; i <  this.player_hand.length; i++) {
+            //     let card = this.player_hand[i];
+            //     if (card.index == index) return card;
+            // }
+            return this.player_hand[index];
+        } 
+        else if (getTeam(color) == TeamEnum.Enemy) {
+            // console.log(`Searching enemy hand: ${index}`)
+            // for (let i = 0; i <  this.enemy_hand.length; i++) {
+            //     let card = this.enemy_hand[i];
+            //     if (card.index == index) return card;
+            // }
+            return this.enemy_hand[index];
+        }  
         //ERROR
-        console.log("COULDN'T FIND CARD");
-        return this.player_hand[0];
+        throw Error("COULDN'T FIND CARD");
+        // return this.player_hand[0];
     }
 
     public playCard(input: Card, color: number) {
-        for (let i = 0; i <  this.player_hand.length; i++) {
-            let card = this.player_hand[i];
+        var hand;
+        if (getTeam(color) == TeamEnum.Player) {
+            hand = this.player_hand;
+        } else if (getTeam(color) == TeamEnum.Enemy) {
+            hand = this.enemy_hand;
+        } else {
+            throw Error(`Invalid player color: ${color}`);
+        }
+        for (let i = 0; i < hand.length; i++) {
+            let card = hand[i];
             if (card != input) continue;
-            // console.log(input.index);
 
             this.logicHandler.playCard(card, color);
 
-            this.player_hand.splice(i, 1);
-            this.player_hand.push(this.queue[0]);
-            this.queue.shift();
-            // console.log(this.queue.shift());
+            hand.splice(i, 1);
+            hand.push(this.queue.shift()!);
             this.queue.push(card);
+            
             this.placeCards();
+            this.reindexCards();
             return;
         }
 
         console.log("Card not found");
-        for (const card of this.queue) {
-            if (card != input) continue;
-            return;
-        }
+        // for (const card of this.queue) {
+        //     if (card != input) continue;
+        //     return;
+        // }
 
-        // For now, assume we don't animate enemy cards.
-        for (const card of this.enemy_hand) {
-            if (card != input) continue;
-            return;
+        // // For now, assume we don't animate enemy cards.
+        // for (const card of this.enemy_hand) {
+        //     if (card != input) continue;
+        //     return;
+        // }
+    }
+
+    public reindexCards() {
+        for (let i = 0; i < this.hand_size; i++) {
+            this.player_hand[i].index = i;
+            this.enemy_hand[i].index = i;
+        }
+        for (let i = 0; i < this.queue.length; i++) {
+            this.queue[i].index = i;
         }
     }
 

@@ -101,6 +101,17 @@ export const ColorEnum = {
     ORANGE: 3
 };
 export type Color = number;
+/** Durstenfeld shuffle for generating a card queue
+ *  Source: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+ */
+export function shuffle(array: any[]) {
+    for (var i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+  
+    return array;
+  }
 
 //----------Game-----------//
 export type Position = {

@@ -3,7 +3,7 @@ import { FancyButton, Button, Input } from "@pixi/ui";
 import { navigation } from "../utils/navigation";
 import { HomeScreen } from "./HomeScreen";
 import server from "../server";
-import { Background } from "../../ui_components/background";
+import { Background } from "../../ui_components/Background";
 import { MenuButton } from "../../ui_components/MenuButton";
 import { ButtonBox } from "../../ui_components/ButtonBox";
 export class JoinGameScreen extends Container {

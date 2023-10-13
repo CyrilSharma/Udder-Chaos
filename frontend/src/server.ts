@@ -71,7 +71,7 @@ class Server {
         this.socket.on("share-move", (cardIndex, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.playCard(cardIndex, color);
-            console.log("Server playing card " + cardIndex);
+            console.log(`Server playing card: ${cardIndex}, color: ${color}`);
         });
     }
 
@@ -88,6 +88,7 @@ class Server {
     }
 
     public async playCard(cardIndex: number, color: number) {
+        console.log(`Sending play-card with index: ${cardIndex}`);
         this.socket.emit("play-card", cardIndex, color);
     }
 

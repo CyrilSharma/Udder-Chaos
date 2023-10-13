@@ -85,11 +85,12 @@ export class Card extends Container {
     }
 
     private onPointerTap = (e: FederatedPointerEvent) => {
-        //console.log("Card was clicked!");
+        console.log(`Card was clicked: index=${this.index}`);
         if (this.queue.game.ourTurn()) {
             this.unscale();
-            this.queue.playCard(this, this.queue.game.playerColor);
+            // Server play card must come before queue play card because queue playcard reindexes it :D
             server.playCard(this.index, this.queue.game.playerColor);
+            this.queue.playCard(this, this.queue.game.playerColor);
             this.queue.game.updateTurn();
         } else {
             console.log("Not your turn!!");
