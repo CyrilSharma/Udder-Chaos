@@ -1,7 +1,7 @@
 import { Container, Graphics, Sprite, Text } from 'pixi.js';
 import { Piece } from './Piece';
 import { Game } from './Game';
-import { GameConfig } from './Utils';
+import { GameConfig, TurnType } from './Utils';
 
 export class GameState extends Container {
     public background: Graphics;
@@ -30,7 +30,7 @@ export class GameState extends Container {
     }
 
     public updateTurn(turn: number) {
-        this.turn.text = "Turn: " + turn;
+        this.turn.text = "Turn: " + Object.values(TurnType)[turn-1];
     }
     
     public updateColor(color_id: number) {

@@ -80,10 +80,10 @@ export const MoveType = {
 }
 export const TurnType = {
     1: "Red",
-    2: "Green",
+    2: "Yellow",
     3: "AI",
     4: "Blue",
-    5: "Orange",
+    5: "Purple",
     6: "AI"
 }
 //---------Cards------------//
