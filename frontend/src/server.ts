@@ -2,16 +2,18 @@ import { io } from "socket.io-client";
 import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
+import { HomeScreen } from "./screens/HomeScreen";
 import { Player } from "./game/Utils"
 import seedrandom from 'seedrandom'
+import { JoinGameScreen } from "./screens/JoinGameScreen";
 
 class Server {
     public color!: number;
     socket;
 
     constructor() {
-        // this.socket = io("http://localhost:3000");
-        this.socket = io("udder-chaos.ue.r.appspot.com");
+        this.socket = io("http://localhost:3000");
+        //this.socket = io("udder-chaos.ue.r.appspot.com");
 
         this.socket.on("connect", () => {
             console.log(`You connected with id: ${this.socket.id}`);
@@ -32,6 +34,11 @@ class Server {
         this.socket.on("player-list", (playerList) => {
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
             createGameScreen.getPlayerList().setPlayers(playerList);
+        });
+
+        this.socket.on("kick-player", () => {
+            this.socket.emit("leave-room");
+            navigation.showScreen(HomeScreen);
         });
 
         this.socket.on("start-game-error", (error) => {

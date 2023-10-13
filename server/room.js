@@ -22,14 +22,14 @@ export class Room {
         this.moveList = [];
     }
 
-    addNewPlayer(socket) {
+    addNewPlayer(socket, host=false) {
         if (this.players.length >= MAX_PLAYERS) {
             socket.emit("receive-message", "This room is full!");
             console.log(socket.id + " couldn't join room: " + this.roomCode);
             return;
         }
 
-        let player = new Player(socket, TEAM.ALIEN, this);
+        let player = new Player(socket, TEAM.ALIEN, this, host);
         this.players.push(player);
 
         player.joinRoom();
@@ -40,6 +40,8 @@ export class Room {
 
     removePlayer(player) {
         // Loop through players to find the correct player to remove
+        player.socket.leave(this.roomCode);
+
         let i = this.players.indexOf(player);
         this.players.splice(i, 1);
         //console.log("new list" + this.getPlayerNames());
@@ -96,11 +98,12 @@ export class Room {
 
 // Each client that connects to a game will be a Player.
 class Player {
-    constructor(socket, team, room) {
+    constructor(socket, team, room, host) {
         this.socket = socket;
         this.name = "Guest " + Math.floor(Math.random() * 1000);
         this.team = team;
         this.room = room;
+        this.host = host;
 
         this.initSocket();
     }
@@ -115,6 +118,9 @@ class Player {
         });
 
         this.socket.on("leave-room", () => {
+            if (this.host) {
+                this.socket.to(this.room.roomCode).emit("kick-player");
+            }
             this.disconnectPlayer();
             initPlayer(true, this.socket);
         });

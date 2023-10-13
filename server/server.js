@@ -56,7 +56,7 @@ function createRoom() {
     let room = new Room(io, roomCode);
     rooms[roomCode] = room;
 
-    room.addNewPlayer(this);
+    room.addNewPlayer(this, true);
 
     console.log(this.id + " created a room: " + roomCode)
 }
