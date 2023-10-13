@@ -123,10 +123,11 @@ export class JoinGameScreen extends Container {
         // this.joinRoomButton.view.width = this.container.width * 0.4;
         // this.joinRoomButton.view.height = this.container.height * 0.2;
 
+        let scale = 0.2 * width / this.roomCodeInput.width;
         this.roomCodeInput.y = this.container.y;
         this.roomCodeInput.x = this.container.x;
-        this.roomCodeInput.width = this.container.width * 0.4;
-        this.roomCodeInput.height = this.container.height * 0.2;
+        this.roomCodeInput.width *= scale;
+        this.roomCodeInput.height *= scale;
         this.roomCodeInput.x = this.roomCodeInput.x - this.roomCodeInput.width * 0.5;
         this.roomCodeInput.y = this.roomCodeInput.y - this.roomCodeInput.height * 0.5;
         this.roomCodeInput.paddingLeft = this.roomCodeInput.width * 0.5;
