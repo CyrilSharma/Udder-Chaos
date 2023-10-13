@@ -35,7 +35,7 @@ export class Game extends Container {
 
     public updateTurn() {
         this.turn += 1;
-        if (this.turn > 4) this.turn -= 4;
+        if (this.turn > 3) this.turn -= 3;
     }
 
     public ourTurn() {
