@@ -3,13 +3,15 @@ import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 import { Player } from "./game/Utils"
+import seedrandom from 'seedrandom'
 
 class Server {
     public color!: number;
     socket;
 
     constructor() {
-        this.socket = io("http://localhost:3000");
+        // this.socket = io("http://localhost:3000");
+        this.socket = io("udder-chaos.ue.r.appspot.com");
 
         this.socket.on("connect", () => {
             console.log(`You connected with id: ${this.socket.id}`);
@@ -38,8 +40,7 @@ class Server {
 
         this.socket.on("start-game", async (seed, socketIds) => {
             Math.seedrandom(seed);
-            console.log(socketIds);
-            
+
             let color = socketIds.indexOf(this.socket.id) + 1;
             console.log("You are color: " + color);
 
