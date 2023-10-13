@@ -1,21 +1,34 @@
-import { Container, Sprite, Graphics, ObservablePoint } from "pixi.js";
+import { Container, Graphics } from "pixi.js";
 import { FancyButton, Button } from "@pixi/ui";
 import { navigation } from "../utils/navigation";
 import { HomeScreen } from "./HomeScreen";
-import server from "../server";
+import { Background } from "../../ui_components/background";
+import { ButtonBox } from "../../ui_components/ButtonBox";
+import { MenuButton } from "../../ui_components/MenuButton";
 
 export class SettingsScreen extends Container {
 
-    private background: Sprite;
-    private container: FancyButton;
+    private background: Background;
+    private container: ButtonBox;
     private backButton: FancyButton;
-    private settingsLabel: FancyButton;
+    private settingsLabel: MenuButton;
 
     constructor() {
         super();
 
-        this.background = Sprite.from('./src/assets/mainBackground.jpg');
-        this.background.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
+        this.background = new Background();
+        this.addChild(this.background.getBackground());
+
+        this.container = new ButtonBox(1, 0.9, 10);
+        this.addChild(this.container.getBox());
+
+        // this.settingsLabel = new MenuButton("Settings", 0.5, 0.1, 0xffcc66, 1, 0.8, 5);
+        // this.container.getBox().addChild(this.settingsLabel.getButton());
+
+        this.settingsLabel = new MenuButton("Settings", 0.5, 0.2, 0xffcc66, 4, 0.2, 30);
+        this.addChild(this.settingsLabel.getButton());
+        
+        //console.log(this.container);
 
         this.backButton = new FancyButton({
             defaultView: (new Button(
@@ -28,32 +41,12 @@ export class SettingsScreen extends Container {
             anchor: 0.5,
         });
 
-        this.settingsLabel = new FancyButton({
-            defaultView: (new Button(
-                new Graphics()
-                        .beginFill(0xffcc66)
-                        .drawRoundedRect(0, 0, 300, 150, 15)
-            )).view,
-            text: 'Settings',
-            anchor: 0.5,
-        });
-
-        this.container = new FancyButton({
-            defaultView: (new Button(
-                new Graphics()
-                        .beginFill(0xffcc66, 0.5)
-                        .drawRoundedRect(0, 0, 300, 150, 15)
-            )).view,
-            anchor: 0.5,
-        });
-
         this.backButton.onPress.connect(() => {
             navigation.showScreen(HomeScreen);
         });
 
-        this.addChild(this.background);
-        this.addChild(this.container);
-        this.addChild(this.settingsLabel);
+
+        
         this.addChild(this.backButton);
     }
 
@@ -64,31 +57,19 @@ export class SettingsScreen extends Container {
     }
 
     public resize(width: number, height: number) {
-        this.container.view.x = width * 0.5;
-        this.container.view.y = height * 0.5;
-        this.container.view.width = width * 0.5;
-        this.container.view.height = height * 0.7;
+        this.container.resize(width, height);
+        this.settingsLabel.resize(width, height);
 
-        this.settingsLabel.view.height = this.container.view.height * 0.2;
-        this.settingsLabel.view.width = this.container.view.width * 0.8;
-        this.settingsLabel.view.x = this.container.view.x;
-        this.settingsLabel.view.y = this.container.view.y - this.container.view.height * 0.35;
+        this.background.resize(width, height);
 
-        this.backButton.view.x = this.container.view.x + this.container.view.width * 0.5;
-        this.backButton.view.y = this.container.view.y - this.container.view.height * 0.5;
-        this.backButton.height = this.container.height * 0.1;
+        // this.settingsLabel.view.height = this.container.getBox().view.height * 0.2;
+        // this.settingsLabel.view.width = this.container.getBox().view.width * 0.8;
+        // this.settingsLabel.view.x = this.container.getBox().view.x;
+        // this.settingsLabel.view.y = this.container.getBox().view.y - this.container.getBox().view.height * 0.35;
 
-
-        // AR work
-        if (width/height >= 1920/768) {
-            this.background.width = width;
-            this.background.height = width * 768 / 1920;
-        } else {
-            this.background.height = height;
-            this.background.width = height * 1920 / 768;
-        }
-        this.background.x = width * 0.5;
-        this.background.y = height * 0.5;
+        this.backButton.view.x = this.container.getBox().view.x + this.container.getBox().view.width * 0.5;
+        this.backButton.view.y = this.container.getBox().view.y - this.container.getBox().view.height * 0.5;
+        this.backButton.height = this.container.getBox().view.height * 0.1;
     }
 
 
