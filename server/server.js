@@ -6,8 +6,8 @@ const io = new Server(3000, {
     }
 })
 
-let rooms = []
-let ai_socket = null;
+let rooms = {};
+export let ai_socket = null;
 
 console.log("Server listening on 3000")
 
@@ -38,6 +38,11 @@ export function initPlayer(playerBool, socket) {
         }
         ai_socket = socket;
 
+        socket.on("make-move", (roomCode, cardIndex, color) => {
+            rooms[roomCode].makeMove(socket, cardIndex, color);
+            console.log("AI made a move " + cardIndex + "," + color);
+        });
+
         socket.on('disconnect', () => {
             console.log('AI has disconnected.');
             ai_socket = null;
@@ -49,7 +54,7 @@ function createRoom() {
     // TODO: Add already existing player checking
     let roomCode = generateRoomCode();
     let room = new Room(io, roomCode);
-    rooms.push(room);
+    rooms[roomCode] = room;
 
     room.addNewPlayer(this);
 
@@ -57,23 +62,12 @@ function createRoom() {
 }
 
 function joinRoom(roomCode) {
-    let room = findRoomByCode(roomCode);
+    let room = rooms[roomCode]
     if (room == null) {
         this.emit("receive-message", "Couldn't find room with code " + roomCode);
         return;
     }
     room.addNewPlayer(this);
-}
-
-function findRoomByCode(code) {
-    console.log("Rooms: ")
-    for (let room of rooms) {
-        console.log(room.roomCode);
-        if (room.roomCode === code) {
-            return room;
-        }
-    }
-    return null;
 }
 
 function generateRoomCode() {
@@ -89,13 +83,6 @@ function generateRoomCode() {
     return roomCode
 }
 
-export function removeRoom(room) {
-    console.log("Removing room:" + room.roomCode);
-    console.log(rooms);
-    let i = rooms.indexOf(room);
-    if (i >= 0) {
-        console.log(i);
-        rooms.splice(rooms.indexOf(room), 1);
-        console.log(rooms);
-    } 
+export function removeRoom(roomCode) {
+    delete rooms[roomCode];
 }
