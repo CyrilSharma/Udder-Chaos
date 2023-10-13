@@ -4,7 +4,7 @@ import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { Player } from "./game/Utils"
-//import seedrandom from 'seedrandom'
+import seedrandom from 'seedrandom'
 import { JoinGameScreen } from "./screens/JoinGameScreen";
 
 class Server {
@@ -51,7 +51,7 @@ class Server {
         });
 
         this.socket.on("start-game", async (seed, socketIds) => {
-            //Math.seedrandom(seed);
+            Math.seedrandom(seed);
 
             let color = socketIds.indexOf(this.socket.id) + 1;
             console.log("You are color: " + color);
