@@ -118,9 +118,6 @@ class Player {
         });
 
         this.socket.on("leave-room", () => {
-            if (this.host) {
-                this.socket.to(this.room.roomCode).emit("kick-player");
-            }
             this.disconnectPlayer();
             initPlayer(true, this.socket);
         });
@@ -137,7 +134,10 @@ class Player {
     }
 
     disconnectPlayer() {
-        console.log(this.name + " has disconnected.")
+        console.log(this.name + " has disconnected.");
+        if (this.host) {
+            this.socket.to(this.room.roomCode).emit("kick-player");
+        }
         this.room.removePlayer(this);
         this.socket.removeAllListeners();
     }
