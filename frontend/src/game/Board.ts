@@ -140,7 +140,13 @@ export class Board extends Container {
         for (const piecetype of Object.values(PieceEnum)) {
             // console.log(config.starts[piecetype]);
             for (const position of config.starts[piecetype]) {
-                if (grid[position.row][position.column] != TileEnum.Impassible) this.createPiece(position, piecetype);
+                // Random generate tiles that are occupied by a piece to not be impassible or destinations
+                if (grid[position.row][position.column] == TileEnum.Impassible || grid[position.row][position.column] == TileEnum.Destination) {
+                    let rand = Math.floor(Math.random() * 2);
+                    if (rand == 0) grid[position.row][position.column] = TileEnum.Plain;
+                    else grid[position.row][position.column] = TileEnum.Pasture;
+                }
+                this.createPiece(position, piecetype);
             }
         }
 
@@ -176,8 +182,8 @@ export class Board extends Container {
         piece.row = position.row;
         piece.column = position.column;
         // Actually display pieces at the right location
-        piece.x = viewPosition.x - 3 * this.tileSize / 4;
-        piece.y = viewPosition.y - 3 * this.tileSize / 4;
+        piece.x = viewPosition.x - 8 * this.tileSize / 4;
+        piece.y = viewPosition.y - 8 * this.tileSize / 4;
     }
 
     public getViewPosition(position: Position) {
