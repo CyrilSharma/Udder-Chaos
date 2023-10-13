@@ -64,4 +64,11 @@ export class GameScreen extends Container {
     public setPlayerColor(color: number) {
         this.game.setPlayerColor(color);
     }
+
+    public resize(width: number, height: number) {
+        console.log("width: " + width);
+        const centerx = width / 2;
+        const centery = height / 2;
+        this.game.x = centerx - this.game.board.getWidth() / 2;
+    }
 }
