@@ -12,7 +12,7 @@ const COLOR = {
     PURPLE: 3,    
 }
 
-const MAX_PLAYERS = 2;
+const MAX_PLAYERS = 4;
 
 export class Room {
     constructor(io, roomCode) {
@@ -65,10 +65,8 @@ export class Room {
         let ids = []
         for (let index in this.players) {
             ids.push(this.players[index].socket.id)
-            if (index % 2 == 1) {
-                ids.push("AI-player")
-            }
         }
+        ids.push("AI-player")
         return ids;
     }
 
