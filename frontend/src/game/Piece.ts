@@ -1,4 +1,4 @@
-import { Container, Sprite, Texture } from 'pixi.js';
+import { Container, Sprite, Texture, Text } from 'pixi.js';
 
 /** Default piece options */
 const defaultPieceOptions = {
@@ -25,6 +25,7 @@ export class Piece extends Container {
     /** The name of the piece - must match one of the available textures */
     public name: string = '';
     public score: number = 0;
+    public scoreDisplay: Text;
 
     constructor() {
         super();
@@ -33,6 +34,16 @@ export class Piece extends Container {
         this.image.x = 500;
         this.image.y = 500;
         this.addChild(this.image);
+        
+        this.scoreDisplay = new Text(this.score);
+        this.image.onmouseover = () => {
+            this.scoreDisplay.text = this.score;
+            this.scoreDisplay.visible = true;
+        };
+        this.image.onmouseout = () => {
+            this.scoreDisplay.visible = false;
+        }
+        this.addChild(this.scoreDisplay);
     }
 
     public setup(options: Partial<PieceOptions> = {}) {
