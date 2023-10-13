@@ -32,6 +32,7 @@ export class MenuButton extends Container {
             text: text
         });
 
+        this.addChild(this.button);
     }
 
     public getButton() {

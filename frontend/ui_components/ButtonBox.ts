@@ -22,6 +22,7 @@ export class ButtonBox extends Container {
             anchor: 0.5,
         });
 
+        this.addChild(this.buttonBox);
     }
 
     public getBox() {

@@ -20,7 +20,7 @@ export class HomeScreen extends Container {
 
         // Background
         this.background = new Background();
-        this.addChild(this.background.getBackground());
+        this.addChild(this.background);
 
         // Logo
         this.logo = Sprite.from('./src/assets/LOGO.png');

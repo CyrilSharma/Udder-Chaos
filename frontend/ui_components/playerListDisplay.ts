@@ -16,7 +16,7 @@ export class PlayerListDisplay extends Container {
             defaultView: (new Button(
                 new Graphics()
                         .beginFill(0xffffff, 1)
-                        .drawRect(0, 0, 300, 600)
+                        .drawRect(0, 0, 300, 300)
             )).view,
             text: "",
             anchor: 0.5,
