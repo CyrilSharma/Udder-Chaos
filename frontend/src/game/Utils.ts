@@ -60,8 +60,9 @@ export function getTeam(piece_type: number) {
         if (key.toLowerCase().includes('player')) return TeamEnum.Player;
         else if (key.toLowerCase().includes('enemy')) return TeamEnum.Enemy;
         else if (key.toLowerCase().includes('cow')) return TeamEnum.Cow;
-        throw Error('Invalid Piece Type: ' + piece_type);
+        return Error('Invalid Piece Type: ' + piece_type);
     }
+    return Error('Invalid Piece Type');
 }
 export function canMoveOver(attacker: number, defender: number) {
     return getTeam(attacker) == TeamEnum.Enemy && getTeam(defender) == TeamEnum.Player ||

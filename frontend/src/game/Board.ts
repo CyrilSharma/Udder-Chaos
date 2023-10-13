@@ -1,4 +1,4 @@
-import { Container, Graphics, Sprite } from 'pixi.js';
+import { Container, Sprite } from 'pixi.js';
 import { Piece } from './Piece';
 import { Game } from './Game';
 import {
@@ -93,20 +93,20 @@ export class Board extends Container {
         console.log("KILLING MOVE");
         console.log(piece);
         console.log(dest);
-        if (isPlayer(piece.type)) return Error('Players cannot kill entities');
+        if (isPlayer(piece.type)) return; //return Error('Players cannot kill entities');
         const target = this.getPieceByPosition(dest)!;
-        if (!isPlayer(target.type)) return Error('Enemy cannot be killed');
+        if (!isPlayer(target.type)) return; //return Error('Enemy cannot be killed');
         this.removePiece(target);
         this.setPieceLocation(piece, dest);
     }
 
     // TODO: change cow to be not a piece...
     public score_move(piece: Piece, dest: Position) {
-        if (!isPlayer(piece.type)) return Error('The AI cannot score');
+        if (!isPlayer(piece.type)) return; // return Error('The AI cannot score');
         
         // TODO: actually do something when scoring
         const target = this.getPieceByPosition(dest)!;
-        if (getTeam(target.type) != TeamEnum.Cow) return Error("Cannot score on this piece");
+        if (getTeam(target.type) != TeamEnum.Cow) return; // return Error("Cannot score on this piece");
         this.removePiece(target);
         console.log("Yay you score!");
         piece.addScore();
