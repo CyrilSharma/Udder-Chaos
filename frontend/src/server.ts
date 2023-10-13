@@ -2,16 +2,18 @@ import { io } from "socket.io-client";
 import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
+import { HomeScreen } from "./screens/HomeScreen";
 import { Player } from "./game/Utils"
-import seedrandom from 'seedrandom'
+//import seedrandom from 'seedrandom'
+import { JoinGameScreen } from "./screens/JoinGameScreen";
 
 class Server {
     public color!: number;
     socket;
 
     constructor() {
-        // this.socket = io("http://localhost:3000");
-        this.socket = io("udder-chaos.ue.r.appspot.com");
+        this.socket = io("http://localhost:3000");
+        //this.socket = io("udder-chaos.ue.r.appspot.com");
 
         this.socket.on("connect", () => {
             console.log(`You connected with id: ${this.socket.id}`);
@@ -22,11 +24,20 @@ class Server {
             console.log(msg);
         });
 
+        this.socket.on("join-error", (error) => {
+            console.log(error);
+        });
+
         this.socket.on("load-room", async (roomCode, playerList) => {
             await navigation.showScreen(CreateGameScreen);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
             createGameScreen.addGameCode(roomCode);
             createGameScreen.getPlayerList().setPlayers(playerList);
+        });
+        
+        this.socket.on("join-error", (error) => {
+            let joinGameScreen = navigation.currentScreen as JoinGameScreen;
+            joinGameScreen.showError(error);
         });
 
         this.socket.on("player-list", (playerList) => {
@@ -34,12 +45,18 @@ class Server {
             createGameScreen.getPlayerList().setPlayers(playerList);
         });
 
+        this.socket.on("kick-player", () => {
+            this.socket.emit("leave-room");
+            navigation.showScreen(HomeScreen);
+        });
+
         this.socket.on("start-game-error", (error) => {
             console.log(error);
         });
 
         this.socket.on("start-game", async (seed, socketIds) => {
-            seedrandom(seed);
+            Math.seedrandom(seed);
+
             let color = socketIds.indexOf(this.socket.id) + 1;
             console.log("You are color: " + color);
 

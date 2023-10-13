@@ -1,4 +1,4 @@
-import { removeRoom, initPlayer } from "./server.js"
+import { removeRoom, initPlayer, ai_socket } from "./server.js"
 
 const TEAM = {
     ALIEN: true,
@@ -12,24 +12,24 @@ const COLOR = {
     PURPLE: 3,    
 }
 
-const MAX_PLAYERS = 4;
+const MAX_PLAYERS = 1;
 
 export class Room {
     constructor(io, roomCode) {
         this.io = io;
         this.roomCode = roomCode;
         this.players = [];
-        this.moveList;
+        this.moveList = [];
     }
 
-    addNewPlayer(socket) {
+    addNewPlayer(socket, host=false) {
         if (this.players.length >= MAX_PLAYERS) {
-            socket.emit("receive-message", "This room is full!");
+            socket.emit("join-error", "This room is full!");
             console.log(socket.id + " couldn't join room: " + this.roomCode);
             return;
         }
 
-        let player = new Player(socket, TEAM.ALIEN, this);
+        let player = new Player(socket, TEAM.ALIEN, this, host);
         this.players.push(player);
 
         player.joinRoom();
@@ -40,16 +40,18 @@ export class Room {
 
     removePlayer(player) {
         // Loop through players to find the correct player to remove
+        player.socket.leave(this.roomCode);
+
         let i = this.players.indexOf(player);
         this.players.splice(i, 1);
-        console.log("new list" + this.getPlayerNames());
+        //console.log("new list" + this.getPlayerNames());
 
         if (this.players.length > 0) {
             // There are still players in the game
             this.io.to(this.roomCode).emit("player-list", this.getPlayerNames());
         }
         else {
-            removeRoom(this);
+            removeRoom(this.roomCode);
         }
     }
 
@@ -63,9 +65,10 @@ export class Room {
 
     getPlayerIds() {
         let ids = []
-        for (let player of this.players) {
-            ids.push(player.socket.id)
+        for (let index in this.players) {
+            ids.push(this.players[index].socket.id)
         }
+        ids.push("AI-player")
         return ids;
     }
 
@@ -83,17 +86,24 @@ export class Room {
     // Emit move to all players
     makeMove(socket, cardIndex, color) {
         //TODO: Check if player's turn 
+        this.moveList.push((cardIndex, color));
         socket.to(this.roomCode).emit("share-move", cardIndex, color);
+        console.log(this.moveList)
+        if (this.moveList.length % 3 == 2) {
+            console.log("Query the AI move");
+            ai_socket.emit("query-move", this.roomCode);
+        }
     }
 }
 
 // Each client that connects to a game will be a Player.
 class Player {
-    constructor(socket, team, room) {
+    constructor(socket, team, room, host) {
         this.socket = socket;
         this.name = "Guest " + Math.floor(Math.random() * 1000);
         this.team = team;
         this.room = room;
+        this.host = host;
 
         this.initSocket();
     }
@@ -105,7 +115,7 @@ class Player {
 
         this.socket.on("play-card", (cardIndex, color) => {
             this.room.makeMove(this.socket, cardIndex, color);
-        })
+        });
 
         this.socket.on("leave-room", () => {
             this.disconnectPlayer();
@@ -124,7 +134,10 @@ class Player {
     }
 
     disconnectPlayer() {
-        console.log(this.name + " has disconnected.")
+        console.log(this.name + " has disconnected.");
+        if (this.host) {
+            this.socket.to(this.room.roomCode).emit("kick-player");
+        }
         this.room.removePlayer(this);
         this.socket.removeAllListeners();
     }

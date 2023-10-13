@@ -150,6 +150,9 @@ export class Board extends Container {
                 let position = { row: r, column: c };
                 this.createTile(position, grid[r][c]);
                 if (grid[r][c] == TileEnum.Pasture) {
+                    if (this.getPieceByPosition(position) != null) continue;
+                    if (Math.random() * 4 < 3) continue;
+                    this.createPiece(position, PieceEnum.Cow);
                     // this.createPiece(position,)
                     // this.createCow(position);
                 }
