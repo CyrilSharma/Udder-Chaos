@@ -59,43 +59,51 @@ export class LogicHandler {
 
         // Collision check with other pieces
         else if (this.game.board.getPieceByPosition(dest) != null && !canMoveOver(piece.type, this.game.board.getPieceByPosition(dest)!.type)) {
-            // console.log(`Piece collision check`);
             // iteratively check every tile in the direction the piece is moving
             // until we find a piece that is not moving or an obstacle
             let canMove: boolean = canMoveOver(piece.type, this.game.board.getPieceByPosition(dest)!.type);
-            // console.log(`canMove: ${canMove}`);
             let check: Position = cur;
+            
             do {
+                // Get next check location
                 check = { row: check.row + dy[dir], column: check.column + dx[dir] };
+
+                // If we have run into a wall, can't move
                 if (this.game.board.getTileAtPosition(check) == TileEnum.Impassible) {
                     canMove = false;
                     break;
-                } else if (this.game.board.getPieceByPosition(check) != null) {
+                }
+                // If this is a piece, we check if it is a player piece, enemy piece, or cow
+                else if (this.game.board.getPieceByPosition(check) != null) {
                     let collidePiece: Piece | null = this.game.board.getPieceByPosition(check);
+
+                    // If this is a friendly piece, we check the next square
                     if (collidePiece!.type == piece.type) {
                         continue;
                     }    
+                    // If this is a cow (or for enemy pieces, if this is a player piece), we can move
                     else if (canMoveOver(piece.type, collidePiece!.type)) {
                         canMove = true;
                         break;
                     }
+                    // Otherwise, we cannot move
                     else {
                         canMove = false;
                         break;
                     }
-                } else {
+                } 
+                // Nothing here, we can move
+                else {
                     canMove = true;
                     break;
                 }
             } while (this.game.board.getPieceByPosition(check) != null);
             
+            // If we can't move, update the destination to remain in the current position
             if (!canMove) {
                 dest = cur;
             }
         }
-
-        console.log(`dest: ${[dest.row, dest.column]}`);
-        console.log(`moveType: ${moveType}`);
 
         // If move places you on another piece, then update move type accordingly
         if (dest != cur && this.game.board.getPieceByPosition(dest) != null) {
@@ -104,7 +112,6 @@ export class LogicHandler {
                     throw Error("Can't move onto this piece!!!");
             }
             else {
-                // console.log("MOVING OVER A PIECE :D");
                 switch (getTeam(piece.type)) {
                     case TeamEnum.Player: { moveType = MoveType.Score_Move; break; }
                     case TeamEnum.Enemy: { moveType = MoveType.Kill_Move; break; }

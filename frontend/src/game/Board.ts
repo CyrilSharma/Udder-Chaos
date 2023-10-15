@@ -17,7 +17,12 @@ import {
     getTeam,
     TeamEnum,
 } from './Utils';
-
+/**
+ * Board class
+ * Handles creation of board, placing obstacles, and stores all tiles and pieces
+ * Accepts piece updates and rerenders after each update
+ * Supports querying for information on the game, including getting pieces and tiles currently on the board
+ */
 export class Board extends Container {
     public game: Game;
     /** The grid state, with only numbers */
@@ -47,6 +52,8 @@ export class Board extends Container {
         this.addChild(this.piecesContainer);
     }
 
+    // Creates the initial board with some config
+    // Called during Game setup
     public setup(config: GameConfig) {
         this.rows = config.grid.length;
         this.columns = config.grid[0].length;
@@ -56,6 +63,7 @@ export class Board extends Container {
         this.buildGame(config);
     }
 
+    // Takes a board update, and performs corresponding updates and rerenders at the end.
     public updateGame(update: BoardUpdate) {
         let normal_changes: { piece: Piece; dest: Position }[] = [];
         update.normal_moves.forEach((move) => {
@@ -81,7 +89,7 @@ export class Board extends Container {
         normal_changes.forEach((c) => this.normal_move(c.piece, c.dest));
         kill_changes.forEach((c) => this.kill_move(c.piece, c.dest));
         score_changes.forEach((c) => this.score_move(c.piece, c.dest));
-        // TODO add to game updatelist
+        // TODO add to game updatelist for move history
     }
 
     // TODO: Learn how to animate things.
@@ -89,6 +97,7 @@ export class Board extends Container {
         this.setPieceLocation(piece, dest);
     }
 
+    // Enemy killing a player piece
     public kill_move(piece: Piece, dest: Position) {
         console.log("KILLING MOVE");
         console.log(piece);
@@ -100,6 +109,7 @@ export class Board extends Container {
         this.setPieceLocation(piece, dest);
     }
 
+    // Player killing a cow piece
     // TODO: change cow to be not a piece...
     public score_move(piece: Piece, dest: Position) {
         if (!isPlayer(piece.type)) return; // return Error('The AI cannot score');
@@ -114,6 +124,7 @@ export class Board extends Container {
         this.setPieceLocation(piece, dest);
     }
 
+    // Removes a piece from the board
     public removePiece(piece: Piece) {
         if (this.pieces.includes(piece)) {
             this.pieces.splice(this.pieces.indexOf(piece), 1);
@@ -123,6 +134,7 @@ export class Board extends Container {
         }
     }
 
+    // Creation of the actual board, including all tiles and placing all pieces
     public buildGame(config: GameConfig) {
         //console.log(PieceMap);
         const grid = config.grid;
@@ -143,6 +155,7 @@ export class Board extends Container {
             }
         }
         
+        // Create all tiles, and randomly generate cows on pastures
         const rows = grid.length;
         const cols = grid[0].length;
         for (let r = 0; r < rows; r++) {
@@ -161,6 +174,7 @@ export class Board extends Container {
         
     }
 
+    // Creating and rendering individual tile
     public createTile(position: Position, tileType: TileType) {
         const name = TileMap[tileType];
         const tile = Sprite.from(name);
@@ -172,6 +186,7 @@ export class Board extends Container {
         this.tilesContainer.addChild(tile);
     }
 
+    /** Creating and rendering individual piece */
     public createPiece(position: Position, pieceType: PieceType) {
         const name = PieceMap[pieceType];
         const piece = new Piece();
@@ -185,6 +200,7 @@ export class Board extends Container {
         this.piecesContainer.addChild(piece);
     }
 
+    /**  Moves piece */
     public setPieceLocation(piece: Piece, position: Position) {
         const viewPosition = this.getViewPosition(position);
         piece.row = position.row;
@@ -194,12 +210,14 @@ export class Board extends Container {
         piece.y = viewPosition.y - 8 * this.tileSize / 4;
     }
 
+    /**  Return visual piece location on the board */
     public getViewPosition(position: Position) {
         const dy = position.row * this.tileSize;
         const dx = position.column * this.tileSize;
         return { x: dx, y: dy };
     }
 
+    /**  Return piece at a certain position, or null if there isn't one */
     public getPieceByPosition(position: Position) {
         // console.log(`Getting piece at ${[position.row, position.column]}`);
         for (const piece of this.pieces) {

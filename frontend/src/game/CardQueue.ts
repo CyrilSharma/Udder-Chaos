@@ -14,6 +14,7 @@ import {
     shuffle
 } from './Utils';
 
+/** Stores all the cards in the game, handles card playing with a logic handler */
 export class CardQueue extends Container {
     public game: Game;
     public queue: Card[] = [];
@@ -90,7 +91,9 @@ export class CardQueue extends Container {
         // return this.player_hand[0];
     }
 
+    /** Called when a card in the cardqueue is clicked */
     public playCard(input: Card, color: number) {
+        // Get correct team
         var hand;
         if (getTeam(color) == TeamEnum.Player) {
             hand = this.player_hand;
@@ -99,16 +102,22 @@ export class CardQueue extends Container {
         } else {
             throw Error(`Invalid player color: ${color}`);
         }
+        // Find card and play it, check that it's actually in hand
         for (let i = 0; i < hand.length; i++) {
             let card = hand[i];
             if (card != input) continue;
-
+            
+            // Use logic handler to process movement logic
             this.logicHandler.playCard(card, color);
 
+            // Remove card from hand and add to queue
             hand.splice(i, 1);
-            hand.push(this.queue.shift()!);
             this.queue.push(card);
+
+            // Get new card from queue
+            hand.push(this.queue.shift()!);
             
+            // Fix card hands and queue, rerender
             this.placeCards();
             this.reindexCards();
             return;
@@ -127,6 +136,7 @@ export class CardQueue extends Container {
         // }
     }
 
+    /** Index each card by its position. Queue and hands are numbered from 0 */
     public reindexCards() {
         for (let i = 0; i < this.hand_size; i++) {
             this.player_hand[i].index = i;
@@ -141,23 +151,34 @@ export class CardQueue extends Container {
         this.cardContainer.addChild(card);
     }
 
+    /** Redraw all cards */
     public placeCards() {
         let count = 0;
         let index = 0;
         const board_width = this.game.board.getWidth();
         const interval = board_width / (this.ncards + 2);
+        
+        // Draw player hand
         for (const card of this.player_hand) {
             ///card.index = index++;
             card.x = interval * (count++);
             this.cardContainer.addChild(card);
         }
+        
+        // Visual space between hand and queue
         count++;
+
+        // Draw card queue
         for (const card of this.queue) {
             ///card.index = index++;
             card.x = interval * (count++);
             this.cardContainer.addChild(card);
         }
+
+        // Space
         count++;
+        
+        // Draw enemy hand
         for (const card of this.enemy_hand) {
             ///card.index = index++;
             card.x = interval * (count++);

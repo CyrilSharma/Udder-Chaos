@@ -84,9 +84,12 @@ export class Card extends Container {
         }
     }
 
+    /** Card behavior when clicked (when played) */
     private onPointerTap = (e: FederatedPointerEvent) => {
         console.log(`Card was clicked: index=${this.index}`);
+        // Make sure it is out turn
         if (this.queue.game.ourTurn()) {
+            // Play card both locally and on the server
             this.unscale();
             // Server play card must come before queue play card because queue playcard reindexes it :D
             server.playCard(this.index, this.queue.game.playerColor);
