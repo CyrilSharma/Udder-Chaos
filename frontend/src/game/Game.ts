@@ -41,10 +41,10 @@ export class Game extends Container {
     }
 
     public updateTurn() {
-        this.turn += 1;
-        if (this.turn > 6) this.turn -= 6;
-        console.log(`turn: ${this.turn}`);
-        this.gameState.updateTurn(this.turn);
+        // this.turn += 1;
+        // if (this.turn > 6) this.turn -= 6;
+        // console.log(`turn: ${this.turn}`);
+        // this.gameState.updateTurn(this.turn);
     }
 
     public ourTurn() {

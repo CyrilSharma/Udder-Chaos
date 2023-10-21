@@ -76,7 +76,8 @@ export const dy = [0, -1, 0, 1];
 export const MoveType = {
     Normal_Move: 0,
     Kill_Move: 1,
-    Score_Move: 2
+    Abduct_Move: 2,
+    Score_Move: 3
 }
 export const TurnType = {
     1: "Red",
@@ -129,7 +130,8 @@ export type PieceMove = { from: Position; to: Position };
 export type BoardUpdate = {
     normal_moves: PieceMove[]; // Moves which kill nothing.
     kill_moves: PieceMove[]; // Moves which kill a unit.
-    score_moves: PieceMove[]; // Moves which abduct a cow.
+    abduct_moves: PieceMove[]; // Moves which abduct a cow.
+    score_moves: PieceMove[]; // Moves which score cows.
 };
 
 //-----Map Functions-----//

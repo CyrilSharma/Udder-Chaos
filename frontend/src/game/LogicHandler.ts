@@ -26,23 +26,25 @@ export class LogicHandler {
         // Move update lists
         let normal_moves: PieceMove[] = [];
         let kill_moves: PieceMove[] = [];
+        let abduct_moves: PieceMove[] = [];
         let score_moves: PieceMove[] = [];
         // For each piece, move it if needed
         this.game.board.pieces.forEach((piece) => {
             if (piece.type == color) {
-                this.movePiece(piece, dir, normal_moves, kill_moves, score_moves);
+                this.movePiece(piece, dir, normal_moves, kill_moves, abduct_moves, score_moves);
             }
         });
         // Send updates to game board
         this.game.board.updateGame({
             normal_moves,
             kill_moves,
-            score_moves,
+            abduct_moves,
+            score_moves
         });
     }
 
     /** Function for piece movement logic */
-    public movePiece(piece: Piece, dir: number, normal_moves: PieceMove[], kill_moves: PieceMove[], score_moves: PieceMove[]) {
+    public movePiece(piece: Piece, dir: number, normal_moves: PieceMove[], kill_moves: PieceMove[], abduct_moves: PieceMove[], score_moves: PieceMove[]) {
         // Current position
         let cur: Position = { row: piece.row, column: piece.column };
         // Destination position
@@ -123,6 +125,7 @@ export class LogicHandler {
         // Add to correct update list
         if (moveType == MoveType.Normal_Move) normal_moves.push({ from: cur, to: dest });
         else if (moveType == MoveType.Kill_Move) kill_moves.push({ from: cur, to: dest });
+        else if (moveType == MoveType.Abduct_Move) abduct_moves.push({ from: cur, to: dest });
         else if (moveType == MoveType.Score_Move) score_moves.push({ from: cur, to: dest });
         else throw Error("Unknown move type: " + moveType);
     }
