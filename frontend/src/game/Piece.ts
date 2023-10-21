@@ -91,4 +91,10 @@ export class Piece extends Container {
     public async addScore(amt: number = 1) {
         this.score += amt;
     }
+
+    public removeScore() {
+        let tempScore: number = this.score;
+        this.score = 0;
+        return tempScore;
+    }
 }

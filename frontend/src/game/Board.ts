@@ -13,9 +13,10 @@ import {
     PieceMap,
     isPlayer,
     BoardUpdate,
-    PieceMove,
+    PieceAction,
     getTeam,
     TeamEnum,
+    ActionType,
 } from './Utils';
 /**
  * Board class
@@ -65,30 +66,47 @@ export class Board extends Container {
 
     // Takes a board update, and performs corresponding updates and rerenders at the end.
     public updateGame(update: BoardUpdate) {
-        let normal_changes: { piece: Piece; dest: Position }[] = [];
-        update.normal_moves.forEach((move) => {
-            normal_changes.push({
-                piece: this.getPieceByPosition(move.from)!,
-                dest: move.to,
-            });
-        });
-        let kill_changes: { piece: Piece; dest: Position }[] = [];
-        update.kill_moves.forEach((move) => {
-            kill_changes.push({
-                piece: this.getPieceByPosition(move.from)!,
-                dest: move.to,
-            });
-        });
-        let score_changes: { piece: Piece; dest: Position }[] = [];
-        update.score_moves.forEach((move) => {
-            score_changes.push({
-                piece: this.getPieceByPosition(move.from)!,
-                dest: move.to,
-            });
-        });
-        normal_changes.forEach((c) => this.normal_move(c.piece, c.dest));
-        kill_changes.forEach((c) => this.kill_move(c.piece, c.dest));
-        score_changes.forEach((c) => this.score_move(c.piece, c.dest));
+        // Loop through steps in update
+        for (let i = 0; i < update.length; i++) {
+            for (let j = 0; j < update[i].length; j++) {
+                let piece = this.getPieceByPosition(update[i][j].from)!;
+                let dest = update[i][j].to;
+                switch (update[i][j].action) {
+                    case ActionType.Normal_Move: { this.normal_move(piece, dest); break; }
+                    case ActionType.Obstruction_Move: { this.obstructed_move(piece, dest); break; }
+                    case ActionType.Kill_Action: { this.kill_action(piece, dest); break; }
+                    case ActionType.Abduct_Action: { this.abduct_action(this.getPieceByPosition(update[i][j].from, TeamEnum.Player)!, dest); break; }
+                    case ActionType.Score_Action: { this.score_action(piece, dest); break; }
+                    default: { throw Error("Illegal move in updateGame"); break; }
+                }
+            }
+        }
+
+
+        // let normal_changes: { piece: Piece; dest: Position }[] = [];
+        // update.normal_moves.forEach((move) => {
+        //     normal_changes.push({
+        //         piece: this.getPieceByPosition(move.from)!,
+        //         dest: move.to,
+        //     });
+        // });
+        // let kill_changes: { piece: Piece; dest: Position }[] = [];
+        // update.kill_moves.forEach((move) => {
+        //     kill_changes.push({
+        //         piece: this.getPieceByPosition(move.from)!,
+        //         dest: move.to,
+        //     });
+        // });
+        // let score_changes: { piece: Piece; dest: Position }[] = [];
+        // update.score_moves.forEach((move) => {
+        //     score_changes.push({
+        //         piece: this.getPieceByPosition(move.from)!,
+        //         dest: move.to,
+        //     });
+        // });
+        // normal_changes.forEach((c) => this.normal_move(c.piece, c.dest));
+        // kill_changes.forEach((c) => this.kill_move(c.piece, c.dest));
+        // score_changes.forEach((c) => this.score_move(c.piece, c.dest));
         // TODO add to game updatelist for move history
     }
 
@@ -97,8 +115,12 @@ export class Board extends Container {
         this.setPieceLocation(piece, dest);
     }
 
+    public obstructed_move(piece: Piece, dest: Position) {
+        // Do an animation toward the destination but fail.
+    }
+
     // Enemy killing a player piece
-    public kill_move(piece: Piece, dest: Position) {
+    public kill_action(piece: Piece, dest: Position) {
         console.log("KILLING MOVE");
         console.log(piece);
         console.log(dest);
@@ -106,22 +128,23 @@ export class Board extends Container {
         const target = this.getPieceByPosition(dest)!;
         if (!isPlayer(target.type)) return; //return Error('Enemy cannot be killed');
         this.removePiece(target);
-        this.setPieceLocation(piece, dest);
     }
 
     // Player killing a cow piece
     // TODO: change cow to be not a piece...
-    public score_move(piece: Piece, dest: Position) {
-        if (!isPlayer(piece.type)) return; // return Error('The AI cannot score');
-        
-        // TODO: actually do something when scoring
-        const target = this.getPieceByPosition(dest)!;
-        if (getTeam(target.type) != TeamEnum.Cow) return; // return Error("Cannot score on this piece");
+    public abduct_action(piece: Piece, dest: Position) {
+        // TODO: actually do something when abduct
+        const target = this.getPieceByPosition(dest, TeamEnum.Cow)!;
         this.removePiece(target);
         console.log("Yay you score!");
         piece.addScore();
-        
-        this.setPieceLocation(piece, dest);
+    }
+
+    // Player scoring cows on destination
+    public score_action(piece: Piece, dest: Position) {
+        let score: number = piece.removeScore();
+        console.log("You scored: " + score);
+        // TODO add score to global score board
     }
 
     // Removes a piece from the board
@@ -217,11 +240,14 @@ export class Board extends Container {
         return { x: dx, y: dy };
     }
 
-    /**  Return piece at a certain position, or null if there isn't one */
-    public getPieceByPosition(position: Position) {
+    /** 
+     * Return piece at a certain position, or null if there isn't one
+     * Optional argument for team type.
+     */
+    public getPieceByPosition(position: Position, team: number = -1) {
         // console.log(`Getting piece at ${[position.row, position.column]}`);
         for (const piece of this.pieces) {
-            if (piece.row === position.row && piece.column === position.column) {
+            if (piece.row === position.row && piece.column === position.column && (team == -1 || team == getTeam(piece.type))) {
                 return piece;
             }
         }

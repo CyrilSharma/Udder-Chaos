@@ -72,13 +72,15 @@ export const Player = PieceEnum;
 // Move direction values for now
 export const dx = [1, 0, -1, 0];
 export const dy = [0, -1, 0, 1];
-// Move types
-export const MoveType = {
+// Action types
+export const ActionType = {
     Normal_Move: 0,
-    Kill_Move: 1,
-    Abduct_Move: 2,
-    Score_Move: 3
+    Obstruction_Move: 1,
+    Kill_Action: 2,
+    Abduct_Action: 3,
+    Score_Action: 4
 }
+
 export const TurnType = {
     1: "Red",
     2: "Yellow",
@@ -124,15 +126,15 @@ export type GameConfig = {
     starts: Position[][];
     tileSize: number;
 };
-export type PieceUpdate = {};
-export type PieceMove = { from: Position; to: Position };
+export type PieceAction = {action: number; from: Position; to: Position};
 // We categorize the moves to allow for unique animations.
-export type BoardUpdate = {
-    normal_moves: PieceMove[]; // Moves which kill nothing.
-    kill_moves: PieceMove[]; // Moves which kill a unit.
-    abduct_moves: PieceMove[]; // Moves which abduct a cow.
-    score_moves: PieceMove[]; // Moves which score cows.
-};
+export type BoardUpdate = PieceAction[][];
+
+//     normal_moves: PieceMove[]; // Moves which kill nothing.
+//     kill_moves: PieceMove[]; // Moves which kill a unit.
+//     abduct_moves: PieceMove[]; // Moves which abduct a cow.
+//     score_moves: PieceMove[]; // Moves which score cows.
+// };
 
 //-----Map Functions-----//
 export function loadMap(seed: number) {
