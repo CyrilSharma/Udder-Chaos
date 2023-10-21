@@ -69,13 +69,13 @@ export class Board extends Container {
         // Loop through steps in update
         for (let i = 0; i < update.length; i++) {
             for (let j = 0; j < update[i].length; j++) {
-                let piece = this.getPieceByPosition(update[i][j].from)!;
+                let piece = update[i][j].piece!;
                 let dest = update[i][j].to;
                 switch (update[i][j].action) {
                     case ActionType.Normal_Move: { this.normal_move(piece, dest); break; }
                     case ActionType.Obstruction_Move: { this.obstructed_move(piece, dest); break; }
                     case ActionType.Kill_Action: { this.kill_action(piece, dest); break; }
-                    case ActionType.Abduct_Action: { this.abduct_action(this.getPieceByPosition(update[i][j].from, TeamEnum.Player)!, dest); break; }
+                    case ActionType.Abduct_Action: { this.abduct_action(update[i][j].piece, dest); break; }
                     case ActionType.Score_Action: { this.score_action(piece, dest); break; }
                     default: { throw Error("Illegal move in updateGame"); break; }
                 }
@@ -142,8 +142,8 @@ export class Board extends Container {
 
     // Player scoring cows on destination
     public score_action(piece: Piece, dest: Position) {
-        let score: number = piece.removeScore();
-        console.log("You scored: " + score);
+        // let score: number = piece.removeScore();
+        // console.log("You scored: " + score);
         // TODO add score to global score board
     }
 

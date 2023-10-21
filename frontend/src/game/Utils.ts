@@ -1,4 +1,5 @@
 import { MAPS } from "../maps/Maps"
+import { Piece } from "./Piece"
 
 //-----Tiles-----//
 export const TileEnum = {
@@ -126,7 +127,7 @@ export type GameConfig = {
     starts: Position[][];
     tileSize: number;
 };
-export type PieceAction = {action: number; from: Position; to: Position};
+export type PieceAction = {action: number; piece: Piece; to: Position};
 // We categorize the moves to allow for unique animations.
 export type BoardUpdate = PieceAction[][];
 
