@@ -5,6 +5,7 @@ import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { Player } from "./game/Utils"
 
+
 import { JoinGameScreen } from "./screens/JoinGameScreen";
 
 class Server {
@@ -12,8 +13,7 @@ class Server {
     socket;
 
     constructor() {
-        require('https').globalAgent.options.rejectUnauthorized = false; 
-        this.socket = io(import.meta.env.VITE_SERVER_URL);
+        this.socket = io(import.meta.env.VITE_SERVER_URL, { secure: false });
 
         this.socket.on("connect", () => {
             console.log(`You connected with id: ${this.socket.id}`);
