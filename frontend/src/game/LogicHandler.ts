@@ -13,8 +13,9 @@ export class LogicHandler {
     }
 
     /** Play a card associated with a given color */
-    public playCard(card: Card, color: number) {
-        card.dirs.forEach((move) => {
+    public async playCard(card: Card, color: number) {
+        for (let i = 0; i < card.dirs.length; i++) {
+            let move = card.dirs[i];
             // Figure out what the card does
             let dir = -1;
             switch (move) {
@@ -37,8 +38,9 @@ export class LogicHandler {
             });
 
             // Send updates to game board
-            this.game.board.updateGame([pre_actions, moves, post_actions]);
-        });
+            await this.game.board.updateGame([pre_actions, moves, post_actions]);
+            console.log("hello " + i)
+        }
     }
 
     /** Function for piece movement logic */

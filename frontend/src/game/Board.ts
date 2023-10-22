@@ -72,12 +72,10 @@ export class Board extends Container {
     }
 
     // Takes a board update, and performs corresponding updates and rerenders at the end.
-    public updateGame(update: BoardUpdate) {
+    public async updateGame(update: BoardUpdate) {
         // Loop through steps in update
         for (let i = 0; i < update.length; i++) {
             for (let j = 0; j < update[i].length; j++) {
-                // let piece = update[i][j].piece!;
-                // let dest = update[i][j].to;
                 switch (update[i][j].action) {
                     case ActionType.Normal_Move: { this.normal_move(update[i][j]); break; }
                     case ActionType.Obstruction_Move: { this.obstructed_move(update[i][j]); break; }
@@ -86,6 +84,10 @@ export class Board extends Container {
                     case ActionType.Score_Action: { this.score_action(update[i][j]); break; }
                     default: { throw Error("Illegal move in updateGame"); break; }
                 }
+            }
+            if (update[i].length > 0) {
+                // Sleep for animation time
+                await new Promise(r => setTimeout(r, 200))
             }
         }
 
