@@ -4,7 +4,8 @@ import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { Player } from "./game/Utils"
-//import seedrandom from 'seedrandom'
+
+
 import { JoinGameScreen } from "./screens/JoinGameScreen";
 
 class Server {
@@ -12,8 +13,7 @@ class Server {
     socket;
 
     constructor() {
-        this.socket = io("http://localhost:3000");
-        //this.socket = io("udder-chaos.ue.r.appspot.com");
+        this.socket = io(import.meta.env.VITE_SERVER_URL, { secure: false });
 
         this.socket.on("connect", () => {
             console.log(`You connected with id: ${this.socket.id}`);
@@ -55,7 +55,6 @@ class Server {
         });
 
         this.socket.on("start-game", async (seed, socketIds) => {
-            Math.seedrandom(seed);
 
             let color = socketIds.indexOf(this.socket.id) + 1;
             console.log("You are color: " + color);

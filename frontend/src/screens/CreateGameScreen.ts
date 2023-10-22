@@ -1,6 +1,6 @@
 import { Container, Sprite, Graphics, ObservablePoint } from 'pixi.js';
 import { FancyButton, Button } from '@pixi/ui';
-import { PlayerListDisplay } from "../../ui_components/playerListDisplay";
+import { PlayerListDisplay } from "../ui_components/playerListDisplay";
 import { navigation } from '../utils/navigation';
 import server from "../server";
 import { HomeScreen } from './HomeScreen';
@@ -19,7 +19,7 @@ export class CreateGameScreen extends Container {
     constructor() {
         super();
 
-        this.background = Sprite.from('./src/assets/mainBackground.jpg');
+        this.background = Sprite.from('../images/mainBackground.jpg');
         this.background.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
 
         this.backButton = new FancyButton({

@@ -1,19 +1,38 @@
 import { Room } from "./room.js"
 import { Server } from "socket.io";
+import { fileURLToPath } from 'url';
+import path from "path"
+import express from "express";
+import http from "http"
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express()
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: { origin: "*" }
+});
+
+// Ship frontend to clients.
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '/index.html'));
+})
+app.listen(80)
+
+// Handles connections.
 var mode = process.env.NODE_ENV;
-const port = (mode == 'development') ? 3000 : 80;
-const io = new Server(3000)
+const server_port = (mode == 'development') ? 3000 : 5000;
+server.listen(server_port, () => {
+    console.log('listening on ' + server_port);
+});
 
 let rooms = {};
 export let ai_socket = null;
-
-console.log("Server listening on 3000")
-console.log('Server listening on ' + port);
-
 io.on('connection', (client) => {
     console.log('A user connected ' + client.id);
-
     client.on('init-connection', (playerBool) => {
         initPlayer(playerBool, client);
     });
