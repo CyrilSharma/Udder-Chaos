@@ -1,10 +1,10 @@
 import { Container, ObservablePoint, Sprite } from 'pixi.js';
 import { navigation } from '../utils/navigation';
-import { Background } from '../../ui_components/background';
+import { Background } from '../ui_components/Background';
 import { SettingsScreen } from './SettingsScreen';
 import server from "../server";
 import { JoinGameScreen } from './JoinGameScreen';
-import { MenuButton } from '../../ui_components/MenuButton';
+import { MenuButton } from '../ui_components/MenuButton';
 
 /** Screen shows upon opening the website */
 export class HomeScreen extends Container {

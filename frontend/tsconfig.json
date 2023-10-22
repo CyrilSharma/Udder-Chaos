@@ -16,5 +16,5 @@
     "skipLibCheck": true,
     "types": ["node", "vite/client"]
   },
-  "include": ["src", "ui_components/playerListDisplay.ts"]
+  "include": ["src"]
 }
