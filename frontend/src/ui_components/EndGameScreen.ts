@@ -30,7 +30,7 @@ export class EndGameScreen extends Container {
             strokeThickness: 9
         }));
         this.message.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
-        this.message.x = -10;
+        //this.message.x = -10;
         this.addChild(this.message);
 
         this.returnButton = new FancyButton({
