@@ -18,6 +18,7 @@ export class Game extends Container {
     public turn: number = 1;
     public turnCount: number = 0;
     public turnLimit: number = 10; //debug limit - includes AI turns (simplest)
+    public totalScore: number = 0;
     constructor() {
         super();
         this.board = new Board(this);
@@ -70,5 +71,10 @@ export class Game extends Container {
         //         this.playerColor == 3 && this.turn == 4 ||
         //         this.playerColor == 4 && this.turn == 5;
         return true; // debug always allow current player to move
+    }
+
+    public scorePoints(points: number) {
+        this.totalScore += points;
+        this.gameState.updateScore(this.totalScore);
     }
 }

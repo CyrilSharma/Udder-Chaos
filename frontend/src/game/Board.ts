@@ -88,33 +88,6 @@ export class Board extends Container {
                 }
             }
         }
-
-
-        // let normal_changes: { piece: Piece; dest: Position }[] = [];
-        // update.normal_moves.forEach((move) => {
-        //     normal_changes.push({
-        //         piece: this.getPieceByPosition(move.from)!,
-        //         dest: move.to,
-        //     });
-        // });
-        // let kill_changes: { piece: Piece; dest: Position }[] = [];
-        // update.kill_moves.forEach((move) => {
-        //     kill_changes.push({
-        //         piece: this.getPieceByPosition(move.from)!,
-        //         dest: move.to,
-        //     });
-        // });
-        // let score_changes: { piece: Piece; dest: Position }[] = [];
-        // update.score_moves.forEach((move) => {
-        //     score_changes.push({
-        //         piece: this.getPieceByPosition(move.from)!,
-        //         dest: move.to,
-        //     });
-        // });
-        // normal_changes.forEach((c) => this.normal_move(c.piece, c.dest));
-        // kill_changes.forEach((c) => this.kill_move(c.piece, c.dest));
-        // score_changes.forEach((c) => this.score_move(c.piece, c.dest));
-        // TODO add to game updatelist for move history
     }
 
     // TODO: Learn how to animate things.
@@ -166,9 +139,8 @@ export class Board extends Container {
     // Player scoring cows on destination
     public score_action(action: PieceAction) {
         let piece = action.piece;
-        // let score: number = piece.removeScore();
-        // console.log("You scored: " + score);
-        // TODO add score to global score board
+        let points: number = piece.removeScore();
+        this.game.scorePoints(points);
     }
 
     // Removes a piece from the board
