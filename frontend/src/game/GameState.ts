@@ -14,8 +14,9 @@ export class GameState extends Container {
         super();
         this.game = game;
         this.background = new Graphics();
-        this.turn = new Text("OOWIEHRIUWEHRIF");
-        this.color = new Text("IWUEFHUIWEH");
+        this.turn = new Text("If you are seeing this, something went wrong...");
+        this.color = new Text("If you are seeing this, something went wrong...");
+
         this.addChild(this.background);
         this.addChild(this.turn);
         this.addChild(this.color);

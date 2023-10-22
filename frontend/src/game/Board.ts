@@ -166,7 +166,7 @@ export class Board extends Container {
     // Player scoring cows on destination
     public score_action(action: PieceAction) {
         let piece = action.piece;
-        // let score: number = piece.removeScore();
+        // let score: number = piece.removeScore(); // Debug disable scoring for now
         // console.log("You scored: " + score);
         // TODO add score to global score board
     }

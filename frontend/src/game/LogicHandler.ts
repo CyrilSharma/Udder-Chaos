@@ -14,29 +14,31 @@ export class LogicHandler {
 
     /** Play a card associated with a given color */
     public playCard(card: Card, color: number) {
-        // Figure out what the card does
-        let dir = -1;
-        switch (card.dir) {
-            case DirectionEnum.RIGHT: { dir = 0; break; }
-            case DirectionEnum.UP:    { dir = 1; break; }
-            case DirectionEnum.LEFT:  { dir = 2; break; }
-            case DirectionEnum.DOWN:  { dir = 3; break; }
-        }
-
-        // Action update lists
-        let pre_actions: PieceAction[] = [];
-        let moves: PieceAction[] = [];
-        let post_actions: PieceAction[] = [];
-
-        // For each piece, move it if needed
-        this.game.board.pieces.forEach((piece) => {
-            if (piece.type == color) {
-                this.movePiece(piece, dir, pre_actions, moves, post_actions);
+        card.dirs.forEach((move) => {
+            // Figure out what the card does
+            let dir = -1;
+            switch (move) {
+                case DirectionEnum.RIGHT: { dir = 0; break; }
+                case DirectionEnum.UP:    { dir = 1; break; }
+                case DirectionEnum.LEFT:  { dir = 2; break; }
+                case DirectionEnum.DOWN:  { dir = 3; break; }
             }
-        });
 
-        // Send updates to game board
-        this.game.board.updateGame([pre_actions, moves, post_actions]);
+            // Action update lists
+            let pre_actions: PieceAction[] = [];
+            let moves: PieceAction[] = [];
+            let post_actions: PieceAction[] = [];
+
+            // For each piece, move it if needed
+            this.game.board.pieces.forEach((piece) => {
+                if (piece.type == color) {
+                    this.movePiece(piece, dir, pre_actions, moves, post_actions);
+                }
+            });
+
+            // Send updates to game board
+            this.game.board.updateGame([pre_actions, moves, post_actions]);
+        });
     }
 
     /** Function for piece movement logic */
