@@ -2,8 +2,8 @@ import { Room } from "./room.js"
 import { Server } from "socket.io";
 
 var mode = process.env.NODE_ENV;
-const port = (mode == 'development') ? 3000 : 80;
-const io = new Server(3000, {
+const port = (mode == 'development') ? 3000 : 5000;
+const io = new Server(port, {
     cors: { origin: "*" }
 })
 
