@@ -50,7 +50,7 @@ export class LogicHandler {
 
         // Collision check with board obstacle tiles
         if (this.game.board.getTileAtPosition(dest) == TileEnum.Impassible) {
-            moves.push({ action: ActionType.Obstruction_Move, piece: piece, moves: [dest] });
+            moves.push({ action: ActionType.Obstruction_Move, piece: piece, move: dest });
             return;
         }
 
@@ -98,7 +98,7 @@ export class LogicHandler {
             
             // If we can't move, update the destination to remain in the current position
             if (!canMove) {
-                moves.push({ action: ActionType.Obstruction_Move, piece: piece, moves: [dest] });
+                moves.push({ action: ActionType.Obstruction_Move, piece: piece, move: dest });
                 return;
             }
         }
@@ -111,8 +111,8 @@ export class LogicHandler {
             }
             else {
                 switch (getTeam(piece.type)) {
-                    case TeamEnum.Player: { post_actions.push({ action: ActionType.Abduct_Action, piece: piece, moves: [dest] }); break; }
-                    case TeamEnum.Enemy: { pre_actions.push({ action: ActionType.Kill_Action, piece: piece, moves: [dest] }); break; }
+                    case TeamEnum.Player: { post_actions.push({ action: ActionType.Abduct_Action, piece: piece, move: dest }); break; }
+                    case TeamEnum.Enemy: { pre_actions.push({ action: ActionType.Kill_Action, piece: piece, move: dest }); break; }
                     default: { throw Error("Illegal move handling in logic handler"); break; }
                 }
             }
@@ -120,9 +120,9 @@ export class LogicHandler {
 
         // If moving onto a destination tile, add score action.
         if (this.game.board.getTileAtPosition(dest) == TileEnum.Destination) {
-            post_actions.push({ action: ActionType.Score_Action, piece: piece, moves: [dest] });
+            post_actions.push({ action: ActionType.Score_Action, piece: piece, move: dest });
         }
 
-        moves.push({ action: ActionType.Normal_Move, piece: piece, moves: [dest] });
+        moves.push({ action: ActionType.Normal_Move, piece: piece, move: dest });
     }
 }

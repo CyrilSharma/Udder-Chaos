@@ -120,7 +120,7 @@ export class Board extends Container {
     // TODO: Learn how to animate things.
     public normal_move(action: PieceAction) {
         let piece = action.piece;
-        let dest = action.moves[0];
+        let dest = action.move;
         this.setPieceLocation(piece, dest);
     }
 
@@ -131,7 +131,7 @@ export class Board extends Container {
     // Enemy killing a player piece
     public kill_action(action: PieceAction) {
         let piece = action.piece;
-        let dest = action.moves[0];
+        let dest = action.move;
 
         console.log("KILLING MOVE");
         console.log(piece);
@@ -154,7 +154,7 @@ export class Board extends Container {
     // TODO: change cow to be not a piece...
     public abduct_action(action: PieceAction) {
         let piece = action.piece;
-        let dest = action.moves[0];
+        let dest = action.move;
 
         // TODO: actually do something when abduct
         const target = this.getPieceByPosition(dest, TeamEnum.Cow)!;
