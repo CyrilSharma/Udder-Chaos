@@ -1,15 +1,15 @@
 import { Room } from "./room.js"
 import { Server } from "socket.io";
-const io = new Server(3000, {
-    cors: {
-        origin: "*",
-    }
-})
+
+var mode = process.env.NODE_ENV;
+const port = (mode == 'development') ? 3000 : 80;
+const io = new Server(3000)
 
 let rooms = {};
 export let ai_socket = null;
 
 console.log("Server listening on 3000")
+console.log('Server listening on ' + port);
 
 io.on('connection', (client) => {
     console.log('A user connected ' + client.id);
