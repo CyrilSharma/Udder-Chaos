@@ -6,7 +6,7 @@ export class Background extends Container {
 
     constructor() {
         super();
-        this.background = Sprite.from('./src/assets/mainBackground.jpg');
+        this.background = Sprite.from('../images/mainBackground.jpg');
         this.background.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.addChild(this.background);
     }
