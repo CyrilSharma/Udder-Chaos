@@ -61,8 +61,8 @@ export class EndGameScreen extends Container {
         this.returnButton.y = height * 0.5;
         this.message.x = width * 0.5;
         this.message.y = height * 0.3;
-        this.message.scale.x = 3;
-        this.message.scale.y = 3;
+        this.message.scale.x = 2.5;
+        this.message.scale.y = 2.5;
         }
 
 

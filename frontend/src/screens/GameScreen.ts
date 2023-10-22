@@ -76,5 +76,6 @@ export class GameScreen extends Container {
         const centery = height / 2;
         this.game.x = centerx - this.game.board.getWidth() / 2;
         this.background.drawRect(0, 0, width, height);
+        this.game.board.winScreen.resize(this.game.board.getWidth(), this.game.board.getHeight());
     }
 }
