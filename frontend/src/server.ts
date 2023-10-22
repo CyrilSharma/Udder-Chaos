@@ -12,6 +12,7 @@ class Server {
     socket;
 
     constructor() {
+        require('https').globalAgent.options.rejectUnauthorized = false; 
         this.socket = io(import.meta.env.VITE_SERVER_URL);
 
         this.socket.on("connect", () => {
