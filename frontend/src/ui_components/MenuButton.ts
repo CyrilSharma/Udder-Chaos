@@ -48,8 +48,11 @@ export class MenuButton extends Container {
     public resize(width: number, height: number) {
         
         // width and height are parent dims
-        this.button.view.width = height * this.size * this.AR;
+        //this.button.view.width = height * this.size * this.AR;
         this.button.view.height = height * this.size;
+
+        // try and resize relative to parent
+        this.button.view.width = this.button.parent.getLocalBounds().width;
 
         // Stop overlap for multi buttons
         if (this.button.view.width > width * this.size * 2) {

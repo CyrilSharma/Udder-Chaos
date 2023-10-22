@@ -15,5 +15,5 @@
     "noImplicitReturns": true,
     "skipLibCheck": true,
   },
-  "include": ["src", "ui_components/playerListDisplay.ts"]
+  "include": ["src", "src/ui_components/playerListDisplay.ts"]
 }
