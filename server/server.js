@@ -10,7 +10,6 @@ const io = new Server(3000, {
 let rooms = {};
 export let ai_socket = null;
 
-console.log("Server listening on 3000")
 console.log('Server listening on ' + port);
 
 io.on('connection', (client) => {
