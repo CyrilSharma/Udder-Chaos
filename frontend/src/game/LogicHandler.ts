@@ -1,6 +1,6 @@
 import { Container } from "pixi.js";
 import { Piece } from "./Piece";
-import { DirectionEnum, GameConfig, Grid, PieceAction, Position, TileEnum, dx, dy, getTeam, TeamEnum, canMoveOver, ActionType, BoardUpdate } from "./Utils";
+import { DirectionEnum, GameConfig, Grid, PieceAction, Position, TileEnum, dx, dy, getTeam, TeamEnum, canMoveOver, ActionType } from "./Utils";
 import { Game } from "./Game";
 import { Card } from "./Card";
 
@@ -14,10 +14,6 @@ export class LogicHandler {
 
     /** Play a card associated with a given color */
     public playCard(card: Card, color: number) {
-        // List of all moves sequentially.
-        let moveList: BoardUpdate = [[]];
-
-        // Loop through the directions on the card
         card.dirs.forEach((move) => {
             // Figure out what the card does
             let dir = -1;
@@ -39,16 +35,10 @@ export class LogicHandler {
                     this.movePiece(piece, dir, pre_actions, moves, post_actions);
                 }
             });
-            
-            // Combine previous post and current pre actions into 1 step
-            moveList[moveList.length - 1] = moveList[moveList.length - 1].concat(post_actions);
-            moveList.push(moves);
-            moveList.push(post_actions);
-        });
-        console.log(moveList);
 
-        // Send updates to game board
-        this.game.board.updateGame(moveList);
+            // Send updates to game board
+            this.game.board.updateGame([pre_actions, moves, post_actions]);
+        });
     }
 
     /** Function for piece movement logic */
