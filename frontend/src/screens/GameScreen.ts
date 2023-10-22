@@ -25,7 +25,7 @@ export class GameScreen extends Container {
         const config: GameConfig = {
             grid: loadMap(Math.floor(Math.random()*MAPS.length)),
             starts: [
-                [{ row: 7, column: 7 }, { row: 7, column: 8 }, { row: 8, column: 7 }, { row: 8, column: 8 }, {row: 1, column: 2}],
+                [{ row: 7, column: 7 }, { row: 7, column: 8 }, { row: 8, column: 7 }, { row: 8, column: 8 }, {row: 1, column: 2}, {row: 2, column: 1}, {row: 3, column: 1}],
                 [{ row: 0, column: 1 }, { row: 1, column: 1 }, { row: 1, column: 0 }, { row: 0, column: 0 }],
                 [{ row: 0, column: 3 }, { row: 1, column: 4 }, { row: 1, column: 3 }, { row: 0, column: 4 }],
                 [{ row: 0, column: 7 }, { row: 1, column: 6 }, { row: 1, column: 7 }, { row: 0, column: 6 }],
