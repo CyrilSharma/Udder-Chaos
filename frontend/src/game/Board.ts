@@ -166,7 +166,7 @@ export class Board extends Container {
             // console.log(config.starts[piecetype]);
             for (const position of config.starts[piecetype]) {
                 // Random generate tiles that are occupied by a piece to not be impassible or destinations
-                if (grid[position.row][position.column] == TileEnum.Impassible || grid[position.row][position.column] == TileEnum.Destination) {
+                if (grid[position.row][position.column] == TileEnum.Impassible) {
                     // console.log("Piece spawning on top of a tile...");
                     let rand = Math.floor(Math.random() * 2);
                     if (rand == 0) grid[position.row][position.column] = TileEnum.Plain;

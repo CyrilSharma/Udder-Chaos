@@ -25,15 +25,15 @@ export class GameScreen extends Container {
         const config: GameConfig = {
             grid: loadMap(Math.floor(Math.random()*MAPS.length)),
             starts: [
-                [{ row: 7, column: 7 }, { row: 7, column: 8 }, { row: 8, column: 7 }, { row: 8, column: 8 }, {row: 1, column: 2}],
-                [{ row: 0, column: 1 }, { row: 1, column: 1 }, { row: 1, column: 0 }, { row: 0, column: 0 }],
-                [{ row: 0, column: 3 }, { row: 1, column: 4 }, { row: 1, column: 3 }, { row: 0, column: 4 }],
-                [{ row: 0, column: 7 }, { row: 1, column: 6 }, { row: 1, column: 7 }, { row: 0, column: 6 }],
-                [{ row: 0, column: 9 }, { row: 1, column: 10 }, { row: 1, column: 9 }, { row: 0, column: 10 }],
-                [{ row: 15, column: 0 }, { row: 15, column: 2 }, {row: 0, column: 2}], //spawn some enemies nearby for showcase
-                [{ row: 15, column: 4 }, { row: 15, column: 6 }, {row: 0, column: 5}],
-                [{ row: 15, column: 8 }, { row: 15, column: 10 }, {row: 0, column: 8}],
-                [{ row: 15, column: 12 }, { row: 15, column: 14 }, {row: 0, column: 11}],
+                [],
+                [{ row: 0, column: 0 }, { row: 0, column: 1 }, { row: 1, column: 0 }, { row: 1, column: 1 }],
+                [{ row: 0, column: 14 }, { row: 0, column: 15 }, { row: 1, column: 14 }, { row: 1, column: 15 }],
+                [{ row: 14, column: 0 }, { row: 14, column: 1 }, { row: 15, column: 0 }, { row: 15, column: 1 }],
+                [{ row: 14, column: 14 }, { row: 14, column: 15 }, { row: 15, column: 14 }, { row: 15, column: 15 }],
+                [{ row: 4, column: 4 }, { row: 4, column: 5 }, { row: 5, column: 4 }, { row: 5, column: 5 }], //spawn some enemies nearby for showcase
+                [{ row: 4, column: 10 }, { row: 4, column: 11 }, { row: 5, column: 10 }, { row: 5, column: 11 }],
+                [{ row: 10, column: 4 }, { row: 10, column: 5 }, { row: 11, column: 4 }, { row: 11, column: 5 }],
+                [{ row: 10, column: 10 }, { row: 10, column: 11 }, { row: 11, column: 10 }, { row: 11, column: 11 }],
             ],
             tileSize: 40,
         };
