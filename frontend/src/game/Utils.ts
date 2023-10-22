@@ -122,7 +122,7 @@ export type GameConfig = {
     starts: Position[][];
     tileSize: number;
 };
-export type PieceAction = {action: number; piece: Piece; moves: Position[]};
+export type PieceAction = {action: number; piece: Piece; move: Position};
 // We categorize the moves to allow for unique animations.
 export type BoardUpdate = PieceAction[][];
 

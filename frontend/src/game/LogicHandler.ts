@@ -13,30 +13,34 @@ export class LogicHandler {
     }
 
     /** Play a card associated with a given color */
-    public playCard(card: Card, color: number) {
-        // Figure out what the card does
-        let dir = -1;
-        switch (card.dir) {
-            case DirectionEnum.RIGHT: { dir = 0; break; }
-            case DirectionEnum.UP:    { dir = 1; break; }
-            case DirectionEnum.LEFT:  { dir = 2; break; }
-            case DirectionEnum.DOWN:  { dir = 3; break; }
-        }
-
-        // Action update lists
-        let pre_actions: PieceAction[] = [];
-        let moves: PieceAction[] = [];
-        let post_actions: PieceAction[] = [];
-
-        // For each piece, move it if needed
-        this.game.board.pieces.forEach((piece) => {
-            if (piece.type == color) {
-                this.movePiece(piece, dir, pre_actions, moves, post_actions);
+    public async playCard(card: Card, color: number) {
+        for (let i = 0; i < card.dirs.length; i++) {
+            let move = card.dirs[i];
+            // Figure out what the card does
+            let dir = -1;
+            switch (move) {
+                case DirectionEnum.RIGHT: { dir = 0; break; }
+                case DirectionEnum.UP:    { dir = 1; break; }
+                case DirectionEnum.LEFT:  { dir = 2; break; }
+                case DirectionEnum.DOWN:  { dir = 3; break; }
             }
-        });
 
-        // Send updates to game board
-        this.game.board.updateGame([pre_actions, moves, post_actions]);
+            // Action update lists
+            let pre_actions: PieceAction[] = [];
+            let moves: PieceAction[] = [];
+            let post_actions: PieceAction[] = [];
+
+            // For each piece, move it if needed
+            this.game.board.pieces.forEach((piece) => {
+                if (piece.type == color) {
+                    this.movePiece(piece, dir, pre_actions, moves, post_actions);
+                }
+            });
+
+            // Send updates to game board
+            await this.game.board.updateGame([pre_actions, moves, post_actions]);
+            console.log("hello " + i)
+        }
     }
 
     /** Function for piece movement logic */
@@ -50,7 +54,7 @@ export class LogicHandler {
 
         // Collision check with board obstacle tiles
         if (this.game.board.getTileAtPosition(dest) == TileEnum.Impassible) {
-            moves.push({ action: ActionType.Obstruction_Move, piece: piece, moves: [dest] });
+            moves.push({ action: ActionType.Obstruction_Move, piece: piece, move: dest });
             return;
         }
 
@@ -98,7 +102,7 @@ export class LogicHandler {
             
             // If we can't move, update the destination to remain in the current position
             if (!canMove) {
-                moves.push({ action: ActionType.Obstruction_Move, piece: piece, moves: [dest] });
+                moves.push({ action: ActionType.Obstruction_Move, piece: piece, move: dest });
                 return;
             }
         }
@@ -111,8 +115,8 @@ export class LogicHandler {
             }
             else {
                 switch (getTeam(piece.type)) {
-                    case TeamEnum.Player: { post_actions.push({ action: ActionType.Abduct_Action, piece: piece, moves: [dest] }); break; }
-                    case TeamEnum.Enemy: { pre_actions.push({ action: ActionType.Kill_Action, piece: piece, moves: [dest] }); break; }
+                    case TeamEnum.Player: { post_actions.push({ action: ActionType.Abduct_Action, piece: piece, move: dest }); break; }
+                    case TeamEnum.Enemy: { pre_actions.push({ action: ActionType.Kill_Action, piece: piece, move: dest }); break; }
                     default: { throw Error("Illegal move handling in logic handler"); break; }
                 }
             }
@@ -120,9 +124,9 @@ export class LogicHandler {
 
         // If moving onto a destination tile, add score action.
         if (this.game.board.getTileAtPosition(dest) == TileEnum.Destination) {
-            post_actions.push({ action: ActionType.Score_Action, piece: piece, moves: [dest] });
+            post_actions.push({ action: ActionType.Score_Action, piece: piece, move: dest });
         }
 
-        moves.push({ action: ActionType.Normal_Move, piece: piece, moves: [dest] });
+        moves.push({ action: ActionType.Normal_Move, piece: piece, move: dest });
     }
 }

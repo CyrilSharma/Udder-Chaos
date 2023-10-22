@@ -72,12 +72,10 @@ export class Board extends Container {
     }
 
     // Takes a board update, and performs corresponding updates and rerenders at the end.
-    public updateGame(update: BoardUpdate) {
+    public async updateGame(update: BoardUpdate) {
         // Loop through steps in update
         for (let i = 0; i < update.length; i++) {
             for (let j = 0; j < update[i].length; j++) {
-                // let piece = update[i][j].piece!;
-                // let dest = update[i][j].to;
                 switch (update[i][j].action) {
                     case ActionType.Normal_Move: { this.normal_move(update[i][j]); break; }
                     case ActionType.Obstruction_Move: { this.obstructed_move(update[i][j]); break; }
@@ -87,13 +85,17 @@ export class Board extends Container {
                     default: { throw Error("Illegal move in updateGame"); break; }
                 }
             }
+            if (update[i].length > 0) {
+                // Sleep for animation time
+                await new Promise(r => setTimeout(r, 200))
+            }
         }
     }
 
     // TODO: Learn how to animate things.
     public normal_move(action: PieceAction) {
         let piece = action.piece;
-        let dest = action.moves[0];
+        let dest = action.move;
         this.setPieceLocation(piece, dest);
     }
 
@@ -104,7 +106,7 @@ export class Board extends Container {
     // Enemy killing a player piece
     public kill_action(action: PieceAction) {
         let piece = action.piece;
-        let dest = action.moves[0];
+        let dest = action.move;
 
         console.log("KILLING MOVE");
         console.log(piece);
@@ -127,7 +129,7 @@ export class Board extends Container {
     // TODO: change cow to be not a piece...
     public abduct_action(action: PieceAction) {
         let piece = action.piece;
-        let dest = action.moves[0];
+        let dest = action.move;
 
         // TODO: actually do something when abduct
         const target = this.getPieceByPosition(dest, TeamEnum.Cow)!;
