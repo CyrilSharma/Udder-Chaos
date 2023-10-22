@@ -8,24 +8,24 @@ import http from "http"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Ship frontend to clients.
 const app = express()
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: { origin: "*" }
+});
+
+// Ship frontend to clients.
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/index.html'));
+    res.sendFile(path.join(__dirname, '/index.html'));
 })
-app.listen(80)
 
 // Handles connections.
 var mode = process.env.NODE_ENV;
 const server_port = (mode == 'development') ? 3000 : 5000;
-const server = http.createServer(app);
 server.listen(server_port, () => {
     console.log('listening on ' + server_port);
-});
-const io = new Server(server, {
-    cors: { origin: "*" }
 });
 
 let rooms = {};
