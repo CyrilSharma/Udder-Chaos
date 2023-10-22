@@ -2,6 +2,7 @@ import { FancyButton, Button } from '@pixi/ui';
 import { Container, Text, TextStyle, Graphics, Texture, Sprite, ObservablePoint} from 'pixi.js';
 import { HomeScreen } from '../screens/HomeScreen';
 import { navigation } from '../utils/navigation';
+import server from '../server';
 
 export class EndGameScreen extends Container {
 
@@ -12,7 +13,6 @@ export class EndGameScreen extends Container {
     constructor(win: boolean) {
         super();
 
-        
         this.vignette = Sprite.from(Texture.WHITE);
         this.vignette.tint = 0x111111;
         this.vignette.interactive = true;
@@ -48,6 +48,8 @@ export class EndGameScreen extends Container {
             anchor: 0.5,
         });
         this.returnButton.onPress.connect(() => {
+            server.leaveRoom();
+            this.visible = false;
             navigation.showScreen(HomeScreen);
         });
         this.addChild(this.returnButton);
