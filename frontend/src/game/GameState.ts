@@ -8,6 +8,7 @@ export class GameState extends Container {
     public game: Game;
     public color: Text;
     public turn: Text;
+    public score: Text;
 
     // We pass the game to allow for callbacks...
     constructor(game: Game) {
@@ -16,9 +17,11 @@ export class GameState extends Container {
         this.background = new Graphics();
         this.turn = new Text("OOWIEHRIUWEHRIF");
         this.color = new Text("IWUEFHUIWEH");
+        this.score = new Text("0")
         this.addChild(this.background);
         this.addChild(this.turn);
         this.addChild(this.color);
+        this.addChild(this.score);
     }
 
     public setup() {
@@ -40,5 +43,9 @@ export class GameState extends Container {
         else if (color_id == 3) color = "Blue";
         else if (color_id == 4) color = "Purple";
         this.color.text = "Color: " + color;
+    }
+
+    public updateScore(score: number) {
+        this.score.text = score;
     }
 }

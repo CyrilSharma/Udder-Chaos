@@ -1,12 +1,10 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
-import { Piece } from './Piece';
 import { Game } from './Game';
 import { Card } from './Card';
 import { LogicHandler } from './LogicHandler';
 import {
     DirectionEnum,
     ColorEnum,
-    PieceMove,
     Position,
     TileEnum,
     TeamEnum,

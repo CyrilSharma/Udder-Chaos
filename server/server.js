@@ -11,6 +11,8 @@ export let ai_socket = null;
 
 console.log("Server listening on 3000")
 
+
+// Listen for clients and initiate the player socket on connection
 io.on('connection', (client) => {
     console.log('A user connected ' + client.id);
 
@@ -19,6 +21,10 @@ io.on('connection', (client) => {
     });
 });
 
+/*
+ * Initiates the player socket event listeners if a player is connecting
+ * Initiates the AI socket listeners otherwise
+ */
 export function initPlayer(playerBool, socket) {
     if (playerBool) {
         // Init player socket listeners
@@ -50,6 +56,10 @@ export function initPlayer(playerBool, socket) {
     }
 }
 
+/*
+ * Create a new Room object which holds players and game information.
+ * Inits the player object within the room
+ */
 function createRoom() {
     // TODO: Add already existing player checking
     let roomCode = generateRoomCode();
@@ -61,15 +71,24 @@ function createRoom() {
     console.log(this.id + " created a room: " + roomCode)
 }
 
+/*
+ * Join an existing room by room code. If it doesn't exist, return an error to socket caller
+ * Inits the player object within the room
+ */
 function joinRoom(roomCode) {
+    // Find room by room code
     let room = rooms[roomCode]
     if (room == null) {
+        // Emit an error event if the room can't be found
         this.emit("join-error", "Couldn't find room with code " + roomCode);
         return;
     }
     room.addNewPlayer(this);
 }
 
+/*
+ * Returns a random room code, made of 4 random letters
+ */
 function generateRoomCode() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     let roomCode = ""
