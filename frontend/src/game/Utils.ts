@@ -47,12 +47,7 @@ Object.keys(PieceEnum).forEach((key) => {
     PieceMap[idx] = `images/${key.toLowerCase()}.png`;
 });
 export function isPlayer(piece_type: number) {
-    for (const key of Object.keys(PieceEnum)) {
-        const val = PieceEnum[key as keyof typeof PieceEnum];
-        if (val != piece_type) continue;
-        return key.toLowerCase().includes('player');
-    }
-    throw Error('Invalid Piece Type: ' + piece_type);
+    return getTeam(piece_type) == TeamEnum.Player;
 }
 export function getTeam(piece_type: number) {
     for (const key of Object.keys(PieceEnum)) {
@@ -127,7 +122,7 @@ export type GameConfig = {
     starts: Position[][];
     tileSize: number;
 };
-export type PieceAction = {action: number; piece: Piece; to: Position};
+export type PieceAction = {action: number; piece: Piece; moves: Position[]};
 // We categorize the moves to allow for unique animations.
 export type BoardUpdate = PieceAction[][];
 
