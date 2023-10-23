@@ -1,5 +1,7 @@
 import { MAPS } from "../maps/Maps"
 import { Piece } from "./Piece"
+import MersenneTwister from 'mersenne-twister';
+
 
 //-----Tiles-----//
 export const TileEnum = {
@@ -105,12 +107,21 @@ export type Color = number;
  */
 export function shuffle(array: any[]) {
     for (var i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
   
     return array;
-  }
+}
+
+let gen = new MersenneTwister();
+export function initSeed(seed: number) {
+    gen.init_seed(seed);
+}
+
+export function random() {
+    return gen.random();
+}
 
 //----------Game-----------//
 export type Position = {
@@ -144,7 +155,7 @@ export function createRandomGrid(rows = 16, cols = 16) {
     const tiles = [TileEnum.Plain, TileEnum.Pasture, TileEnum.Impassible, TileEnum.Destination];
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-            let idx = Math.floor(Math.random() * tiles.length);
+            let idx = Math.floor(random() * tiles.length);
             if (!grid[r]) grid[r] = [];
             grid[r][c] = tiles[idx];
         }

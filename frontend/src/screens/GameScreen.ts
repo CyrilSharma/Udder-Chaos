@@ -1,6 +1,6 @@
 import { Container, Graphics } from 'pixi.js';
 import { Game } from '../game/Game';
-import { createRandomGrid, PieceEnum, GameConfig, loadMap, getTeam, TeamEnum } from '../game/Utils';
+import { createRandomGrid, PieceEnum, GameConfig, loadMap, getTeam, TeamEnum, random } from '../game/Utils';
 import { MAPS } from "../maps/Maps"
 
 export class GameScreen extends Container {
@@ -23,7 +23,7 @@ export class GameScreen extends Container {
     public prepare() {
         // Temporary workaround until we can load maps.
         const config: GameConfig = {
-            grid: loadMap(Math.floor(Math.random()*MAPS.length)),
+            grid: loadMap(Math.floor(random()*MAPS.length)),
             starts: [
                 [],
                 [{ row: 0, column: 0 }, { row: 0, column: 1 }, { row: 1, column: 0 }, { row: 1, column: 1 }],

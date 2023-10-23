@@ -17,6 +17,7 @@ import {
     getTeam,
     TeamEnum,
     ActionType,
+    random,
 } from './Utils';
 /**
  * Board class
@@ -170,7 +171,7 @@ export class Board extends Container {
                 // Random generate tiles that are occupied by a piece to not be impassible or destinations
                 if (grid[position.row][position.column] == TileEnum.Impassible) {
                     // console.log("Piece spawning on top of a tile...");
-                    let rand = Math.floor(Math.random() * 2);
+                    let rand = Math.floor(random() * 2);
                     if (rand == 0) grid[position.row][position.column] = TileEnum.Plain;
                     else grid[position.row][position.column] = TileEnum.Pasture;
                     // console.log(`Fixed ${[position.row, position.column]} to ${grid[position.row][position.column]}`);
@@ -192,7 +193,7 @@ export class Board extends Container {
                 this.createTile(position, grid[r][c]);
                 if (grid[r][c] == TileEnum.Pasture) {
                     if (this.getPieceByPosition(position) != null) continue;
-                    if (Math.random() * 4 < 3) continue;
+                    if (random() * 4 < 3) continue;
                     this.createPiece(position, PieceEnum.Cow);
                     // this.createPiece(position,)
                     // this.createCow(position);
