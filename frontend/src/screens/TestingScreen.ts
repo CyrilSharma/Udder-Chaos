@@ -3,6 +3,7 @@ import { Background } from '../ui_components/Background';
 
 import { Button, FancyButton } from '@pixi/ui';
 import { PlayerGameInfo } from '../ui_components/PlayerGameInfo';
+import { PlayerColorIcon } from '../ui_components/PlayerColorIcon';
 
 
 export class TestingScreen extends Container {
@@ -16,6 +17,7 @@ export class TestingScreen extends Container {
     private player3: PlayerGameInfo;
     private player4: PlayerGameInfo;
     private scoreDisplay: FancyButton;
+    private playerIcon: PlayerColorIcon;
 
     constructor() {
         /** Default Stuff */
@@ -35,16 +37,19 @@ export class TestingScreen extends Container {
             padding: 0,
             anchor: 0.5,
         });
-        this.player1 = new PlayerGameInfo(new Color(0xFF0000));
-        this.player2 = new PlayerGameInfo(new Color(0x0085FF));
-        this.player3 = new PlayerGameInfo(new Color(0xAD00FF));
-        this.player4 = new PlayerGameInfo(new Color(0xFFAB2E));
+        this.player1 = new PlayerGameInfo(0xFF0000);
+        this.player2 = new PlayerGameInfo(0x0085FF);
+        this.player3 = new PlayerGameInfo(0xAD00FF);
+        this.player4 = new PlayerGameInfo(0xFFAB2E);
+
+        this.playerIcon = new PlayerColorIcon(0xFF0000);
 
         this.leftCol.addChild(this.player1);
         this.leftCol.addChild(this.player2);
         this.leftCol.addChild(this.player3);
         this.leftCol.addChild(this.player4);
         this.leftCol.addChild(this.scoreDisplay);
+        this.leftCol.addChild(this.playerIcon);
         this.addChild(this.leftCol);
 
         this.board = new Container();
@@ -60,7 +65,7 @@ export class TestingScreen extends Container {
         this.player2.y = -100;
         this.player3.y = -50
         this.player4.y = 0;
-
+        this.playerIcon.y = 90;
     }
 
 }

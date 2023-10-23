@@ -9,7 +9,7 @@ export class PlayerGameInfo extends Container {
     private ufo: Sprite;
     private units: Text;
 
-    constructor(color: Color) {
+    constructor(color: number) {
         super();
 
         this.displayArea = new FancyButton({
@@ -19,7 +19,7 @@ export class PlayerGameInfo extends Container {
                    .lineStyle(5, color, 1, 0)
                    .drawRoundedRect(0, 0, 400, 80, 15)
             )).view,
-            anchor: 0.5,
+            anchor: 0.5
         });
         this.addChild(this.displayArea);
 
