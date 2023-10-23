@@ -32,8 +32,6 @@ server.listen(server_port, () => {
 let rooms = {};
 export let ai_socket = null;
 
-console.log("Server listening on 3000")
-
 
 // Listen for clients and initiate the player socket on connection
 io.on('connection', (client) => {
