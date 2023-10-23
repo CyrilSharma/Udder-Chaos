@@ -1,4 +1,7 @@
 import { MAPS } from "../maps/Maps"
+import { Piece } from "./Piece"
+import MersenneTwister from 'mersenne-twister';
+
 
 //-----Tiles-----//
 export const TileEnum = {
@@ -46,12 +49,7 @@ Object.keys(PieceEnum).forEach((key) => {
     PieceMap[idx] = `images/${key.toLowerCase()}.png`;
 });
 export function isPlayer(piece_type: number) {
-    for (const key of Object.keys(PieceEnum)) {
-        const val = PieceEnum[key as keyof typeof PieceEnum];
-        if (val != piece_type) continue;
-        return key.toLowerCase().includes('player');
-    }
-    throw Error('Invalid Piece Type: ' + piece_type);
+    return getTeam(piece_type) == TeamEnum.Player;
 }
 export function getTeam(piece_type: number) {
     for (const key of Object.keys(PieceEnum)) {
@@ -72,13 +70,23 @@ export const Player = PieceEnum;
 // Move direction values for now
 export const dx = [1, 0, -1, 0];
 export const dy = [0, -1, 0, 1];
-// Move types
-export const MoveType = {
+// Action types
+export const ActionType = {
     Normal_Move: 0,
-    Kill_Move: 1,
-    Score_Move: 2
+    Obstruction_Move: 1,
+    Kill_Action: 2,
+    Abduct_Action: 3,
+    Score_Action: 4
 }
 
+export const TurnType = {
+    1: "Red",
+    2: "Yellow",
+    3: "AI",
+    4: "Blue",
+    5: "Purple",
+    6: "AI"
+}
 //---------Cards------------//
 export const DirectionEnum = {
     RIGHT: 0,
@@ -94,6 +102,26 @@ export const ColorEnum = {
     ORANGE: 3
 };
 export type Color = number;
+/** Durstenfeld shuffle for generating a card queue
+ *  Source: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+ */
+export function shuffle(array: any[]) {
+    for (var i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+  
+    return array;
+}
+
+let gen = new MersenneTwister();
+export function initSeed(seed: number) {
+    gen.init_seed(seed);
+}
+
+export function random() {
+    return gen.random();
+}
 
 //----------Game-----------//
 export type Position = {
@@ -105,16 +133,17 @@ export type GameConfig = {
     starts: Position[][];
     tileSize: number;
 };
-export type PieceUpdate = {};
-export type PieceMove = { from: Position; to: Position };
+export type PieceAction = {action: number; piece: Piece; move: Position};
 // We categorize the moves to allow for unique animations.
-export type BoardUpdate = {
-    normal_moves: PieceMove[]; // Moves which kill nothing.
-    kill_moves: PieceMove[]; // Moves which kill a unit.
-    score_moves: PieceMove[]; // Moves which abduct a cow.
-};
+export type BoardUpdate = PieceAction[][];
 
-//-----Functions-----//
+//     normal_moves: PieceMove[]; // Moves which kill nothing.
+//     kill_moves: PieceMove[]; // Moves which kill a unit.
+//     abduct_moves: PieceMove[]; // Moves which abduct a cow.
+//     score_moves: PieceMove[]; // Moves which score cows.
+// };
+
+//-----Map Functions-----//
 export function loadMap(seed: number) {
     const grid: Grid = parseCSVGrid(MAPS[seed]);
     console.log(grid);
@@ -126,7 +155,7 @@ export function createRandomGrid(rows = 16, cols = 16) {
     const tiles = [TileEnum.Plain, TileEnum.Pasture, TileEnum.Impassible, TileEnum.Destination];
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-            let idx = Math.floor(Math.random() * tiles.length);
+            let idx = Math.floor(random() * tiles.length);
             if (!grid[r]) grid[r] = [];
             grid[r][c] = tiles[idx];
         }

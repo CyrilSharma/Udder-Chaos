@@ -28,21 +28,21 @@ export class HomeScreen extends Container {
         this.addChild(this.logo);
 
         // Create Game
-        this.createGameButton = new MenuButton("Create Game", 0.3, 0.6, 0xffcc66, 4, 0.15, 60);
+        this.createGameButton = new MenuButton("Create Game", 0.3, 0.6, 0xF4C418, 4, 0.15, 30);
         this.createGameButton.getButton().onPress.connect(() => {
             server.createRoom();
         });
         this.addChild(this.createGameButton.getButton());
 
         // Join Game
-        this.joinGameButton = new MenuButton("Join Game", 0.7, 0.6, 0xffcc66, 4, 0.15, 60);
+        this.joinGameButton = new MenuButton("Join Game", 0.7, 0.6, 0xF4C418, 4, 0.15, 30);
         this.joinGameButton.getButton().onPress.connect(() => {
             navigation.showScreen(JoinGameScreen);
         });
         this.addChild(this.joinGameButton.getButton());
 
         // Settings
-        this.settingsButton = new MenuButton("Settings", 0.5, 0.89, 0xffcc66, 4, 0.15, 60);
+        this.settingsButton = new MenuButton("Settings", 0.5, 0.89, 0xF4C418, 4, 0.15, 30);
         this.settingsButton.getButton().onPress.connect(() => {
             navigation.showScreen(SettingsScreen);
         });

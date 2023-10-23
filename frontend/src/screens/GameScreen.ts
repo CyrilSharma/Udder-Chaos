@@ -1,6 +1,6 @@
 import { Container, Graphics } from 'pixi.js';
 import { Game } from '../game/Game';
-import { createRandomGrid, PieceEnum, GameConfig, PieceMove, loadMap, getTeam, TeamEnum } from '../game/Utils';
+import { createRandomGrid, PieceEnum, GameConfig, loadMap, getTeam, TeamEnum, random } from '../game/Utils';
 import { MAPS } from "../maps/Maps"
 
 export class GameScreen extends Container {
@@ -23,17 +23,17 @@ export class GameScreen extends Container {
     public prepare() {
         // Temporary workaround until we can load maps.
         const config: GameConfig = {
-            grid: loadMap(Math.floor(Math.random()*MAPS.length)),
+            grid: loadMap(Math.floor(random()*MAPS.length)),
             starts: [
-                [{ row: 7, column: 7 }, { row: 7, column: 8 }, { row: 8, column: 7 }, { row: 8, column: 8 }],
-                [{ row: 0, column: 1 }, { row: 1, column: 1 }, { row: 1, column: 0 }, { row: 0, column: 0 }],
-                [{ row: 0, column: 3 }, { row: 1, column: 4 }, { row: 1, column: 3 }, { row: 0, column: 4 }],
-                [{ row: 0, column: 7 }, { row: 1, column: 6 }, { row: 1, column: 7 }, { row: 0, column: 6 }],
-                [{ row: 0, column: 9 }, { row: 1, column: 10 }, { row: 1, column: 9 }, { row: 0, column: 10 }],
-                [{ row: 15, column: 0 }, { row: 15, column: 2 }],
-                [{ row: 15, column: 4 }, { row: 15, column: 6 }],
-                [{ row: 15, column: 8 }, { row: 15, column: 10 }],
-                [{ row: 15, column: 12 }, { row: 15, column: 14 }],
+                [],
+                [{ row: 0, column: 0 }, { row: 0, column: 1 }, { row: 1, column: 0 }, { row: 1, column: 1 }],
+                [{ row: 0, column: 14 }, { row: 0, column: 15 }, { row: 1, column: 14 }, { row: 1, column: 15 }],
+                [{ row: 14, column: 0 }, { row: 14, column: 1 }, { row: 15, column: 0 }, { row: 15, column: 1 }],
+                [{ row: 14, column: 14 }, { row: 14, column: 15 }, { row: 15, column: 14 }, { row: 15, column: 15 }],
+                [{ row: 4, column: 4 }, { row: 4, column: 5 }, { row: 5, column: 4 }, { row: 5, column: 5 }],
+                [{ row: 4, column: 10 }, { row: 4, column: 11 }, { row: 5, column: 10 }, { row: 5, column: 11 }],
+                [{ row: 10, column: 4 }, { row: 10, column: 5 }, { row: 11, column: 4 }, { row: 11, column: 5 }],
+                [{ row: 10, column: 10 }, { row: 10, column: 11 }, { row: 11, column: 10 }, { row: 11, column: 11 }],
             ],
             tileSize: 40,
         };
@@ -41,26 +41,27 @@ export class GameScreen extends Container {
     }
 
     // Move function only used for debug purposes right now (arrow key calls from main)
-    public move(dir: number) {
-        let dx = [1, 0, -1, 0];
-        let dy = [0, -1, 0, 1];
-        let normal_moves: PieceMove[] = [];
-        this.game.board.pieces.forEach((piece) => {
-            if (piece.type != PieceEnum.Enemy_Red) return;
-            let cur = { row: piece.row, column: piece.column };
-            let dest = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
-            normal_moves.push({ from: cur, to: dest });
-        });
+    // Deprecated debug movement
+    // public move(dir: number) {
+    //     let dx = [1, 0, -1, 0];
+    //     let dy = [0, -1, 0, 1];
+    //     let normal_moves: PieceMove[] = [];
+    //     this.game.board.pieces.forEach((piece) => {
+    //         if (piece.type != PieceEnum.Enemy_Red) return;
+    //         let cur = { row: piece.row, column: piece.column };
+    //         let dest = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
+    //         normal_moves.push({ from: cur, to: dest });
+    //     });
 
-        this.game.board.updateGame({
-            normal_moves,
-            kill_moves: [],
-            score_moves: [],
-        });
-    }
+    //     this.game.board.updateGame({
+    //         normal_moves,
+    //         kill_moves: [],
+    //         score_moves: [],
+    //     });
+    // }
 
     public playCard(cardIndex: number, color: number) {
-        let card = this.game.cards.findCardInHand(cardIndex);
+        let card = this.game.cards.findCardInHand(cardIndex, color);
         this.game.cards.playCard(card, color);
 
         this.game.updateTurn();

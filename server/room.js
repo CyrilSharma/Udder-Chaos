@@ -14,6 +14,10 @@ const COLOR = {
 
 const MAX_PLAYERS = 4;
 
+/*
+ * Room class tracks all players within a room/game and related game information.
+ * Contains functions for adding players to the room and starting the game.
+ */
 export class Room {
     constructor(io, roomCode) {
         this.io = io;
@@ -96,7 +100,10 @@ export class Room {
     }
 }
 
-// Each client that connects to a game will be a Player.
+/*
+ * Player class manages each client that joins a game as a player.
+ * Inits event listeners related to the game and contains other player info.
+ */
 class Player {
     constructor(socket, team, room, host) {
         this.socket = socket;

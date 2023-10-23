@@ -1,5 +1,7 @@
 import { Button, FancyButton } from '@pixi/ui';
 import { Container, Graphics } from 'pixi.js';
+import type { TextStyle } from 'pixi.js';
+import { Text } from 'pixi.js';
 
 export class MenuButton extends Container {
 
@@ -29,7 +31,11 @@ export class MenuButton extends Container {
                         .drawRoundedRect(0, 0, AR * 100, 100, bevel)
             )).view,
             anchor: 0.5,
-            text: text
+            text: new Text(text, {
+                fontFamily: 'Concert One',
+                align: 'center',
+                fontSize: 60,
+            })
         });
 
         this.addChild(this.button);

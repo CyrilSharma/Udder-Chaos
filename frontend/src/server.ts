@@ -3,9 +3,8 @@ import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
-import { Player } from "./game/Utils"
-
-
+import { Player, initSeed } from "./game/Utils"
+//import seedrandom from 'seedrandom'
 import { JoinGameScreen } from "./screens/JoinGameScreen";
 
 class Server {
@@ -56,6 +55,9 @@ class Server {
 
         this.socket.on("start-game", async (seed, socketIds) => {
 
+            // Math.seedrandom(seed);
+            initSeed(seed);
+
             let color = socketIds.indexOf(this.socket.id) + 1;
             console.log("You are color: " + color);
 
@@ -70,7 +72,7 @@ class Server {
         this.socket.on("share-move", (cardIndex, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.playCard(cardIndex, color);
-            console.log("Server playing card " + cardIndex);
+            console.log(`Server playing card: ${cardIndex}, color: ${color}`);
         });
     }
 
@@ -87,6 +89,7 @@ class Server {
     }
 
     public async playCard(cardIndex: number, color: number) {
+        console.log(`Sending play-card with index: ${cardIndex}`);
         this.socket.emit("play-card", cardIndex, color);
     }
 

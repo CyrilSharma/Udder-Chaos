@@ -1,13 +1,34 @@
-import { Application } from 'pixi.js';
+import * as PIXI from 'pixi.js';
 import { navigation } from './utils/navigation';
 import { HomeScreen } from './screens/HomeScreen';
 import { GameScreen } from './screens/GameScreen';
 
 /** The PixiJS app Application instance, shared across the project */
-export const app = new Application<HTMLCanvasElement>({
+export const app = new PIXI.Application<HTMLCanvasElement>({
     resolution: Math.max(window.devicePixelRatio, 2),
     backgroundColor: 0xffffff,
 });
+
+// Load google fonts before starting...
+window.WebFontConfig = {
+    google: {
+        families: ['Concert One', 'Snippet'],
+    },
+    active()
+    {
+        init();
+    },
+};
+
+(function() {
+    const wf = document.createElement('script');
+    wf.src = `${document.location.protocol === 'https:' ? 'https' : 'http'
+    }://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js`;
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    const s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+}());
 
 /** Set up a resize function for the app */
 function resize() {
@@ -85,4 +106,4 @@ async function init() {
 }
 
 // Init everything
-init();
+//init();
