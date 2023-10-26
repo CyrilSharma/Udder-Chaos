@@ -112,18 +112,19 @@ export class Board extends Container {
         console.log("KILLING MOVE");
         console.log(piece);
         console.log(dest);
-        if (isPlayer(piece.type)) return; //return Error('Players cannot kill entities');
         const target = this.getPieceByPosition(dest)!;
-        if (!isPlayer(target.type)) return; //return Error('Enemy cannot be killed');
         this.removePiece(target);
 
         // Remove a piece from this player
-        this.playerPieces[target.type] -= 1;
+        if (getTeam(target.type) == TeamEnum.Player) {
+            this.playerPieces[target.type] -= 1;
 
         // If this player has no more pieces end the game
         if (this.playerPieces[target.type] == 0) {
             this.game.endGame();
         }
+        }
+        
     }
 
     // Player killing a cow piece

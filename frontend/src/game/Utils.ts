@@ -63,8 +63,22 @@ export function getTeam(piece_type: number) {
     return Error('Invalid Piece Type');
 }
 export function canMoveOver(attacker: number, defender: number) {
-    return getTeam(attacker) == TeamEnum.Enemy && getTeam(defender) == TeamEnum.Player ||
-        getTeam(attacker) == TeamEnum.Player && getTeam(defender) == TeamEnum.Cow;
+    // If on differing teams, i.e, moving into cow space, jet kills ufo, ufo kills jet.
+    return (getTeam(defender) != getTeam(attacker))
+}
+export function checkActionType(attacker: number, defender: number) {
+    if (getTeam(defender) == TeamEnum.Cow && getTeam(attacker) == TeamEnum.Player) {
+        return ActionType.Abduct_Action; 
+    }
+    else if (
+        (getTeam(defender) == TeamEnum.Enemy && getTeam(attacker) == TeamEnum.Player) ||
+        (getTeam(defender) == TeamEnum.Player && getTeam(attacker) == TeamEnum.Enemy)
+    ) {
+        return ActionType.Kill_Action;
+    }
+    else {
+        return -1;
+    }
 }
 export const Player = PieceEnum;
 // Move direction values for now
