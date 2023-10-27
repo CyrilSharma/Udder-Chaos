@@ -12,7 +12,7 @@ const COLOR = {
     PURPLE: 3,    
 }
 
-const MAX_PLAYERS = 1;
+const MAX_PLAYERS = 2;
 
 /*
  * Room class tracks all players within a room/game and related game information.
@@ -88,11 +88,11 @@ export class Room {
     }
 
     // Emit move to all players
-    makeMove(socket, cardIndex, color) {
+    makeMove(socket, moveType, moveData, color) {
         //TODO: Check if player's turn 
-        this.moveList.push((cardIndex, color));
-        socket.to(this.roomCode).emit("share-move", cardIndex, color);
-        console.log(this.moveList)
+        this.moveList.push((moveType, moveData, color));
+        socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
+        console.log(this.moveList);
         if (this.moveList.length % 3 == 2) {
             console.log("Query the AI move");
             ai_socket.emit("query-move", this.roomCode);
@@ -120,8 +120,8 @@ class Player {
             this.room.startGame(this.socket);
         });
 
-        this.socket.on("play-card", (cardIndex, color) => {
-            this.room.makeMove(this.socket, cardIndex, color);
+        this.socket.on("make-move", (moveType, moveData, color) => {
+           this.room.makeMove(this.socket, moveType, moveData, color); 
         });
 
         this.socket.on("leave-room", () => {

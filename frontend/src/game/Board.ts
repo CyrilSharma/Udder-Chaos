@@ -119,12 +119,11 @@ export class Board extends Container {
         if (getTeam(target.type) == TeamEnum.Player) {
             this.playerPieces[target.type] -= 1;
 
-        // If this player has no more pieces end the game
-        if (this.playerPieces[target.type] == 0) {
-            this.game.endGame();
+            // If this player has no more pieces end the game
+            if (this.playerPieces[target.type] == 0) {
+                this.game.endGame();
+            }
         }
-        }
-        
     }
 
     // Player killing a cow piece

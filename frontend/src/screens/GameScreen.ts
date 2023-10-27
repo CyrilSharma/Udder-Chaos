@@ -61,9 +61,15 @@ export class GameScreen extends Container {
     // }
 
     public playCard(cardIndex: number, color: number) {
+        console.log("screen Playing card: " + cardIndex);
         let card = this.game.cards.findCardInHand(cardIndex, color);
         this.game.cards.playCard(card, color);
+        this.game.updateTurn();
+    }
 
+    public rotateCard(cardIndex: number, rotation: number, color: number) {
+        let card = this.game.cards.findCardInHand(cardIndex, color);
+        card.rotateCard(rotation);
         this.game.updateTurn();
     }
 
