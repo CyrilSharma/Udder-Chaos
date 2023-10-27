@@ -28,7 +28,7 @@ struct GameConfig {
  * Alternatively, switch std::bitset to boost::bitset, and we won't need templates.
  */
 
-template <int64_t width, int64_t height, int64_t ncards = 16, int64_t hand_size = 3>
+template <uint64_t width, uint64_t height, uint64_t ncards = 16, uint64_t hand_size = 3>
 struct Game {
   /*--- Utility Functions -----*/
   static constexpr int64_t area() {
@@ -36,7 +36,7 @@ struct Game {
   }
 
   static constexpr int64_t ncard_bits() {
-    return 1 << (64 -__builtin_clz(ncards - 1));
+    return 64 -__builtin_clz(ncards - 1);
   }
 
   static constexpr int64_t queue_length() {
@@ -106,9 +106,11 @@ struct Game {
    */
 
   Game(GameConfig config) {
-    for (int i = 0; i < ncards; i++) {
-      queue |= (i << (i * ncard_bits()));
+    for (uint64_t i = 0; i < ncards; i++) {
       cards[i] = config.cards[i];
+      bitset<queue_length()> msk{0b1};
+      msk <<= (i * ncard_bits());
+      queue |= msk; 
     }
     for (auto [i, j, p]: config.pieces) {
       if (p < 4) {
@@ -141,11 +143,13 @@ struct Game {
       for (int j = 0; j < width; j++) {
         char c = ' ';
         for (int k = 0; k < 4; k++) {
-          if (players[k] & (1 << (width * i + j))) {
+          bitset<area()> msk{1};
+          msk <<= (width * i + j);
+          if ((players[k] & msk).any()) {
             c = k + '0';
             break;
           }
-          if (enemies[k] & (1 << (width * i + j))) {
+          if ((enemies[k] & msk).any()) {
             c = k + '4';
             break;
           }
@@ -159,9 +163,10 @@ struct Game {
     for (int i = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
         char c = ' ';
-        if (impassible & (1 << (width * i + j))) {
+        auto mask = bitset<area()>{1ULL << (width * i + j)};
+        if ((impassible & mask).any()) {
           c = '1';
-        } else if (cows & (1 << (width * i + j))) {
+        } else if ((cows & mask).any()) {
           c = '2';
         }
         cout << c;
