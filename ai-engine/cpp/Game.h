@@ -3,6 +3,7 @@
 #include <vector>
 using namespace std;
 
+/*---- Helper Structures -----*/
 enum Direction {
   RIGHT = 0,
   UP = 1,
@@ -11,14 +12,50 @@ enum Direction {
 };
 
 struct Card {
-  vector<Direction> moves;
+  std::vector<Direction> moves;
+  bool operator==(const Card& other) const {
+    return moves == other.moves;
+  }
+  bool operator!=(const Card& other) const {
+    return moves != other.moves;
+  }
 };
+ostream& operator<<(ostream& os, const Card& card) {
+  os << "Card: ";
+  for (auto move: card.moves) {
+    switch (move) {
+      case RIGHT: { os << 'R'; break; }
+      case UP:    { os << 'U'; break; }
+      case LEFT:  { os << 'L'; break; }
+      case DOWN:  { os << 'D'; break; }
+    }
+  }
+  os << '\n';
+  return os;
+}
+
+struct Piece {
+  int i, j, tp;
+  bool operator==(const Piece& other) const {
+    return i == other.i && j == other.j
+      && tp == other.tp;
+  }
+  bool operator!=(const Piece& other) const {
+    return !(*this == other);
+  }
+};
+ostream& operator<<(ostream& os, const Piece& p) {
+  os << "Piece: ( " << p.i << ", " << p.j << ", " << p.tp << " )\n";
+  return os;
+}
 
 struct GameConfig {
   vector<vector<int>> board;
-  vector<tuple<int,int,int>> pieces;
+  vector<Piece> pieces;
   vector<Card> cards;
 };
+
+/*--- Game Object ----*/
 
 /*
  * Why is this not in a cpp file?
@@ -44,7 +81,11 @@ struct Game {
   }
 
   static constexpr bitset<area()> player_hand_mask() {
-    bitset<queue_length()> m{(1LL << ncard_bits()) - 1};
+    bitset<queue_length()> m{0b0};
+    for (int i = 0; i < ncard_bits(); i++) {
+      bitset<queue_length()> unit{0b1};
+      m |= unit << i;
+    }
     return m;
   }
 
@@ -98,7 +139,70 @@ struct Game {
   bitset<area()> score_tiles = { 0 };
   bitset<area()> cows = { 0 };
 
-  /*--- Main Functions -----*/
+  /*------ Debug + Testing ----------*/
+
+  /*
+   * Puts the board in a convenient state.
+   */
+
+  vector<vector<int>> viewBoard() {
+    vector<vector<int>> out(height, vector<int>(width));
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        out[i][j] = 0;
+        auto mask = bitset<area()>{1};
+        mask <<= (width * i + j);
+        if ((impassible & mask).any()) {
+          out[i][j] = 1;
+        } else if ((cows & mask).any()) {
+          out[i][j] = 2;
+        }
+      }
+    }
+    return out;
+  } /* viewBoard() */
+
+  /*
+   * Puts the pieces in a convenient state.
+   */
+
+  vector<Piece> viewPieces() {
+    vector<Piece> out;
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        for (int k = 0; k < 4; k++) {
+          bitset<area()> msk{1};
+          msk <<= (width * i + j);
+          if ((players[k] & msk).any()) {
+            out.push_back(Piece { i, j, k });
+            break;
+          } else if ((enemies[k] & msk).any()) {
+            out.push_back(Piece { i, j, k + 4 });
+            break;
+          }
+        }
+      }
+    }
+    return out;
+  } /* viewPieces() */
+
+  /*
+   * Puts the Cards in a convenient state.
+   */
+
+  vector<Card> viewCards() {
+    vector<Card> out(ncards);
+    for (uint64_t i = 0; i < ncards; i++) {
+      // Hope and pray there aren't 1e64 cards.
+      bitset<queue_length()> msk { (1ULL << ncard_bits()) - 1 };
+      auto idx = ((queue >> ncard_bits() * i) & msk).to_ullong();
+      out[i] = cards[idx];
+    }
+    return out;
+  } /* viewCards() */
+
+
+  /*--- Game Logic -----*/
 
   /*
    * Parses a GameConfig into a more efficient, internal
@@ -108,73 +212,34 @@ struct Game {
   Game(GameConfig config) {
     for (uint64_t i = 0; i < ncards; i++) {
       cards[i] = config.cards[i];
-      bitset<queue_length()> msk{0b1};
+      bitset<queue_length()> msk{i};
       msk <<= (i * ncard_bits());
       queue |= msk; 
     }
-    for (auto [i, j, p]: config.pieces) {
-      if (p < 4) {
-        players[p] |= 1 << (i * height + width);
+    for (auto p: config.pieces) {
+      bitset<area()> msk {1};
+      msk <<= p.i * width + p.j;
+      if (p.tp < 4) {
+        players[p.tp] |= msk;
       } else {
-        enemies[p & 0b11] |= 1 << (i * height + width);
+        enemies[p.tp & 0b11] |= msk;
       }
     }
     for (int i = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
         int tile = config.board[i][j];
+        bitset<area()> m{1};
+        m <<= (i * width + j);
         if (tile == 1) {
-          impassible |= 1 << (i * height + width);
+          impassible |= m;
         } else if (tile == 2) {
-          score_tiles |= 1 << (i * height + width);
-          cows |= 1 << (i * height + width);
+          score_tiles |= m;
+          cows |= m;
         }
       }
     }
   } /* Game() */
 
-  /*
-   * Used for debugging.
-   * Renders a few masks to show the state.
-   */
-
-  void render() {
-    // Render Player - Enemy Mask.
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        char c = ' ';
-        for (int k = 0; k < 4; k++) {
-          bitset<area()> msk{1};
-          msk <<= (width * i + j);
-          if ((players[k] & msk).any()) {
-            c = k + '0';
-            break;
-          }
-          if ((enemies[k] & msk).any()) {
-            c = k + '4';
-            break;
-          }
-        }
-        cout << c;
-      }
-      cout << '\n';
-    }
-
-    // Render Board
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        char c = ' ';
-        auto mask = bitset<area()>{1ULL << (width * i + j)};
-        if ((impassible & mask).any()) {
-          c = '1';
-        } else if ((cows & mask).any()) {
-          c = '2';
-        }
-        cout << c;
-      }
-      cout << '\n';
-    }
-    cout<<endl;
-  } /* render() */
 
   /*
   * choice is expected to be the numerical

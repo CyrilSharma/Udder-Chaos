@@ -1,19 +1,17 @@
 # Compiler and compiler flags
 CC = g++
-CFLAGS = -std=c++17 -Wall
+CFLAGS = -g -std=c++17 -Wall
 
 # Source file and executable name
+DEPS = Game.h Utils.h
 SOURCE = TestGame.cpp
 EXECUTABLE = Test
 
 # Default target
 all: $(EXECUTABLE)
 
-test: $(EXECUTABLE)
-	./$(EXECUTABLE)
-
 # Compile the source file
-$(EXECUTABLE): $(SOURCE)
+$(EXECUTABLE): $(SOURCE) $(DEPS)
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(SOURCE)
 
 # Clean up object files and the executable

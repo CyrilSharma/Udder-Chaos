@@ -2,45 +2,52 @@
 #include "doctest.h"
 #include <bits/stdc++.h>
 #include "Game.h"
+#include "Utils.h"
 
 using namespace std;
+
+/*
+ * Ensure creation function faithfully transcribes
+ * The board, players, and cards.
+ */
 
 TEST_CASE("Testing the Creation Function") {
   const int width = 16;
   const int height = 16;
-  vector<vector<int>> board(16, vector<int>(16));
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      board[i][j] = rand() % 3;
-    }
-  }
-  int npieces = 5;
-  vector<tuple<int,int,int>> pieces(npieces);
-  for (int i = 0; i < npieces; i++) {
-    pieces[i] = {
-      rand() % width,
-      rand() % height,
-      rand() % 9
-    };
-  }
+  auto board = random_board(width, height);
+
+  const int npieces = 5;
+  auto pieces = random_pieces(npieces, width, height);
+
+  const int ndirs = 3;
   const int ncards = 16;
-  int ndirs = 3;
-  vector<Card> cards(ncards);
-  for (int i = 0; i < ncards; i++) {
-    vector<Direction> moves(ndirs);
-    vector<Direction> dirs = {
-      Direction::RIGHT, Direction::UP,
-      Direction::LEFT, Direction::DOWN
-    };
-    for (int i = 0; i < ndirs; i++) {
-      moves[i] = dirs[rand() % 4];
-    }
-    cards[i] = Card { moves };
-  }
+  auto cards = random_cards(ndirs, ncards);
+
   GameConfig config = {
     board, pieces, cards
   };
   const int hand_size = 3;
   auto game = Game<width, height, ncards, hand_size>(config);
-  game.render();
+
+  CHECK_MESSAGE(
+    checkvv(game.viewBoard(), board),
+    "Game Board does not match Input!"
+  );
+
+  // Pieces need to be sorted to properly check for eq.
+  sort(pieces.begin(), pieces.end(), [](Piece &a, Piece &b) {
+    if (a.i != b.i) return a.i < b.i;
+    if (a.j != b.j) return a.j < b.j;
+    return a.tp < b.tp;
+  });
+
+  CHECK_MESSAGE(
+    checkv(game.viewPieces(), pieces),
+    "Pieces do not match Input!"
+  );
+
+  CHECK_MESSAGE(
+    checkv(game.viewCards(), cards),
+    "Cards do not match Input!"
+  );
 }
