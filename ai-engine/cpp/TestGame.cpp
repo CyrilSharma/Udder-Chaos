@@ -171,13 +171,43 @@ TEST_CASE("Testing Player Movement") {
     }
   }
 
-  SUBCASE("Collision Test") {
+  SUBCASE("Self-Collision Test") {
     int xs[4] = { 0, 1, 0, 1 };
     int ys[4] = { 0, 0, 1, 1 };
     for (int i = 0; i < 4; i++) {
       pieces[i].i = ys[i];
       pieces[i].j = xs[i];
     }
+    config = { board, pieces, cards };
+    game = Game<width, height>(config);
+    for (int d = 0; d < 4; d++) {
+      for (int i = 0; i < 25; i++) {
+        game.play_player_movement(dirs[d]);
+      }
+    }
+    verify();
+  }
+
+  SUBCASE("Other-Collision Test") {
+    /*
+     * 11 ====== 1
+     * 11 ====== 1
+     * ===========
+     * ===========
+     * ===========
+     * 11 ==== 11
+     */
+    pieces.clear();
+    pieces.push_back( Piece { 0, 0, 1 } );
+    pieces.push_back( Piece { 0, 1, 1 } );
+    pieces.push_back( Piece { 0, 10, 2 } );
+    pieces.push_back( Piece { 1, 0, 1 } );
+    pieces.push_back( Piece { 1, 1, 1 } );
+    pieces.push_back( Piece { 1, 10, 2 } );
+    pieces.push_back( Piece { 2, 0, 2 } );
+    pieces.push_back( Piece { 2, 1, 2 } );
+    pieces.push_back( Piece { 2, 8, 2 } );
+    pieces.push_back( Piece { 2, 9, 2 } );
     config = { board, pieces, cards };
     game = Game<width, height>(config);
     for (int d = 0; d < 4; d++) {
