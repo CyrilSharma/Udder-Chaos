@@ -53,7 +53,7 @@ vector<Piece> random_pieces(int npieces, int width, int height) {
     pieces[i] = Piece {
       rand() % width,
       rand() % height,
-      rand() % 9
+      (rand() % 9) + 1,
     };
   }
   return pieces;

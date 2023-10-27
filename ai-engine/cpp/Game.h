@@ -4,6 +4,8 @@
 using namespace std;
 
 /*---- Helper Structures -----*/
+
+// Don't mess with the values here.
 enum Direction {
   RIGHT = 0,
   UP = 1,
@@ -96,11 +98,13 @@ struct Game {
   }
 
   static constexpr bitset<area()> right_edge_mask() {
-    bitset<area()> m = 0b0;
+    bitset<area()> res = 0b0;
     for (int i = 0; i < height; i++) {
-      area |= bitset<area()>{(0b1) << (i * width)};
+      bitset<area()> m {1};
+      m <<= (i * width + (width - 1));
+      res |= m;
     }
-    return area;
+    return res;
   }
 
   static constexpr bitset<area()> up_edge_mask() {
@@ -111,12 +115,13 @@ struct Game {
   }
 
   static constexpr bitset<area()> left_edge_mask() {
-    bitset<area()> m = 0b0;
-    bitset<area()> row { 0b1 << (width - 1) };
+    bitset<area()> res = 0b0;
     for (int i = 0; i < height; i++) {
-      m |= row;
+      bitset<area()> m {1};
+      m <<= (i * width);
+      res |= m;
     }
-    return m;
+    return res;
   }
 
   static constexpr bitset<area()> down_edge_mask() {
@@ -174,10 +179,10 @@ struct Game {
           bitset<area()> msk{1};
           msk <<= (width * i + j);
           if ((players[k] & msk).any()) {
-            out.push_back(Piece { i, j, k });
+            out.push_back(Piece { i, j, k + 1});
             break;
           } else if ((enemies[k] & msk).any()) {
-            out.push_back(Piece { i, j, k + 4 });
+            out.push_back(Piece { i, j, k + 5 });
             break;
           }
         }
@@ -219,10 +224,10 @@ struct Game {
     for (auto p: config.pieces) {
       bitset<area()> msk {1};
       msk <<= p.i * width + p.j;
-      if (p.tp < 4) {
-        players[p.tp] |= msk;
+      if (p.tp < 5) {
+        players[p.tp - 1] |= msk;
       } else {
-        enemies[p.tp & 0b11] |= msk;
+        enemies[(p.tp - 1) & 0b11] |= msk;
       }
     }
     for (int i = 0; i < height; i++) {
@@ -243,7 +248,7 @@ struct Game {
 
   /*
   * choice is expected to be the numerical
-  * index of the card you wish to play.
+  * index IN YOUR HAND of the card you wish to play.
   * we do not check if the card is in your hand.
   */
 
@@ -330,26 +335,45 @@ struct Game {
       right_edge_mask(), up_edge_mask(),
       left_edge_mask(), down_edge_mask()
     };
-    int shift[4] = { 1, width, -1, -width };
+    uint64_t shift[4] = { 1, width, 1, width };
 
     // Wall_mask contains all pieces aligned with a wall.
-    bitset<area()> wall_mask;
+    bitset<area()> wall_mask { 0 };
     bitset<area()> cur_mask = impassible;
     while (cur_mask != 0) {
       // Everywhere there was a wall last time, assume there's a wall this time.
-      cur_mask = (shift[d] > 0) ? (cur_mask << shift[d]) : (cur_mask >> -shift[d]);
+      cur_mask = (d < 2) ? (cur_mask << shift[d]) : (cur_mask >> shift[d]);
       // If there isn't a unit at this square / went off the grid, remove from mask.
       cur_mask &= player_mask & edge_masks[d];
       wall_mask |= cur_mask;
     }
 
-    // Shift once in the desired direction, keep all blocked pieces where they are.
-    player_mask = (shift[d] > 0) ? (~wall_mask & player_mask) << shift[d] :
-      (~wall_mask & player_mask) >> -shift[d];
+    /* cout<<"d: "<<d<<"\n";
+    cout<<"~wall: "<< ~wall_mask <<"\n";
+    cout<<"~wall and player: "<< (~wall_mask & player_mask) <<"\n";
+    cout<<"player_mask: "<< player_mask <<"\n"; */
 
-    // Move the score mask identiclaly to the player mask.
-    score_mask = (shift[d] > 0) ? (~wall_mask & score_mask) << shift[d] :
-      (~wall_mask & score_mask) >> -shift[d];
+    // Move pieces in the desired direction.
+    auto moved = (d < 2) ? (~wall_mask & player_mask) << shift[d] :
+      (~wall_mask & player_mask) >> shift[d];
+    
+    // If we shifted into a wall or off the edge, delete the shifted bit.
+    // Place anything that hit a wall back where it was.
+    // Place anything that hit an edge back where it was.
+    player_mask =
+      (moved & ~edge_masks[(d + 2) % 2] & ~impassible) |
+      (player_mask & wall_mask) |
+      (player_mask & edge_masks[d]);
+
+
+    // Move the score mask identically to the player mask.
+    moved = (d < 2) ? (~wall_mask & score_mask) << shift[d] :
+      (~wall_mask & score_mask) >> shift[d];
+    score_mask =
+      (moved & ~edge_masks[(d + 2) % 2] & ~impassible) |
+      (score_mask & wall_mask) |
+      (score_mask & edge_masks[d]);
+
 
     // For every player that doesn't have a cow, delete the corresponding cow.
     cows &= ~(player_mask & ~score_mask);
