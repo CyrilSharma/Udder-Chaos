@@ -63,10 +63,10 @@ TEST_CASE("Testing Player Movement") {
   vector<vector<int>> board(height, vector<int>(width));
 
   vector<Piece> pieces = {
-    Piece { 5, 5, 1 },
-    Piece { 5, 11, 1 },
-    Piece { 11, 5, 1 },
-    Piece { 11, 11, 1 },
+    Piece(5, 5, 1),
+    Piece(5, 11, 1),
+    Piece(11, 5, 1),
+    Piece(11, 11, 1),
   };
 
   const int ndirs = 3;
@@ -190,24 +190,24 @@ TEST_CASE("Testing Player Movement") {
 
   SUBCASE("Other-Collision Test") {
     /*
-     * 11 ====== 1
-     * 11 ====== 1
-     * ===========
-     * ===========
-     * ===========
-     * 11 ==== 11
+     * 11 ======= 2
+     * 11 ======= 2
+     * ============
+     * ============
+     * ============
+     * 22 ==== 22 =
      */
     pieces.clear();
-    pieces.push_back( Piece { 0, 0, 1 } );
-    pieces.push_back( Piece { 0, 1, 1 } );
-    pieces.push_back( Piece { 0, 10, 2 } );
-    pieces.push_back( Piece { 1, 0, 1 } );
-    pieces.push_back( Piece { 1, 1, 1 } );
-    pieces.push_back( Piece { 1, 10, 2 } );
-    pieces.push_back( Piece { 2, 0, 2 } );
-    pieces.push_back( Piece { 2, 1, 2 } );
-    pieces.push_back( Piece { 2, 8, 2 } );
-    pieces.push_back( Piece { 2, 9, 2 } );
+    pieces.push_back( Piece(0, 0, 1) );
+    pieces.push_back( Piece(0, 1, 1) );
+    pieces.push_back( Piece(0, 10, 2) );
+    pieces.push_back( Piece(1, 0, 1) );
+    pieces.push_back( Piece(1, 1, 1 ) );
+    pieces.push_back( Piece(1, 10, 2) );
+    pieces.push_back( Piece(2, 0, 2) );
+    pieces.push_back( Piece(2, 1, 2) );
+    pieces.push_back( Piece(2, 8, 2) );
+    pieces.push_back( Piece(2, 9, 2) );
     config = { board, pieces, cards };
     game = Game<width, height>(config);
     for (int d = 0; d < 4; d++) {
@@ -217,4 +217,78 @@ TEST_CASE("Testing Player Movement") {
     }
     verify();
   }
+}
+
+/*
+ * Ensure cows are removed from the mask,
+ * And the score mask is correctly updated.
+ */
+
+TEST_CASE("Test Cow Capturing") {
+  const int width = 16, height = 16;
+
+  int ncows = 0;
+  vector<vector<int>> board(height, vector<int>(width));
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      if (rand() % 4 == 0) {
+        board[i][j] = 2;
+        ncows += 1;
+      }
+    }
+  }
+
+  vector<Piece> pieces = { Piece(5, 5, 1) };
+
+  const int ndirs = 3;
+  const int ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
+
+  GameConfig config = { board, pieces, cards };
+  auto game = Game<width, height>(config);
+  Direction dirs[4] = {
+    Direction::RIGHT, Direction::UP,
+    Direction::LEFT, Direction::DOWN,
+  };
+
+  auto easy_update = [&](Direction dir) {
+    int dx[4] = { 1, 0, -1, 0 };
+    int dy[4] = { 0, 1, 0, -1 };
+    for (int i = 0; i < pieces.size(); i++) {
+      auto &p = pieces[i];
+      auto ni = p.i + dy[dir];
+      auto nj = p.j + dx[dir];
+      if (ni < 0 || ni >= height || nj < 0 || nj >= width)
+        continue;
+      p.i = ni, p.j = nj;
+      if (board[ni][nj] == 2)
+        pieces[i].score |= 1;
+    }
+  };
+
+  auto verify = [&]() {
+    if (checkv(game.viewPieces(), pieces)) return;
+    cout<<"Expected - \n";
+    printv(pieces);
+    cout<<"\n";
+
+    cout<<"Got - \n";
+    printv(game.viewPieces());
+    cout<<"\n";
+
+    FAIL("Pieces were not updated properly!");
+  };
+
+  for (int i = 0; i < 100; i++) {
+    auto d = dirs[rand() % 4];
+    game.play_player_movement(d);
+    easy_update(d);
+    verify();
+  }
+
+  int total_score = 0;
+  for (auto &p: pieces) {
+    total_score += p.score;
+  }
+  REQUIRE((ncows - total_score) == game.cows.count());
 }

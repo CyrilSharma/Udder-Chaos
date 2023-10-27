@@ -35,17 +35,21 @@ ostream& operator<<(ostream& os, const Card& card) {
 }
 
 struct Piece {
-  int i, j, tp;
+  int i, j, tp, score;
+  Piece(): i(0), j(0), tp(0), score(0) {}
+  Piece(int i, int j, int tp, int score = 0) :
+    i(i), j(j), tp(tp), score(score) {}
   bool operator==(const Piece& other) const {
     return i == other.i && j == other.j
-      && tp == other.tp;
+      && tp == other.tp && score == other.score;
   }
   bool operator!=(const Piece& other) const {
     return !(*this == other);
   }
 };
 ostream& operator<<(ostream& os, const Piece& p) {
-  os << "Piece: ( " << p.i << ", " << p.j << ", " << p.tp << " )\n";
+  os << "Piece: ( " << p.i << ", " << p.j << ", "
+    << p.tp << ", " << p.score << " )\n";
   return os;
 }
 

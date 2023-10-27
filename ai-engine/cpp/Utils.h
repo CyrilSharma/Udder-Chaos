@@ -63,11 +63,11 @@ vector<vector<int>> random_board(int width, int height) {
 vector<Piece> random_pieces(int npieces, int width, int height) {
   vector<Piece> pieces(npieces);
   for (int i = 0; i < npieces; i++) {
-    pieces[i] = Piece {
+    pieces[i] = Piece(
       rand() % width,
       rand() % height,
-      (rand() % 9) + 1,
-    };
+      (rand() % 9) + 1
+    );
   }
   return pieces;
 }

@@ -126,10 +126,13 @@ struct Game {
           bitset<area()> msk{1};
           msk <<= (width * i + j);
           if ((players[k] & msk).any()) {
-            out.push_back(Piece { i, j, k + 1});
+            out.push_back(Piece(
+              i, j, k + 1,
+              (player_scores[k] & msk).any()
+            ));
             break;
           } else if ((enemies[k] & msk).any()) {
-            out.push_back(Piece { i, j, k + 5 });
+            out.push_back(Piece(i, j, k + 5));
             break;
           }
         }
@@ -344,8 +347,8 @@ struct Game {
       (score_mask & edge_masks[d]);
 
 
-    // For every player that doesn't have a cow, delete the corresponding cow.
-    cows &= ~(player_mask & ~score_mask);
+    // Every player that doesn't have a cow
+    auto cow_less = ~(player_mask & ~score_mask);
 
     // Kill enemies the player hits.
     for (int i = 0; i < 4; i++) {
@@ -354,6 +357,7 @@ struct Game {
 
     // The score is 1 for any player on a cow.
     score_mask |= (player_mask & cows);
+    cows &= cow_less;
 
     players[player_id] = player_mask;
     player_scores[player_id] = score_mask;
