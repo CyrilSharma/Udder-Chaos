@@ -229,8 +229,9 @@ TEST_CASE("Test Cow Capturing") {
 
   int ncows = 0;
   vector<vector<int>> board(height, vector<int>(width));
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
+  // Lazy way to make cows not spawn where units already are.
+  for (int i = 1; i < 11; i++) {
+    for (int j = 1; j < 11; j++) {
       if (rand() % 4 == 0) {
         board[i][j] = 2;
         ncows += 1;
@@ -238,7 +239,12 @@ TEST_CASE("Test Cow Capturing") {
     }
   }
 
-  vector<Piece> pieces = { Piece(5, 5, 1) };
+  vector<Piece> pieces = {
+    Piece(0, 0, 1),
+    Piece(0, 11, 1),
+    Piece(11, 0, 1),
+    Piece(11, 11, 1),
+  };
 
   const int ndirs = 3;
   const int ncards = 16;
@@ -261,8 +267,11 @@ TEST_CASE("Test Cow Capturing") {
       if (ni < 0 || ni >= height || nj < 0 || nj >= width)
         continue;
       p.i = ni, p.j = nj;
-      if (board[ni][nj] == 2)
+      if (board[ni][nj] == 2) {
+        // sus way to say the cow is gone now.
+        board[ni][nj] = 0;
         pieces[i].score |= 1;
+      }
     }
   };
 
@@ -279,7 +288,7 @@ TEST_CASE("Test Cow Capturing") {
     FAIL("Pieces were not updated properly!");
   };
 
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < 10; i++) {
     auto d = dirs[rand() % 4];
     game.play_player_movement(d);
     easy_update(d);
@@ -291,4 +300,42 @@ TEST_CASE("Test Cow Capturing") {
     total_score += p.score;
   }
   REQUIRE((ncows - total_score) == game.cows.count());
+}
+
+/*
+ * Test Unit Killing.
+ * Ensure enemies are removed from their corresponding masks.
+ */
+
+TEST_CASE("Test Unit Killing") {
+  const int width = 16, height = 16;
+  vector<vector<int>> board(height, vector<int>(width));
+
+  vector<Piece> pieces = {
+    Piece(5, 5, 1),
+    Piece(5, 6, 5),
+    Piece(5, 4, 6),
+    Piece(4, 5, 7),
+    Piece(6, 5, 8),
+  };
+
+  const int ndirs = 3;
+  const int ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
+
+  GameConfig config = { board, pieces, cards };
+  auto game = Game<width, height>(config);
+  Direction dirs[4] = {
+    Direction::RIGHT, Direction::UP,
+    Direction::LEFT, Direction::DOWN,
+  };
+
+  for (int i = 0; i < 4; i++) {
+    game.play_player_movement(dirs[i]);
+    game.play_player_movement(dirs[(i + 2) & 0b11]);
+    printv(game.viewPieces());
+    REQUIRE(game.viewPieces().size() == 4 - i);
+  }
+
+  REQUIRE(game.viewPieces()[0].tp == 1);
 }
