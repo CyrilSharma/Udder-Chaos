@@ -251,7 +251,7 @@ struct Game {
     int shift[4] = { 1, width, 1, width };
 
     bitset<area()> all_enemies { 0 };
-    for (int i = player_id + 1; i != player_id; i = (i + 1) & 0b11) {
+    for (int i = choice + 1; i != choice; i = (i + 1) & 0b11) {
       all_enemies |= enemies[i];
     }
 
@@ -268,8 +268,13 @@ struct Game {
     }
 
     // Shift once in the desired direction, keep all blocked pieces where they are.
-    enemy_mask = (d < 2) ? (~wall_mask & enemy_mask) << shift[d] :
+    auto moved = (d < 2) ? (~wall_mask & enemy_mask) << shift[d] :
       (~wall_mask & enemy_mask) >> shift[d];
+
+    enemy_mask =
+      (moved & ~edge_masks[(d + 2) % 4] & ~impassible) |
+      (enemy_mask & wall_mask) |
+      (enemy_mask & edge_masks[d]);
 
     // Kill players the enemy hits.
     for (int i = 0; i < 4; i++) {

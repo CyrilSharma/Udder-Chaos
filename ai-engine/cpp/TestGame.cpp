@@ -333,7 +333,6 @@ TEST_CASE("Test Unit Killing") {
   for (int i = 0; i < 4; i++) {
     game.play_player_movement(dirs[i]);
     game.play_player_movement(dirs[(i + 2) & 0b11]);
-    printv(game.viewPieces());
     REQUIRE(game.viewPieces().size() == 4 - i);
   }
 
@@ -359,17 +358,12 @@ TEST_CASE("Test Enemy Movement / Logic") {
   vector<Piece> player_pieces(npieces);
   vector<Piece> enemy_pieces(npieces);
 
-  const int enemy_choice = 5;
+  const int enemy_tp = 5;
   int lx[npieces] = { 0, 1, 2, 3 };
   int ly[npieces] = { 0, 1, 2, 3 };
   for (int i = 0; i < npieces; i++) {
-    player_pieces[i].tp = 1;
-    player_pieces[i].i  = ly[i];
-    player_pieces[i].j  = lx[i];
-
-    enemy_pieces[i].tp = 5;
-    enemy_pieces[i].i  = ly[i];
-    enemy_pieces[i].j  = lx[i];
+    player_pieces[i] = Piece(ly[i], lx[i], 1);
+    enemy_pieces[i] = Piece(ly[i], lx[i], enemy_tp);
   }
 
   const int ndirs = 3;
@@ -388,7 +382,7 @@ TEST_CASE("Test Enemy Movement / Logic") {
   for (int i = 0; i < 1000; i++) {
     auto d = dirs[rand() % 4];
     game_p.play_player_movement(d);
-    game_e.play_enemy_movement(d, enemy_choice);
+    game_e.play_enemy_movement(d, enemy_tp - 5);
     auto cur_pieces1 = game_p.viewPieces();
     auto cur_pieces2 = game_e.viewPieces();
 
