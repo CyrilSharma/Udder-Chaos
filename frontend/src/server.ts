@@ -7,6 +7,11 @@ import { Player, initSeed } from "./game/Utils"
 //import seedrandom from 'seedrandom'
 import { JoinGameScreen } from "./screens/JoinGameScreen";
 
+const MoveType = {
+    PlayCard: 0,
+    RotateCard: 1
+}
+
 class Server {
     public color!: number;
     socket;
@@ -41,6 +46,7 @@ class Server {
 
         this.socket.on("player-list", (playerList) => {
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            console.log(playerList);
             createGameScreen.getPlayerList().setPlayers(playerList);
         });
 
@@ -69,10 +75,19 @@ class Server {
             this.color = color;
         });
 
-        this.socket.on("share-move", (cardIndex, color) => {
+        this.socket.on("share-move", (moveType, moveData, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
-            gameScreen.playCard(cardIndex, color);
-            console.log(`Server playing card: ${cardIndex}, color: ${color}`);
+            
+            switch (moveType) {
+                case MoveType.PlayCard:
+                    gameScreen.playCard(moveData["index"], color);
+                    console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
+                    break;
+                case MoveType.RotateCard:
+                    gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
+                    console.log(`Server rotating card: ${moveData["index"]} ${moveData["rotation"]}, color: ${color}`);
+                    break;
+            }
         });
     }
 
@@ -90,7 +105,12 @@ class Server {
 
     public async playCard(cardIndex: number, color: number) {
         console.log(`Sending play-card with index: ${cardIndex}`);
-        this.socket.emit("play-card", cardIndex, color);
+        this.socket.emit("make-move", MoveType.PlayCard, {"index": cardIndex}, color);
+    }
+
+    public async rotateCard(cardIndex: number, rotation: number, color: number) {
+        console.log(`Sending rotate-card with index: ${cardIndex}`);
+        this.socket.emit("make-move", MoveType.RotateCard, {"index": cardIndex, "rotation": rotation}, color);
     }
 
     public async leaveRoom() {

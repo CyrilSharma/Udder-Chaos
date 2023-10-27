@@ -121,5 +121,14 @@ export class Card extends Container {
         this.position.x += this.graphics.width / (2 * this.scale_on_focus);
         this.position.y += this.graphics.height / 2;
         this.scaled = false;
+    };
+
+    public rotateCard(rotation: number) {
+        console.log(this.dirs);
+        for (let i = 0; i < this.dirs.length; i++) {
+            this.dirs[i] = (this.dirs[i] + rotation) % 4
+        }
+        console.log(this.dirs);
+        this.drawArrow(this.graphics, 10 / 2, 10 * 0.7, 10 / 3, 10 / 10, this.dirs[0]);
     }
 }

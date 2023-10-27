@@ -2,6 +2,8 @@ import * as PIXI from 'pixi.js';
 import { navigation } from './utils/navigation';
 import { HomeScreen } from './screens/HomeScreen';
 import { GameScreen } from './screens/GameScreen';
+import server from "./server";
+
 
 /** The PixiJS app Application instance, shared across the project */
 export const app = new PIXI.Application<HTMLCanvasElement>({
@@ -100,6 +102,11 @@ async function init() {
         } else if (e.key === 'ArrowDown') {
             console.log('Down arrow key was pressed');
             key = 3;
+        } else if (e.key === 'Tab') {
+            console.log("rotate the first card!");
+            let gameScreen = navigation.currentScreen as GameScreen;
+            server.rotateCard(0, 2, 1);
+            gameScreen.rotateCard(0, 2, 1);
         }
         if (key == -1) return;
         navigation?.move(key);
