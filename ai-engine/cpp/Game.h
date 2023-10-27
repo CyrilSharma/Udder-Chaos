@@ -300,17 +300,17 @@ struct Game {
     auto moved = (d < 2) ? (~wall_mask & player_mask) << shift[d] :
       (~wall_mask & player_mask) >> shift[d];
     
-    cout<<"Moved - \n";
-    print_bitmask<width, height>(moved);
+    // cout<<"Moved - \n";
+    // print_bitmask<width, height>(moved);
 
-    cout<<"Move Masked - \n";
-    print_bitmask<width, height>(moved & ~edge_masks[(d + 2) % 4] & ~impassible);
+    // cout<<"Move Masked - \n";
+    // print_bitmask<width, height>(moved & ~edge_masks[(d + 2) % 4] & ~impassible);
 
-    cout<<"Wall Masked - \n";
-    print_bitmask<width, height>(player_mask & wall_mask);
+    // cout<<"Wall Masked - \n";
+    // print_bitmask<width, height>(player_mask & wall_mask);
 
-    cout<<"Edge Masked - \n";
-    print_bitmask<width, height>(player_mask & edge_masks[d]);
+    // cout<<"Edge Masked - \n";
+    // print_bitmask<width, height>(player_mask & edge_masks[d]);
     
     // If we shifted into a wall or off the edge, delete the shifted bit.
     // Place anything that hit a wall back where it was.
@@ -320,8 +320,8 @@ struct Game {
       (player_mask & wall_mask) |
       (player_mask & edge_masks[d]);
 
-    cout<<"Final Player Mask - \n";
-    print_bitmask<width, height>(player_mask);
+    // cout<<"Final Player Mask - \n";
+    // print_bitmask<width, height>(player_mask);
 
 
     // Move the score mask identically to the player mask.

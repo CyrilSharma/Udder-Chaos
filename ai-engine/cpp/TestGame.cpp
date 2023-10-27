@@ -93,17 +93,16 @@ TEST_CASE("Testing Player Movement") {
   };
 
   auto verify = [&]() {
-    if (!checkv(game.viewPieces(), pieces)) {
-      cout<<"Expected - \n";
-      printv(pieces);
-      cout<<"\n";
+    if (checkv(game.viewPieces(), pieces)) return;
+    cout<<"Expected - \n";
+    printv(pieces);
+    cout<<"\n";
 
-      cout<<"Got - \n";
-      printv(game.viewPieces());
-      cout<<"\n";
+    cout<<"Got - \n";
+    printv(game.viewPieces());
+    cout<<"\n";
 
-      FAIL("Pieces were not updated properly!");
-    }
+    FAIL("Pieces were not updated properly!");
   };
 
   SUBCASE("No walls, edges, collisions") {
@@ -129,6 +128,47 @@ TEST_CASE("Testing Player Movement") {
       cout<<"i: "<<i<<" dir: "<<dir<<endl;
       game.play_player_movement(dir);
       easy_update(dir);
+      verify();
+    }
+  }
+
+  // Presume walls are on checkerboard tiles.
+  auto wall_update = [&](Direction dir) {
+    for (Piece &p: pieces) {
+      auto ti = p.i;
+      auto tj = p.j;
+      switch (dir) {
+        case Direction::RIGHT: { p.j = min(p.j + 1, width - 1);  break; }
+        case Direction::UP:    { p.i = min(p.i + 1, height - 1); break; }
+        case Direction::LEFT:  { p.j = max(p.j - 1, 0);          break; }
+        case Direction::DOWN:  { p.i = max(p.i - 1, 0);          break; }
+      }
+      if ((p.i + p.j) % 2 == 0) {
+        p.i = ti, p.j = tj;
+      }
+    }
+  };
+
+  SUBCASE("Just Walls") {
+    int xs[4] = { 1, 15, 0, 15 };
+    int ys[4] = { 0, 0, 15, 14 };
+    for (int i = 0; i < 14; i++) {
+      pieces[i].i = ys[i];
+      pieces[i].j = xs[i];
+    }
+    vector<vector<int>> checkers(height, vector<int>(width));
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        checkers[i][j] = ((i + j) % 2) == 0;
+      }
+    }
+    config = { checkers, pieces, cards };
+    game = Game<width, height>(config);
+    for (int i = 0; i < 12; i++) {
+      auto dir = dirs[rand() % 4];
+      cout<<"i: "<<i<<" dir: "<<dir<<endl;
+      game.play_player_movement(dir);
+      wall_update(dir);
       verify();
     }
   }
