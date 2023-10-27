@@ -248,22 +248,28 @@ struct Game {
       right_edge_mask(), up_edge_mask(),
       left_edge_mask(), down_edge_mask()
     };
-    int shift[4] = { 1, width, -1, -width };
+    int shift[4] = { 1, width, 1, width };
+
+    bitset<area()> all_enemies { 0 };
+    for (int i = player_id + 1; i != player_id; i = (i + 1) & 0b11) {
+      all_enemies |= enemies[i];
+    }
 
     // Wall_mask contains all pieces aligned with a wall.
     bitset<area()> wall_mask;
-    bitset<area()> cur_mask = impassible;
+    bitset<area()> cur_mask = impassible | (edge_masks[d] & enemy_mask) | all_enemies;
     while (cur_mask != 0) {
-      // Everywhere there was a wall last time, assume there's a wall this time.
-      cur_mask = (shift[d] > 0) ? (cur_mask << shift[d]) : (cur_mask >> -shift[d]);
+      // Move backwards, and check if there's player units there.
+      int b = (d + 2) % 4;
+      cur_mask = (b < 2) ? (cur_mask << shift[b]) : (cur_mask >> shift[b]);
       // If there isn't a unit at this square / went off the grid, remove from mask.
-      cur_mask &= enemy_mask & edge_masks[d];
+      cur_mask &= enemy_mask & ~edge_masks[d];
       wall_mask |= cur_mask;
     }
 
     // Shift once in the desired direction, keep all blocked pieces where they are.
-    enemy_mask = (shift[d] > 0) ? (~wall_mask & enemy_mask) << shift[d] :
-      (~wall_mask & enemy_mask) >> -shift[d];
+    enemy_mask = (d < 2) ? (~wall_mask & enemy_mask) << shift[d] :
+      (~wall_mask & enemy_mask) >> shift[d];
 
     // Kill players the enemy hits.
     for (int i = 0; i < 4; i++) {
