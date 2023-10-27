@@ -37,8 +37,7 @@ export class Room {
         this.players.push(player);
 
         player.joinRoom();
-        socket.to(this.roomCode).emit("player-list", this.getPlayerNames());
-        this.io.to(this.roomCode).emit("receive-message", "ROOOM")
+        this.updatePlayerList(socket);
         console.log(socket.id + " joined the room: " + this.roomCode);
     }
 
@@ -52,19 +51,23 @@ export class Room {
 
         if (this.players.length > 0) {
             // There are still players in the game
-            this.io.to(this.roomCode).emit("player-list", this.getPlayerNames());
+            this.updatePlayerList(this.io);
         }
         else {
             removeRoom(this.roomCode);
         }
     }
 
-    getPlayerNames() {
-        let names = []
+    updatePlayerList(socket) {
+        socket.to(this.roomCode).emit("player-list", this.getPlayerInfo());
+    }
+
+    getPlayerInfo() {
+        let playerList = [];
         for (let player of this.players) {
-            names.push(player.name)
+            playerList.push({"name": player.name, "color": player.color});
         }
-        return names;
+        return playerList;
     }
 
     getPlayerIds() {
@@ -109,6 +112,7 @@ class Player {
         this.socket = socket;
         this.name = "Guest " + Math.floor(Math.random() * 1000);
         this.team = team;
+        this.color = -1;
         this.room = room;
         this.host = host;
 
@@ -116,6 +120,12 @@ class Player {
     }
 
     initSocket() {
+        this.socket.on("update-player-list", (name, color) => {
+            this.name = name;
+            this.color = color;
+            this.room.updatePlayerList(this.socket);
+        });
+
         this.socket.on("start-game", () => {
             this.room.startGame(this.socket);
         });
@@ -136,7 +146,7 @@ class Player {
 
     joinRoom() {
         this.socket.join(this.room.roomCode);
-        this.socket.emit("load-room", this.room.roomCode, this.room.getPlayerNames());
+        this.socket.emit("load-room", this.room.roomCode, this.room.getPlayerInfo());
         this.socket.emit("receive-message", "joined the room");
     }
 

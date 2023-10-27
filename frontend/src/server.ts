@@ -47,6 +47,7 @@ class Server {
 
         this.socket.on("player-list", (playerList) => {
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            console.log(playerList);
             createGameScreen.getPlayerList().setPlayers(playerList);
         });
 
