@@ -52,7 +52,6 @@ TEST_CASE("Testing the Creation Function") {
   );
 }
 
-
 /*
  * Ensure synchronized movement works
  * when there's no collisions or walls.

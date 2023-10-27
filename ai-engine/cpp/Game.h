@@ -28,18 +28,19 @@ struct Game {
     return (ncards * ncard_bits());
   }
 
+  static constexpr bitset<area()> top_card() {
+    bitset<queue_length()> m{(1LL << (ncard_bits())) - 1};
+    return m;
+  }
+
   static constexpr bitset<area()> player_hand_mask() {
-    bitset<queue_length()> m{0b0};
-    for (int i = 0; i < ncard_bits(); i++) {
-      bitset<queue_length()> unit{0b1};
-      m |= unit << i;
-    }
+    bitset<queue_length()> m{(1LL << (ncard_bits() * hand_size)) - 1};
     return m;
   }
 
   static constexpr bitset<area()> enemy_hand_mask() {
-    bitset<queue_length()> m1{(1LL << (ncard_bits() + hand_size)) - 1};
-    bitset<queue_length()> m2{(1LL << (hand_size)) - 1};
+    bitset<queue_length()> m1{(1LL << (2 * ncard_bits() * hand_size)) - 1};
+    bitset<queue_length()> m2{(1LL << (ncard_bits() * hand_size)) - 1};
     return (m1 ^ m2);
   }
 
@@ -203,7 +204,7 @@ struct Game {
   */
 
   void player_move(int choice) {
-    int index = (queue >> choice * ncard_bits()) & player_hand_mask();
+    int index = get_index(choice);
     auto moves = cards[index].moves;
     for (Direction move: moves) {
       if (turn % 3 == 2) {
@@ -226,7 +227,7 @@ struct Game {
   */
 
   void enemy_move(int choice) {
-    int index = (queue >> (choice * ncard_bits() + hand_size)) & player_hand_mask();
+    int index = get_index(choice + hand_size);
     auto moves = cards[index].moves;
     for (Direction move: moves) {
       play_enemy_movement(move, choice);
@@ -235,6 +236,16 @@ struct Game {
     player_id = (player_id + 1) & 0b11;
     turn += 1;
   } /* enemy_move() */
+
+  /*
+   * finds the card index corresponding 
+   * to your choice in the queue.
+   */
+
+  int get_index(int choice) {
+    auto m = (queue >> (choice * ncard_bits()) & top_card());
+    return m.to_ullong();
+  } /* get_index() */
 
 
   /*
