@@ -339,3 +339,67 @@ TEST_CASE("Test Unit Killing") {
 
   REQUIRE(game.viewPieces()[0].tp == 1);
 }
+
+/*
+ * Test Enemies.
+ * Enemy Movement / Kill Logic is identical to player Logic.
+ * Hence, I'm going to run two games, and ensure they match.
+ */
+
+TEST_CASE("Test Enemy Movement / Logic") {
+  const int width = 16, height = 16;
+  vector<vector<int>> board(height, vector<int>(width));
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      board[i][j] = rand() % 2;
+    }
+  }
+
+  const int npieces = 4;
+  vector<Piece> player_pieces(npieces);
+  vector<Piece> enemy_pieces(npieces);
+
+  const int enemy_choice = 5;
+  int lx[npieces] = { 0, 1, 2, 3 };
+  int ly[npieces] = { 0, 1, 2, 3 };
+  for (int i = 0; i < npieces; i++) {
+    player_pieces[i].tp = 1;
+    player_pieces[i].i  = ly[i];
+    player_pieces[i].j  = lx[i];
+
+    enemy_pieces[i].tp = 5;
+    enemy_pieces[i].i  = ly[i];
+    enemy_pieces[i].j  = lx[i];
+  }
+
+  const int ndirs = 3;
+  const int ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
+
+  GameConfig config_p = { board, player_pieces, cards };
+  GameConfig config_e = { board, enemy_pieces, cards };
+  auto game_p = Game<width, height>(config_p);
+  auto game_e = Game<width, height>(config_e);
+  Direction dirs[4] = {
+    Direction::RIGHT, Direction::UP,
+    Direction::LEFT, Direction::DOWN,
+  };
+
+  for (int i = 0; i < 1000; i++) {
+    auto d = dirs[rand() % 4];
+    game_p.play_player_movement(d);
+    game_e.play_enemy_movement(d, enemy_choice);
+    auto cur_pieces1 = game_p.viewPieces();
+    auto cur_pieces2 = game_e.viewPieces();
+
+    // Nothing should've died.
+    REQUIRE(cur_pieces1.size() == npieces);
+    REQUIRE(cur_pieces2.size() == npieces);
+    for (int j = 0; j < npieces; j++) {
+      REQUIRE((
+        (cur_pieces1[j].i == cur_pieces2[j].i) &&
+        (cur_pieces1[j].j == cur_pieces2[j].j)
+      ));
+    }
+  }
+}
