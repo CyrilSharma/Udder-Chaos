@@ -58,7 +58,7 @@ TEST_CASE("Testing the Creation Function") {
  * when there's no collisions or walls.
  */
 
-TEST_CASE("Testing Basic Movement (no player collisions, no walls)") {
+TEST_CASE("Testing Player Movement") {
   const int width = 16, height = 16;
   vector<vector<int>> board(height, vector<int>(width));
 
@@ -80,12 +80,9 @@ TEST_CASE("Testing Basic Movement (no player collisions, no walls)") {
     Direction::LEFT, Direction::DOWN,
   };
 
-  for (int i = 0; i < 5; i++) {
-    auto dir = dirs[rand() % 4];
-    game.play_player_movement(dir);
+  // Valid so long as nothing collides, and there aren't walls.
+  auto easy_update = [&](Direction dir) {
     for (Piece &p: pieces) {
-      // Valid so long as nothing collides, and nothing will
-      // Since everything is too far apart.
       switch (dir) {
         case Direction::RIGHT: { p.j = min(p.j + 1, width - 1);  break; }
         case Direction::UP:    { p.i = min(p.i + 1, height - 1); break; }
@@ -93,22 +90,46 @@ TEST_CASE("Testing Basic Movement (no player collisions, no walls)") {
         case Direction::DOWN:  { p.i = max(p.i - 1, 0);          break; }
       }
     }
+  };
+
+  auto verify = [&]() {
     if (!checkv(game.viewPieces(), pieces)) {
-      printv(game.viewPieces());
-      cout<<"\n";
+      cout<<"Expected - \n";
       printv(pieces);
       cout<<"\n";
 
-      auto print_bitmask = [](bitset<game.area()> b) {
-        for (int i = height - 1; i >= 0; i--) {
-          for (int j = 0; j < width; j++) {
-            cout<<b[i * width + j];
-          }
-          cout<<'\n';
-        }
-        cout<<"\n\n";
-      };
+      cout<<"Got - \n";
+      printv(game.viewPieces());
+      cout<<"\n";
+
       FAIL("Pieces were not updated properly!");
+    }
+  };
+
+  SUBCASE("No walls, edges, collisions") {
+    for (int i = 0; i < 5; i++) {
+      auto dir = dirs[rand() % 4];
+      game.play_player_movement(dir);
+      easy_update(dir);
+      verify();
+    }
+  }
+
+  SUBCASE("Just Edges") {
+    int xs[4] = { 0, 15, 0, 15 };
+    int ys[4] = { 0, 0, 15, 15 };
+    for (int i = 0; i < 4; i++) {
+      pieces[i].i = ys[i];
+      pieces[i].j = xs[i];
+    }
+    config = { board, pieces, cards };
+    game = Game<width, height>(config);
+    for (int i = 0; i < 12; i++) {
+      auto dir = dirs[rand() % 4];
+      cout<<"i: "<<i<<" dir: "<<dir<<endl;
+      game.play_player_movement(dir);
+      easy_update(dir);
+      verify();
     }
   }
 }

@@ -1,63 +1,9 @@
 #pragma once
 #include <bitset>
 #include <vector>
+#include "Utils.h"
+#include "Helpers.h"
 using namespace std;
-
-/*---- Helper Structures -----*/
-
-// Don't mess with the values here.
-enum Direction {
-  RIGHT = 0,
-  UP = 1,
-  LEFT = 2,
-  DOWN = 3
-};
-
-struct Card {
-  std::vector<Direction> moves;
-  bool operator==(const Card& other) const {
-    return moves == other.moves;
-  }
-  bool operator!=(const Card& other) const {
-    return moves != other.moves;
-  }
-};
-ostream& operator<<(ostream& os, const Card& card) {
-  os << "Card: ";
-  for (auto move: card.moves) {
-    switch (move) {
-      case RIGHT: { os << 'R'; break; }
-      case UP:    { os << 'U'; break; }
-      case LEFT:  { os << 'L'; break; }
-      case DOWN:  { os << 'D'; break; }
-    }
-  }
-  os << '\n';
-  return os;
-}
-
-struct Piece {
-  int i, j, tp;
-  bool operator==(const Piece& other) const {
-    return i == other.i && j == other.j
-      && tp == other.tp;
-  }
-  bool operator!=(const Piece& other) const {
-    return !(*this == other);
-  }
-};
-ostream& operator<<(ostream& os, const Piece& p) {
-  os << "Piece: ( " << p.i << ", " << p.j << ", " << p.tp << " )\n";
-  return os;
-}
-
-struct GameConfig {
-  vector<vector<int>> board;
-  vector<Piece> pieces;
-  vector<Card> cards;
-};
-
-/*--- Game Object ----*/
 
 /*
  * Why is this not in a cpp file?
@@ -348,10 +294,7 @@ struct Game {
       wall_mask |= cur_mask;
     }
 
-    /* cout<<"d: "<<d<<"\n";
-    cout<<"~wall: "<< ~wall_mask <<"\n";
-    cout<<"~wall and player: "<< (~wall_mask & player_mask) <<"\n";
-    cout<<"player_mask: "<< player_mask <<"\n"; */
+    print_bitmask<width, height>(player_mask);
 
     // Move pieces in the desired direction.
     auto moved = (d < 2) ? (~wall_mask & player_mask) << shift[d] :
@@ -364,6 +307,8 @@ struct Game {
       (moved & ~edge_masks[(d + 2) % 2] & ~impassible) |
       (player_mask & wall_mask) |
       (player_mask & edge_masks[d]);
+
+    print_bitmask<width, height>(player_mask);
 
 
     // Move the score mask identically to the player mask.

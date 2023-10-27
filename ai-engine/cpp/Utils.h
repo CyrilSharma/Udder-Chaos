@@ -1,6 +1,6 @@
 #pragma once
 #include <bits/stdc++.h> // Forgive me for my lazyness.
-#include "Game.h"
+#include "Helpers.h"
 using namespace std;
 
 /*--- Printers ----*/
@@ -17,6 +17,17 @@ void printvv(vector<vector<T>> v) {
   for (int i = 0; i < v.size(); i++) {
     printv(v[i]);
   }
+}
+
+template <int64_t W, int64_t H>
+void print_bitmask(bitset<W * H> b) {
+  for (int i = H - 1; i >= 0; i--) {
+    for (int j = 0; j < W; j++) {
+      cout<<b[i * W + j];
+    }
+    cout<<'\n';
+  }
+  cout<<"\n\n";
 }
 
 /*--- Verifiers ----*/
