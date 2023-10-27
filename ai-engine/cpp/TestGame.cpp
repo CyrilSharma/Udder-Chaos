@@ -396,3 +396,25 @@ TEST_CASE("Test Enemy Movement / Logic") {
     }
   }
 }
+
+/*
+ * Ensure the card queue works as intended
+ */
+
+TEST_CASE("Test Cards") {
+  const int width = 16, height = 16;
+  vector<vector<int>> board(height, vector<int>(width));
+  vector<Piece> pieces = { Piece(5, 5, 1) };
+  const int ndirs = 3, ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
+  GameConfig config = { board, pieces, cards };
+  auto game = Game<width, height>(config);
+
+  SUBCASE("Card Retrieval") {
+    for (int i = 0; i < ncards; i++) {
+      int idx = game.get_index(i);
+      CHECK(idx == i);
+    }
+  }
+  
+}

@@ -28,17 +28,17 @@ struct Game {
     return (ncards * ncard_bits());
   }
 
-  static constexpr bitset<area()> top_card() {
+  static constexpr bitset<queue_length()> top_card() {
     bitset<queue_length()> m{(1LL << (ncard_bits())) - 1};
     return m;
   }
 
-  static constexpr bitset<area()> player_hand_mask() {
+  static constexpr bitset<queue_length()> player_hand_mask() {
     bitset<queue_length()> m{(1LL << (ncard_bits() * hand_size)) - 1};
     return m;
   }
 
-  static constexpr bitset<area()> enemy_hand_mask() {
+  static constexpr bitset<queue_length()> enemy_hand_mask() {
     bitset<queue_length()> m1{(1LL << (2 * ncard_bits() * hand_size)) - 1};
     bitset<queue_length()> m2{(1LL << (ncard_bits() * hand_size)) - 1};
     return (m1 ^ m2);
@@ -238,6 +238,18 @@ struct Game {
   } /* enemy_move() */
 
   /*
+   * Pops the card of choice from the enemy hand. 
+   */
+  int pop_enemy(int choice) {
+    int index1 = get_index(choice + hand_size);
+    int index = get_index(choice + hand_size);
+    bitset<queue_length()> m = { (1 << (2 * ncard_bits() * hand_size)) - 1}
+    int card = (queue >> ncard_bits()) & ~m;
+    set_index(choice + hand_size, index);
+
+  } /* pop_enemy */
+
+  /*
    * finds the card index corresponding 
    * to your choice in the queue.
    */
@@ -246,6 +258,17 @@ struct Game {
     auto m = (queue >> (choice * ncard_bits()) & top_card());
     return m.to_ullong();
   } /* get_index() */
+
+  /*
+   * sets the specified index in the queue.
+   */
+
+  void set_index(int choice, int value) {
+    bitset<queue_length()> m { 0 };
+    bitset<queue_length()> b { value };
+    queue &= m;
+    queue |= (b << (choice * ncard_bits()));
+  } /* set_index() */
 
 
   /*
