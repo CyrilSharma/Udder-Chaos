@@ -284,9 +284,14 @@ struct Game {
     };
     uint64_t shift[4] = { 1, width, 1, width };
 
+    bitset<area()> all_players { 0 };
+    for (int i = player_id + 1; i != player_id; i = (i + 1) & 0b11) {
+      all_players |= players[i];
+    }
+
     // Wall_mask contains all pieces aligned with a wall.
     bitset<area()> wall_mask { 0 };
-    bitset<area()> cur_mask = impassible;
+    bitset<area()> cur_mask = impassible | (edge_masks[d] & player_mask) | all_players;
     while (cur_mask != 0) {
       // Move backwards, and check if there's player units there.
       int b = (d + 2) % 4;
@@ -300,23 +305,23 @@ struct Game {
     auto moved = (d < 2) ? (~wall_mask & player_mask) << shift[d] :
       (~wall_mask & player_mask) >> shift[d];
 
-    cout<<"Player Mask - \n";
-    print_bitmask<width, height>(player_mask);
+    // cout<<"Player Mask - \n";
+    // print_bitmask<width, height>(player_mask);
     
-    cout<<"Moved - \n";
-    print_bitmask<width, height>(moved);
+    // cout<<"Moved - \n";
+    // print_bitmask<width, height>(moved);
 
-    cout<<"Move Masked - \n";
-    print_bitmask<width, height>(moved & ~edge_masks[(d + 2) % 4] & ~impassible);
+    // cout<<"Move Masked - \n";
+    // print_bitmask<width, height>(moved & ~edge_masks[(d + 2) % 4] & ~impassible);
 
-    cout<<" Wall Mask - \n";
-    print_bitmask<width, height>(wall_mask);
+    // cout<<" Wall Mask - \n";
+    // print_bitmask<width, height>(wall_mask);
 
-    cout<<"Wall Masked - \n";
-    print_bitmask<width, height>(player_mask & wall_mask);
+    // cout<<"Wall Masked - \n";
+    // print_bitmask<width, height>(player_mask & wall_mask);
 
-    cout<<"Edge Masked - \n";
-    print_bitmask<width, height>(player_mask & edge_masks[d]);
+    // cout<<"Edge Masked - \n";
+    // print_bitmask<width, height>(player_mask & edge_masks[d]);
     
     // If we shifted into a wall or off the edge, delete the shifted bit.
     // Place anything that hit a wall back where it was.
@@ -326,8 +331,8 @@ struct Game {
       (player_mask & wall_mask) |
       (player_mask & edge_masks[d]);
 
-    cout<<"Final Player Mask - \n";
-    print_bitmask<width, height>(player_mask);
+    // cout<<"Final Player Mask - \n";
+    // print_bitmask<width, height>(player_mask);
 
 
     // Move the score mask identically to the player mask.

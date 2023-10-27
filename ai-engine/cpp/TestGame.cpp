@@ -180,14 +180,11 @@ TEST_CASE("Testing Player Movement") {
     }
     config = { board, pieces, cards };
     game = Game<width, height>(config);
-    /* for (int d = 0; d < 4; d++) {
+    for (int d = 0; d < 4; d++) {
       for (int i = 0; i < 25; i++) {
         game.play_player_movement(dirs[d]);
-        printv(game.viewPieces());
-        cout<<"\n";
       }
-    } */
-    game.play_player_movement(Direction::LEFT);
+    }
     verify();
   }
 }
