@@ -3,7 +3,7 @@ CC = g++
 CFLAGS = -g -std=c++17 -Wall
 
 # Source file and executable name
-DEPS = Game.h Utils.h
+DEPS = Game.h Utils.h Helpers.h
 SOURCE = TestGame.cpp
 EXECUTABLE = Test
 

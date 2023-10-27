@@ -125,7 +125,6 @@ TEST_CASE("Testing Player Movement") {
     game = Game<width, height>(config);
     for (int i = 0; i < 12; i++) {
       auto dir = dirs[rand() % 4];
-      cout<<"i: "<<i<<" dir: "<<dir<<endl;
       game.play_player_movement(dir);
       easy_update(dir);
       verify();
@@ -150,9 +149,9 @@ TEST_CASE("Testing Player Movement") {
   };
 
   SUBCASE("Just Walls") {
-    int xs[4] = { 1, 15, 0, 15 };
-    int ys[4] = { 0, 0, 15, 14 };
-    for (int i = 0; i < 14; i++) {
+    int xs[4] = { 1, 15, 15, 10 };
+    int ys[4] = { 0, 0, 14, 15 };
+    for (int i = 0; i < 4; i++) {
       pieces[i].i = ys[i];
       pieces[i].j = xs[i];
     }
@@ -166,10 +165,29 @@ TEST_CASE("Testing Player Movement") {
     game = Game<width, height>(config);
     for (int i = 0; i < 12; i++) {
       auto dir = dirs[rand() % 4];
-      cout<<"i: "<<i<<" dir: "<<dir<<endl;
       game.play_player_movement(dir);
       wall_update(dir);
       verify();
     }
+  }
+
+  SUBCASE("Collision Test") {
+    int xs[4] = { 0, 1, 0, 1 };
+    int ys[4] = { 0, 0, 1, 1 };
+    for (int i = 0; i < 4; i++) {
+      pieces[i].i = ys[i];
+      pieces[i].j = xs[i];
+    }
+    config = { board, pieces, cards };
+    game = Game<width, height>(config);
+    /* for (int d = 0; d < 4; d++) {
+      for (int i = 0; i < 25; i++) {
+        game.play_player_movement(dirs[d]);
+        printv(game.viewPieces());
+        cout<<"\n";
+      }
+    } */
+    game.play_player_movement(Direction::LEFT);
+    verify();
   }
 }

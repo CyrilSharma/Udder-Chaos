@@ -43,6 +43,7 @@ struct Game {
     return (m1 ^ m2);
   }
 
+  // Sprint 3 OPT; Remove edge masks and simply use walls for everything.
   static constexpr bitset<area()> right_edge_mask() {
     bitset<area()> res = 0b0;
     for (int i = 0; i < height; i++) {
@@ -287,30 +288,35 @@ struct Game {
     bitset<area()> wall_mask { 0 };
     bitset<area()> cur_mask = impassible;
     while (cur_mask != 0) {
-      // Everywhere there was a wall last time, assume there's a wall this time.
-      cur_mask = (d < 2) ? (cur_mask << shift[d]) : (cur_mask >> shift[d]);
+      // Move backwards, and check if there's player units there.
+      int b = (d + 2) % 4;
+      cur_mask = (b < 2) ? (cur_mask << shift[b]) : (cur_mask >> shift[b]);
       // If there isn't a unit at this square / went off the grid, remove from mask.
-      cur_mask &= player_mask & edge_masks[d];
+      cur_mask &= player_mask & ~edge_masks[d];
       wall_mask |= cur_mask;
     }
-
-    print_bitmask<width, height>(player_mask);
 
     // Move pieces in the desired direction.
     auto moved = (d < 2) ? (~wall_mask & player_mask) << shift[d] :
       (~wall_mask & player_mask) >> shift[d];
+
+    cout<<"Player Mask - \n";
+    print_bitmask<width, height>(player_mask);
     
-    // cout<<"Moved - \n";
-    // print_bitmask<width, height>(moved);
+    cout<<"Moved - \n";
+    print_bitmask<width, height>(moved);
 
-    // cout<<"Move Masked - \n";
-    // print_bitmask<width, height>(moved & ~edge_masks[(d + 2) % 4] & ~impassible);
+    cout<<"Move Masked - \n";
+    print_bitmask<width, height>(moved & ~edge_masks[(d + 2) % 4] & ~impassible);
 
-    // cout<<"Wall Masked - \n";
-    // print_bitmask<width, height>(player_mask & wall_mask);
+    cout<<" Wall Mask - \n";
+    print_bitmask<width, height>(wall_mask);
 
-    // cout<<"Edge Masked - \n";
-    // print_bitmask<width, height>(player_mask & edge_masks[d]);
+    cout<<"Wall Masked - \n";
+    print_bitmask<width, height>(player_mask & wall_mask);
+
+    cout<<"Edge Masked - \n";
+    print_bitmask<width, height>(player_mask & edge_masks[d]);
     
     // If we shifted into a wall or off the edge, delete the shifted bit.
     // Place anything that hit a wall back where it was.
@@ -320,8 +326,8 @@ struct Game {
       (player_mask & wall_mask) |
       (player_mask & edge_masks[d]);
 
-    // cout<<"Final Player Mask - \n";
-    // print_bitmask<width, height>(player_mask);
+    cout<<"Final Player Mask - \n";
+    print_bitmask<width, height>(player_mask);
 
 
     // Move the score mask identically to the player mask.

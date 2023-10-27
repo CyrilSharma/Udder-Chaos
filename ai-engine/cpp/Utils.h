@@ -33,6 +33,7 @@ void print_bitmask(bitset<W * H> b) {
 /*--- Verifiers ----*/
 template <typename T>
 bool checkv(vector<T> a, vector<T> b) {
+  if (a.size() != b.size()) return false;
   for (int i = 0; i < a.size(); i++) {
     if (a[i] != b[i]) return false;
   }
@@ -41,6 +42,7 @@ bool checkv(vector<T> a, vector<T> b) {
 
 template <typename T>
 bool checkvv(vector<vector<T>> a, vector<vector<T>> b) {
+  if (a.size() != b.size()) return false;
   for (int i = 0; i < a.size(); i++) {
     if (!checkv(a[i], b[i])) return false;
   }
