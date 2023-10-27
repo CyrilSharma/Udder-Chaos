@@ -17,8 +17,7 @@ class Server {
     socket;
 
     constructor() {
-        this.socket = io("http://localhost:3000");
-        //this.socket = io("udder-chaos.ue.r.appspot.com");
+        this.socket = io(import.meta.env.VITE_SERVER_URL, { secure: false });
 
         this.socket.on("connect", () => {
             console.log(`You connected with id: ${this.socket.id}`);

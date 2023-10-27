@@ -1,10 +1,10 @@
 import { Container, ObservablePoint, Sprite } from 'pixi.js';
 import { navigation } from '../utils/navigation';
-import { Background } from '../../ui_components/Background';
+import { Background } from '../ui_components/Background';
 import { SettingsScreen } from './SettingsScreen';
 import server from "../server";
 import { JoinGameScreen } from './JoinGameScreen';
-import { MenuButton } from '../../ui_components/MenuButton';
+import { MenuButton } from '../ui_components/MenuButton';
 
 /** Screen shows upon opening the website */
 export class HomeScreen extends Container {
@@ -23,7 +23,7 @@ export class HomeScreen extends Container {
         this.addChild(this.background);
 
         // Logo
-        this.logo = Sprite.from('./src/assets/LOGO.png');
+        this.logo = Sprite.from('../images/LOGO.png');
         this.logo.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.addChild(this.logo);
 

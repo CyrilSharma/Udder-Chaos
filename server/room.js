@@ -12,7 +12,7 @@ const COLOR = {
     PURPLE: 3,    
 }
 
-const MAX_PLAYERS = 2;
+const MAX_PLAYERS = 4;
 
 /*
  * Room class tracks all players within a room/game and related game information.

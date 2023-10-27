@@ -1,6 +1,10 @@
 const io = require("socket.io-client")
 
-const socket = io("http://localhost:3000")
+// Handles connections.
+var mode = process.env.NODE_ENV;
+const url = (mode == 'development') ?
+    'http://localhost:3000': 'http://udder-chaos.org:5000';
+const socket = io(url)
 
 socket.on("connect", () => {
     console.log(`You connected with id: ${socket.id}`)
