@@ -108,10 +108,6 @@ TEST_CASE("Testing Basic Movement (no player collisions, no walls)") {
         }
         cout<<"\n\n";
       };
-      print_bitmask(game.right_edge_mask());
-      print_bitmask(game.up_edge_mask());
-      print_bitmask(game.left_edge_mask());
-      print_bitmask(game.down_edge_mask());
       FAIL("Pieces were not updated properly!");
     }
   }
