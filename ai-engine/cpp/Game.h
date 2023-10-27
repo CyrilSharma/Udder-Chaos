@@ -1,29 +1,118 @@
 #pragma once
 #include <bitset>
+#include <vector>
 #include "Card.h"
 #include "GameConfig.h"
 using namespace std;
 
+enum Direction {
+  RIGHT = 0,
+  UP = 1,
+  LEFT = 2,
+  DOWN = 3
+};
+
+struct Card {
+  vector<Direction> moves;
+};
+
+struct GameConfig {
+  vector<vector<int>> board;
+  vector<tuple<int,int,int>> pieces;
+  vector<Card> cards;
+};
+
 /*
  * Why is this not in a cpp file?
  * See: https://softwareengineering.stackexchange.com/questions/373916/c-preferred-method-of-dealing-with-implementation-for-large-templates
+ * TLDR: templates need to be entirely in header files. There are hacky ways to get around it if you want shorter build time,
+ * But, we barely have any files so I'm gonna do the easiest approach.
+ * Alternatively, switch std::bitset to boost::bitset, and we won't need templates.
  */
 
-template <int64_t width, int64_t height, int64_t ncards, int64_t hand_size>
+template <int64_t width, int64_t height, int64_t ncards = 16, int64_t hand_size = 3>
 struct Game {
-  int64_t turn;
+  int64_t turn = 0;
   array<Card, ncards> cards;
-  bitset<ncards * card_bits> queue;
-  array<bitset<area>, 4> players;
-  array<bitset<area>, 4> player_scores;
+  bitset<ncards * card_bits> queue = { 0 };
+  array<bitset<area>, 4> players = { 0 };
+  array<bitset<area>, 4> player_scores = { 0 };
   array<bitset<area>, 4> enemies;
-  bitset<area> impassible;
-  bitset<area> score_tiles;
-  bitset<area> cows;
+  bitset<area> impassible = { 0 };
+  bitset<area> score_tiles = { 0 };
+  bitset<area> cows = { 0 };
+
+  /*
+   * Parses a GameConfig into a more efficient, internal
+   * representation.
+   */
 
   Game::Game(GameConfig config) {
-    
-  }
+    for (int i = 0; i < ncards; i++) {
+      queue |= (i << (i * ncard_bits()));
+      cards[i] = config.cards[i];
+    }
+    for (int i = 0; i < pieces.size(); i++) {
+      auto [i, j, p] = config.pieces[i];
+      if (p < 4) {
+        players[p] |= 1 << (i * height + width);
+      } else {
+        enemies[p & 0b11] |= 1 << (i * height + width);
+      }
+    }
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        int tile = board[i][j];
+        if (tile == 1) {
+          impassible |= 1 << (i * height + width);
+        } else if (tile == 2) {
+          score_tiles |= 1 << (i * height + width);
+          cows |= 1 << (i * height + width);
+        }
+      }
+    }
+  } /* Game() */
+
+  /*
+   * Used for debugging.
+   * Renders a few masks to show the state.
+   */
+
+  Game::render() {
+    // Render Player - Enemy Mask.
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        char c = ' ';
+        for (int k = 0; k < 4; k++) {
+          if (players[k] & (1 << (width * i + j)) == 1) {
+            c = k + '0';
+            break;
+          }
+          if (enemies[k] & (1 << (width * i + j)) == 1) {
+            c = k + '4';
+            break;
+          }
+        }
+        cout << c;
+      }
+      cout << '\n';
+    }
+
+    // Render Board
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        char c = ' ';
+        if (impassible & (1 << (width * i + j))) {
+          c = '1';
+        } else if (cows & (1 << (width * i + j))) {
+          c = '2'
+        }
+        cout << c;
+      }
+      cout << '\n';
+    }
+    cout<<endl;
+  } /* render() */
 
   /*
   * choice is expected to be the numerical
@@ -99,7 +188,7 @@ struct Game {
     }
 
     enemies[choice] = player_mask;
-  }
+  } /* play_enemy_movement() */
 
   /*
   * Moves the current piece in the desired direction.
@@ -155,6 +244,7 @@ struct Game {
    */
 
   constexpr int64_t area() { return (width * height); }
+
   constexpr int64_t ncard_bits() {
     return 1 << (64 -__builtin_clz(ncards - 1));
   }
@@ -202,4 +292,4 @@ struct Game {
     }
     return m;
   }
-}
+};
