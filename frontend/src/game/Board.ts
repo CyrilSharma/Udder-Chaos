@@ -85,8 +85,12 @@ export class Board extends Container {
     }
 
     // Anything that should happen when the game ends will go here eventually
-    public endGame() {
-        
+    public endGame(success: boolean, message: string) {
+        if (success) {
+            this.winScreen.visible = true;
+        } else {
+            this.loseScreen.visible = true;
+        }
     }
 
     // Takes a board update, and performs corresponding updates and rerenders at the end.
