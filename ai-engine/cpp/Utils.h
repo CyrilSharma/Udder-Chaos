@@ -19,17 +19,6 @@ void printvv(vector<vector<T>> v) {
   }
 }
 
-template <int64_t W, int64_t H>
-void print_bitmask(bitset<W * H> b) {
-  for (int i = H - 1; i >= 0; i--) {
-    for (int j = 0; j < W; j++) {
-      cout<<b[i * W + j];
-    }
-    cout<<'\n';
-  }
-  cout<<"\n\n";
-}
-
 /*--- Verifiers ----*/
 template <typename T>
 bool checkv(vector<T> a, vector<T> b) {

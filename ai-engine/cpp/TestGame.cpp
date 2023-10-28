@@ -24,11 +24,8 @@ TEST_CASE("Testing the Creation Function") {
   const int ncards = 16;
   auto cards = random_cards(ndirs, ncards);
 
-  GameConfig config = {
-    board, pieces, cards
-  };
-  const int hand_size = 3;
-  auto game = Game<width, height, ncards, hand_size>(config);
+  auto config = GameConfig(board, pieces, cards);
+  auto game = Game(config);
 
   CHECK_MESSAGE(
     checkvv(game.viewBoard(), board),
@@ -51,10 +48,6 @@ TEST_CASE("Testing the Creation Function") {
     checkv(game.viewCards(), cards),
     "Cards do not match Input!"
   );
-
-  cout << "UWU: " << endl; printv(game.viewPieces());
-  cout << endl << endl;
-  printvv(game.boardString());
 }
 
 /*
@@ -63,8 +56,15 @@ TEST_CASE("Testing the Creation Function") {
  */
 
 TEST_CASE("Testing Player Movement") {
+  Direction dirs[4] = {
+    Direction::RIGHT, Direction::UP,
+    Direction::LEFT, Direction::DOWN,
+  };
   const int width = 16, height = 16;
   vector<vector<int>> board(height, vector<int>(width));
+
+  const int ndirs = 3, ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
 
   vector<Piece> pieces = {
     Piece(5, 5, 1),
@@ -73,16 +73,7 @@ TEST_CASE("Testing Player Movement") {
     Piece(11, 11, 1),
   };
 
-  const int ndirs = 3;
-  const int ncards = 16;
-  auto cards = random_cards(ndirs, ncards);
-
   GameConfig config = { board, pieces, cards };
-  auto game = Game<width, height>(config);
-  Direction dirs[4] = {
-    Direction::RIGHT, Direction::UP,
-    Direction::LEFT, Direction::DOWN,
-  };
 
   // Valid so long as nothing collides, and there aren't walls.
   auto easy_update = [&](Direction dir) {
@@ -96,25 +87,26 @@ TEST_CASE("Testing Player Movement") {
     }
   };
 
-  auto verify = [&]() {
-    if (checkv(game.viewPieces(), pieces)) return;
+  auto verify = [&](Game &g) {
+    if (checkv(g.viewPieces(), pieces)) return;
     cout<<"Expected - \n";
     printv(pieces);
     cout<<"\n";
 
     cout<<"Got - \n";
-    printv(game.viewPieces());
+    printv(g.viewPieces());
     cout<<"\n";
 
     FAIL("Pieces were not updated properly!");
   };
 
   SUBCASE("No walls, edges, collisions") {
+    auto g0 = Game(config);
     for (int i = 0; i < 5; i++) {
       auto dir = dirs[rand() % 4];
-      game.play_player_movement(dir);
+      g0.play_player_movement(dir);
       easy_update(dir);
-      verify();
+      verify(g0);
     }
   }
 
@@ -126,12 +118,12 @@ TEST_CASE("Testing Player Movement") {
       pieces[i].j = xs[i];
     }
     config = { board, pieces, cards };
-    game = Game<width, height>(config);
+    auto g1 = Game(config);
     for (int i = 0; i < 12; i++) {
       auto dir = dirs[rand() % 4];
-      game.play_player_movement(dir);
+      g1.play_player_movement(dir);
       easy_update(dir);
-      verify();
+      verify(g1);
     }
   }
 
@@ -166,12 +158,12 @@ TEST_CASE("Testing Player Movement") {
       }
     }
     config = { checkers, pieces, cards };
-    game = Game<width, height>(config);
+    auto g2 = Game(config);
     for (int i = 0; i < 12; i++) {
       auto dir = dirs[rand() % 4];
-      game.play_player_movement(dir);
+      g2.play_player_movement(dir);
       wall_update(dir);
-      verify();
+      verify(g2);
     }
   }
 
@@ -183,13 +175,13 @@ TEST_CASE("Testing Player Movement") {
       pieces[i].j = xs[i];
     }
     config = { board, pieces, cards };
-    game = Game<width, height>(config);
+    auto g3 = Game(config);
     for (int d = 0; d < 4; d++) {
       for (int i = 0; i < 25; i++) {
-        game.play_player_movement(dirs[d]);
+        g3.play_player_movement(dirs[d]);
       }
     }
-    verify();
+    verify(g3);
   }
 
   SUBCASE("Other-Collision Test") {
@@ -213,13 +205,13 @@ TEST_CASE("Testing Player Movement") {
     pieces.push_back( Piece(2, 8, 2) );
     pieces.push_back( Piece(2, 9, 2) );
     config = { board, pieces, cards };
-    game = Game<width, height>(config);
+    auto g4 = Game(config);
     for (int d = 0; d < 4; d++) {
       for (int i = 0; i < 25; i++) {
-        game.play_player_movement(dirs[d]);
+        g4.play_player_movement(dirs[d]);
       }
     }
-    verify();
+    verify(g4);
   }
 }
 
@@ -255,7 +247,7 @@ TEST_CASE("Test Cow Capturing") {
   auto cards = random_cards(ndirs, ncards);
 
   GameConfig config = { board, pieces, cards };
-  auto game = Game<width, height>(config);
+  auto game = Game(config);
   Direction dirs[4] = {
     Direction::RIGHT, Direction::UP,
     Direction::LEFT, Direction::DOWN,
@@ -328,7 +320,7 @@ TEST_CASE("Test Unit Killing") {
   auto cards = random_cards(ndirs, ncards);
 
   GameConfig config = { board, pieces, cards };
-  auto game = Game<width, height>(config);
+  auto game = Game(config);
   Direction dirs[4] = {
     Direction::RIGHT, Direction::UP,
     Direction::LEFT, Direction::DOWN,
@@ -376,8 +368,8 @@ TEST_CASE("Test Enemy Movement / Logic") {
 
   GameConfig config_p = { board, player_pieces, cards };
   GameConfig config_e = { board, enemy_pieces, cards };
-  auto game_p = Game<width, height>(config_p);
-  auto game_e = Game<width, height>(config_e);
+  auto game_p = Game(config_p);
+  auto game_e = Game(config_e);
   Direction dirs[4] = {
     Direction::RIGHT, Direction::UP,
     Direction::LEFT, Direction::DOWN,
@@ -387,18 +379,15 @@ TEST_CASE("Test Enemy Movement / Logic") {
     auto d = dirs[rand() % 4];
     game_p.play_player_movement(d);
     game_e.play_enemy_movement(d, enemy_tp - 5);
-    auto cur_pieces1 = game_p.viewPieces();
-    auto cur_pieces2 = game_e.viewPieces();
+  }
 
-    // Nothing should've died.
-    REQUIRE(cur_pieces1.size() == npieces);
-    REQUIRE(cur_pieces2.size() == npieces);
-    for (int j = 0; j < npieces; j++) {
-      REQUIRE((
-        (cur_pieces1[j].i == cur_pieces2[j].i) &&
-        (cur_pieces1[j].j == cur_pieces2[j].j)
-      ));
-    }
+  auto cur_pieces1 = game_p.viewPieces();
+  auto cur_pieces2 = game_e.viewPieces();
+  for (int j = 0; j < npieces; j++) {
+    REQUIRE((
+      (cur_pieces1[j].i == cur_pieces2[j].i) &&
+      (cur_pieces1[j].j == cur_pieces2[j].j)
+    ));
   }
 }
 
@@ -410,7 +399,7 @@ TEST_CASE("Test Cards") {
   const int reserve = 6;
   const int nelements = 16;
   const int nbits_per = 64 - __builtin_clzll(nelements - 1);
-  CardQueue<nelements, nbits_per> queue(reserve);
+  CardQueue queue(nelements, nbits_per, reserve);
   for (int i = 0; i < nelements; i++) {
     queue.set(i, i);
   } 
@@ -421,7 +410,7 @@ TEST_CASE("Test Cards") {
   }
   SUBCASE("Test Choose") {
     for (int i = reserve - 1; i < nelements; i++) {
-      REQUIRE(queue.choose(reserve - 1) == i);
+      CHECK(queue.choose(reserve - 1) == i);
     }
   }
 }

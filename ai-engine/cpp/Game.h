@@ -1,165 +1,85 @@
 #pragma once
-#include <bitset>
+#include <boost/dynamic_bitset.hpp>
 #include <vector>
 #include "CardQueue.h"
 #include "Utils.h"
 #include "Helpers.h"
-using namespace std;
+
+using dynamic_bitset = boost::dynamic_bitset<>;
 
 /*
  * Why is this not in a cpp file?
  * See: https://softwareengineering.stackexchange.com/questions/373916/c-preferred-method-of-dealing-with-implementation-for-large-templates
  * TLDR: templates need to be entirely in header files. There are hacky ways to get around it if you want shorter build time,
  * But, we barely have any files so I'm gonna do the easiest approach.
- * Alternatively, switch std::bitset to boost::bitset, and we won't need templates.
+ * Alternatively, switch std::bitset to boost::dynamic_bitset, and we won't need templates.
  */
 
-template <uint64_t width, uint64_t height, uint64_t ncards = 16, uint64_t hand_size = 3>
 struct Game {
   /*--- Utility Functions -----*/
-  static constexpr int64_t area() {
+  const int64_t area() {
     return (width * height);
   }
 
-  static constexpr int64_t ncard_bits() {
+  const int64_t ncard_bits() {
     return 64 -__builtin_clzll(ncards - 1);
   }
 
   // Sprint 3 OPT; Remove edge masks and simply use walls for everything.
-  static constexpr bitset<area()> right_edge_mask() {
-    bitset<area()> res = 0b0;
+  const dynamic_bitset right_edge_mask() {
+    dynamic_bitset res(area(), 0b0);
     for (int i = 0; i < height; i++) {
-      bitset<area()> m {1};
+      dynamic_bitset m(area(), 1);
       m <<= (i * width + (width - 1));
       res |= m;
     }
     return res;
   }
 
-  static constexpr bitset<area()> up_edge_mask() {
-    bitset<area()> m = 0b0;
-    bitset<area()> row { (0b1 << width) - 1 };
+  const dynamic_bitset up_edge_mask() {
+    dynamic_bitset m(area(), 0);
+    dynamic_bitset row(area(), (0b1 << width) - 1);
     m |= row << (width * (height - 1));
     return m;
   }
 
-  static constexpr bitset<area()> left_edge_mask() {
-    bitset<area()> res = 0b0;
+  const dynamic_bitset left_edge_mask() {
+    dynamic_bitset res(area(), 0);
     for (int i = 0; i < height; i++) {
-      bitset<area()> m {1};
+      dynamic_bitset m(area(), 1);
       m <<= (i * width);
       res |= m;
     }
     return res;
   }
 
-  static constexpr bitset<area()> down_edge_mask() {
-    bitset<area()> m = 0b0;
+  const dynamic_bitset down_edge_mask() {
+    dynamic_bitset m(area(), 0);
     for (int i = 0; i < width; i++) {
-      m |= (0b1) << i;
+      dynamic_bitset b(area(), 1);
+      m |= b << i;
     }
     return m;
   }
 
   /*--- Struct Members ---*/
+  const uint64_t width;
+  const uint64_t height;
+  const uint64_t ncards;
+  const uint64_t hand_size = 3;
+  const array<dynamic_bitset, 4> edge_masks;
   int64_t turn = 0;
   int64_t round = 0;
   int64_t player_id = 0;
-  array<Card, ncards> cards;
-  CardQueue<ncards, ncard_bits()> queue;
-  array<bitset<area()>, 6> cow_respawn = { 0 };
-  array<bitset<area()>, 4> players = { 0 };
-  array<bitset<area()>, 4> player_scores = { 0 };
-  array<bitset<area()>, 4> enemies;
-  bitset<area()> impassible = { 0 };
-  bitset<area()> cow_tiles = { 0 };
-  bitset<area()> cows = { 0 };
 
-  /*------ Debug + Testing ----------*/
-
-  /*
-   * Puts the board in a convenient state.
-   */
-
-  vector<vector<int>> viewBoard() {
-    vector<vector<int>> out(height, vector<int>(width));
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        out[i][j] = 0;
-        auto mask = bitset<area()>{1};
-        mask <<= (width * i + j);
-        if ((impassible & mask).any()) {
-          out[i][j] = 1;
-        } else if ((cows & mask).any()) {
-          out[i][j] = 2;
-        }
-      }
-    }
-    return out;
-  } /* viewBoard() */
-
-  /*
-   * Pretty string for debug printing
-   * mostly just copy of viewBoard
-   */
-
-  vector<vector<char>> boardString() {
-    // Empty space default to '.'
-    vector<vector<char>> out(height, vector<char>(width, '.'));
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        auto mask = bitset<area()>{1};
-        mask <<= (width * i + j);
-        if ((impassible & mask).any()) {
-          out[i][j] = '#'; //impassible
-        } else if ((cows & mask).any()) {
-          out[i][j] = 'O'; // cow?
-        }
-      }
-    }
-    return out;
-  } /* boardString() */
-
-  /*
-   * Puts the pieces in a convenient state.
-   */
-
-  vector<Piece> viewPieces() {
-    vector<Piece> out;
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        for (int k = 0; k < 4; k++) {
-          bitset<area()> msk{1};
-          msk <<= (width * i + j);
-          if ((players[k] & msk).any()) {
-            out.push_back(Piece(
-              i, j, k + 1,
-              (player_scores[k] & msk).any()
-            ));
-            break;
-          } else if ((enemies[k] & msk).any()) {
-            out.push_back(Piece(i, j, k + 5));
-            break;
-          }
-        }
-      }
-    }
-    return out;
-  } /* viewPieces() */
-
-  /*
-   * Puts the Cards in a convenient state.
-   */
-
-  vector<Card> viewCards() {
-    vector<Card> out(ncards);
-    for (uint64_t i = 0; i < ncards; i++) {
-      auto idx = queue.get(i);
-      out[i] = cards[idx];
-    }
-    return out;
-  } /* viewCards() */
-
+  CardQueue queue;
+  vector<Card> cards;
+  array<dynamic_bitset, 6> cow_respawn;
+  array<dynamic_bitset, 4> players;
+  array<dynamic_bitset, 4> player_scores;
+  array<dynamic_bitset, 4> enemies;
+  dynamic_bitset impassible;
+  dynamic_bitset cows;
 
   /*--- Game Logic -----*/
 
@@ -168,13 +88,35 @@ struct Game {
    * representation.
    */
 
-  Game(GameConfig config): queue(2 * hand_size) {
+  Game(GameConfig config):
+    width(config.board[0].size()),
+    height(config.board.size()),
+    ncards(config.cards.size()),
+    edge_masks({
+      right_edge_mask(), up_edge_mask(),
+      left_edge_mask(), down_edge_mask()
+    }),
+    queue(CardQueue(ncards, ncard_bits(), 2 * hand_size)),
+    impassible(dynamic_bitset(area(), 0)),
+    cows(dynamic_bitset(area(), 0)) {
+
+    for (int i = 0; i < 4; i++) {
+      players[i] = dynamic_bitset(area(), 0);
+      player_scores[i] = dynamic_bitset(area(), 0);
+      enemies[i] = dynamic_bitset(area(), 0);
+    }
+    for (int i = 0; i < 6; i++) {
+      cow_respawn[i] = dynamic_bitset(area(), 0);
+    }
+
+    cards.resize(ncards);
     for (uint64_t i = 0; i < ncards; i++) {
       cards[i] = config.cards[i];
       queue.set(i, i);
     }
+
     for (auto p: config.pieces) {
-      bitset<area()> msk {1};
+      dynamic_bitset msk(area(), 1);
       msk <<= p.i * width + p.j;
       if (p.tp < 5) {
         players[p.tp - 1] |= msk;
@@ -182,15 +124,15 @@ struct Game {
         enemies[(p.tp - 1) & 0b11] |= msk;
       }
     }
+
     for (int i = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
         int tile = config.board[i][j];
-        bitset<area()> m{1};
+        auto m = dynamic_bitset(area(), 1);
         m <<= (i * width + j);
         if (tile == 1) {
           impassible |= m;
         } else if (tile == 2) {
-          cow_tiles |= m;
           cows |= m;
         }
       }
@@ -202,7 +144,7 @@ struct Game {
    * -1 if AI, 1 if player, 0 if nobody has won yet.
    */
 
-  bool is_jover() {
+  int is_jover() {
     bool all_dead = true;
     for (int i = 0; i < 4; i++) {
       if (players[i].count()) continue;
@@ -210,6 +152,7 @@ struct Game {
       break;
     }
     if (all_dead) return -1;
+    return 0;
     // Need to implement score tiles...
   } /* is_jover() */
 
@@ -259,21 +202,21 @@ struct Game {
 
   void play_enemy_movement(Direction d, int choice) {
     auto enemy_mask = enemies[choice];
-    bitset<area()> edge_masks[4] = {
+    dynamic_bitset edge_masks[4] = {
       right_edge_mask(), up_edge_mask(),
       left_edge_mask(), down_edge_mask()
     };
-    int shift[4] = { 1, width, 1, width };
+    uint64_t shift[4] = { 1, width, 1, width };
 
-    bitset<area()> all_enemies { 0 };
+    auto all_enemies = dynamic_bitset(area(), 0);
     for (int i = choice + 1; i != choice; i = (i + 1) & 0b11) {
       all_enemies |= enemies[i];
     }
 
     // Wall_mask contains all pieces aligned with a wall.
-    bitset<area()> wall_mask;
-    bitset<area()> cur_mask = impassible | (edge_masks[d] & enemy_mask) | all_enemies;
-    while (cur_mask != 0) {
+    auto wall_mask = dynamic_bitset(area(), 0);
+    auto cur_mask = impassible | (edge_masks[d] & enemy_mask) | all_enemies;
+    while (cur_mask.any()) {
       // Move backwards, and check if there's player units there.
       int b = (d + 2) % 4;
       cur_mask = (b < 2) ? (cur_mask << shift[b]) : (cur_mask >> shift[b]);
@@ -307,21 +250,21 @@ struct Game {
   void play_player_movement(Direction d) {
     auto player_mask = players[player_id];
     auto score_mask = player_scores[player_id];
-    bitset<area()> edge_masks[4] = {
+    dynamic_bitset edge_masks[4] = {
       right_edge_mask(), up_edge_mask(),
       left_edge_mask(), down_edge_mask()
     };
     uint64_t shift[4] = { 1, width, 1, width };
 
-    bitset<area()> all_players { 0 };
+    auto all_players = dynamic_bitset(area(), 0);
     for (int i = player_id + 1; i != player_id; i = (i + 1) & 0b11) {
       all_players |= players[i];
     }
 
     // Wall_mask contains all pieces aligned with a wall.
-    bitset<area()> wall_mask { 0 };
-    bitset<area()> cur_mask = impassible | (edge_masks[d] & player_mask) | all_players;
-    while (cur_mask != 0) {
+    auto wall_mask = dynamic_bitset(area(), 0);
+    auto cur_mask = impassible | (edge_masks[d] & player_mask) | all_players;
+    while (cur_mask.any()) {
       // Move backwards, and check if there's player units there.
       int b = (d + 2) % 4;
       cur_mask = (b < 2) ? (cur_mask << shift[b]) : (cur_mask >> shift[b]);
@@ -365,4 +308,89 @@ struct Game {
     player_scores[player_id] = score_mask;
     cow_respawn[turn % 6] = prev & ~cows;
   } /* play_player_movement() */
+
+  /*------ Debug + Testing ----------*/
+
+  /*
+   * Puts the board in a convenient state.
+   */
+
+  vector<vector<int>> viewBoard() {
+    vector<vector<int>> out(height, vector<int>(width));
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        out[i][j] = 0;
+        auto mask = dynamic_bitset(area(), 1);
+        mask <<= (width * i + j);
+        if ((impassible & mask).any()) {
+          out[i][j] = 1;
+        } else if ((cows & mask).any()) {
+          out[i][j] = 2;
+        }
+      }
+    }
+    return out;
+  } /* viewBoard() */
+
+  /*
+   * Pretty string for debug printing
+   * mostly just copy of viewBoard
+   */
+
+  vector<vector<char>> boardString() {
+    // Empty space default to '.'
+    vector<vector<char>> out(height, vector<char>(width, '.'));
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        auto mask = dynamic_bitset(area(), 1);
+        mask <<= (width * i + j);
+        if ((impassible & mask).any()) {
+          out[i][j] = '#'; //impassible
+        } else if ((cows & mask).any()) {
+          out[i][j] = 'O'; // cow?
+        }
+      }
+    }
+    return out;
+  } /* boardString() */
+
+  /*
+   * Puts the pieces in a convenient state.
+   */
+
+  vector<Piece> viewPieces() {
+    vector<Piece> out;
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        for (int k = 0; k < 4; k++) {
+          auto msk = dynamic_bitset(area(), 1);
+          msk <<= (width * i + j);
+          if ((players[k] & msk).any()) {
+            out.push_back(Piece(
+              i, j, k + 1,
+              (player_scores[k] & msk).any()
+            ));
+            break;
+          } else if ((enemies[k] & msk).any()) {
+            out.push_back(Piece(i, j, k + 5));
+            break;
+          }
+        }
+      }
+    }
+    return out;
+  } /* viewPieces() */
+
+  /*
+   * Puts the Cards in a convenient state.
+   */
+
+  vector<Card> viewCards() {
+    vector<Card> out(ncards);
+    for (uint64_t i = 0; i < ncards; i++) {
+      auto idx = queue.get(i);
+      out[i] = cards[idx];
+    }
+    return out;
+  } /* viewCards() */
 };

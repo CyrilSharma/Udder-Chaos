@@ -1,5 +1,4 @@
 #pragma once
-#include <bitset>
 #include <vector>
 using namespace std;
 
@@ -57,4 +56,10 @@ struct GameConfig {
   vector<vector<int>> board;
   vector<Piece> pieces;
   vector<Card> cards;
+  GameConfig(
+    vector<vector<int>> board,
+    vector<Piece> pieces,
+    vector<Card> cards
+  ): board(board), pieces(pieces),
+     cards(cards) {}
 };

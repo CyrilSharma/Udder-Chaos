@@ -1,17 +1,26 @@
 #pragma once
-#include <bitset>
-using namespace std;
+#include <boost/dynamic_bitset.hpp>
+using dynamic_bitset = boost::dynamic_bitset<>;
 
-// This should be in a .cpp file. 
-template <int64_t elements, int64_t bits_per>
 struct CardQueue {
-  static constexpr int queue_length() { return bits_per * elements; }
-  static constexpr bitset<queue_length()> top_mask() {
-    return bitset<queue_length()> { (1ULL << bits_per) - 1};
+  const int queue_length() {
+    return bits_per * elements;
   }
-  int reserve = 0;
-  bitset<queue_length()> queue = { 0 };
-  CardQueue(int r): reserve(r) {}
+
+  const dynamic_bitset top_mask() {
+    return dynamic_bitset(
+      queue_length(),
+      (1ULL << bits_per) - 1
+    );
+  }
+
+  dynamic_bitset queue;
+  int elements, bits_per, reserve;
+  CardQueue(int nel, int nbits, int reserve):
+    elements(nel), bits_per(nbits),
+    reserve(reserve) {
+    queue = dynamic_bitset(queue_length());
+  }
 
   /*
    * Send an element from the reserve back.
@@ -20,7 +29,7 @@ struct CardQueue {
   int choose(int choice) {
     int used_idx = get(choice);
     int new_idx = get(reserve);
-    bitset<queue_length()> m { (1ULL << reserve) - 1 };
+    dynamic_bitset m(queue_length(), (1ULL << reserve) - 1);
     queue = ((queue >> bits_per) & ~m) | (queue & m);
     set(choice, new_idx);
     set(elements - 1, used_idx);
@@ -34,7 +43,7 @@ struct CardQueue {
 
   int get(int choice) {
     auto m = (queue >> (choice * bits_per) & top_mask());
-    return m.to_ullong();
+    return m.to_ulong();
   } /* get() */
 
   /*
@@ -43,7 +52,7 @@ struct CardQueue {
    */
 
   void set(int choice, uint64_t value) {
-    bitset<queue_length()> b { value };
+    dynamic_bitset b(queue_length(), value);
     queue &= ~(top_mask() << (choice * bits_per));
     queue |= (b << (choice * bits_per));
   } /* set() */
