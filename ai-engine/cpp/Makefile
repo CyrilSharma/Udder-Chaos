@@ -1,6 +1,8 @@
 # Compiler and compiler flags
 CC = g++
-CFLAGS = -g -std=c++17 -Wall
+CFLAGS = -std=c++17 -Wall
+DEBUG_FLAGS = -g
+OPTIMIZED_FLAGS = -O3
 
 # Source file and executable name
 LIBS = boost_1_83_0
@@ -9,11 +11,13 @@ SOURCE = TestGame.cpp
 EXECUTABLE = Test
 
 # Default target
-all: $(EXECUTABLE)
+all: debug
 
-# Compile the source file
-$(EXECUTABLE): $(SOURCE) $(DEPS)
-	$(CC) $(CFLAGS) -I $(LIBS) -o $(EXECUTABLE) $(SOURCE)
+debug: $(SOURCE) $(DEPS)
+	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -I $(LIBS) -o $(EXECUTABLE) $(SOURCE)
+
+build: $(SOURCE) $(DEPS)
+	$(CC) $(CFLAGS) $(OPTIMIZED_FLAGS) -I $(LIBS) -o $(EXECUTABLE) $(SOURCE)
 
 # Clean up object files and the executable
 clean:

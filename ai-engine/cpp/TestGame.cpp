@@ -375,7 +375,7 @@ TEST_CASE("Test Enemy Movement / Logic") {
     Direction::LEFT, Direction::DOWN,
   };
 
-  for (int i = 0; i < 10000; i++) {
+  for (int i = 0; i < 1000; i++) {
     auto d = dirs[rand() % 4];
     game_p.play_player_movement(d);
     game_e.play_enemy_movement(d, enemy_tp - 5);

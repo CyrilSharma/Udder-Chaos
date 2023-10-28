@@ -81,6 +81,9 @@ struct Game {
   array<dynamic_bitset, 4> enemies;
   dynamic_bitset impassible;
   dynamic_bitset cows;
+  dynamic_bitset all_enemies;
+  dynamic_bitset all_players;
+  dynamic_bitset wall_mask;
 
   /*--- Game Logic -----*/
 
@@ -101,7 +104,10 @@ struct Game {
     }),
     queue(CardQueue(ncards, ncard_bits(), 2 * hand_size)),
     impassible(dynamic_bitset(area(), 0)),
-    cows(dynamic_bitset(area(), 0)) {
+    cows(dynamic_bitset(area(), 0)),
+    all_enemies(dynamic_bitset(area(), 0)),
+    all_players(dynamic_bitset(area(), 0)),
+    wall_mask(dynamic_bitset(area(), 0)) {
 
     for (int i = 0; i < 4; i++) {
       players[i] = dynamic_bitset(area(), 0);
@@ -203,22 +209,20 @@ struct Game {
   * applying all necessary side-effects. 
   */
 
+
   void play_enemy_movement(Direction d, int choice) {
     auto enemy_mask = enemies[choice];
-    dynamic_bitset edge_masks[4] = {
-      right_edge_mask(), up_edge_mask(),
-      left_edge_mask(), down_edge_mask()
-    };
     uint64_t shift[4] = { 1, width, 1, width };
 
-    auto all_enemies = dynamic_bitset(area(), 0);
+    all_enemies.reset();
     for (int i = choice + 1; i != choice; i = (i + 1) & 0b11) {
       all_enemies |= enemies[i];
     }
 
     // Wall_mask contains all pieces aligned with a wall.
-    auto wall_mask = dynamic_bitset(area(), 0);
+    wall_mask.reset();
     auto cur_mask = impassible | (edge_masks[d] & enemy_mask) | all_enemies;
+
     while (cur_mask.any()) {
       // Move backwards, and check if there's player units there.
       int b = (d + 2) % 4;
@@ -253,19 +257,15 @@ struct Game {
   void play_player_movement(Direction d) {
     auto player_mask = players[player_id];
     auto score_mask = player_scores[player_id];
-    dynamic_bitset edge_masks[4] = {
-      right_edge_mask(), up_edge_mask(),
-      left_edge_mask(), down_edge_mask()
-    };
     uint64_t shift[4] = { 1, width, 1, width };
 
-    auto all_players = dynamic_bitset(area(), 0);
+    all_players.reset();
     for (int i = player_id + 1; i != player_id; i = (i + 1) & 0b11) {
       all_players |= players[i];
     }
 
     // Wall_mask contains all pieces aligned with a wall.
-    auto wall_mask = dynamic_bitset(area(), 0);
+    wall_mask.reset();
     auto cur_mask = impassible | (edge_masks[d] & player_mask) | all_players;
     while (cur_mask.any()) {
       // Move backwards, and check if there's player units there.
