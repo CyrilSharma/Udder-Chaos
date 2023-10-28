@@ -6,6 +6,16 @@
 #include "Utils.h"
 
 int main() {
+  // int x = 0; 
+  boost::dynamic_bitset<uint64_t> t(64, 0);
+  // bitset<64> s { 0 };
+  for (int i = 0; i < 1e8; i++) {
+    // x |= (x >> 1) & x;
+    t |= (t >> 1) & t;
+    // s |= (s >> 1) & s;
+  }
+  return 0 ;
+
   const int width = 16, height = 16;
   vector<vector<int>> board(height, vector<int>(width));
   for (int i = 0; i < height; i++) {
@@ -33,14 +43,4 @@ int main() {
     Direction::RIGHT, Direction::UP,
     Direction::LEFT, Direction::DOWN,
   };
-
-  // int x = 1982;
-  // boost::dynamic_bitset<uint64_t> thing(64, 0);
-  // std::bitset<64> y { 0 };
-  for (int i = 0; i < 1e8; i++) {
-    // auto d = dirs[i % 4];
-    // if (rand()) x = ~x;
-    // if (rand()) y = ~y; 
-    // if (rand()) thing = ~thing; // 50 TIMES SLOWER.
-  }
 }
