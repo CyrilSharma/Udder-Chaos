@@ -19,6 +19,7 @@ import {
     ActionType,
     random,
 } from './Utils';
+import { EndGameScreen } from '../ui_components/EndGameScreen';
 /**
  * Board class
  * Handles creation of board, placing obstacles, and stores all tiles and pieces
@@ -41,6 +42,10 @@ export class Board extends Container {
     public columns = 0;
     /** The size (width & height) of each board slot */
     public tileSize = 0;
+    /** The overlay to be displayed upon winning the game */
+    public winScreen: EndGameScreen;
+    /** THe overlay to be displayed upon losing the game */
+    public loseScreen: EndGameScreen;
     /** How many pieces each player countrols */
     public playerPieces: number[] = [];
 
@@ -51,9 +56,12 @@ export class Board extends Container {
 
         this.tilesContainer = new Container();
         this.addChild(this.tilesContainer);
-
         this.piecesContainer = new Container();
         this.addChild(this.piecesContainer);
+        this.winScreen = new EndGameScreen(true)
+        this.loseScreen = new EndGameScreen(false);
+        this.addChild(this.winScreen);
+        this.addChild(this.loseScreen);
     }
 
     // Creates the initial board with some config
@@ -65,6 +73,8 @@ export class Board extends Container {
         this.piecesContainer.visible = true;
         this.grid = config.grid;
         this.buildGame(config);
+        this.winScreen.visible = false;
+        this.loseScreen.visible = false;
     }
 
     // Anything that should happen when the game ends will go here eventually

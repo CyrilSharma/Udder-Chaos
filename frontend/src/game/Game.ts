@@ -5,6 +5,7 @@ import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
 import { GameState } from './GameState';
+
 // This seems a little redundant right now,
 // But it will house the cards as well,
 // And provide some callbacks maybe.
@@ -19,11 +20,14 @@ export class Game extends Container {
     public turnCount: number = 0;
     public turnLimit: number = 10; //debug limit - includes AI turns (simplest)
     public totalScore: number = 0;
+
     constructor() {
         super();
+
         this.board = new Board(this);
         this.cards = new CardQueue(this);
         this.gameState = new GameState(this);
+
         this.addChild(this.board);
         this.addChild(this.cards);
         this.addChild(this.gameState);
