@@ -1,9 +1,11 @@
-import { Container, Graphics, Color } from 'pixi.js';
+import { Container, Graphics, Color, RoundedRectangle } from 'pixi.js';
 import { Background } from '../ui_components/Background';
 
 import { Button, FancyButton } from '@pixi/ui';
 import { PlayerGameInfo } from '../ui_components/PlayerGameInfo';
 import { PlayerColorIcon } from '../ui_components/PlayerColorIcon';
+import { RoundedTriangle } from '../ui_components/RoundedTriangle';
+import { DayCounter } from '../ui_components/DayCounter';
 
 
 export class TestingScreen extends Container {
@@ -18,6 +20,8 @@ export class TestingScreen extends Container {
     private player4: PlayerGameInfo;
     private scoreDisplay: FancyButton;
     private playerIcon: PlayerColorIcon;
+    private triangle: RoundedTriangle;
+    private dayCounter: DayCounter;
 
     constructor() {
         /** Default Stuff */
@@ -44,6 +48,15 @@ export class TestingScreen extends Container {
 
         this.playerIcon = new PlayerColorIcon(0xFF0000);
 
+        this.triangle = new RoundedTriangle();
+        this.leftCol.addChild(this.triangle);
+
+        this.dayCounter = new DayCounter();
+        this.dayCounter.scale.x = 0.5;
+        this.dayCounter.scale.y = 0.5;
+        this.dayCounter.onPress.connect(() => this.dayCounter.cycleDay(this.dayCounter));
+        this.leftCol.addChild(this.dayCounter);
+
         this.leftCol.addChild(this.player1);
         this.leftCol.addChild(this.player2);
         this.leftCol.addChild(this.player3);
@@ -66,6 +79,11 @@ export class TestingScreen extends Container {
         this.player3.y = -50
         this.player4.y = 0;
         this.playerIcon.y = 90;
+        this.triangle.y = -290;
+        this.dayCounter.y = 100;
+        this.dayCounter.x = 400;
+        let count = 0;
     }
+
 
 }
