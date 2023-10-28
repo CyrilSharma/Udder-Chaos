@@ -139,7 +139,7 @@ export class Board extends Container {
 
             // If this player has no more pieces end the game
             if (this.playerPieces[target.type] == 0) {
-                this.game.endGame();
+                this.game.endGame(false, "HI");
             }
         }
     }
