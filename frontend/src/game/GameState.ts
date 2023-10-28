@@ -9,6 +9,7 @@ export class GameState extends Container {
     public color: Text;
     public turn: Text;
     public score: Text;
+    public day: Text;
 
     // We pass the game to allow for callbacks...
     constructor(game: Game) {
@@ -17,11 +18,13 @@ export class GameState extends Container {
         this.background = new Graphics();
         this.turn = new Text("If you are seeing this, something went wrong...");
         this.color = new Text("If you are seeing this, something went wrong...");
-        this.score = new Text("0")
+        this.score = new Text("0");
+        this.day = new Text("Day 0");
         this.addChild(this.background);
         this.addChild(this.turn);
         this.addChild(this.color);
         this.addChild(this.score);
+        this.addChild(this.day);
     }
 
     public setup() {
@@ -29,7 +32,8 @@ export class GameState extends Container {
         this.background.drawRect(0, 0, this.game.board.getWidth(), 50);
         this.updateTurn(this.game.turn);
         this.turn.x = this.game.board.getWidth() / 8; 
-        this.color.x = 5 * this.game.board.getWidth() / 8;
+        this.color.x = 4 * this.game.board.getWidth() / 8;
+        this.day.x = 7 * this.game.board.getWidth() / 8;
     }
 
     public updateTurn(turn: number) {

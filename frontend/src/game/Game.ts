@@ -17,6 +17,7 @@ export class Game extends Container {
     public updateList: GameUpdate[] = [];
     public turn: number = 1;
     public turnCount: number = 0;
+    public dayCount: number = 0;
     public turnLimit: number = 10; //debug limit - includes AI turns (simplest)
     public totalScore: number = 0;
     constructor() {
@@ -45,7 +46,10 @@ export class Game extends Container {
 
     public updateTurn() {
         this.turn += 1;
-        if (this.turn > 6) this.turn -= 6;
+        if (this.turn > 6) {
+            this.turn -= 6;
+            this.dayCount++;
+        }
         console.log(`turn: ${this.turn}`);
         this.gameState.updateTurn(this.turn);
         
