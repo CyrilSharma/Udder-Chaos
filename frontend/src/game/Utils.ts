@@ -11,7 +11,11 @@ export const TileEnum = {
     Plain: 0,
     Pasture: 1,
     Impassible: 2,
-    Destination: 3
+    Destination: 3,
+    Red_Enemy_Spawn: 4,
+    Yellow_Enemy_Spawn: 5,
+    Blue_Enemy_Spawn: 6,
+    Purple_Enemy_Spawn: 7,
 };
 // Weighting of tiles when generating a random board
 export const TileWeights = {

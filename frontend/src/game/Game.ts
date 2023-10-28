@@ -64,21 +64,14 @@ export class Game extends Container {
         }
         this.gameState.updateTurn(this.turn);
         this.turnCount += 1;
-        this.checkTurnStart();
-    }
-
-    public checkTurnStart() {
-        // Loop through pasture tiles that need new cows
-        this.board.pastureRegen[this.turnCount % COW_REGEN_RATE].forEach((tilePosition) => {
-            this.board.createPiece(tilePosition, PieceEnum.Cow);
-        });
-        this.board.pastureRegen[this.turnCount % COW_REGEN_RATE] = [];
+        this.board.spawnCows(this.turnCount);
     }
 
     public startNewRound() {
         console.log("New round starting!");
         
         this.cowSacrifice();
+        this.board.spawnEnemies();
     }
 
     public cowSacrifice() {
@@ -97,7 +90,7 @@ export class Game extends Container {
     // reset when a new game is setup rather than when the old one finishes
     public endGame(success: boolean, message: string) {
         console.log(message);
-        this.board.endGame();
+        this.board.endGame(false, "failed");
     }
 
     public ourTurn() {

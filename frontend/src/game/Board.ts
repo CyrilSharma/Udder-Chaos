@@ -51,6 +51,8 @@ export class Board extends Container {
     public playerPieces: number[] = [];
     /** Pasture tiles to respawn, outer array represents turns, middle array represent tiles, inner array represents tile coords */
     public pastureRegen: Position[][] = [];
+    /** Enemy tiles to spawn enemies each round */
+    public enemyRegen: Position[][] = [];
 
     // We pass the game to allow for callbacks...
     constructor(game: Game) {
@@ -68,6 +70,9 @@ export class Board extends Container {
 
         for (let i = 0; i < COW_REGEN_RATE; i++) {
             this.pastureRegen.push([])
+        }
+        for (let i = 0; i < 4; i++) {
+            this.enemyRegen.push([])
         }
     }
 
@@ -139,7 +144,7 @@ export class Board extends Container {
 
             // If this player has no more pieces end the game
             if (this.playerPieces[target.type] == 0) {
-                this.game.endGame();
+                this.game.endGame(false, "All of your UFOs were wiped out.");
             }
         }
     }
@@ -213,8 +218,10 @@ export class Board extends Container {
                 if (grid[r][c] == TileEnum.Pasture) {
                     if (this.getPieceByPosition(position) != null) continue;
                     this.createPiece(position, PieceEnum.Cow);
-                    // this.createPiece(position,)
-                    // this.createCow(position);
+                } else if (grid[r][c] >= TileEnum.Red_Enemy_Spawn) {
+                    // If it's an enemy spawner, spawn the corresponding enemy type
+                    this.createPiece(position, grid[r][c] + 1);
+                    this.enemyRegen[grid[r][c] - TileEnum.Red_Enemy_Spawn].push(position);
                 }
             }
         }
@@ -295,5 +302,21 @@ export class Board extends Container {
         if (position.row < 0 || position.row >= this.rows || position.column < 0 || position.column >= this.columns) return TileEnum.Impassible;
         // console.log(this.grid[position.row][position.column]);
         return this.grid[position.row][position.column];
+    }
+
+    public spawnCows(turnCount: number) {
+        // Loop through pasture tiles that need new cows
+        this.pastureRegen[turnCount % COW_REGEN_RATE].forEach((tilePosition) => {
+            this.createPiece(tilePosition, PieceEnum.Cow);
+        });
+        this.pastureRegen[turnCount % COW_REGEN_RATE] = [];
+    }
+
+    public spawnEnemies() {
+        for (let i = 0; i < 4; i++) {
+            this.enemyRegen[i].forEach((tilePosition) => {
+                this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
+            });
+        }
     }
 }
