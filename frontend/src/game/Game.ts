@@ -17,6 +17,9 @@ export class Game extends Container {
     public playerColor!: number;
     public updateList: GameUpdate[] = [];
     public turn: number = 1;
+    public turnCount: number = 0;
+    public turnLimit: number = 10; //debug limit - includes AI turns (simplest)
+    public totalScore: number = 0;
 
     constructor() {
         super();
@@ -49,6 +52,21 @@ export class Game extends Container {
         if (this.turn > 6) this.turn -= 6;
         console.log(`turn: ${this.turn}`);
         this.gameState.updateTurn(this.turn);
+        
+        console.log(`turnCount: ${this.turnCount}`);
+        this.turnCount += 1;
+        if (this.turnCount == this.turnLimit) {
+            this.endGame();
+        }
+    }
+
+    // All the end game functionality will go here :D
+    // Actually not much to do on the game side since the board is
+    // reset when a new game is setup rather than when the old one finishes
+    public endGame() {
+        console.log("I am ending the game");
+        console.log("etc etc");
+        this.board.endGame();
     }
 
     public ourTurn() {
@@ -56,5 +74,11 @@ export class Game extends Container {
                 this.playerColor == 2 && this.turn == 2 || 
                 this.playerColor == 3 && this.turn == 4 ||
                 this.playerColor == 4 && this.turn == 5;
+        return true; // debug always allow current player to move
+    }
+
+    public scorePoints(points: number) {
+        this.totalScore += points;
+        this.gameState.updateScore(this.totalScore);
     }
 }

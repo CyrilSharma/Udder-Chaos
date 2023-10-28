@@ -48,6 +48,7 @@ export class MenuButton extends Container {
     public resize(width: number, height: number) {
         
         // width and height are parent dims
+
         //this.button.view.width = height * this.size * this.AR;
         this.button.view.height = height * this.size;
 

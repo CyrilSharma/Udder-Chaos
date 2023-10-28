@@ -1,6 +1,6 @@
 import { Container } from "pixi.js";
 import { Piece } from "./Piece";
-import { DirectionEnum, GameConfig, Grid, PieceMove, Position, TileEnum, dx, dy, getTeam, TeamEnum, canMoveOver, MoveType } from "./Utils";
+import { DirectionEnum, GameConfig, Grid, PieceAction, Position, TileEnum, dx, dy, getTeam, TeamEnum, canMoveOver, checkActionType, ActionType } from "./Utils";
 import { Game } from "./Game";
 import { Card } from "./Card";
 
@@ -13,58 +13,59 @@ export class LogicHandler {
     }
 
     /** Play a card associated with a given color */
-    public playCard(card: Card, color: number) {
-        // Figure out what the card does
-        let dir = -1;
-        switch (card.dir) {
-            case DirectionEnum.RIGHT: { dir = 0; break; }
-            case DirectionEnum.UP:    { dir = 1; break; }
-            case DirectionEnum.LEFT:  { dir = 2; break; }
-            case DirectionEnum.DOWN:  { dir = 3; break; }
-        }
-
-        // Move update lists
-        let normal_moves: PieceMove[] = [];
-        let kill_moves: PieceMove[] = [];
-        let score_moves: PieceMove[] = [];
-        // For each piece, move it if needed
-        this.game.board.pieces.forEach((piece) => {
-            if (piece.type == color) {
-                this.movePiece(piece, dir, normal_moves, kill_moves, score_moves);
+    public async playCard(card: Card, color: number) {
+        for (let i = 0; i < card.dirs.length; i++) {
+            let move = card.dirs[i];
+            // Figure out what the card does
+            let dir = -1;
+            switch (move) {
+                case DirectionEnum.RIGHT: { dir = 0; break; }
+                case DirectionEnum.UP:    { dir = 1; break; }
+                case DirectionEnum.LEFT:  { dir = 2; break; }
+                case DirectionEnum.DOWN:  { dir = 3; break; }
             }
-        });
-        // Send updates to game board
-        this.game.board.updateGame({
-            normal_moves,
-            kill_moves,
-            score_moves,
-        });
+
+            // Action update lists
+            let pre_actions: PieceAction[] = [];
+            let moves: PieceAction[] = [];
+            let post_actions: PieceAction[] = [];
+
+            // For each of the player's piece, move it if needed
+            this.game.board.pieces.forEach((piece) => {
+                if (piece.type == color) {
+                    this.movePiece(piece, dir, pre_actions, moves, post_actions);
+                }
+            });
+
+            // Send updates to game board
+            await this.game.board.updateGame([pre_actions, moves, post_actions]);
+            console.log("hello " + i)
+        }
     }
 
     /** Function for piece movement logic */
-    public movePiece(piece: Piece, dir: number, normal_moves: PieceMove[], kill_moves: PieceMove[], score_moves: PieceMove[]) {
+    public movePiece(piece: Piece, dir: number, pre_actions: PieceAction[], moves: PieceAction[], post_actions: PieceAction[]) {
         // Current position
         let cur: Position = { row: piece.row, column: piece.column };
         // Destination position
         let dest: Position = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
-        // Move type (normal, kill, score)
-        let moveType: number = MoveType.Normal_Move;
 
         console.log(`Moving ${[cur.row, cur.column]}`);
 
         // Collision check with board obstacle tiles
         if (this.game.board.getTileAtPosition(dest) == TileEnum.Impassible) {
-            dest = cur;
+            moves.push({ action: ActionType.Obstruction_Move, piece: piece, move: dest });
+            return;
         }
 
-        // Collision check with other pieces
+        // Collision check with other pieces, if piece can invade another piece, skip
         else if (this.game.board.getPieceByPosition(dest) != null && !canMoveOver(piece.type, this.game.board.getPieceByPosition(dest)!.type)) {
             // iteratively check every tile in the direction the piece is moving
             // until we find a piece that is not moving or an obstacle
             let canMove: boolean = canMoveOver(piece.type, this.game.board.getPieceByPosition(dest)!.type);
             let check: Position = cur;
             
-            do {
+            do { 
                 // Get next check location
                 check = { row: check.row + dy[dir], column: check.column + dx[dir] };
 
@@ -101,29 +102,33 @@ export class LogicHandler {
             
             // If we can't move, update the destination to remain in the current position
             if (!canMove) {
-                dest = cur;
+                moves.push({ action: ActionType.Obstruction_Move, piece: piece, move: dest });
+                return;
             }
         }
 
         // If move places you on another piece, then update move type accordingly
-        if (dest != cur && this.game.board.getPieceByPosition(dest) != null) {
-            if (!canMoveOver(piece.type, this.game.board.getPieceByPosition(dest)!.type)) {
-                if (piece.type != this.game.board.getPieceByPosition(dest)!.type) 
+        let destPiece = this.game.board.getPieceByPosition(dest);
+        if (destPiece != null) {
+            // If moving to a friendly unit, that's okay.
+            if (!canMoveOver(piece.type, destPiece!.type)) {
+                if (piece.type != destPiece!.type) 
                     throw Error("Can't move onto this piece!!!");
             }
             else {
-                switch (getTeam(piece.type)) {
-                    case TeamEnum.Player: { moveType = MoveType.Score_Move; break; }
-                    case TeamEnum.Enemy: { moveType = MoveType.Kill_Move; break; }
-                    default: { moveType = MoveType.Normal_Move; throw Error("Illegal move handling in logic handler"); break; }
+                switch (checkActionType(piece.type, destPiece!.type)) {
+                    case ActionType.Abduct_Action: { post_actions.push({ action: ActionType.Abduct_Action, piece: piece, move: dest }); break; }
+                    case ActionType.Kill_Action: { pre_actions.push({ action: ActionType.Kill_Action, piece: piece, move: dest }); break; }
+                    default: { break; }
                 }
             }
         }
 
-        // Add to correct update list
-        if (moveType == MoveType.Normal_Move) normal_moves.push({ from: cur, to: dest });
-        else if (moveType == MoveType.Kill_Move) kill_moves.push({ from: cur, to: dest });
-        else if (moveType == MoveType.Score_Move) score_moves.push({ from: cur, to: dest });
-        else throw Error("Unknown move type: " + moveType);
+        // If moving onto a destination tile, add score action.
+        if (this.game.board.getTileAtPosition(dest) == TileEnum.Destination) {
+            post_actions.push({ action: ActionType.Score_Action, piece: piece, move: dest });
+        }
+
+        moves.push({ action: ActionType.Normal_Move, piece: piece, move: dest });
     }
 }

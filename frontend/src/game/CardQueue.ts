@@ -1,12 +1,10 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
-import { Piece } from './Piece';
 import { Game } from './Game';
 import { Card } from './Card';
 import { LogicHandler } from './LogicHandler';
 import {
     DirectionEnum,
     ColorEnum,
-    PieceMove,
     Position,
     TileEnum,
     TeamEnum,
@@ -44,7 +42,7 @@ export class CardQueue extends Container {
         for (let i = 0; i < this.ncards; i++) {
             let config = {
                 color: ColorEnum.RED,
-                dir: i % 4, // Evenly generate a number of each card
+                dirs: [i % 4, i % 4], // Evenly generate a number of each card, for now literally just make it move twice
                 size: 50
             };
             let card = new Card(this, config, i);

@@ -14,6 +14,9 @@
     "noUnusedParameters": false,
     "noImplicitReturns": true,
     "skipLibCheck": true,
+    "types": ["node", "vite/client"]
   },
-  "include": ["src", "src/ui_components/playerListDisplay.ts"]
+
+  "include": ["src"]
+
 }

@@ -5,14 +5,14 @@ import server from "../server";
 
 export type CardOptions = {
     color: Color
-    dir: Direction;
+    dirs: Direction[];
     size: number;
 };
 export class Card extends Container {
     public readonly queue: CardQueue;
     public readonly graphics: Graphics;
     public readonly scale_on_focus = 1.5;
-    public dir: Direction;
+    public dirs: Direction[];
     public index: number;
     public scaled = false;
     constructor(queue: CardQueue, options: CardOptions, index: number) {
@@ -21,15 +21,15 @@ export class Card extends Container {
         this.index = index;
         this.graphics = new Graphics();
         this.graphics.beginFill(0xFFFFFF);
-        this.dir = options.dir;
+        this.dirs = options.dirs;
         // set the line style to have a width of 5 and set the color to red
         this.graphics.lineStyle(5, 0x000000);
         // draw a card
         this.graphics.drawRoundedRect(
             0, 0, options.size, options.size * 1.4, 10
         );
-        this.drawArrow(this.graphics, options.size / 2, options.size * 0.7,
-            options.size / 3, options.size / 10, options.dir);
+        this.drawArrow(this.graphics, options.size / 2, options.size * 0.7, options.size / 3, options.size / 10, options.dirs[0]); // TEMP draw just the first arrow, maybe some visual indication later
+                
         this.addChild(this.graphics);
         this.graphics.eventMode = 'static';
         this.graphics.on('pointertap', this.onPointerTap);
@@ -121,5 +121,14 @@ export class Card extends Container {
         this.position.x += this.graphics.width / (2 * this.scale_on_focus);
         this.position.y += this.graphics.height / 2;
         this.scaled = false;
+    };
+
+    public rotateCard(rotation: number) {
+        console.log(this.dirs);
+        for (let i = 0; i < this.dirs.length; i++) {
+            this.dirs[i] = (this.dirs[i] + rotation) % 4
+        }
+        console.log(this.dirs);
+        this.drawArrow(this.graphics, 10 / 2, 10 * 0.7, 10 / 3, 10 / 10, this.dirs[0]);
     }
 }
