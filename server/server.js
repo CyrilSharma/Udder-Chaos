@@ -15,12 +15,14 @@ const io = new Server(server, {
 });
 
 // Ship frontend to clients.
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/index.html'));
-})
-app.listen(80)
+if (mode == 'development') {
+    app.use('/assets', express.static(path.join(__dirname, 'assets')));
+    app.use('/images', express.static(path.join(__dirname, 'images')));
+    app.get('/', (req, res) => {
+        res.sendFile(path.join(__dirname, '/index.html'));
+    })
+    app.listen(80)
+}
 
 // Handles connections.
 var mode = process.env.NODE_ENV;
