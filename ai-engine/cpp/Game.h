@@ -115,6 +115,27 @@ struct Game {
     return out;
   } /* viewBoard() */
 
+  /**
+   * Pretty string for debug printing
+   * mostly just copy of viewBoard
+  */
+  vector<vector<char>> boardString() {
+    // Empty space default to '.'
+    vector<vector<char>> out(height, vector<char>(width, '.'));
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        auto mask = bitset<area()>{1};
+        mask <<= (width * i + j);
+        if ((impassible & mask).any()) {
+          out[i][j] = '#'; //impassible
+        } else if ((cows & mask).any()) {
+          out[i][j] = 'O'; // cow?
+        }
+      }
+    }
+    return out;
+  }
+
   /*
    * Puts the pieces in a convenient state.
    */
@@ -243,7 +264,7 @@ struct Game {
   int pop_enemy(int choice) {
     int index1 = get_index(choice + hand_size);
     int index = get_index(choice + hand_size);
-    bitset<queue_length()> m = { (1 << (2 * ncard_bits() * hand_size)) - 1}
+    bitset<queue_length()> m = { (1 << (2 * ncard_bits() * hand_size)) - 1};
     int card = (queue >> ncard_bits()) & ~m;
     set_index(choice + hand_size, index);
 

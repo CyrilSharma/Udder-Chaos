@@ -50,6 +50,10 @@ TEST_CASE("Testing the Creation Function") {
     checkv(game.viewCards(), cards),
     "Cards do not match Input!"
   );
+
+  cout << "UWU: " << endl; printv(game.viewPieces());
+  cout << endl << endl;
+  printvv(game.boardString());
 }
 
 /*
