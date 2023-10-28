@@ -66,12 +66,13 @@ struct Game {
   const uint64_t width;
   const uint64_t height;
   const uint64_t ncards;
-  const uint64_t hand_size = 3;
+  const uint64_t hand_size;
+  const uint64_t round_length;
   const array<dynamic_bitset, 4> edge_masks;
+
   int64_t turn = 0;
   int64_t round = 0;
   int64_t player_id = 0;
-
   CardQueue queue;
   vector<Card> cards;
   array<dynamic_bitset, 6> cow_respawn;
@@ -92,6 +93,8 @@ struct Game {
     width(config.board[0].size()),
     height(config.board.size()),
     ncards(config.cards.size()),
+    hand_size(config.hand_size),
+    round_length(config.round_length),
     edge_masks({
       right_edge_mask(), up_edge_mask(),
       left_edge_mask(), down_edge_mask()
@@ -105,7 +108,7 @@ struct Game {
       player_scores[i] = dynamic_bitset(area(), 0);
       enemies[i] = dynamic_bitset(area(), 0);
     }
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < round_length; i++) {
       cow_respawn[i] = dynamic_bitset(area(), 0);
     }
 
@@ -164,7 +167,7 @@ struct Game {
    */
 
   void player_move(int choice) {
-    cows |= cow_respawn[turn % 6];
+    cows |= cow_respawn[turn % round_length];
     int index = queue.choose(choice);
     auto moves = cards[index].moves;
     for (Direction move: moves) {
@@ -185,7 +188,7 @@ struct Game {
    */
 
   void enemy_move(int choice) {
-    cows |= cow_respawn[turn % 6];
+    cows |= cow_respawn[turn % round_length];
     int index = queue.choose(choice + hand_size);
     auto moves = cards[index].moves;
     for (Direction move: moves) {
@@ -306,7 +309,7 @@ struct Game {
 
     players[player_id] = player_mask;
     player_scores[player_id] = score_mask;
-    cow_respawn[turn % 6] = prev & ~cows;
+    cow_respawn[turn % round_length] = prev & ~cows;
   } /* play_player_movement() */
 
   /*------ Debug + Testing ----------*/

@@ -73,7 +73,7 @@ TEST_CASE("Testing Player Movement") {
     Piece(11, 11, 1),
   };
 
-  GameConfig config = { board, pieces, cards };
+  auto config = GameConfig(board, pieces, cards);
 
   // Valid so long as nothing collides, and there aren't walls.
   auto easy_update = [&](Direction dir) {
@@ -246,7 +246,7 @@ TEST_CASE("Test Cow Capturing") {
   const int ncards = 16;
   auto cards = random_cards(ndirs, ncards);
 
-  GameConfig config = { board, pieces, cards };
+  auto config = GameConfig(board, pieces, cards);
   auto game = Game(config);
   Direction dirs[4] = {
     Direction::RIGHT, Direction::UP,
@@ -319,7 +319,7 @@ TEST_CASE("Test Unit Killing") {
   const int ncards = 16;
   auto cards = random_cards(ndirs, ncards);
 
-  GameConfig config = { board, pieces, cards };
+  auto config = GameConfig(board, pieces, cards);
   auto game = Game(config);
   Direction dirs[4] = {
     Direction::RIGHT, Direction::UP,
@@ -366,8 +366,8 @@ TEST_CASE("Test Enemy Movement / Logic") {
   const int ncards = 16;
   auto cards = random_cards(ndirs, ncards);
 
-  GameConfig config_p = { board, player_pieces, cards };
-  GameConfig config_e = { board, enemy_pieces, cards };
+  auto config_p = GameConfig(board, player_pieces, cards);
+  auto config_e = GameConfig(board, enemy_pieces, cards);
   auto game_p = Game(config_p);
   auto game_e = Game(config_e);
   Direction dirs[4] = {
