@@ -63,14 +63,16 @@ struct Game {
 
   /*--- Struct Members ---*/
   int64_t turn = 0;
+  int64_t round = 0;
   int64_t player_id = 0;
   array<Card, ncards> cards;
   CardQueue<ncards, ncard_bits()> queue;
+  array<bitset<area()>, 6> cow_respawn = { 0 };
   array<bitset<area()>, 4> players = { 0 };
   array<bitset<area()>, 4> player_scores = { 0 };
   array<bitset<area()>, 4> enemies;
   bitset<area()> impassible = { 0 };
-  bitset<area()> score_tiles = { 0 };
+  bitset<area()> cow_tiles = { 0 };
   bitset<area()> cows = { 0 };
 
   /*------ Debug + Testing ----------*/
@@ -96,10 +98,11 @@ struct Game {
     return out;
   } /* viewBoard() */
 
-  /**
+  /*
    * Pretty string for debug printing
    * mostly just copy of viewBoard
-  */
+   */
+
   vector<vector<char>> boardString() {
     // Empty space default to '.'
     vector<vector<char>> out(height, vector<char>(width, '.'));
@@ -115,7 +118,7 @@ struct Game {
       }
     }
     return out;
-  }
+  } /* boardString() */
 
   /*
    * Puts the pieces in a convenient state.
@@ -187,27 +190,42 @@ struct Game {
         if (tile == 1) {
           impassible |= m;
         } else if (tile == 2) {
-          score_tiles |= m;
+          cow_tiles |= m;
           cows |= m;
         }
       }
     }
   } /* Game() */
 
+  /*
+   * returns the winner of the game.
+   * -1 if AI, 1 if player, 0 if nobody has won yet.
+   */
+
+  bool is_jover() {
+    bool all_dead = true;
+    for (int i = 0; i < 4; i++) {
+      if (players[i].count()) continue;
+      all_dead = false;
+      break;
+    }
+    if (all_dead) return -1;
+    // Need to implement score tiles...
+  } /* is_jover() */
+
 
   /*
-  * choice is expected to be the numerical
-  * index IN YOUR HAND of the card you wish to play.
-  * we do not check if the card is in your hand.
-  */
+   * choice is expected to be the numerical
+   * index IN YOUR HAND of the card you wish to play.
+   * we do not check if the card is in your hand.
+   */
 
   void player_move(int choice) {
+    cows |= cow_respawn[turn % 6];
     int index = queue.choose(choice);
     auto moves = cards[index].moves;
     for (Direction move: moves) {
-      if (turn % 3 == 2) {
-        play_player_movement(move);
-      }
+      play_player_movement(move);
     }
     if (turn % 2 == 1) {
       player_id = (player_id + 1) & 0b11;
@@ -216,14 +234,15 @@ struct Game {
   } /* player_move() */
 
   /*
-  * choice is expected to be the numerical
-  * index of the card you wish to play.
-  * we do not check if the card is in your hand.
-  * 
-  * color is which color you want to move with this action.
-  */
+   * choice is expected to be the numerical
+   * index of the card you wish to play.
+   * we do not check if the card is in your hand.
+   * 
+   * color is which color you want to move with this action.
+   */
 
   void enemy_move(int choice) {
+    cows |= cow_respawn[turn % 6];
     int index = queue.choose(choice + hand_size);
     auto moves = cards[index].moves;
     for (Direction move: moves) {
@@ -281,9 +300,9 @@ struct Game {
   } /* play_enemy_movement() */
 
   /*
-  * Moves the current piece in the desired direction.
-  * applying all necessary side-effects. 
-  */
+   * Moves the current piece in the desired direction.
+   * applying all necessary side-effects. 
+   */
 
   void play_player_movement(Direction d) {
     auto player_mask = players[player_id];
@@ -331,19 +350,19 @@ struct Game {
       (score_mask & wall_mask) |
       (score_mask & edge_masks[d]);
 
-    // Every player that doesn't have a cow
-    auto cow_less = ~(player_mask & ~score_mask);
-
     // Kill enemies the player hits.
     for (int i = 0; i < 4; i++) {
       enemies[i] &= ~player_mask;
     }
 
-    // The score is 1 for any player on a cow.
+    // Every player that doesn't have a cow
+    auto cow_less = ~(player_mask & ~score_mask);
     score_mask |= (player_mask & cows);
+    auto prev = cows;
     cows &= cow_less;
 
     players[player_id] = player_mask;
     player_scores[player_id] = score_mask;
+    cow_respawn[turn % 6] = prev & ~cows;
   } /* play_player_movement() */
 };
