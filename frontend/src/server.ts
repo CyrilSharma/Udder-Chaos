@@ -65,7 +65,6 @@ class Server {
             initSeed(seed);
 
             let color = socketIds.indexOf(this.socket.id) + 1;
-            console.log("You are color: " + color);
 
             await navigation.showScreen(GameScreen);
 
@@ -81,11 +80,11 @@ class Server {
             switch (moveType) {
                 case MoveType.PlayCard:
                     gameScreen.playCard(moveData["index"], color);
-                    console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
+                    //console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
                     break;
                 case MoveType.RotateCard:
                     gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
-                    console.log(`Server rotating card: ${moveData["index"]} ${moveData["rotation"]}, color: ${color}`);
+                    //console.log(`Server rotating card: ${moveData["index"]} ${moveData["rotation"]}, color: ${color}`);
                     break;
             }
         });
@@ -104,12 +103,12 @@ class Server {
     }
 
     public async playCard(cardIndex: number, color: number) {
-        console.log(`Sending play-card with index: ${cardIndex}`);
+        //console.log(`Sending play-card with index: ${cardIndex}`);
         this.socket.emit("make-move", MoveType.PlayCard, {"index": cardIndex}, color);
     }
 
     public async rotateCard(cardIndex: number, rotation: number, color: number) {
-        console.log(`Sending rotate-card with index: ${cardIndex}`);
+        //console.log(`Sending rotate-card with index: ${cardIndex}`);
         this.socket.emit("make-move", MoveType.RotateCard, {"index": cardIndex, "rotation": rotation}, color);
     }
 

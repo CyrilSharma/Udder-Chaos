@@ -3,8 +3,8 @@ import { Piece } from "./Piece"
 import MersenneTwister from 'mersenne-twister';
 
 // Constants
-export const COW_REGEN_RATE = 5; // Respawn after 3 days
-
+export const COW_REGEN_RATE = 12; // Respawn after 3 days
+export const COW_SACRIFICE = 3; 
 
 //-----Tiles-----//
 export const TileEnum = {

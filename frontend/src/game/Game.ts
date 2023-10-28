@@ -1,6 +1,6 @@
 import { Container, Sprite } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig, COW_REGEN_RATE, PieceEnum } from './Utils';
+import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, PieceEnum } from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
@@ -8,7 +8,7 @@ import { GameState } from './GameState';
 // This seems a little redundant right now,
 // But it will house the cards as well,
 // And provide some callbacks maybe.
-const DAYS_PER_ROUND = 6;
+const DAYS_PER_ROUND = 3;
 
 export class Game extends Container {
     public board: Board;
@@ -19,9 +19,8 @@ export class Game extends Container {
     public updateList: GameUpdate[] = [];
     public turn: number = 1;
     public turnCount: number = 0;
-    public day: number = 0;
-    public dayCount: number = 0;
-    public turnLimit: number = 10; //debug limit - includes AI turns (simplest)
+    public dayCycle: number = 0;
+    public totalDayCount: number = 0;
     public totalScore: number = 0;
     constructor() {
         super();
@@ -51,20 +50,16 @@ export class Game extends Container {
         this.turn += 1;
         if (this.turn > 6) {
             this.turn -= 6;
-            this.day++;
-            if (this.day >= DAYS_PER_ROUND) {
-                console.log("New round!")
+            this.dayCycle++;
+            if (this.dayCycle >= DAYS_PER_ROUND) {
+                this.dayCycle -= DAYS_PER_ROUND;
+                this.startNewRound();
             }
-            this.dayCount++;
-            this.gameState.updateDay(this.dayCount);
+            this.totalDayCount++;
+            this.gameState.updateDay(this.totalDayCount);
         }
         this.gameState.updateTurn(this.turn);
-        
         this.turnCount += 1;
-        if (this.turnCount == this.turnLimit) {
-            this.endGame();
-        }
-
         this.checkTurnStart();
     }
 
@@ -76,16 +71,33 @@ export class Game extends Container {
         this.board.pastureRegen[this.turnCount % COW_REGEN_RATE] = [];
     }
 
+    public startNewRound() {
+        console.log("New round starting!");
+        
+        this.cowSacrifice();
+    }
+
+    public cowSacrifice() {
+        if (this.totalScore >= COW_SACRIFICE) {
+            this.totalScore -= COW_SACRIFICE;
+            this.gameState.updateScore(this.totalScore);
+        }
+        else {
+            console.log("Failed to sacrifice enough cows!")
+            this.endGame(false, "You failed to sacrifice enough cows to Homeworld.");
+        }
+    }
+
     // All the end game functionality will go here :D
     // Actually not much to do on the game side since the board is
     // reset when a new game is setup rather than when the old one finishes
-    public endGame() {
-        console.log("I am ending the game");
-        console.log("etc etc");
+    public endGame(success: boolean, message: string) {
+        console.log(message);
         this.board.endGame();
     }
 
     public ourTurn() {
+        return true;
         return this.playerColor == 1 && this.turn == 1 || 
                 this.playerColor == 2 && this.turn == 2 || 
                 this.playerColor == 3 && this.turn == 4 ||
