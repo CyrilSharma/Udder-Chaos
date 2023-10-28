@@ -22,8 +22,6 @@ export class ButtonBox extends Container {
             anchor: 0.5,
         });
         this.addChild(this.buttonBox);
-
-        this.addChild(this.buttonBox);
     }
 
     public getBox() {
@@ -36,5 +34,4 @@ export class ButtonBox extends Container {
         this.buttonBox.view.width = this.AR * this.size * height;
         this.buttonBox.view.height = this.size * height;
     }
-
 }
