@@ -5,8 +5,6 @@
 #include "Game.h"
 #include "Utils.h"
 
-using dynamic_bitset = boost::dynamic_bitset<>;
-
 int main() {
   const int width = 16, height = 16;
   vector<vector<int>> board(height, vector<int>(width));
@@ -36,11 +34,13 @@ int main() {
     Direction::LEFT, Direction::DOWN,
   };
 
-  volatile int x = 1982;
-  dynamic_bitset thing(64, 0);
+  // int x = 1982;
+  // boost::dynamic_bitset<uint64_t> thing(64, 0);
+  // std::bitset<64> y { 0 };
   for (int i = 0; i < 1e8; i++) {
-    auto d = dirs[i % 4];
-    x = ~x;
-    // thing ~= thing is 50 TIMES SLOWER.
+    // auto d = dirs[i % 4];
+    // if (rand()) x = ~x;
+    // if (rand()) y = ~y; 
+    // if (rand()) thing = ~thing; // 50 TIMES SLOWER.
   }
 }
