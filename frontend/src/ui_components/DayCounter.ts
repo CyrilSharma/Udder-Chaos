@@ -30,7 +30,6 @@ export class DayCounter extends FancyButton {
         }));
         this.label.x = -100;
         this.label.y = -190;
-        this.days[0].turnOn();
         this.addChild(this.label);
     }
     
@@ -40,8 +39,9 @@ export class DayCounter extends FancyButton {
                 ele.turnOff();
             });
             counter.day = 0;
+        } else {
+            counter.days[counter.day++].turnOn();
         }
-        counter.days[counter.day++].turnOn();
     }
 
 }

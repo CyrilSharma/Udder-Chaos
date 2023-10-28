@@ -82,8 +82,6 @@ export class TestingScreen extends Container {
         this.triangle.y = -290;
         this.dayCounter.y = 100;
         this.dayCounter.x = 400;
-        let count = 0;
     }
-
 
 }
