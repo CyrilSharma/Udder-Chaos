@@ -18,7 +18,9 @@ import {
     TeamEnum,
     ActionType,
     random,
+    COW_REGEN_RATE,
 } from './Utils';
+
 /**
  * Board class
  * Handles creation of board, placing obstacles, and stores all tiles and pieces
@@ -43,6 +45,8 @@ export class Board extends Container {
     public tileSize = 0;
     /** How many pieces each player countrols */
     public playerPieces: number[] = [];
+    /** Pasture tiles to respawn, outer array represents turns, middle array represent tiles, inner array represents tile coords */
+    public pastureRegen: Position[][] = [];
 
     // We pass the game to allow for callbacks...
     constructor(game: Game) {
@@ -54,6 +58,10 @@ export class Board extends Container {
 
         this.piecesContainer = new Container();
         this.addChild(this.piecesContainer);
+
+        for (let i = 0; i < COW_REGEN_RATE; i++) {
+            this.pastureRegen.push([])
+        }
     }
 
     // Creates the initial board with some config
@@ -109,9 +117,6 @@ export class Board extends Container {
         let piece = action.piece;
         let dest = action.move;
 
-        console.log("KILLING MOVE");
-        console.log(piece);
-        console.log(dest);
         const target = this.getPieceByPosition(dest)!;
         this.removePiece(target);
 
@@ -132,11 +137,12 @@ export class Board extends Container {
         let piece = action.piece;
         let dest = action.move;
 
-        // TODO: actually do something when abduct
         const target = this.getPieceByPosition(dest, TeamEnum.Cow)!;
         this.removePiece(target);
-        console.log("Yay you score!");
         piece.addScore();
+
+        // Add respawn to pasture
+        this.pastureRegen[this.game.turnCount % COW_REGEN_RATE].push(dest);
     }
 
     // Player scoring cows on destination
@@ -184,7 +190,7 @@ export class Board extends Container {
             }
         }
         
-        // Create all tiles, and randomly generate cows on pastures
+        // Create all tiles, and generate cows on pastures
         const rows = grid.length;
         const cols = grid[0].length;
         for (let r = 0; r < rows; r++) {
@@ -193,7 +199,6 @@ export class Board extends Container {
                 this.createTile(position, grid[r][c]);
                 if (grid[r][c] == TileEnum.Pasture) {
                     if (this.getPieceByPosition(position) != null) continue;
-                    if (random() * 4 < 3) continue;
                     this.createPiece(position, PieceEnum.Cow);
                     // this.createPiece(position,)
                     // this.createCow(position);

@@ -39,7 +39,6 @@ export class LogicHandler {
 
             // Send updates to game board
             await this.game.board.updateGame([pre_actions, moves, post_actions]);
-            console.log("hello " + i)
         }
     }
 
@@ -49,8 +48,6 @@ export class LogicHandler {
         let cur: Position = { row: piece.row, column: piece.column };
         // Destination position
         let dest: Position = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
-
-        console.log(`Moving ${[cur.row, cur.column]}`);
 
         // Collision check with board obstacle tiles
         if (this.game.board.getTileAtPosition(dest) == TileEnum.Impassible) {

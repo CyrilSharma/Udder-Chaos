@@ -52,4 +52,8 @@ export class GameState extends Container {
     public updateScore(score: number) {
         this.score.text = score;
     }
+
+    public updateDay(day: number) {
+        this.day.text = "Day " + day;
+    }
 }

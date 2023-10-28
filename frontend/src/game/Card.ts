@@ -86,7 +86,6 @@ export class Card extends Container {
 
     /** Card behavior when clicked (when played) */
     private onPointerTap = (e: FederatedPointerEvent) => {
-        console.log(`Card was clicked: index=${this.index}`);
         // Make sure it is out turn
         if (this.queue.game.ourTurn()) {
             // Play card both locally and on the server
@@ -110,7 +109,6 @@ export class Card extends Container {
     };
 
     private onPointerLeave = (e: FederatedPointerEvent) => {
-        //console.log("Leave over card " + this.index);
         this.unscale();
         this.queue.placeCards();
     };

@@ -2,13 +2,16 @@ import { MAPS } from "../maps/Maps"
 import { Piece } from "./Piece"
 import MersenneTwister from 'mersenne-twister';
 
+// Constants
+export const COW_REGEN_RATE = 5; // Respawn after 3 days
+
 
 //-----Tiles-----//
 export const TileEnum = {
     Plain: 0,
     Pasture: 1,
     Impassible: 2,
-    Destination: 3,
+    Destination: 3
 };
 // Weighting of tiles when generating a random board
 export const TileWeights = {
@@ -160,7 +163,6 @@ export type BoardUpdate = PieceAction[][];
 //-----Map Functions-----//
 export function loadMap(seed: number) {
     const grid: Grid = parseCSVGrid(MAPS[seed]);
-    console.log(grid);
     return grid;
 }
 

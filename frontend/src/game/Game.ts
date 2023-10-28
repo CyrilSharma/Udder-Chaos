@@ -1,6 +1,6 @@
 import { Container, Sprite } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig } from './Utils';
+import { ColorEnum, GameConfig, COW_REGEN_RATE, PieceEnum } from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
@@ -8,6 +8,8 @@ import { GameState } from './GameState';
 // This seems a little redundant right now,
 // But it will house the cards as well,
 // And provide some callbacks maybe.
+const DAYS_PER_ROUND = 6;
+
 export class Game extends Container {
     public board: Board;
     public cards: CardQueue;
@@ -17,6 +19,7 @@ export class Game extends Container {
     public updateList: GameUpdate[] = [];
     public turn: number = 1;
     public turnCount: number = 0;
+    public day: number = 0;
     public dayCount: number = 0;
     public turnLimit: number = 10; //debug limit - includes AI turns (simplest)
     public totalScore: number = 0;
@@ -48,16 +51,29 @@ export class Game extends Container {
         this.turn += 1;
         if (this.turn > 6) {
             this.turn -= 6;
+            this.day++;
+            if (this.day >= DAYS_PER_ROUND) {
+                console.log("New round!")
+            }
             this.dayCount++;
+            this.gameState.updateDay(this.dayCount);
         }
-        console.log(`turn: ${this.turn}`);
         this.gameState.updateTurn(this.turn);
         
-        console.log(`turnCount: ${this.turnCount}`);
         this.turnCount += 1;
         if (this.turnCount == this.turnLimit) {
             this.endGame();
         }
+
+        this.checkTurnStart();
+    }
+
+    public checkTurnStart() {
+        // Loop through pasture tiles that need new cows
+        this.board.pastureRegen[this.turnCount % COW_REGEN_RATE].forEach((tilePosition) => {
+            this.board.createPiece(tilePosition, PieceEnum.Cow);
+        });
+        this.board.pastureRegen[this.turnCount % COW_REGEN_RATE] = [];
     }
 
     // All the end game functionality will go here :D

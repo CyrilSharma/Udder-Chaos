@@ -70,6 +70,7 @@ async function init() {
     resize();
 
     await navigation.showScreen(HomeScreen);
+
     // Show initial loading screen
     /* await navigation.showScreen(LoadScreen);
 
