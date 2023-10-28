@@ -1,6 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include <bits/stdc++.h>
+#include "CardQueue.h"
 #include "Game.h"
 #include "Utils.h"
 
@@ -406,19 +407,21 @@ TEST_CASE("Test Enemy Movement / Logic") {
  */
 
 TEST_CASE("Test Cards") {
-  const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width));
-  vector<Piece> pieces = { Piece(5, 5, 1) };
-  const int ndirs = 3, ncards = 16;
-  auto cards = random_cards(ndirs, ncards);
-  GameConfig config = { board, pieces, cards };
-  auto game = Game<width, height>(config);
-
-  SUBCASE("Card Retrieval") {
-    for (int i = 0; i < ncards; i++) {
-      int idx = game.get_index(i);
-      CHECK(idx == i);
+  const int reserve = 6;
+  const int nelements = 16;
+  const int nbits_per = 64 - __builtin_clzll(nelements - 1);
+  CardQueue<nelements, nbits_per> queue(reserve);
+  for (int i = 0; i < nelements; i++) {
+    queue.set(i, i);
+  } 
+  SUBCASE("Test GET") {
+    for (int i = 0; i < nelements; i++) {
+      CHECK(queue.get(i) == i);
+    } 
+  }
+  SUBCASE("Test Choose") {
+    for (int i = reserve - 1; i < nelements; i++) {
+      REQUIRE(queue.choose(reserve - 1) == i);
     }
   }
-  
 }

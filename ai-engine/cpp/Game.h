@@ -1,6 +1,7 @@
 #pragma once
 #include <bitset>
 #include <vector>
+#include "CardQueue.h"
 #include "Utils.h"
 #include "Helpers.h"
 using namespace std;
@@ -21,27 +22,7 @@ struct Game {
   }
 
   static constexpr int64_t ncard_bits() {
-    return 64 -__builtin_clz(ncards - 1);
-  }
-
-  static constexpr int64_t queue_length() {
-    return (ncards * ncard_bits());
-  }
-
-  static constexpr bitset<queue_length()> top_card() {
-    bitset<queue_length()> m{(1LL << (ncard_bits())) - 1};
-    return m;
-  }
-
-  static constexpr bitset<queue_length()> player_hand_mask() {
-    bitset<queue_length()> m{(1LL << (ncard_bits() * hand_size)) - 1};
-    return m;
-  }
-
-  static constexpr bitset<queue_length()> enemy_hand_mask() {
-    bitset<queue_length()> m1{(1LL << (2 * ncard_bits() * hand_size)) - 1};
-    bitset<queue_length()> m2{(1LL << (ncard_bits() * hand_size)) - 1};
-    return (m1 ^ m2);
+    return 64 -__builtin_clzll(ncards - 1);
   }
 
   // Sprint 3 OPT; Remove edge masks and simply use walls for everything.
@@ -84,7 +65,7 @@ struct Game {
   int64_t turn = 0;
   int64_t player_id = 0;
   array<Card, ncards> cards;
-  bitset<queue_length()> queue = { 0 };
+  CardQueue<ncards, ncard_bits()> queue;
   array<bitset<area()>, 4> players = { 0 };
   array<bitset<area()>, 4> player_scores = { 0 };
   array<bitset<area()>, 4> enemies;
@@ -170,9 +151,7 @@ struct Game {
   vector<Card> viewCards() {
     vector<Card> out(ncards);
     for (uint64_t i = 0; i < ncards; i++) {
-      // Hope and pray there aren't 1e64 cards.
-      bitset<queue_length()> msk { (1ULL << ncard_bits()) - 1 };
-      auto idx = ((queue >> ncard_bits() * i) & msk).to_ullong();
+      auto idx = queue.get(i);
       out[i] = cards[idx];
     }
     return out;
@@ -186,12 +165,10 @@ struct Game {
    * representation.
    */
 
-  Game(GameConfig config) {
+  Game(GameConfig config): queue(2 * hand_size) {
     for (uint64_t i = 0; i < ncards; i++) {
       cards[i] = config.cards[i];
-      bitset<queue_length()> msk{i};
-      msk <<= (i * ncard_bits());
-      queue |= msk; 
+      queue.set(i, i);
     }
     for (auto p: config.pieces) {
       bitset<area()> msk {1};
@@ -225,7 +202,7 @@ struct Game {
   */
 
   void player_move(int choice) {
-    int index = get_index(choice);
+    int index = queue.choose(choice);
     auto moves = cards[index].moves;
     for (Direction move: moves) {
       if (turn % 3 == 2) {
@@ -238,7 +215,6 @@ struct Game {
     turn += 1;
   } /* player_move() */
 
-
   /*
   * choice is expected to be the numerical
   * index of the card you wish to play.
@@ -248,49 +224,14 @@ struct Game {
   */
 
   void enemy_move(int choice) {
-    int index = get_index(choice + hand_size);
+    int index = queue.choose(choice + hand_size);
     auto moves = cards[index].moves;
     for (Direction move: moves) {
       play_enemy_movement(move, choice);
     }
-
     player_id = (player_id + 1) & 0b11;
     turn += 1;
   } /* enemy_move() */
-
-  /*
-   * Pops the card of choice from the enemy hand. 
-   */
-  int pop_enemy(int choice) {
-    int index1 = get_index(choice + hand_size);
-    int index = get_index(choice + hand_size);
-    bitset<queue_length()> m = { (1 << (2 * ncard_bits() * hand_size)) - 1};
-    int card = (queue >> ncard_bits()) & ~m;
-    set_index(choice + hand_size, index);
-
-  } /* pop_enemy */
-
-  /*
-   * finds the card index corresponding 
-   * to your choice in the queue.
-   */
-
-  int get_index(int choice) {
-    auto m = (queue >> (choice * ncard_bits()) & top_card());
-    return m.to_ullong();
-  } /* get_index() */
-
-  /*
-   * sets the specified index in the queue.
-   */
-
-  void set_index(int choice, int value) {
-    bitset<queue_length()> m { 0 };
-    bitset<queue_length()> b { value };
-    queue &= m;
-    queue |= (b << (choice * ncard_bits()));
-  } /* set_index() */
-
 
   /*
   * Moves the current piece in the desired direction.
@@ -373,24 +314,6 @@ struct Game {
     // Move pieces in the desired direction.
     auto moved = (d < 2) ? (~wall_mask & player_mask) << shift[d] :
       (~wall_mask & player_mask) >> shift[d];
-
-    // cout<<"Player Mask - \n";
-    // print_bitmask<width, height>(player_mask);
-    
-    // cout<<"Moved - \n";
-    // print_bitmask<width, height>(moved);
-
-    // cout<<"Move Masked - \n";
-    // print_bitmask<width, height>(moved & ~edge_masks[(d + 2) % 4] & ~impassible);
-
-    // cout<<" Wall Mask - \n";
-    // print_bitmask<width, height>(wall_mask);
-
-    // cout<<"Wall Masked - \n";
-    // print_bitmask<width, height>(player_mask & wall_mask);
-
-    // cout<<"Edge Masked - \n";
-    // print_bitmask<width, height>(player_mask & edge_masks[d]);
     
     // If we shifted into a wall or off the edge, delete the shifted bit.
     // Place anything that hit a wall back where it was.
@@ -400,10 +323,6 @@ struct Game {
       (player_mask & wall_mask) |
       (player_mask & edge_masks[d]);
 
-    // cout<<"Final Player Mask - \n";
-    // print_bitmask<width, height>(player_mask);
-
-
     // Move the score mask identically to the player mask.
     moved = (d < 2) ? (~wall_mask & score_mask) << shift[d] :
       (~wall_mask & score_mask) >> shift[d];
@@ -411,7 +330,6 @@ struct Game {
       (moved & ~edge_masks[(d + 2) % 4] & ~impassible) |
       (score_mask & wall_mask) |
       (score_mask & edge_masks[d]);
-
 
     // Every player that doesn't have a cow
     auto cow_less = ~(player_mask & ~score_mask);
