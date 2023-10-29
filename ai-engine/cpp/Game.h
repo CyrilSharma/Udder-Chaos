@@ -65,6 +65,11 @@ struct Game {
     return m;
   }
 
+  // Comparator for map and things? Idk
+  bool operator<(const Game& o) const {
+    return turn < o.turn;
+  }
+
   /*--- Struct Members ---*/
   const uint64_t width;
   const uint64_t height;

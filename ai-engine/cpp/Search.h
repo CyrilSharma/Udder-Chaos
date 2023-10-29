@@ -22,9 +22,15 @@ struct Search {
         // ?
     }
 
+    map<Game, int> evals;
+
     // Timeout passed in for now, might be a const or smt later
     int getMove(uint64_t timeout = 1000) {
         auto start = curTime();
+
+        // Remove evals for states made before this turn, we no longer use them
+        auto it = evals.begin();
+        while (it != evals.end() && it->first.turn < game.turn) it = evals.erase(it);
 
         // Score, game state
         auto cmp = [] (auto a, auto b) { return a.first < b.first; };
@@ -35,29 +41,41 @@ struct Search {
         // basic time check for now, can optimize later
         while (curTime() - start < timeout) {
             // Store state metadata with score and the first move made 
-            auto &[state_metadata, state] = states.top(); states.pop();
+            auto [state_metadata, state] = states.top(); states.pop();
+            auto [prev_eval, first_move] = state_metadata;
             
             // Assume that each player is more likely to play better moves, so search accordingly
             // Insert negative evals when player turns to search best moves for the players first
             int state_eval = state.is_enemy_turn() ? INT_MIN : INT_MAX;
             for (uint32_t choice = 0; choice < game.hand_size; ++choice) {
                 auto tmp_state = state;
-                auto tmp_metadata = state_metadata;
                 if (tmp_state.is_enemy_turn()) {
                     tmp_state.enemy_move(choice);
-
                     int tmp_eval = score(tmp_state);
-                    state_eval = max(state_eval, tmp_eval);
-                    if (tmp_metadata.second == game.hand_size) tmp_metadata.second = choice;
-                    next_states.push({tmp_metadata, tmp_state});
+
+                    // Prune poor branches, can be improved in future
+                    if (tmp_eval < state_eval) {
+                        continue;
+                    }
+
+                    // Pruned branches, so tmp_eval > state_eval
+                    state_eval = tmp_eval;
+                    if (first_move == game.hand_size) first_move = choice;
+                    next_states.push({{tmp_eval, first_move}, tmp_state});
                 }
                 else {
                     tmp_state.player_move(choice);
-
                     int tmp_eval = score(tmp_state);
-                    state_eval = min(state_eval, tmp_eval);
-                    if (tmp_metadata.second == game.hand_size) tmp_metadata.second = choice;
-                    next_states.push({tmp_metadata, tmp_state});
+
+                    // Prune poor branches, can be improved in future
+                    if (tmp_eval > state_eval) {
+                        continue;
+                    }
+
+                    // Lower branches are pruned
+                    state_eval = tmp_eval;
+                    if (first_move == game.hand_size) first_move = choice;
+                    next_states.push({{tmp_eval, first_move}, tmp_state});
                 }
             }
 
@@ -65,6 +83,9 @@ struct Search {
                 best_eval = state_eval;
                 best_move = state_metadata.second;
             }
+
+            // Save evaluation for now, don't really do anything with them yet.
+            evals[state] = state_eval;
         } 
         
         return best_move;
