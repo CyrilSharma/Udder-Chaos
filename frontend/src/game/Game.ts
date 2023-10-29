@@ -1,6 +1,6 @@
 import { Container, Sprite } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, PieceEnum } from './Utils';
+import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum } from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
@@ -23,6 +23,7 @@ export class Game extends Container {
     public dayCycle: number = 0;
     public totalDayCount: number = 0;
     public totalScore: number = 0;
+    public gameOver: boolean = false;
 
     constructor() {
         super();
@@ -51,6 +52,10 @@ export class Game extends Container {
     }
 
     public updateTurn() {
+        if (this.gameOver) {
+            return;
+        }
+
         this.turn += 1;
         if (this.turn > 6) {
             this.turn -= 6;
@@ -90,20 +95,25 @@ export class Game extends Container {
     // reset when a new game is setup rather than when the old one finishes
     public endGame(success: boolean, message: string) {
         console.log(message);
-        this.board.endGame(false, "failed");
+        this.board.endGame(success, message);
+        this.gameOver = true;
     }
 
     public ourTurn() {
-        return true;
-        return this.playerColor == 1 && this.turn == 1 || 
-                this.playerColor == 2 && this.turn == 2 || 
-                this.playerColor == 3 && this.turn == 4 ||
-                this.playerColor == 4 && this.turn == 5;
+        return !this.gameOver;
+        return !this.gameOver && 
+            this.playerColor == 1 && this.turn == 1 || 
+            this.playerColor == 2 && this.turn == 2 || 
+            this.playerColor == 3 && this.turn == 4 ||
+            this.playerColor == 4 && this.turn == 5;
         return true; // debug always allow current player to move
     }
 
     public scorePoints(points: number) {
         this.totalScore += points;
         this.gameState.updateScore(this.totalScore);
+        if (this.totalScore >= SCORE_GOAL) {
+            this.endGame(true, "You saved Homeworld with enough cows!")
+        }
     }
 }

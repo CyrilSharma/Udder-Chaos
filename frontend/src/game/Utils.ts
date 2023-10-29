@@ -5,6 +5,7 @@ import MersenneTwister from 'mersenne-twister';
 // Constants
 export const COW_REGEN_RATE = 12; // Respawn after 3 days
 export const COW_SACRIFICE = 3; 
+export const SCORE_GOAL = 4;
 
 //-----Tiles-----//
 export const TileEnum = {
