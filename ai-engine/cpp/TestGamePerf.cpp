@@ -5,42 +5,60 @@
 #include "Game.h"
 #include "Utils.h"
 
-int main() {
-  // int x = 0; 
-  boost::dynamic_bitset<uint64_t> t(64, 0);
-  // bitset<64> s { 0 };
-  for (int i = 0; i < 1e8; i++) {
-    // x |= (x >> 1) & x;
-    t |= (t >> 1) & t;
-    // s |= (s >> 1) & s;
-  }
-  return 0 ;
+int func1(int);
+int func2(int);
+int func3(int);
 
-  const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width));
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      board[i][j] = rand() % 2;
+const int num_ints = 4;
+
+int main() {
+  int n = 1e8;
+  
+  // Measure the execution time of func1
+  auto start_time = std::chrono::high_resolution_clock::now();
+  func1(n);
+  auto end_time = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed_time = end_time - start_time;
+  std::cout << "integer: " << elapsed_time.count() << " seconds" << std::endl;
+
+  // Measure the execution time of func2
+  start_time = std::chrono::high_resolution_clock::now();
+  func2(n);
+  end_time = std::chrono::high_resolution_clock::now();
+  elapsed_time = end_time - start_time;
+  std::cout << "stl bitset: " << elapsed_time.count() << " seconds" << std::endl;
+
+  // Measure the execution time of func3
+  start_time = std::chrono::high_resolution_clock::now();
+  func3(n);
+  end_time = std::chrono::high_resolution_clock::now();
+  elapsed_time = end_time - start_time;
+  std::cout << "boost bitset: " << elapsed_time.count() << " seconds" << std::endl;
+}
+
+int func1(int n) {
+  uint64_t x = 0; 
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < num_ints; j++) {
+      x |= (1 << (rand() % 64));
     }
   }
+  return x;
+}
 
-  const int npieces = 4;
-  vector<Piece> player_pieces(npieces);
-
-  int lx[npieces] = { 0, 1, 2, 3 };
-  int ly[npieces] = { 0, 1, 2, 3 };
-  for (int i = 0; i < npieces; i++) {
-    player_pieces[i] = Piece(ly[i], lx[i], 1);
+int func2(int n) {
+  std::bitset<64 * num_ints> x { 0 };
+  for (int i = 0; i < n; i++) {
+    x |= (1 << (rand() % 64));
   }
+  return x.to_ulong();
+}
 
-  const int ndirs = 3;
-  const int ncards = 16;
-  auto cards = random_cards(ndirs, ncards);
-
-  auto config = GameConfig(board, player_pieces, cards);
-  auto game = Game(config);
-  Direction dirs[4] = {
-    Direction::RIGHT, Direction::UP,
-    Direction::LEFT, Direction::DOWN,
-  };
+int func3(int n) {
+  boost::dynamic_bitset<> x(64 * num_ints, 0);
+  boost::dynamic_bitset<> m(64 * num_ints, 1);
+  for (int i = 0; i < n; i++) {
+    x |= m << (rand() % 64);
+  }
+  return x.to_ulong();
 }
