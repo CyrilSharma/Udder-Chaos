@@ -21,6 +21,8 @@ import {
     COW_REGEN_RATE,
 } from './Utils';
 import { EndGameScreen } from '../ui_components/EndGameScreen';
+import server from "../server";
+
 /**
  * Board class
  * Handles creation of board, placing obstacles, and stores all tiles and pieces
@@ -241,7 +243,8 @@ export class Board extends Container {
         tile.eventMode = 'static';
         tile.on('pointerup', () => {
             if (this.game.buyButton.dragging) {
-                this.purchaseUFO(position);
+                server.purchaseUFO(position, this.game.playerColor);
+                this.purchaseUFO(position, this.game.playerColor);
             }
         });
 
@@ -328,13 +331,13 @@ export class Board extends Container {
         }
     }
 
-    public purchaseUFO(position: Position) {
+    public purchaseUFO(position: Position, color: number) {
         if (this.game.ourTurn() &&
             this.game.totalScore > 0 && 
             this.getTileAtPosition(position) == TileEnum.Destination && 
             this.getPieceByPosition(position) == null) {
                 this.game.scorePoints(-1);
-                this.createPiece(position, this.game.playerColor);
+                this.createPiece(position, color);
         } else {
             console.log("You can't purchase a UFO!")
         }

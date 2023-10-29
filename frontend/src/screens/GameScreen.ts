@@ -1,6 +1,6 @@
 import { Container, Graphics } from 'pixi.js';
 import { Game } from '../game/Game';
-import { createRandomGrid, PieceEnum, GameConfig, loadMap, getTeam, TeamEnum, random } from '../game/Utils';
+import { createRandomGrid, PieceEnum, GameConfig, loadMap, getTeam, TeamEnum, random, Position } from '../game/Utils';
 import { MAPS } from "../maps/Maps"
 
 export class GameScreen extends Container {
@@ -71,6 +71,10 @@ export class GameScreen extends Container {
         let card = this.game.cards.findCardInHand(cardIndex, color);
         card.rotateCard(rotation);
         this.game.updateTurn();
+    }
+
+    public purchaseUFO(position: Position, color: number) {
+        this.game.board.purchaseUFO(position, color);
     }
 
     public setPlayerColor(color: number) {
