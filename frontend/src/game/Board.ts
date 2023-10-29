@@ -242,7 +242,7 @@ export class Board extends Container {
 
         tile.eventMode = 'static';
         tile.on('pointerup', () => {
-            if (this.game.buyButton.dragging) {
+            if (this.game.buyButton.dragging && this.game.ourTurn()) {
                 server.purchaseUFO(position, this.game.playerColor);
                 this.purchaseUFO(position, this.game.playerColor);
             }
@@ -332,8 +332,7 @@ export class Board extends Container {
     }
 
     public purchaseUFO(position: Position, color: number) {
-        if (this.game.ourTurn() &&
-            this.game.totalScore > 0 && 
+        if (this.game.totalScore > 0 && 
             this.getTileAtPosition(position) == TileEnum.Destination && 
             this.getPieceByPosition(position) == null) {
                 this.game.scorePoints(-1);
