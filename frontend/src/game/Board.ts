@@ -18,8 +18,11 @@ import {
     TeamEnum,
     ActionType,
     random,
+    COW_REGEN_RATE,
 } from './Utils';
 import { EndGameScreen } from '../ui_components/EndGameScreen';
+import server from "../server";
+
 /**
  * Board class
  * Handles creation of board, placing obstacles, and stores all tiles and pieces
@@ -48,6 +51,10 @@ export class Board extends Container {
     public loseScreen: EndGameScreen;
     /** How many pieces each player countrols */
     public playerPieces: number[] = [];
+    /** Pasture tiles to respawn, outer array represents turns, middle array represent tiles, inner array represents tile coords */
+    public pastureRegen: Position[][] = [];
+    /** Enemy tiles to spawn enemies each round */
+    public enemyRegen: Position[][] = [];
 
     // We pass the game to allow for callbacks...
     constructor(game: Game) {
@@ -62,6 +69,13 @@ export class Board extends Container {
         this.loseScreen = new EndGameScreen(false);
         this.addChild(this.winScreen);
         this.addChild(this.loseScreen);
+
+        for (let i = 0; i < COW_REGEN_RATE; i++) {
+            this.pastureRegen.push([])
+        }
+        for (let i = 0; i < 4; i++) {
+            this.enemyRegen.push([])
+        }
     }
 
     // Creates the initial board with some config
@@ -78,8 +92,12 @@ export class Board extends Container {
     }
 
     // Anything that should happen when the game ends will go here eventually
-    public endGame() {
-
+    public endGame(success: boolean, message: string) {
+        if (success) {
+            this.winScreen.visible = true;
+        } else {
+            this.loseScreen.visible = true;
+        }
     }
 
     // Takes a board update, and performs corresponding updates and rerenders at the end.
@@ -119,9 +137,6 @@ export class Board extends Container {
         let piece = action.piece;
         let dest = action.move;
 
-        console.log("KILLING MOVE");
-        console.log(piece);
-        console.log(dest);
         const target = this.getPieceByPosition(dest)!;
         this.removePiece(target);
 
@@ -131,7 +146,7 @@ export class Board extends Container {
 
             // If this player has no more pieces end the game
             if (this.playerPieces[target.type] == 0) {
-                this.game.endGame();
+                this.game.endGame(false, "All of your UFOs were wiped out.");
             }
         }
     }
@@ -142,11 +157,12 @@ export class Board extends Container {
         let piece = action.piece;
         let dest = action.move;
 
-        // TODO: actually do something when abduct
         const target = this.getPieceByPosition(dest, TeamEnum.Cow)!;
         this.removePiece(target);
-        console.log("Yay you score!");
         piece.addScore();
+
+        // Add respawn to pasture
+        this.pastureRegen[this.game.turnCount % COW_REGEN_RATE].push(dest);
     }
 
     // Player scoring cows on destination
@@ -194,7 +210,7 @@ export class Board extends Container {
             }
         }
         
-        // Create all tiles, and randomly generate cows on pastures
+        // Create all tiles, and generate cows on pastures
         const rows = grid.length;
         const cols = grid[0].length;
         for (let r = 0; r < rows; r++) {
@@ -203,10 +219,11 @@ export class Board extends Container {
                 this.createTile(position, grid[r][c]);
                 if (grid[r][c] == TileEnum.Pasture) {
                     if (this.getPieceByPosition(position) != null) continue;
-                    if (random() * 4 < 3) continue;
                     this.createPiece(position, PieceEnum.Cow);
-                    // this.createPiece(position,)
-                    // this.createCow(position);
+                } else if (grid[r][c] >= TileEnum.Red_Enemy_Spawn) {
+                    // If it's an enemy spawner, spawn the corresponding enemy type
+                    this.createPiece(position, grid[r][c] + 1);
+                    this.enemyRegen[grid[r][c] - TileEnum.Red_Enemy_Spawn].push(position);
                 }
             }
         }
@@ -216,12 +233,21 @@ export class Board extends Container {
     // Creating and rendering individual tile
     public createTile(position: Position, tileType: TileType) {
         const name = TileMap[tileType];
-        const tile = Sprite.from(name);
+        const tile: Sprite = Sprite.from(name);
         const viewPosition = this.getViewPosition(position);
         tile.x = viewPosition.x;
         tile.y = viewPosition.y;
         tile.width = this.tileSize;
         tile.height = this.tileSize;
+
+        tile.eventMode = 'static';
+        tile.on('pointerup', () => {
+            if (this.game.buyButton.dragging && this.game.ourTurn()) {
+                server.purchaseUFO(position, this.game.playerColor);
+                this.purchaseUFO(position, this.game.playerColor);
+            }
+        });
+
         this.tilesContainer.addChild(tile);
     }
 
@@ -287,5 +313,32 @@ export class Board extends Container {
         if (position.row < 0 || position.row >= this.rows || position.column < 0 || position.column >= this.columns) return TileEnum.Impassible;
         // console.log(this.grid[position.row][position.column]);
         return this.grid[position.row][position.column];
+    }
+
+    public spawnCows(turnCount: number) {
+        // Loop through pasture tiles that need new cows
+        this.pastureRegen[turnCount % COW_REGEN_RATE].forEach((tilePosition) => {
+            this.createPiece(tilePosition, PieceEnum.Cow);
+        });
+        this.pastureRegen[turnCount % COW_REGEN_RATE] = [];
+    }
+
+    public spawnEnemies() {
+        for (let i = 0; i < 4; i++) {
+            this.enemyRegen[i].forEach((tilePosition) => {
+                this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
+            });
+        }
+    }
+
+    public purchaseUFO(position: Position, color: number) {
+        if (this.game.totalScore > 0 && 
+            this.getTileAtPosition(position) == TileEnum.Destination && 
+            this.getPieceByPosition(position) == null) {
+                this.game.scorePoints(-1);
+                this.createPiece(position, color);
+        } else {
+            console.log("You can't purchase a UFO!")
+        }
     }
 }

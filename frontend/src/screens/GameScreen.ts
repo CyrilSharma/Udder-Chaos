@@ -1,6 +1,6 @@
 import { Container, Graphics } from 'pixi.js';
 import { Game } from '../game/Game';
-import { createRandomGrid, PieceEnum, GameConfig, loadMap, getTeam, TeamEnum, random } from '../game/Utils';
+import { createRandomGrid, PieceEnum, GameConfig, loadMap, getTeam, TeamEnum, random, Position } from '../game/Utils';
 import { MAPS } from "../maps/Maps"
 
 export class GameScreen extends Container {
@@ -30,10 +30,10 @@ export class GameScreen extends Container {
                 [{ row: 0, column: 14 }, { row: 0, column: 15 }, { row: 1, column: 14 }, { row: 1, column: 15 }],
                 [{ row: 14, column: 0 }, { row: 14, column: 1 }, { row: 15, column: 0 }, { row: 15, column: 1 }],
                 [{ row: 14, column: 14 }, { row: 14, column: 15 }, { row: 15, column: 14 }, { row: 15, column: 15 }],
-                [{ row: 4, column: 4 }, { row: 4, column: 5 }, { row: 5, column: 4 }, { row: 5, column: 5 }],
-                [{ row: 4, column: 10 }, { row: 4, column: 11 }, { row: 5, column: 10 }, { row: 5, column: 11 }],
-                [{ row: 10, column: 4 }, { row: 10, column: 5 }, { row: 11, column: 4 }, { row: 11, column: 5 }],
-                [{ row: 10, column: 10 }, { row: 10, column: 11 }, { row: 11, column: 10 }, { row: 11, column: 11 }],
+                [],
+                [],
+                [],
+                [],
             ],
             tileSize: 40,
         };
@@ -73,6 +73,10 @@ export class GameScreen extends Container {
         this.game.updateTurn();
     }
 
+    public purchaseUFO(position: Position, color: number) {
+        this.game.board.purchaseUFO(position, color);
+    }
+
     public setPlayerColor(color: number) {
         this.game.setPlayerColor(color);
     }
@@ -84,5 +88,6 @@ export class GameScreen extends Container {
         this.game.x = centerx - this.game.board.getWidth() / 2;
         this.background.drawRect(0, 0, width, height);
         this.game.board.winScreen.resize(this.game.board.getWidth(), this.game.board.getHeight());
+        this.game.board.loseScreen.resize(this.game.board.getWidth(), this.game.board.getHeight());
     }
 }

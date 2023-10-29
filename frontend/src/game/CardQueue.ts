@@ -59,9 +59,6 @@ export class CardQueue extends Container {
             this.enemy_hand.push(this.queue.shift()!);
         }
 
-        console.log(this.player_hand);
-        console.log(this.enemy_hand);
-
         this.placeCards();
         this.reindexCards();
     }
