@@ -4,6 +4,7 @@
 #include "CardQueue.h"
 #include "Game.h"
 #include "Utils.h"
+#include "Search.h"
 
 using namespace std;
 
@@ -256,7 +257,7 @@ TEST_CASE("Test Cow Capturing") {
   auto easy_update = [&](Direction dir) {
     int dx[4] = { 1, 0, -1, 0 };
     int dy[4] = { 0, 1, 0, -1 };
-    for (int i = 0; i < pieces.size(); i++) {
+    for (uint32_t i = 0; i < pieces.size(); i++) {
       auto &p = pieces[i];
       auto ni = p.i + dy[dir];
       auto nj = p.j + dx[dir];

@@ -6,7 +6,7 @@ using namespace std;
 /*--- Printers ----*/
 template <typename T>
 void printv(vector<T> v) {
-  for (int i = 0; i < v.size(); i++) {
+  for (uint32_t i = 0; i < v.size(); i++) {
     cout<<v[i]<<"";
   }
   cout<<"\n";
@@ -23,7 +23,7 @@ void printvv(vector<vector<T>> v) {
 template <typename T>
 bool checkv(vector<T> a, vector<T> b) {
   if (a.size() != b.size()) return false;
-  for (int i = 0; i < a.size(); i++) {
+  for (uint32_t i = 0; i < a.size(); i++) {
     if (a[i] != b[i]) return false;
   }
   return true;
@@ -32,7 +32,7 @@ bool checkv(vector<T> a, vector<T> b) {
 template <typename T>
 bool checkvv(vector<vector<T>> a, vector<vector<T>> b) {
   if (a.size() != b.size()) return false;
-  for (int i = 0; i < a.size(); i++) {
+  for (uint32_t i = 0; i < a.size(); i++) {
     if (!checkv(a[i], b[i])) return false;
   }
   return true;

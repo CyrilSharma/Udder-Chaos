@@ -17,18 +17,18 @@ using dynamic_bitset = boost::dynamic_bitset<>;
 
 struct Game {
   /*--- Utility Functions -----*/
-  const int64_t area() {
+  int64_t area() {
     return (width * height);
   }
 
-  const int64_t ncard_bits() {
+  int64_t ncard_bits() {
     return 64 -__builtin_clzll(ncards - 1);
   }
 
   // Sprint 3 OPT; Remove edge masks and simply use walls for everything.
   const dynamic_bitset right_edge_mask() {
     dynamic_bitset res(area(), 0b0);
-    for (int i = 0; i < height; i++) {
+    for (uint32_t i = 0; i < height; i++) {
       dynamic_bitset m(area(), 1);
       m <<= (i * width + (width - 1));
       res |= m;
@@ -45,7 +45,7 @@ struct Game {
 
   const dynamic_bitset left_edge_mask() {
     dynamic_bitset res(area(), 0);
-    for (int i = 0; i < height; i++) {
+    for (uint32_t i = 0; i < height; i++) {
       dynamic_bitset m(area(), 1);
       m <<= (i * width);
       res |= m;
@@ -55,7 +55,7 @@ struct Game {
 
   const dynamic_bitset down_edge_mask() {
     dynamic_bitset m(area(), 0);
-    for (int i = 0; i < width; i++) {
+    for (uint32_t i = 0; i < width; i++) {
       dynamic_bitset b(area(), 1);
       m |= b << i;
     }
@@ -109,12 +109,12 @@ struct Game {
     all_players(dynamic_bitset(area(), 0)),
     wall_mask(dynamic_bitset(area(), 0)) {
 
-    for (int i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
       players[i] = dynamic_bitset(area(), 0);
       player_scores[i] = dynamic_bitset(area(), 0);
       enemies[i] = dynamic_bitset(area(), 0);
     }
-    for (int i = 0; i < round_length; i++) {
+    for (uint32_t i = 0; i < round_length; i++) {
       cow_respawn[i] = dynamic_bitset(area(), 0);
     }
 
@@ -134,8 +134,8 @@ struct Game {
       }
     }
 
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
+    for (uint32_t i = 0; i < height; i++) {
+      for (uint32_t j = 0; j < width; j++) {
         int tile = config.board[i][j];
         auto m = dynamic_bitset(area(), 1);
         m <<= (i * width + j);
@@ -320,8 +320,8 @@ struct Game {
 
   vector<vector<int>> viewBoard() {
     vector<vector<int>> out(height, vector<int>(width));
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
+    for (uint32_t i = 0; i < height; i++) {
+      for (uint32_t j = 0; j < width; j++) {
         out[i][j] = 0;
         auto mask = dynamic_bitset(area(), 1);
         mask <<= (width * i + j);
@@ -343,8 +343,8 @@ struct Game {
   vector<vector<char>> boardString() {
     // Empty space default to '.'
     vector<vector<char>> out(height, vector<char>(width, '.'));
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
+    for (uint32_t i = 0; i < height; i++) {
+      for (uint32_t j = 0; j < width; j++) {
         auto mask = dynamic_bitset(area(), 1);
         mask <<= (width * i + j);
         if ((impassible & mask).any()) {
@@ -363,8 +363,8 @@ struct Game {
 
   vector<Piece> viewPieces() {
     vector<Piece> out;
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
+    for (uint32_t i = 0; i < height; i++) {
+      for (uint32_t j = 0; j < width; j++) {
         for (int k = 0; k < 4; k++) {
           auto msk = dynamic_bitset(area(), 1);
           msk <<= (width * i + j);

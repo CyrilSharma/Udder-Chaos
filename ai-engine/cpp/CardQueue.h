@@ -3,7 +3,7 @@
 using dynamic_bitset = boost::dynamic_bitset<>;
 
 struct CardQueue {
-  const int queue_length() {
+  int queue_length() {
     return bits_per * elements;
   }
 

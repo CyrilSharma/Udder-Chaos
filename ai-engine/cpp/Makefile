@@ -1,6 +1,6 @@
 # Compiler and compiler flags
 CC = g++
-CFLAGS = -std=c++17 -Wall
+CFLAGS = -std=c++17 -Wall -Wextra
 DEBUG_FLAGS = -g
 OPTIMIZED_FLAGS = -O3
 
