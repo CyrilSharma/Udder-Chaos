@@ -13,6 +13,9 @@ using dynamic_bitset = boost::dynamic_bitset<>;
  * TLDR: templates need to be entirely in header files. There are hacky ways to get around it if you want shorter build time,
  * But, we barely have any files so I'm gonna do the easiest approach.
  * Alternatively, switch std::bitset to boost::dynamic_bitset, and we won't need templates.
+ * 
+ * Game struct contains all the useful functions for simulating game logic 
+ * 
  */
 
 struct Game {

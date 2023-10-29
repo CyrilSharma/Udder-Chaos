@@ -1,5 +1,5 @@
 node_modules
-boost_1_83_0
+boost_1_83_0/
 vcpkg
 .vscode/
 TestPerf
