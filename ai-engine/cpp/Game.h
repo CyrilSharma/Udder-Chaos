@@ -151,6 +151,40 @@ struct Game {
     }
   } /* Game() */
 
+  /**
+   * Game copy constructor because apparently it doesn't make one implicitly :(
+  */
+  Game(const Game &game):
+    width(game.width),
+    height(game.height),
+    ncards(game.ncards),
+    hand_size(game.hand_size),
+    round_length(game.round_length),
+    edge_masks(game.edge_masks),
+    queue(game.queue),
+    impassible(game.impassible),
+    cows(game.cows),
+    all_enemies(game.all_enemies),
+    all_players(game.all_players),
+    wall_mask(game.wall_mask),
+    players(game.players),
+    player_scores(game.player_scores),
+    enemies(game.enemies),
+    cow_respawn(game.cow_respawn),
+    cards(game.cards) {
+  } /* copy Game() */
+
+  /**
+   * Game move constructor because apparently it doesn't make one implicitly :(
+  */
+  Game& operator=(const Game &game) {
+    // Gee I sure hope I don't have to actually write a
+    // move constructor for this massive struct...
+    
+    // ... TODO
+    return *this;
+  } /* copy Game() */
+
   /*
    * returns the winner of the game.
    * -1 if AI, 1 if player, 0 if nobody has won yet.
@@ -168,6 +202,11 @@ struct Game {
     // Need to implement score tiles...
   } /* is_jover() */
 
+  // Temp player turn check
+  bool is_enemy_turn() const {
+    return turn % 3 == 2;
+  }
+
 
   /*
    * choice is expected to be the numerical
@@ -182,7 +221,7 @@ struct Game {
     for (Direction move: moves) {
       play_player_movement(move);
     }
-    if (turn % 2 == 1) {
+    if (turn & 1) {
       player_id = (player_id + 1) & 0b11;
     }
     turn += 1;

@@ -1,7 +1,7 @@
 #pragma once
-#include <bits/stdc++.h> // Forgive me for my lazyness.
+#include <bits/stdc++.h> // Forgive me for my lazyness. :(
 #include "Helpers.h"
-using namespace std;
+using namespace std; // part 2
 
 /*--- Printers ----*/
 template <typename T>
@@ -75,4 +75,11 @@ vector<Card> random_cards(int ndirs, int ncards) {
     cards[i] = Card { moves };
   }
   return cards;
+}
+
+/*--- Timing ---*/
+// From https://stackoverflow.com/questions/19555121/how-to-get-current-timestamp-in-milliseconds-since-1970-just-the-way-java-gets
+uint64_t curTime() {
+  using namespace std::chrono;
+  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 }
