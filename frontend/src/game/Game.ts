@@ -1,10 +1,11 @@
-import { Container, Sprite } from 'pixi.js';
+import { Container, Sprite, Text } from 'pixi.js';
 import { Board } from './Board';
 import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum } from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
 import { GameState } from './GameState';
+import { BuyButton } from '../ui_components/BuyButton';
 
 // This seems a little redundant right now,
 // But it will house the cards as well,
@@ -23,6 +24,7 @@ export class Game extends Container {
     public dayCycle: number = 0;
     public totalDayCount: number = 0;
     public totalScore: number = 0;
+    public buyButton: BuyButton;
     public gameOver: boolean = false;
 
     constructor() {
@@ -31,10 +33,12 @@ export class Game extends Container {
         this.board = new Board(this);
         this.cards = new CardQueue(this);
         this.gameState = new GameState(this);
+        this.buyButton = new BuyButton("Buy", -100, -1, 0xffcc66, 1, 0.1, 30);
 
         this.addChild(this.board);
         this.addChild(this.cards);
         this.addChild(this.gameState);
+        this.addChild(this.buyButton);
     }
 
     public setup(config: GameConfig) {

@@ -231,12 +231,20 @@ export class Board extends Container {
     // Creating and rendering individual tile
     public createTile(position: Position, tileType: TileType) {
         const name = TileMap[tileType];
-        const tile = Sprite.from(name);
+        const tile: Sprite = Sprite.from(name);
         const viewPosition = this.getViewPosition(position);
         tile.x = viewPosition.x;
         tile.y = viewPosition.y;
         tile.width = this.tileSize;
         tile.height = this.tileSize;
+
+        tile.eventMode = 'static';
+        tile.on('pointerup', () => {
+            if (this.game.buyButton.dragging) {
+                this.purchaseUFO(position);
+            }
+        });
+
         this.tilesContainer.addChild(tile);
     }
 
@@ -317,6 +325,18 @@ export class Board extends Container {
             this.enemyRegen[i].forEach((tilePosition) => {
                 this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
             });
+        }
+    }
+
+    public purchaseUFO(position: Position) {
+        if (this.game.ourTurn() &&
+            this.game.totalScore > 0 && 
+            this.getTileAtPosition(position) == TileEnum.Destination && 
+            this.getPieceByPosition(position) == null) {
+                this.game.scorePoints(-1);
+                this.createPiece(position, this.game.playerColor);
+        } else {
+            console.log("You can't purchase a UFO!")
         }
     }
 }
