@@ -25,7 +25,9 @@ export class TestingScreen extends Container {
     // private dayCounter: DayCounter;
     // private colorSelector: ColorSelector;
     private menuContainer: MenuContainer;
-    private joinLabel: SizedButton;
+    private lobbyLabel: SizedButton;
+    private codeDisplay: SizedButton;
+    private startButton: SizedButton;
 
     constructor() {
         /** Default Stuff */
@@ -67,8 +69,16 @@ export class TestingScreen extends Container {
         // this.addChild(this.leftCol);
 
         this.menuContainer = new MenuContainer();
-        this.joinLabel = new SizedButton(0.32, 0.2, 0.5, 0.25, "Game Lobby", this.menuContainer.width, this.menuContainer.height);
-        this.menuContainer.addChild(this.joinLabel);
+        this.lobbyLabel = new SizedButton(0.32, 0.16, 0.5, 0.25, "Game Lobby", this.menuContainer.width, this.menuContainer.height, 60, 0xffcc66);
+        this.menuContainer.addChild(this.lobbyLabel);
+        
+        this.codeDisplay = new SizedButton(0.75, 0.16, 0.3, 0.25, "Code:\nABCD", this.menuContainer.width, this.menuContainer.height, 40, 0xffcc66);
+        this.codeDisplay.changeText("Code:\nABCD");
+        this.menuContainer.addChild(this.codeDisplay);
+
+        this.startButton = new SizedButton(0.5, 0.9, 0.3, 0.15, "Start Game", this.menuContainer.width, this.menuContainer.height, 40, 0x6060fc);
+        this.menuContainer.addChild(this.startButton);
+
         this.addChild(this.menuContainer);
 
         // this.board = new Container();
@@ -96,7 +106,10 @@ export class TestingScreen extends Container {
         // this.rightCol.x = width * 0.8;
         // this.rightCol.y = height * 0.5;
         this.menuContainer.resize(width, height);
-        this.joinLabel.resize(this.menuContainer.getBox());
+        this.lobbyLabel.resize(this.menuContainer.getBox());
+        this.codeDisplay.resize(this.menuContainer.getBox());
+        this.startButton.resize(this.menuContainer.getBox());
+
     }
 
 }

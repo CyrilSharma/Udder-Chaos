@@ -11,14 +11,14 @@ export class SizedButton extends FancyButton {
     private percentHeight: number;
     private label: Text;
 
-    constructor(x: number, y: number, width: number, height: number, text: string, parentW: number, parentH: number) {
+    constructor(x: number, y: number, width: number, height: number, text: string, parentW: number, parentH: number, fontSize: number, color: number) {
         super();
         
         this.label = new Text(text, new TextStyle({
             fontFamily: "Concert One",
-            fontSize: 60,
-            fill: "#ffffff",
-            align: "left",
+            fontSize: fontSize,
+            fill: "#000000",
+            align: "center",
         }));
         this.percentWidth = width;
         this.percentHeight = height;
@@ -28,15 +28,20 @@ export class SizedButton extends FancyButton {
         this.button = new FancyButton({
             defaultView: (new Button(
                 new Graphics()
-                        .beginFill(0x9f9f9f)
+                        .beginFill(color)
                         .drawRoundedRect(0, 0, width * parentW, height * parentH, 0.025 * (parentW + parentH))
             )).view,
             anchor: 0.5,
             text: this.label
         });
 
-        this
         this.addChild(this.button);
+    }
+
+    public changeText(str: string) {
+
+        this.label.text = str;
+
     }
 
     public resize(bounds: Array<number>) {
@@ -45,7 +50,6 @@ export class SizedButton extends FancyButton {
         this.y = bounds[0] + (bounds[1] - bounds[0]) * this.percentY;
         this.width = (bounds[3] - bounds[2]) * this.percentWidth;
         this.height = (bounds[1] - bounds[0]) * this.percentHeight;
-        console.log(this.button.text)
-    }
+        }
 
 }
