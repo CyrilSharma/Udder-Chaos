@@ -36,7 +36,13 @@ export class ColorSelector extends FancyButton {
         this.addChild(this.selectorButton);
     }
 
-    public swapColor(available: Array<boolean>) : Array<boolean> {
+    public reset() : number {
+        let tmp = this.color;
+        this.color = 4;
+        return tmp;
+    }
+
+    public swapColor(available: Array<boolean>) : number {
         let temp = this.color;
         do {
             temp++;
@@ -53,9 +59,9 @@ export class ColorSelector extends FancyButton {
                     available[temp] = false;
                 }
                 this.color = temp;
-                break;
+                return this.color;
             }
         } while (!available[temp]);
-        return available;
+        return -1;
     }
 }

@@ -1,5 +1,5 @@
 import { Button, FancyButton } from '@pixi/ui';
-import { Container, Graphics } from 'pixi.js';
+import { Container, Graphics, TextStyleAlign } from 'pixi.js';
 import { Text, TextStyle } from 'pixi.js';
 
 export class SizedButton extends FancyButton {
@@ -9,7 +9,7 @@ export class SizedButton extends FancyButton {
     private percentY: number;
     private percentWidth: number;
     private percentHeight: number;
-    private label: Text;
+    public label: Text;
 
     constructor(x: number, y: number, width: number, height: number, text: string, parentW: number, parentH: number, fontSize: number, color: number) {
         super();
@@ -39,9 +39,7 @@ export class SizedButton extends FancyButton {
     }
 
     public changeText(str: string) {
-
         this.label.text = str;
-
     }
 
     public resize(bounds: Array<number>) {

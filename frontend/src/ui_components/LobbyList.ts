@@ -23,7 +23,6 @@ export class LobbyList extends FancyButton {
 
     private playersList: Array<SizedButton>;
     private nameInput: Input;
-    //public text: Text;
     private players: Array<PlayerInfo>;
 
     constructor(currentPlayerNumber: number, menuContainer: MenuContainer, pX: number, pY: number, pW: number, pH: number) {
@@ -50,17 +49,20 @@ export class LobbyList extends FancyButton {
             this.colorSelectors[i].x = -215;
             this.colorSelectors[i].y = -90 + i * 60;
             this.listContainer.addChild(this.colorSelectors[i]);
+            this.colorSelectors[i].onPress.connect(() => {if (i == this.currentPlayerNumber) {
+                this.swapColor(i);
+            }});
+
         }
-        this.colorSelectors[currentPlayerNumber].onPress.connect(() => {this.swapColor(this.currentPlayerNumber)});
 
         /* set up players */
         this.players = new Array<PlayerInfo>;
         this.playersList = new Array<SizedButton>;
         for (let i = 0; i < 4; i++) {
             if (i != this.currentPlayerNumber) {
-                 this.playersList[i] = new SizedButton(0.5, 0.5, 0.8, 0.2, "", this.listContainer.width, this.listContainer.height, 10, 0xffffff);
+                 this.playersList[i] = new SizedButton(0.5, 0.5, 0.8, 0.2, "        ", this.listContainer.width, this.listContainer.height, 40, 0xffffff);
             } else {
-                this.playersList[i] = new SizedButton(0.5, 0.5, 0.8, 0.2, "", this.listContainer.width, this.listContainer.height, 10, 0xfff2b4);
+                this.playersList[i] = new SizedButton(0.5, 0.5, 0.8, 0.2, "        ", this.listContainer.width, this.listContainer.height, 40, 0xfff2b4);
             }
             this.playersList[i].x = 28;
             this.playersList[i].y = i * 60 - 90;
@@ -69,8 +71,28 @@ export class LobbyList extends FancyButton {
         
         /* set up name input */
         this.nameInput = new Input({
-            bg: this.playersList[this.currentPlayerNumber]
+            bg: this.playersList[this.currentPlayerNumber],
+            maxLength: 10,
+            textStyle: new TextStyle({
+                fontFamily: "Concert One",
+                fontSize: 40,
+                fill: "#000000",
+                align: "center",
+            })
         });
+        this.nameInput.alpha = 1;
+        this.nameInput.value = this.playersList[this.currentPlayerNumber].label.text;
+        console.log(`Value = ${this.nameInput.value}`)
+        //this.nameInput.onChange();
+        this.listContainer.addChild(this.nameInput);
+        // Room Code Input
+        // this.roomCodeInput = new Input({
+        //     bg: new Graphics()
+        //         .beginFill(0xffffff)
+        //         .drawRect(0, 0, 300, 150),
+        //     placeholder: "Enter Room Code",
+        //     padding: 0
+        // });
 
     }
 
@@ -83,40 +105,74 @@ export class LobbyList extends FancyButton {
     }
 
     public swapColor(player: number) {
-        this.available = this.colorSelectors[player].swapColor(this.available);
+        let tmp = this.colorSelectors[player].swapColor(this.available);
+        this.players[player].color = tmp;
+        if (this.players[player].color != 4) {
+            this.available[this.players[player].color] = false;
+        }
+        console.log(this);
     }
 
     public addPlayer(player: PlayerInfo) {
+
+        console.log(this.players.length)
         if (this.players.length >= 4) {
             return;
         }
         this.players.push(player);
-        this.updateTheList();
+        this.players.forEach(element => {
+            console.log(element);
+        });
+        console.log(`Length: ${this.players.length}`);
+        this.playersList[this.players.length - 1].changeText(player.name);
     }
 
     public removePlayer(player: PlayerInfo) {
-        this.players?.splice(this.players.indexOf(player));
-        this.updateTheList();
+
+        // get index of player in list
+        let index = -1;
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i].name == player.name) {
+                index = i;
+            }
+        }
+
+        // update the UI
+        let tmp = this.playersList[index];
+        this.playersList[index].y = -90 + 60 * 3;
+        for (let i = 0; i < 4; i++) {
+            if (i > index) {
+                this.playersList[i].y -= 60;
+                this.playersList[i] = this.playersList[i - 1];
+            }
+        }
+        this.playersList[3] = tmp;
+
+        // remove player from list
+        this.players.splice(index, 1);
+
+        // update available colors
+        if (index < this.currentPlayerNumber) {
+            this.currentPlayerNumber--;
+        }
+        this.available[this.colorSelectors[this.players.length].reset()] = true;
     }
 
+    // untested
     public setPlayers(players: PlayerInfo[]) {
         this.players = players;
-        this.updateTheList();
+        for (let i = 0; i < 4; i++) {
+            if (players[i] != null) {
+                this.playersList[i].changeText(players[i].name);
+            } else {
+                this.playersList[i].changeText("");
+            }
+        }
     }
 
+    // untested
     public numPlayers() : number {
         return this.players.length;
-    }
-
-    public updateTheList() {
-        let text = "";
-
-        this.players.forEach(player => {
-            text = text + player.color + " : " + player.name + "\n";
-
-        });
-        console.log("text: " + text);
-        //this.text.text = text;
     }
 
     public resize(bounds: Array<number>) {

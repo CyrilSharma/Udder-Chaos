@@ -81,8 +81,16 @@ export class TestingScreen extends Container {
         this.startButton = new SizedButton(0.5, 0.9, 0.3, 0.15, "Start Game", this.menuContainer.width, this.menuContainer.height, 40, 0x6060fc);
         this.menuContainer.addChild(this.startButton);
 
-        this.lobbyList = new LobbyList(1, this.menuContainer, 0.5, 0.555, 0.64, 0.5);
+        this.lobbyList = new LobbyList(3, this.menuContainer, 0.5, 0.555, 0.64, 0.5);
         this.menuContainer.addChild(this.lobbyList);
+        this.lobbyList.addPlayer({name: "Ethan", color: 4});
+        this.lobbyList.addPlayer({name: "Cyril", color: 4});
+        this.lobbyList.addPlayer({name: "Peter", color: 4});
+        this.lobbyList.addPlayer({name: "Gabe", color: 4});
+        //this.lobbyList.removePlayer({name: "Peter", color: 4});
+        this.lobbyList.removePlayer({name: "Cyril", color: 4});
+        this.lobbyList.addPlayer({name: "Bartholomew", color: 4});
+
 
         this.addChild(this.menuContainer);
 
