@@ -26,7 +26,6 @@ export class PlayerListDisplay extends Container {
         this.addChild(this.text);
     }
 
-
     public addPlayer(player: PlayerInfo) {
         if (this.players.length >= 4) {
             return;

@@ -9,6 +9,7 @@ import { DayCounter } from '../ui_components/DayCounter';
 import { ColorSelector } from '../ui_components/ColorSelector';
 import { MenuContainer } from '../ui_components/MenuContainer';
 import { SizedButton } from '../ui_components/SizedButton';
+import { LobbyList } from '../ui_components/LobbyList';
 
 export class TestingScreen extends Container {
 
@@ -28,6 +29,7 @@ export class TestingScreen extends Container {
     private lobbyLabel: SizedButton;
     private codeDisplay: SizedButton;
     private startButton: SizedButton;
+    private lobbyList: LobbyList;
 
     constructor() {
         /** Default Stuff */
@@ -79,6 +81,9 @@ export class TestingScreen extends Container {
         this.startButton = new SizedButton(0.5, 0.9, 0.3, 0.15, "Start Game", this.menuContainer.width, this.menuContainer.height, 40, 0x6060fc);
         this.menuContainer.addChild(this.startButton);
 
+        this.lobbyList = new LobbyList(1, this.menuContainer, 0.5, 0.555, 0.64, 0.5);
+        this.menuContainer.addChild(this.lobbyList);
+
         this.addChild(this.menuContainer);
 
         // this.board = new Container();
@@ -109,7 +114,7 @@ export class TestingScreen extends Container {
         this.lobbyLabel.resize(this.menuContainer.getBox());
         this.codeDisplay.resize(this.menuContainer.getBox());
         this.startButton.resize(this.menuContainer.getBox());
-
+        this.lobbyList.resize(this.menuContainer.getBox());
     }
 
 }
