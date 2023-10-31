@@ -67,6 +67,7 @@ export class LobbyList extends FancyButton {
             this.playersList[i].x = 28;
             this.playersList[i].y = i * 60 - 90;
             this.listContainer.addChild(this.playersList[i]);
+            this.playersList[i].label.text = "";
         }
         
         /* set up name input */
@@ -80,20 +81,20 @@ export class LobbyList extends FancyButton {
                 align: "center",
             })
         });
-        this.nameInput.alpha = 1;
+        this.nameInput.alpha = 0;
         this.nameInput.value = this.playersList[this.currentPlayerNumber].label.text;
-        console.log(`Value = ${this.nameInput.value}`)
-        //this.nameInput.onChange();
-        this.listContainer.addChild(this.nameInput);
-        // Room Code Input
-        // this.roomCodeInput = new Input({
-        //     bg: new Graphics()
-        //         .beginFill(0xffffff)
-        //         .drawRect(0, 0, 300, 150),
-        //     placeholder: "Enter Room Code",
-        //     padding: 0
-        // });
+        this.nameInput.onChange.connect(() => {
+            if (this.nameInput.value.length > 10) {
+                this.nameInput.value = this.nameInput.value.slice(0, 10);
+            }
+            this.playersList[this.currentPlayerNumber].changeText(this.nameInput.value);
+            this.nameInput.x = this.playersList[0].x - this.nameInput.width * 0.5;
+            this.nameInput.y = this.playersList[this.currentPlayerNumber].y - this.nameInput.height * 0.5;
+        });
+        this.nameInput.x = this.playersList[0].x - 42;
+        //this.nameInput.y = this.playersList[0].y;
 
+        this.listContainer.addChild(this.nameInput);
     }
 
     public setTaken(color: number) {
@@ -110,21 +111,26 @@ export class LobbyList extends FancyButton {
         if (this.players[player].color != 4) {
             this.available[this.players[player].color] = false;
         }
-        console.log(this);
     }
 
     public addPlayer(player: PlayerInfo) {
 
-        console.log(this.players.length)
         if (this.players.length >= 4) {
             return;
         }
         this.players.push(player);
-        this.players.forEach(element => {
-            console.log(element);
-        });
-        console.log(`Length: ${this.players.length}`);
-        this.playersList[this.players.length - 1].changeText(player.name);
+        
+        for (let i = 0; i < 4; i++) {
+            if (this.playersList[i].label.text == "") {
+                this.playersList[i].changeText(player.name);
+                break;
+            }
+        }
+
+        if (this.players.length - 1 == this.currentPlayerNumber && this.playersList[this.currentPlayerNumber].label.text == player.name) {
+            this.nameInput.value = player.name;
+        }
+
     }
 
     public removePlayer(player: PlayerInfo) {
@@ -137,25 +143,40 @@ export class LobbyList extends FancyButton {
             }
         }
 
-        // update the UI
-        let tmp = this.playersList[index];
-        this.playersList[index].y = -90 + 60 * 3;
+        // reutrn if player not in game
+        if (index == -1) {
+            return;
+        }
+
+        // update the order of the players list
+        let tmp = this.players[index];
         for (let i = 0; i < 4; i++) {
             if (i > index) {
-                this.playersList[i].y -= 60;
-                this.playersList[i] = this.playersList[i - 1];
+                this.players[i-1] = this.players[i];
             }
         }
-        this.playersList[3] = tmp;
+        this.players[3] = tmp;
 
-        // remove player from list
-        this.players.splice(index, 1);
-
-        // update available colors
-        if (index < this.currentPlayerNumber) {
-            this.currentPlayerNumber--;
+        // update UI
+        this.playersList.forEach(button => {
+            for (let i = 0; i < 4; i++) {
+                if (button.label.text == this.players[i].name) {
+                    button.y = -90 + 60 * i;
+                }
+                if (button.label.text == this.playersList[this.currentPlayerNumber].label.text) {
+                    this.nameInput.y = button.y - 25;
+                }
+            }
+        });
+        
+        for (let i = 0; i < 4; i++) {
+            if (this.playersList[i].label.text == this.players[3].name) {
+                this.playersList[i].changeText("");
+            }
         }
-        this.available[this.colorSelectors[this.players.length].reset()] = true;
+
+        //this.playersList[3].changeText("");
+        this.players.pop();
     }
 
     // untested

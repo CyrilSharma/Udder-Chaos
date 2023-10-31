@@ -89,7 +89,11 @@ export class TestingScreen extends Container {
         this.lobbyList.addPlayer({name: "Gabe", color: 4});
         //this.lobbyList.removePlayer({name: "Peter", color: 4});
         this.lobbyList.removePlayer({name: "Cyril", color: 4});
-        this.lobbyList.addPlayer({name: "Bartholomew", color: 4});
+        setTimeout(() => {
+            this.lobbyList.addPlayer({name: "Bartholomew", color: 4});
+            this.lobbyList.removePlayer({name: "Ethan", color: 4});
+        }, 2000);
+        
 
 
         this.addChild(this.menuContainer);
