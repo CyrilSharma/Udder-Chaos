@@ -1,5 +1,6 @@
-import { Container, FederatedPointerEvent, Graphics, Sprite } from 'pixi.js';
-import { Direction, Color, DirectionEnum } from './Utils';
+import { Container, FederatedPointerEvent, Graphics, Sprite, Point } from 'pixi.js';
+import "@pixi/math-extras";
+import { Direction, Color, DirectionEnum, angleBetween } from './Utils';
 import { CardQueue } from './CardQueue';
 import server from "../server";
 
@@ -12,6 +13,8 @@ export class Card extends Container {
     public readonly queue: CardQueue;
     public readonly graphics: Graphics;
     public readonly scale_on_focus = 1.5;
+    public center: Point;
+    public dragStart: Point | null = null;
     public dirs: Direction[];
     public index: number;
     public scaled = false;
@@ -22,19 +25,25 @@ export class Card extends Container {
         this.graphics = new Graphics();
         this.graphics.beginFill(0xFFFFFF);
         this.dirs = options.dirs;
-        // set the line style to have a width of 5 and set the color to red
+        // set the line style to have a width of 5 and set the color to black
         this.graphics.lineStyle(5, 0x000000);
         // draw a card
         this.graphics.drawRoundedRect(
-            0, 0, options.size, options.size * 1.4, 10
+            0, 0, options.size, options.size, 10
         );
-        this.drawArrow(this.graphics, options.size / 2, options.size * 0.7, options.size / 3, options.size / 10, options.dirs[0]); // TEMP draw just the first arrow, maybe some visual indication later
+        this.drawArrow(this.graphics, options.size / 2, options.size / 2, options.size / 3, options.size / 10, options.dirs[0]); // TEMP draw just the first arrow, maybe some visual indication later
+        
+        this.center = new Point(options.size/2, options.size/2);
+        this.graphics.pivot = this.center;
                 
         this.addChild(this.graphics);
         this.graphics.eventMode = 'static';
-        this.graphics.on('pointertap', this.onPointerTap);
+        //this.graphics.on('pointertap', this.onPointerTap);
         this.graphics.on('pointerenter', this.onPointerEnter);
         this.graphics.on('pointerleave', this.onPointerLeave);
+        this.graphics.on('pointerdown', this.onDragStart);
+        this.graphics.on('pointerup', this.onDragEnd);
+        this.graphics.on('pointerupoutside', this.onDragEnd);
     }
 
     private drawArrow = (g: Graphics, x: number, y: number,
@@ -112,6 +121,35 @@ export class Card extends Container {
         this.unscale();
         this.queue.placeCards();
     };
+
+    private onDragStart = (e: FederatedPointerEvent) => {
+        this.dragStart = this.toLocal(e.global) as Point;
+        console.log(`container: ${this.toLocal(e.global)}`);
+        console.log(this.dragStart);
+
+        console.log(`container size: ${this.center}`);
+        this.graphics.on('pointermove', this.onDragMove);
+    }
+
+    private onDragMove = (e: FederatedPointerEvent) => {
+        if (this.dragStart != null) {
+            console.log();
+            let currentPoint = this.toLocal(e.global) as Point;
+            let angle = angleBetween(this.dragStart, currentPoint);
+            this.graphics.rotation = angle;
+        }
+        //console.log(`end drag: ${e.offsetX} ${e.offsetY}`)
+    }
+
+    private onDragEnd = (e: FederatedPointerEvent) => {
+        if (this.dragStart != null) {
+            console.log(this.dragStart);
+            console.log(this.center);
+            console.log(this.toLocal(e.global));
+            this.graphics.off('pointermove', this.onDragMove);
+        }
+        //console.log(`end drag: ${e.offsetX} ${e.offsetY}`)
+    }
 
     private unscale = () => {
         if (!this.scaled) return;

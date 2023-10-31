@@ -104,6 +104,7 @@ export class Game extends Container {
     }
 
     public ourTurn() {
+        return !this.gameOver;
         return !this.gameOver && 
             this.playerColor == 1 && this.turn == 1 || 
             this.playerColor == 2 && this.turn == 2 || 

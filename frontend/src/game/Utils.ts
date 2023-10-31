@@ -1,6 +1,8 @@
 import { MAPS } from "../maps/Maps"
 import { Piece } from "./Piece"
 import MersenneTwister from 'mersenne-twister';
+import { Point } from 'pixi.js';
+import '@pixi/math-extras';
 
 // Constants
 export const COW_REGEN_RATE = 12; // Respawn after 3 days
@@ -220,3 +222,11 @@ function parseCSVGrid(csvString: string) {
     }
     return grid;
 };
+
+export function angleBetween(vectorOne: Point, vectorTwo: Point) {
+    let angle = Math.atan2( vectorOne.x*vectorTwo.y - vectorOne.y*vectorTwo.x, vectorOne.x*vectorTwo.x + vectorOne.y*vectorTwo.y);
+    if (angle < 0) {
+        angle += 2 * Math.PI;
+    }
+    return angle;
+}
