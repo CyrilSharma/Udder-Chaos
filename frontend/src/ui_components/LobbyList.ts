@@ -49,9 +49,11 @@ export class LobbyList extends FancyButton {
             this.colorSelectors[i].x = -215;
             this.colorSelectors[i].y = -90 + i * 60;
             this.listContainer.addChild(this.colorSelectors[i]);
-            this.colorSelectors[i].onPress.connect(() => {if (i == this.currentPlayerNumber) {
+            this.colorSelectors[i].onPress.connect(() => {
+                if (i == this.currentPlayerNumber) {
                 this.swapColor(i);
-            }});
+                }
+            });
 
         }
 
@@ -87,13 +89,16 @@ export class LobbyList extends FancyButton {
             if (this.nameInput.value.length > 10) {
                 this.nameInput.value = this.nameInput.value.slice(0, 10);
             }
+            this.players.forEach(element => {
+                if (element.name == this.playersList[this.currentPlayerNumber].label.text) {
+                    element.name = this.nameInput.value;
+                }
+            });
             this.playersList[this.currentPlayerNumber].changeText(this.nameInput.value);
             this.nameInput.x = this.playersList[0].x - this.nameInput.width * 0.5;
             this.nameInput.y = this.playersList[this.currentPlayerNumber].y - this.nameInput.height * 0.5;
         });
         this.nameInput.x = this.playersList[0].x - 42;
-        //this.nameInput.y = this.playersList[0].y;
-
         this.listContainer.addChild(this.nameInput);
     }
 
@@ -107,10 +112,17 @@ export class LobbyList extends FancyButton {
 
     public swapColor(player: number) {
         let tmp = this.colorSelectors[player].swapColor(this.available);
-        this.players[player].color = tmp;
-        if (this.players[player].color != 4) {
-            this.available[this.players[player].color] = false;
+        let tmpIndex = -1;
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.playersList[player].label.text == this.players[i].name) {
+                tmpIndex = i;
+            }
         }
+        this.players[tmpIndex].color = tmp;
+        if (this.players[tmpIndex].color != 4) {
+            this.available[this.players[tmpIndex].color] = false;
+        }
+        console.log(this.players[tmpIndex].color);
     }
 
     public addPlayer(player: PlayerInfo) {
@@ -129,6 +141,10 @@ export class LobbyList extends FancyButton {
 
         if (this.players.length - 1 == this.currentPlayerNumber && this.playersList[this.currentPlayerNumber].label.text == player.name) {
             this.nameInput.value = player.name;
+        }
+
+        for (let i = 0; i < 4; i++) {
+            this.colorSelectors[i].y = this.playersList[i].y;
         }
 
     }
@@ -168,6 +184,10 @@ export class LobbyList extends FancyButton {
                 }
             }
         });
+
+        for (let i = 0; i < 4; i++) {
+            this.colorSelectors[i].y = this.playersList[i].y;
+        }
         
         for (let i = 0; i < 4; i++) {
             if (this.playersList[i].label.text == this.players[3].name) {

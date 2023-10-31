@@ -10,6 +10,7 @@ import { ColorSelector } from '../ui_components/ColorSelector';
 import { MenuContainer } from '../ui_components/MenuContainer';
 import { SizedButton } from '../ui_components/SizedButton';
 import { LobbyList } from '../ui_components/LobbyList';
+import { SeedBox } from '../ui_components/SeedBox';
 
 export class TestingScreen extends Container {
 
@@ -30,6 +31,7 @@ export class TestingScreen extends Container {
     private codeDisplay: SizedButton;
     private startButton: SizedButton;
     private lobbyList: LobbyList;
+    private seedBox: SeedBox;
 
     constructor() {
         /** Default Stuff */
@@ -81,30 +83,21 @@ export class TestingScreen extends Container {
         this.startButton = new SizedButton(0.5, 0.9, 0.3, 0.15, "Start Game", this.menuContainer.width, this.menuContainer.height, 40, 0x6060fc);
         this.menuContainer.addChild(this.startButton);
 
+        this.seedBox = new SeedBox(this.menuContainer, 0.82, 0.9, 0.3, 0.15);
+        this.menuContainer.addChild(this.seedBox);
+
         this.lobbyList = new LobbyList(3, this.menuContainer, 0.5, 0.555, 0.64, 0.5);
         this.menuContainer.addChild(this.lobbyList);
+
         this.lobbyList.addPlayer({name: "Ethan", color: 4});
         this.lobbyList.addPlayer({name: "Cyril", color: 4});
         this.lobbyList.addPlayer({name: "Peter", color: 4});
         this.lobbyList.addPlayer({name: "Gabe", color: 4});
-        //this.lobbyList.removePlayer({name: "Peter", color: 4});
         this.lobbyList.removePlayer({name: "Cyril", color: 4});
-        setTimeout(() => {
-            this.lobbyList.addPlayer({name: "Bartholomew", color: 4});
-            this.lobbyList.removePlayer({name: "Ethan", color: 4});
-        }, 2000);
+        this.lobbyList.addPlayer({name: "Bartholomew", color: 4});
+        this.lobbyList.removePlayer({name: "Ethan", color: 4});
         
-
-
         this.addChild(this.menuContainer);
-
-        // this.board = new Container();
-        // this.rightCol = new Container();
-
-        // this.colorSelector = new ColorSelector();
-        // this.colorSelector.onPress.connect(() => this.colorSelector.swapColor());
-        // this.rightCol.addChild(this.colorSelector);
-        // this.addChild(this.rightCol);
     }
 
     public resize(width: number, height: number) {
@@ -127,6 +120,7 @@ export class TestingScreen extends Container {
         this.codeDisplay.resize(this.menuContainer.getBox());
         this.startButton.resize(this.menuContainer.getBox());
         this.lobbyList.resize(this.menuContainer.getBox());
+        this.seedBox.resize(this.menuContainer.getBox());
     }
 
 }
