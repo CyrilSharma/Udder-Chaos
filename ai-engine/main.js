@@ -1,4 +1,6 @@
-const io = require("socket.io-client")
+// const { spawn } = require('node:child_process');
+const io = require("socket.io-client");
+// const ai = spawn('cpp/main');
 
 // Handles connections.
 var mode = process.env.NODE_ENV;

@@ -1,23 +1,23 @@
 # Compiler and compiler flags
-CC = g++
-CFLAGS = -std=c++17 -Wall -Wextra
-DEBUG_FLAGS = -g
-OPTIMIZED_FLAGS = -O3
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra
 
 # Source file and executable name
-LIBS = boost_1_83_0
+INCLUDES = -I./boost_1_83_0
 DEPS = Game.h Utils.h Helpers.h CardQueue.h
-SOURCE = TestGame.cpp
-EXECUTABLE = Test
+EXECUTABLES = TestGame TestGamePerf TestBitset Main
 
 # Default target
 all: debug
 
-debug: $(SOURCE) $(DEPS)
-	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -I $(LIBS) -o $(EXECUTABLE) $(SOURCE)
+debug: CXXFLAGS += -g
+debug: $(EXECUTABLES)
 
-build: $(SOURCE) $(DEPS)
-	$(CC) $(CFLAGS) $(OPTIMIZED_FLAGS) -I $(LIBS) -o $(EXECUTABLE) $(SOURCE)
+build: CXXFLAGS += -O3
+build: $(EXECUTABLES)
+
+$(EXECUTABLES): %: %.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
 
 # Clean up object files and the executable
 clean:

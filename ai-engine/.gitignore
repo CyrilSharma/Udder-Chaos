@@ -1,2 +1,6 @@
+*
+!*/
+!*.*
 *.dSYM/
 cpp/boost*/
+cpp/socket.io*/
