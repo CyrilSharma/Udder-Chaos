@@ -7,9 +7,14 @@ const origHeight = 500;
 export class MenuContainer extends Container {
 
     private menuContainer: FancyButton;
+    private wide: number;
+    private high: number;
 
     constructor() {
         super();
+
+        this.wide = 800;
+        this.high = 500;
 
         this.menuContainer = new FancyButton({
             defaultView: (new Button(
@@ -32,7 +37,19 @@ export class MenuContainer extends Container {
     public resize(width: number, height: number) {
         this.menuContainer.view.x = width * 0.5;
         this.menuContainer.view.y = height * 0.5;
-        this.menuContainer.scale.x = 1;
-        this.menuContainer.scale.y = 1;
+
+        if (this.width > width * 0.9 && this.height < height * 0.9) {
+            this.menuContainer.width = 0.9 * width;
+            this.menuContainer.height = 0.9 * width * 5 / 8;
+        } else if (this.height > height * 0.9 && this.width < width * 0.9) {
+            this.menuContainer.height = 0.9 * height;
+            this.menuContainer.width = 0.9 * height * 8 / 5;
+        } else if (width / height > this.wide / this.high) {
+            this.menuContainer.height = 0.9 * height;
+            this.menuContainer.width = 0.9 * height * 8 / 5;
+        } else {
+            this.menuContainer.width = 0.9 * width;
+            this.menuContainer.height = 0.9 * width * 5 / 8;
+        }
     }
 }

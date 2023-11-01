@@ -6,14 +6,14 @@ import { MenuContainer } from './MenuContainer';
 export class SeedBox extends FancyButton {
 
     private background: SizedButton;
-    private seed: Input;
+    public seed: Input;
 
     private percentX: number;
     private percentY: number;
     private percentWidth: number;
     private percentHeight: number;
 
-    constructor(menuContainer: MenuContainer,  pX: number, pY: number, pW: number, pH: number) {
+    constructor(menuContainer: MenuContainer,  pX: number, pY: number, pW: number, pH: number, text: string, maxL: number) {
         super();
 
         /* Set up properties */
@@ -22,14 +22,14 @@ export class SeedBox extends FancyButton {
         this.percentWidth = pW;
         this.percentHeight = pH;
 
-        this.background = new SizedButton(pX, pY, pW, pH, "Seed", menuContainer.width, menuContainer.height, 40, 0xffffff);
+        this.background = new SizedButton(pX, pY, pW, pH, text, menuContainer.width, menuContainer.height, 40, 0xffffff);
 
         this.addChild(this.background);
 
         /* set up name input */
         this.seed = new Input({
             bg: this.background,
-            maxLength: 6,
+            maxLength: maxL,
             textStyle: new TextStyle({
                 fontFamily: "Concert One",
                 fontSize: 40,
@@ -43,12 +43,10 @@ export class SeedBox extends FancyButton {
             this.seed.x = this.background.x - this.seed.width * 0.5;
 
         });
-        //this.seed.x = this.background.x - this.seed.width * 0.5;
         
-        this.seed.value = "Seed";
-        this.seed.y = this.background.y - this.seed.height * 0.8;
+        this.seed.value = text;
+        this.seed.y = this.background.y - this.background.height * 0.5;
         this.seed.x = this.background.x - this.seed.width * 0.5;
-        //this.seed.value = "";
 
         this.addChild(this.seed);
 
