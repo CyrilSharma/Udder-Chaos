@@ -21,7 +21,7 @@ export class CreateGameScreen extends Container {
     private seedBox: SeedBox;
     private backButton: BackButton;
 
-    constructor(currentPlayer: number) {
+    constructor() {
         super();
         this.background = new Background();
         this.addChild(this.background);
@@ -43,7 +43,7 @@ export class CreateGameScreen extends Container {
         this.seedBox = new SeedBox(this.menuContainer, 0.82, 0.9, 0.3, 0.15, "Seed", 6);
         this.menuContainer.addChild(this.seedBox);
 
-        this.lobbyList = new LobbyList(currentPlayer, this.menuContainer, 0.5, 0.555, 0.64, 0.5);
+        this.lobbyList = new LobbyList(0, this.menuContainer, 0.5, 0.555, 0.64, 0.5);
         this.menuContainer.addChild(this.lobbyList);
 
         this.backButton = new BackButton(0.985, 0.015, this.menuContainer.width, this.menuContainer.height);
@@ -69,5 +69,9 @@ export class CreateGameScreen extends Container {
         this.lobbyList.resize(this.menuContainer.getBox());
         this.seedBox.resize(this.menuContainer.getBox());
         this.backButton.resize(this.menuContainer.getBox());
+    }
+
+    public getLobbyList() {
+        return this.lobbyList;
     }
 }

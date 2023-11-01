@@ -3,11 +3,7 @@ import { FancyButton, Button, Input } from '@pixi/ui';
 import { ColorSelector } from './ColorSelector';
 import { MenuContainer } from './MenuContainer';
 import { SizedButton } from './SizedButton';
-
-type PlayerInfo = {
-    name: string,
-    color: number
-}
+import { PlayerInfo } from "../game/Utils"
 
 export class LobbyList extends FancyButton {
 
@@ -201,14 +197,12 @@ export class LobbyList extends FancyButton {
 
     // untested
     public setPlayers(players: PlayerInfo[]) {
-        this.players = players;
-        for (let i = 0; i < 4; i++) {
-            if (players[i] != null) {
-                this.playersList[i].changeText(players[i].name);
-            } else {
-                this.playersList[i].changeText("");
-            }
-        }
+        this.players.forEach((player) => {
+            this.removePlayer(player);
+        });
+        players.forEach((player) => {
+            this.addPlayer(player);
+        });
     }
 
     // untested
@@ -222,5 +216,9 @@ export class LobbyList extends FancyButton {
         this.y = bounds[0] + (bounds[1] - bounds[0]) * this.percentY;
         this.width = (bounds[3] - bounds[2]) * this.percentWidth;
         this.height = (bounds[1] - bounds[0]) * this.percentHeight;
+    }
+
+    public setCurrentPlayer(playerNum: number) {
+        this.currentPlayerNumber = playerNum;
     }
 }

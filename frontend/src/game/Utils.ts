@@ -6,6 +6,12 @@ import MersenneTwister from 'mersenne-twister';
 export const COW_REGEN_RATE = 12; // Respawn after 3 days
 export const COW_SACRIFICE = 3; 
 
+//-----Menu-----//
+export type PlayerInfo = {
+    name: string,
+    color: number
+}
+
 //-----Tiles-----//
 export const TileEnum = {
     Plain: 0,

@@ -12,7 +12,7 @@ const COLOR = {
     PURPLE: 3,    
 }
 
-const MAX_PLAYERS = 1;
+const MAX_PLAYERS = 4;
 
 /*
  * Room class tracks all players within a room/game and related game information.
@@ -64,6 +64,7 @@ export class Room {
 
     getPlayerInfo() {
         let playerList = [];
+        console.log(this.players);
         for (let player of this.players) {
             playerList.push({"name": player.name, "color": player.color});
         }
@@ -147,6 +148,7 @@ class Player {
     joinRoom() {
         this.socket.join(this.room.roomCode);
         this.socket.emit("load-room", this.room.roomCode, this.room.getPlayerInfo());
+        console.log(this.room.getPlayerInfo());
         this.socket.emit("receive-message", "joined the room");
     }
 
