@@ -71,12 +71,12 @@ struct Game {
   }
 
   /*--- Struct Members ---*/
-  const uint64_t width;
-  const uint64_t height;
-  const uint64_t ncards;
-  const uint64_t hand_size;
-  const uint64_t round_length;
-  const array<dynamic_bitset, 4> edge_masks;
+  uint64_t width;
+  uint64_t height;
+  uint64_t ncards;
+  uint64_t hand_size;
+  uint64_t round_length;
+  array<dynamic_bitset, 4> edge_masks;
 
   int64_t turn = 0;
   int64_t round = 0;
@@ -155,40 +155,6 @@ struct Game {
       }
     }
   } /* Game() */
-
-  /**
-   * Game copy constructor because apparently it doesn't make one implicitly :(
-  */
-  Game(const Game &game):
-    width(game.width),
-    height(game.height),
-    ncards(game.ncards),
-    hand_size(game.hand_size),
-    round_length(game.round_length),
-    edge_masks(game.edge_masks),
-    queue(game.queue),
-    impassible(game.impassible),
-    cows(game.cows),
-    all_enemies(game.all_enemies),
-    all_players(game.all_players),
-    wall_mask(game.wall_mask),
-    players(game.players),
-    player_scores(game.player_scores),
-    enemies(game.enemies),
-    cow_respawn(game.cow_respawn),
-    cards(game.cards) {
-  } /* copy Game() */
-
-  /**
-   * Game move constructor because apparently it doesn't make one implicitly :(
-  */
-  Game& operator=(const Game &game) {
-    // Gee I sure hope I don't have to actually write a
-    // move constructor for this massive struct...
-    
-    // ... TODO
-    return *this;
-  } /* copy Game() */
 
   /*
    * returns the winner of the game.

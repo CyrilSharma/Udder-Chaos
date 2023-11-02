@@ -1,0 +1,10 @@
+INIT
+game_id: 2
+hand_size: 2
+round_length: 5
+ncards: 18 
+seed: 1102
+END
+GET
+game_id: 2
+END

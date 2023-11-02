@@ -10,17 +10,14 @@
 
 using dynamic_bitset = boost::dynamic_bitset<>;
 
-/**
+/*
  * Search tree algos
  * TODO?
-*/
+ */
 
 struct Search {
-
     Game game;
-    Search(GameConfig gc) : game(gc) {
-        // ?
-    }
+    Search(GameConfig gc) : game(gc) {}
 
     map<Game, int> evals;
 
@@ -33,8 +30,13 @@ struct Search {
         while (it != evals.end() && it->first.turn < game.turn) it = evals.erase(it);
 
         // Score, game state
-        auto cmp = [] (auto a, auto b) { return a.first < b.first; };
-        priority_queue<pair<pair<uint32_t, uint32_t>, Game>, vector<pair<pair<uint32_t, uint32_t>, Game>>, decltype(cmp)> states(cmp), next_states(cmp);
+        auto cmp = [] (auto a, auto b) { return a.first.first < b.first.first; };
+        priority_queue<
+          pair<pair<uint32_t, uint32_t>, Game>,
+          vector<pair<pair<uint32_t, uint32_t>, Game>>,
+          decltype(cmp)
+        > states(cmp), next_states(cmp);
+
         // Using game.hand_size to indicate that this is the initial state
         states.push({{0, game.hand_size}, game});
         int best_move = 0, best_eval = INT_MIN;

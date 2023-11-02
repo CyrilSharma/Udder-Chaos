@@ -55,7 +55,6 @@ class Server {
 
         this.socket.on("start-game", async (seed, socketIds) => {
 
-            // Math.seedrandom(seed);
             initSeed(seed);
 
             let color = socketIds.indexOf(this.socket.id) + 1;

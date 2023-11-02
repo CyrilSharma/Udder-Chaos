@@ -16,7 +16,7 @@ debug: $(EXECUTABLES)
 build: CXXFLAGS += -O3
 build: $(EXECUTABLES)
 
-$(EXECUTABLES): %: %.cpp
+$(EXECUTABLES): %: %.cpp $(DEPS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
 
 # Clean up object files and the executable
