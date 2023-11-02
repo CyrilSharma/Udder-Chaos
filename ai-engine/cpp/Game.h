@@ -417,7 +417,10 @@ ostream& operator<<(ostream& os, Game& game) {
   printvv(game.viewBoard());
   printv(game.viewPieces());
   printv(game.viewCards());
-  os << "turn: " << game.turn;
+  os << "turn: " << game.turn << endl;
+  os << "hand size: " << game.hand_size << endl;
+  os << "playe pieces: " << game.all_players.count() << endl;
+  os << "eneme pieces: " << game.all_enemies.count() << endl;
   return os;
 }
 

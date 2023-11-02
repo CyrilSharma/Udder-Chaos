@@ -9,7 +9,7 @@ struct Scorer {
     Scorer (int typ = 0) : typ(typ) {}
 
     /** Heuristics */
-    uint32_t score(const Game &game) {
+    uint32_t score(Game &game) {
         switch(typ) {
             // default score
             case def: return _score(game);
@@ -24,16 +24,16 @@ struct Scorer {
         exit(1);
     }
 
-    int _score(const Game &game) {
+    int _score(Game &game) {
+        // cerr << game << endl;
         // future heuristic ideas
         // Piece positions
         // Player piece count
         // Enemy piece count
         // Player score amount
         // Game turn (later is better for ai)
-        if (game.all_players.count() > 0) cerr << game.all_players.count() << endl;
-        int ppscore = 2 * game.all_players.count(); 
-        int epscore = -3 * game.all_enemies.count();
+        int ppscore = -2 * game.all_players.count(); 
+        int epscore = 3 * game.all_enemies.count();
         // cerr << "SCORE IS: " << ppscore + epscore << endl;
         return ppscore + epscore;
     }
