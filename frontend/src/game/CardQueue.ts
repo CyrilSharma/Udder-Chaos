@@ -42,7 +42,6 @@ export class CardQueue extends Container {
                 size: 50,
                 rotation: Math.floor(random() * 4),
             };
-            console.log(config);
             let card = new Card(this, config, i);
             this.cardContainer.addChild(card);
             this.queue.push(card);

@@ -13,7 +13,7 @@ const COLOR = {
     UNSET: 4  
 }
 
-const MAX_PLAYERS = 1;
+const MAX_PLAYERS = 4;
 
 /*
  * Room class tracks all players within a room/game and related game information.
@@ -67,7 +67,6 @@ export class Room {
 
     getPlayerInfo() {
         let playerList = [];
-        console.log(this.players);
         for (let player of this.players) {
             playerList.push(player.getPlayerInfo());
         }
@@ -84,7 +83,6 @@ export class Room {
     }
 
     setSeed(seed) {
-        console.log(seed);
         if (seed === "") {
             return;
         }
@@ -98,6 +96,13 @@ export class Room {
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
             // Send starting game info to players
+            for (let i = 0; i < MAX_PLAYERS; i++) {
+                if (this.players[i].color == 4) {
+                    // If any player is unset color, stop with error.
+                    host.emit("start-game-error", "Everyone must choose a color!");
+                    return;
+                }
+            }
             this.io.to(this.roomCode).emit('start-game', this.seed, this.getPlayerInfo());
         }
         else {
@@ -111,7 +116,6 @@ export class Room {
         //TODO: Check if player's turn 
         this.moveList.push((moveType, moveData, color));
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
-        console.log(this.moveList);
         if (moveType < 2) {
             this.turn += 1;
         }

@@ -130,7 +130,6 @@ export class Card extends Container {
         this.unscale();
         this.queue.placeCards();
         this.onDragEnd(e);
-        console.log("here")
     };
 
     private onDragStart = (e: FederatedPointerEvent) => {
@@ -156,7 +155,6 @@ export class Card extends Container {
 
     private onDragEnd = (e: FederatedPointerEvent) => {
         if (this.dragStartPos != null) {
-            console.log("end")
             this.graphics.off('pointermove', this.onDragMove);
             this.dragStartPos = null;
             let trueAngle = mod(this.graphics.angle, 360);
@@ -171,7 +169,7 @@ export class Card extends Container {
             }
 
             let rotation = Math.floor((trueAngle + 45) / 90);
-            //server.rotateCard(this.index, rotation, this.queue.game.playerColor);
+            server.rotateCard(this.index, rotation, this.queue.game.playerColor);
             this.rotateCard(rotation - this.cardRotation);
             this.queue.game.updateTurn();
         }
