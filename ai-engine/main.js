@@ -1,7 +1,24 @@
 const { spawn } = require('node:child_process');
 const io = require("socket.io-client");
+const readline = require('node:readline');
+
 const ai = spawn('cpp/Main');
 ai.stdin.setEncoding('utf-8');
+
+const rl = readline.createInterface({
+    input: ai.stdout,
+    terminal: false
+});
+
+// Promisify the readline interface to read one line
+function read_output() {
+    return new Promise((resolve) => {
+        rl.once('line', (line) => {
+            resolve(line);
+            rl.close();
+        });
+    });
+  }
 
 // Handles connections.
 var mode = process.env.NODE_ENV;
@@ -12,9 +29,13 @@ const url =
 
 const socket = io(url)
 
-socket.on("start-game", (roomcode, _) => {
+socket.on("start-game", async (roomcode, seed) => {
     ai.stdin.write('INIT\n');
-    ai.stdin.write(`roomcode: {roomcode}\n`);
+    ai.stdin.write(`game_id: {roomcode}\n`);
+    ai.stdin.write(`seed: {seed}\n`);
+    ai.stdin.write(`END\n`);
+    const output = await read_output();
+    console.log(`Output: {output}`)
 });
 
 socket.on("connect", () => {
@@ -23,8 +44,13 @@ socket.on("connect", () => {
 });
 
 socket.on("query-move", async (roomCode) => {
-    await new Promise(r => setTimeout(r, 2000))
-    let move = Math.floor(Math.random() * 3);
+    ai.stdin.write('GET\n');
+    ai.stdin.write(`game_id: {roomcode}\n`);
+    ai.stdin.write(`END\n`);
+    const move = await read_output();
+    const status = await read_output();
+    console.log(`Got: {move}`)
+    console.log(`Status: {status}`)
     let color = Math.floor(Math.random() * 4) + 5;
     socket.emit("make-move", roomCode, move, color);
 });
