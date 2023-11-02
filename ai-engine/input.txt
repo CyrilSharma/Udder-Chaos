@@ -6,5 +6,6 @@ ncards: 18
 seed: 1102
 END
 GET
+timeout: 2000
 game_id: 2
 END

@@ -176,7 +176,9 @@ struct Game {
 
   // Temp player turn check
   bool is_enemy_turn() const {
-    return turn % 3 == 2;
+    // DEBUG RETURN TRUE
+    return true;
+    // return turn % 3 == 2;
   }
 
 
@@ -207,12 +209,12 @@ struct Game {
    * color is which color you want to move with this action.
    */
 
-  void enemy_move(int choice) {
+  void enemy_move(int choice, int color) {
     cows |= cow_respawn[turn % round_length];
     int index = queue.choose(choice + hand_size);
     auto moves = cards[index].moves;
     for (Direction move: moves) {
-      play_enemy_movement(move, choice);
+      play_enemy_movement(move, color);
     }
     player_id = (player_id + 1) & 0b11;
     turn += 1;
@@ -222,7 +224,6 @@ struct Game {
   * Moves the current piece in the desired direction.
   * applying all necessary side-effects. 
   */
-
 
   void play_enemy_movement(Direction d, int choice) {
     auto enemy_mask = enemies[choice];

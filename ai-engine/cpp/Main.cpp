@@ -8,7 +8,7 @@ enum Request {
   INIT,
   GET,
   MOVE,
-  BUY
+  BUY,
 };
 
 // Communicates with a node.js server via stdin and stdout.
@@ -36,8 +36,9 @@ struct Handler {
    */
 
   void run() {
-    while (true) {
+    for (int ct = 1; ; ct++) {
       Request r = get_request();
+      cout << "Instruction: " << ct << endl;
       switch (r) {
         case INIT: init(); break;
         case GET:  get();  break;
@@ -108,17 +109,17 @@ struct Handler {
     auto params = load_params();
     auto game_id = stoll(params["game_id"]);
     if (searches.count(game_id)) {
-      // auto res = searches.at(game_id).getMove(1);
-      // cout << res << endl;
+      auto res = searches.at(game_id).getMove(stoll(params["timeout"]));
+      cout << res.first << ", " << res.second << endl;
       cout << 0 << endl;
     } else {
-      cerr << "Invalid Game ID!" << endl;
+      cerr << "Game ID not found" << endl;
       exit(1);
     }
   } /* get() */
 
   /*
-   * player the specified card.
+   * play the specified card.
    * advances the internal state of the search tree.
    */
 

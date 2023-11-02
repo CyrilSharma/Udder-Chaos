@@ -1,6 +1,6 @@
 # Compiler and compiler flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -fsanitize=address -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
+CXXFLAGS = -std=c++20 -Wall -Wextra -fsanitize=address -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
 
 # Source file and executable name
 INCLUDES = -I./boost_1_83_0
