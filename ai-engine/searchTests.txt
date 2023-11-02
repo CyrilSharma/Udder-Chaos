@@ -1,0 +1,20 @@
+INIT
+game_id: 2
+hand_size: 2
+round_length: 5
+ncards: 18 
+seed: 1102
+END
+MOVE
+game_id: 2
+move: 1
+END
+MOVE
+game_id: 2
+move: 1
+END
+GET
+verbose: true
+timeout: 2000
+game_id: 2
+END
