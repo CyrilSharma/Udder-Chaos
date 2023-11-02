@@ -28,6 +28,7 @@ struct Search {
 
         // Remove evals for states made before this turn, we no longer use them
         auto it = evals.begin();
+
         while (it != evals.end() && it->first.turn < game.turn) it = evals.erase(it);
 
         // Score, game state
@@ -81,7 +82,6 @@ struct Search {
                     next_states.push({{tmp_eval, first_move}, tmp_state});
                 }
             }
-
             if (state_eval > best_eval && state_metadata.second != game.hand_size) {
                 best_eval = state_eval;
                 best_move = state_metadata.second;
@@ -90,7 +90,6 @@ struct Search {
             // Save evaluation for now, don't really do anything with them yet.
             evals[state] = state_eval;
         } 
-        
         return best_move;
     }
 };

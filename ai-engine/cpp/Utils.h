@@ -137,7 +137,7 @@ vector<Card> load_cards(mt19937 rng, int ncards) {
     cards[i] = Card { moves };
   }
   for (int i = ncards - 1; i > 0; i--) {
-    int j = uniform_int_distribution<int>(0, i + 1)(rng);
+    int j = uniform_int_distribution<int>(0, i)(rng);
     swap(cards[i], cards[j]);
   }
   return cards;
