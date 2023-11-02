@@ -13,7 +13,7 @@ const COLOR = {
     UNSET: 4  
 }
 
-const MAX_PLAYERS = 4;
+const MAX_PLAYERS = 1;
 
 /*
  * Room class tracks all players within a room/game and related game information.
@@ -26,6 +26,7 @@ export class Room {
         this.players = [];
         this.moveList = [];
         this.turn = 0;
+        this.setSeed(roomCode);
     }
 
     addNewPlayer(socket, host=false) {
@@ -82,10 +83,22 @@ export class Room {
         return ids;
     }
 
+    setSeed(seed) {
+        console.log(seed);
+        if (seed === "") {
+            return;
+        }
+        let numSeed = 0;
+        for (let i = 0; i < seed.length; i++) {
+            numSeed += seed.charCodeAt(i);
+        }
+        this.seed = numSeed;
+    }
+
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
             // Send starting game info to players
-            this.io.to(this.roomCode).emit('start-game', this.roomCode, this.getPlayerIds());
+            this.io.to(this.roomCode).emit('start-game', this.seed, this.getPlayerInfo());
         }
         else {
             // Not enough players yet
@@ -136,7 +149,8 @@ class Player {
             this.room.updatePlayer(this);
         });
 
-        this.socket.on("start-game", () => {
+        this.socket.on("start-game", (seed) => {
+            this.room.setSeed(seed);
             this.room.startGame(this.socket);
         });
 
