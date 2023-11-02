@@ -113,7 +113,7 @@ struct Handler {
       auto res = searches.at(game_id).getMove(stoll(params["timeout"]));
       cerr << "PATH1\n";
       auto res = searches.at(game_id).getMove(1);
-      cout << res.first << " " << res.second << endl;
+      cout << res.first << "\n" << res.second << endl;
       cout << "SUCCESS" << endl;
     } else {
       cerr << "PATH2\n";
