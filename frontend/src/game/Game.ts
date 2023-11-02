@@ -1,6 +1,6 @@
 import { Container, Sprite, Text } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum } from './Utils';
+import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum, DAYS_PER_ROUND } from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
@@ -10,7 +10,6 @@ import { BuyButton } from '../ui_components/BuyButton';
 // This seems a little redundant right now,
 // But it will house the cards as well,
 // And provide some callbacks maybe.
-const DAYS_PER_ROUND = 3;
 
 export class Game extends Container {
     public board: Board;
@@ -104,12 +103,12 @@ export class Game extends Container {
     }
 
     public ourTurn() {
+        return !this.gameOver; // debug always allow current player to move
         return !this.gameOver && 
             this.playerColor == 1 && this.turn == 1 || 
             this.playerColor == 2 && this.turn == 2 || 
             this.playerColor == 3 && this.turn == 4 ||
             this.playerColor == 4 && this.turn == 5;
-        return !this.gameOver; // debug always allow current player to move
     }
 
     public scorePoints(points: number) {

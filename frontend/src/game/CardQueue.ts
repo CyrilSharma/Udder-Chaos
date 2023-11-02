@@ -9,8 +9,10 @@ import {
     TileEnum,
     TeamEnum,
     getTeam,
-    shuffle
+    shuffle,
+    random
 } from './Utils';
+import { CARD_PRESETS } from '../maps/Cards'
 
 /** Stores all the cards in the game, handles card playing with a logic handler */
 export class CardQueue extends Container {
@@ -21,7 +23,7 @@ export class CardQueue extends Container {
     public cardContainer: Container;
     public logicHandler: LogicHandler;
     public cardSize = 100;
-    public ncards = 16;
+    public ncards = 15;
     public hand_size: number = 3;
 
     constructor(game: Game) {
@@ -33,18 +35,14 @@ export class CardQueue extends Container {
     }
 
     public setup() {
-        let directions = [
-            DirectionEnum.LEFT,
-            DirectionEnum.RIGHT,
-            DirectionEnum.DOWN,
-            DirectionEnum.UP,
-        ]
         for (let i = 0; i < this.ncards; i++) {
             let config = {
                 color: ColorEnum.RED,
-                dirs: [i % 4, i % 4], // Evenly generate a number of each card, for now literally just make it move twice
-                size: 50
+                dirs: Array.from(CARD_PRESETS[i % CARD_PRESETS.length]), // Evenly generate a number of each card, for now literally just make it move twice
+                size: 50,
+                rotation: Math.floor(random() * 4),
             };
+            console.log(config);
             let card = new Card(this, config, i);
             this.cardContainer.addChild(card);
             this.queue.push(card);
@@ -129,6 +127,26 @@ export class CardQueue extends Container {
         //     if (card != input) continue;
         //     return;
         // }
+    }
+
+    public checkCardInHand(input: Card, color: number) {
+        // Get correct team
+        var hand;
+        if (getTeam(color) == TeamEnum.Player) {
+            hand = this.player_hand;
+        } else if (getTeam(color) == TeamEnum.Enemy) {
+            hand = this.enemy_hand;
+        } else {
+            throw Error(`Invalid player color: ${color}`);
+        }
+        // Find card and play it, check that it's actually in hand
+        for (let i = 0; i < hand.length; i++) {
+            let card = hand[i];
+            if (card != input) continue;
+            return true;
+        }
+
+        return false;
     }
 
     /** Index each card by its position. Queue and hands are numbered from 0 */
