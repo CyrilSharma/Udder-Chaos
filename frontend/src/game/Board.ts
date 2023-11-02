@@ -21,6 +21,8 @@ import {
     COW_REGEN_RATE,
 } from './Utils';
 import { EndGameScreen } from '../ui_components/EndGameScreen';
+import server from "../server";
+
 /**
  * Board class
  * Handles creation of board, placing obstacles, and stores all tiles and pieces
@@ -231,12 +233,21 @@ export class Board extends Container {
     // Creating and rendering individual tile
     public createTile(position: Position, tileType: TileType) {
         const name = TileMap[tileType];
-        const tile = Sprite.from(name);
+        const tile: Sprite = Sprite.from(name);
         const viewPosition = this.getViewPosition(position);
         tile.x = viewPosition.x;
         tile.y = viewPosition.y;
         tile.width = this.tileSize;
         tile.height = this.tileSize;
+
+        tile.eventMode = 'static';
+        tile.on('pointerup', () => {
+            if (this.game.buyButton.dragging && this.game.ourTurn()) {
+                server.purchaseUFO(position, this.game.playerColor);
+                this.purchaseUFO(position, this.game.playerColor);
+            }
+        });
+
         this.tilesContainer.addChild(tile);
     }
 
@@ -320,6 +331,7 @@ export class Board extends Container {
         }
     }
 
+
     public resize(bounds: Array<number>, left: number, right: number, bottom: number) {
         // Top, bottom, left, right
         // this.width = (bounds[3] - bounds[2]);
@@ -335,6 +347,17 @@ export class Board extends Container {
 
         this.x = this.width * -0.5;
         this.y = this.height * -0.5;
-        
+    }
+
+    public purchaseUFO(position: Position, color: number) {
+        if (this.game.totalScore > 0 && 
+            this.getTileAtPosition(position) == TileEnum.Destination && 
+            this.getPieceByPosition(position) == null) {
+                this.game.scorePoints(-1);
+                this.createPiece(position, color);
+        } else {
+            console.log("You can't purchase a UFO!")
+        }
+
     }
 }

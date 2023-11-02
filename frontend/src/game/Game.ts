@@ -1,6 +1,7 @@
 import { Container, Sprite, ObservablePoint } from 'pixi.js';
+import {  Text } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, PieceEnum } from './Utils';
+import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum, DAYS_PER_ROUND } from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
@@ -9,11 +10,11 @@ import { GamePanel } from '../ui_components/GamePanel';
 import { PlayerColorIcon } from '../ui_components/PlayerColorIcon';
 import { PlayerGameInfo } from '../ui_components/PlayerGameInfo';
 import { DayCounter } from '../ui_components/DayCounter';
+import { BuyButton } from '../ui_components/BuyButton';
 
 // This seems a little redundant right now,
 // But it will house the cards as well,
 // And provide some callbacks maybe.
-const DAYS_PER_ROUND = 3;
 
 export class Game extends Container {
     public board: Board;
@@ -39,6 +40,8 @@ export class Game extends Container {
     private player2: PlayerGameInfo;
     private player3: PlayerGameInfo;
     private player4: PlayerGameInfo;
+    public buyButton: BuyButton;
+    public gameOver: boolean = false;
 
     constructor() {
         super();
@@ -46,6 +49,7 @@ export class Game extends Container {
         this.board = new Board(this);
         this.cards = new CardQueue(this);
         this.gameState = new GameState(this);
+        this.buyButton = new BuyButton("Buy", -100, -1, 0xffcc66, 1, 0.1, 30);
 
         this.leftPanel = new GamePanel(0.1125, 0.5, 0.22, 1, 200, 1000, 0xffffff);
         this.rightPanel = new GamePanel(0.8875, 0.5, 0.22, 1, 200, 1000, 0x5f5f5f);
@@ -76,6 +80,8 @@ export class Game extends Container {
         this.addChild(this.boardPanel);
         this.addChild(this.bottomPanel);
 
+
+        this.addChild(this.buyButton);
     }
 
     public setup(config: GameConfig) {
@@ -94,6 +100,10 @@ export class Game extends Container {
     }
 
     public updateTurn() {
+        if (this.gameOver) {
+            return;
+        }
+
         this.turn += 1;
         if (this.turn > 6) {
             this.turn -= 6;
@@ -133,21 +143,25 @@ export class Game extends Container {
     // reset when a new game is setup rather than when the old one finishes
     public endGame(success: boolean, message: string) {
         console.log(message);
-        this.board.endGame(false, "failed");
+        this.board.endGame(success, message);
+        this.gameOver = true;
     }
 
     public ourTurn() {
-        return true;
-        return this.playerColor == 1 && this.turn == 1 || 
-                this.playerColor == 2 && this.turn == 2 || 
-                this.playerColor == 3 && this.turn == 4 ||
-                this.playerColor == 4 && this.turn == 5;
-        return true; // debug always allow current player to move
+        return !this.gameOver; // debug always allow current player to move
+        return !this.gameOver && 
+            this.playerColor == 1 && this.turn == 1 || 
+            this.playerColor == 2 && this.turn == 2 || 
+            this.playerColor == 3 && this.turn == 4 ||
+            this.playerColor == 4 && this.turn == 5;
     }
 
     public scorePoints(points: number) {
         this.totalScore += points;
         this.gameState.updateScore(this.totalScore);
+        if (this.totalScore >= SCORE_GOAL) {
+            this.endGame(true, "You saved Homeworld with enough cows!")
+        }
     }
 
     public resize(width: number, height: number) {
