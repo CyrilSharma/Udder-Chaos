@@ -419,8 +419,10 @@ ostream& operator<<(ostream& os, Game& game) {
   printv(game.viewCards());
   os << "turn: " << game.turn << endl;
   os << "hand size: " << game.hand_size << endl;
-  os << "playe pieces: " << game.all_players.count() << endl;
-  os << "eneme pieces: " << game.all_enemies.count() << endl;
+  int ppct = 0, epct = 0;
+  for (int i = 0; i < 4; i++) ppct += game.players[i].count(), epct += game.enemies[i].count();
+  os << "player pieces: " << ppct << endl;
+  os << "enemy pieces: " << epct << endl;
   return os;
 }
 

@@ -32,9 +32,13 @@ struct Scorer {
         // Enemy piece count
         // Player score amount
         // Game turn (later is better for ai)
-        int ppscore = -2 * game.all_players.count(); 
-        int epscore = 3 * game.all_enemies.count();
+        int ppct = 0, epct = 0;
+        for (int i = 0; i < 4; i++) ppct += game.players[i].count(), epct += game.enemies[i].count();
+
+        int ppscore = -2*ppct;
+        int epscore = 3*epct;
         // cerr << "SCORE IS: " << ppscore + epscore << endl;
+        
         return ppscore + epscore;
     }
 };
