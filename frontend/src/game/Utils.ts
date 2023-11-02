@@ -230,3 +230,7 @@ export function angleBetween(vectorOne: Point, vectorTwo: Point) {
     }
     return angle;
 }
+
+export function mod(n: number, m: number) {
+    return ((n % m) + m) % m;
+  }

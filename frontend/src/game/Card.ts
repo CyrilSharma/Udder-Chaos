@@ -1,23 +1,29 @@
 import { Container, FederatedPointerEvent, Graphics, Sprite, Point } from 'pixi.js';
 import "@pixi/math-extras";
-import { Direction, Color, DirectionEnum, angleBetween } from './Utils';
+import { Direction, Color, DirectionEnum, angleBetween, mod } from './Utils';
 import { CardQueue } from './CardQueue';
 import server from "../server";
+
+const ALLOWED_POS_OFFSET = 5;
+const ALLOWED_TIME_OFFSET = 800;
 
 export type CardOptions = {
     color: Color
     dirs: Direction[];
     size: number;
 };
+
 export class Card extends Container {
     public readonly queue: CardQueue;
     public readonly graphics: Graphics;
     public readonly scale_on_focus = 1.5;
     public center: Point;
-    public dragStart: Point | null = null;
+    public dragStartPos: Point | null = null;
+    public dragStartTime: number = -1;
     public dirs: Direction[];
     public index: number;
     public scaled = false;
+    private cardRotation: number = 0;
     constructor(queue: CardQueue, options: CardOptions, index: number) {
         super();
         this.queue = queue;
@@ -38,12 +44,12 @@ export class Card extends Container {
                 
         this.addChild(this.graphics);
         this.graphics.eventMode = 'static';
-        //this.graphics.on('pointertap', this.onPointerTap);
         this.graphics.on('pointerenter', this.onPointerEnter);
         this.graphics.on('pointerleave', this.onPointerLeave);
         this.graphics.on('pointerdown', this.onDragStart);
         this.graphics.on('pointerup', this.onDragEnd);
         this.graphics.on('pointerupoutside', this.onDragEnd);
+        //this.graphics.on('pointertap', this.onPointerTap);
     }
 
     private drawArrow = (g: Graphics, x: number, y: number,
@@ -94,7 +100,8 @@ export class Card extends Container {
     }
 
     /** Card behavior when clicked (when played) */
-    private onPointerTap = (e: FederatedPointerEvent) => {
+    private tapCard() {
+        console.log("tap!")
         // Make sure it is out turn
         if (this.queue.game.ourTurn()) {
             // Play card both locally and on the server
@@ -111,60 +118,75 @@ export class Card extends Container {
     private onPointerEnter = (e: FederatedPointerEvent) => {
         //console.log("Hover over card " + this.index);
         this.queue.bringCardToTop(this);
-        this.position.x -= this.graphics.width / (2 * this.scale_on_focus);
-        this.position.y -= this.graphics.height / 2;
-        this.scale.set(this.scale_on_focus);
-        this.scaled = true;
+        this.upscale();
     };
 
     private onPointerLeave = (e: FederatedPointerEvent) => {
         this.unscale();
         this.queue.placeCards();
+        this.onDragEnd(e);
+        console.log("here")
     };
 
     private onDragStart = (e: FederatedPointerEvent) => {
-        this.dragStart = this.toLocal(e.global) as Point;
-        console.log(`container: ${this.toLocal(e.global)}`);
-        console.log(this.dragStart);
-
-        console.log(`container size: ${this.center}`);
+        this.dragStartPos = this.toLocal(e.global) as Point;
         this.graphics.on('pointermove', this.onDragMove);
+
+        this.dragStartTime = Date.now();
     }
 
     private onDragMove = (e: FederatedPointerEvent) => {
-        if (this.dragStart != null) {
-            console.log();
+        if (this.dragStartPos != null) {
             let currentPoint = this.toLocal(e.global) as Point;
-            let angle = angleBetween(this.dragStart, currentPoint);
-            this.graphics.rotation = angle;
+            let angle = angleBetween(this.dragStartPos, currentPoint);
+
+            this.graphics.rotation = angle + (this.cardRotation * Math.PI / 2);
         }
         //console.log(`end drag: ${e.offsetX} ${e.offsetY}`)
     }
 
     private onDragEnd = (e: FederatedPointerEvent) => {
-        if (this.dragStart != null) {
-            console.log(this.dragStart);
-            console.log(this.center);
-            console.log(this.toLocal(e.global));
+        if (this.dragStartPos != null) {
+            console.log("end")
             this.graphics.off('pointermove', this.onDragMove);
+            this.dragStartPos = null;
+            let trueAngle = mod(this.graphics.angle, 360);
+
+            if (this.cardRotation * 90 - ALLOWED_POS_OFFSET <= trueAngle && trueAngle <= this.cardRotation * 90 + ALLOWED_POS_OFFSET) {
+                let endTime = Date.now();
+                console.log("no ratation");
+                if (endTime - this.dragStartTime < ALLOWED_TIME_OFFSET) {
+                    this.tapCard();
+                }
+                return;
+            }
+
+            let rotation = Math.floor((trueAngle + 45) / 90);
+            this.rotateCard(rotation - this.cardRotation);
+            // Snap angle to closest 90 degree increment.
+            this.graphics.angle = rotation * 90;
         }
         //console.log(`end drag: ${e.offsetX} ${e.offsetY}`)
+    }
+
+    private upscale = () => {
+        if (this.scaled) return;
+        this.scale.set(this.scale_on_focus);
+        this.position.y -= (this.graphics.height * this.scale_on_focus - this.graphics.height) / 2;
+        this.scaled = true;
     }
 
     private unscale = () => {
         if (!this.scaled) return;
         this.scale.set(1);
-        this.position.x += this.graphics.width / (2 * this.scale_on_focus);
-        this.position.y += this.graphics.height / 2;
+        this.position.y += (this.graphics.height * this.scale_on_focus - this.graphics.height) / 2;
         this.scaled = false;
     };
 
     public rotateCard(rotation: number) {
-        console.log(this.dirs);
         for (let i = 0; i < this.dirs.length; i++) {
-            this.dirs[i] = (this.dirs[i] + rotation) % 4
+            this.dirs[i] = mod((this.dirs[i] - rotation), 4);
         }
-        console.log(this.dirs);
-        this.drawArrow(this.graphics, 10 / 2, 10 * 0.7, 10 / 3, 10 / 10, this.dirs[0]);
+        this.cardRotation = mod((this.cardRotation + rotation), 4);
     }
 }
