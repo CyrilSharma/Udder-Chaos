@@ -108,8 +108,9 @@ struct Handler {
     auto params = load_params();
     auto game_id = stoll(params["game_id"]);
     if (searches.count(game_id)) {
-      auto res = searches.at(game_id).getMove(1);
-      cout << res << endl;
+      // auto res = searches.at(game_id).getMove(1);
+      // cout << res << endl;
+      cout << 0 << endl;
     } else {
       cerr << "Invalid Game ID!" << endl;
       exit(1);
