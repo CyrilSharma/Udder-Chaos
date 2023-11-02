@@ -69,7 +69,7 @@ export class GameScreen extends Container {
 
     public rotateCard(cardIndex: number, rotation: number, color: number) {
         let card = this.game.cards.findCardInHand(cardIndex, color);
-        card.rotateCard(rotation);
+        card.rotateCard(rotation - card.cardRotation);
         this.game.updateTurn();
     }
 

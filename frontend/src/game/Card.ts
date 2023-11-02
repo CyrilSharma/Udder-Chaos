@@ -23,7 +23,7 @@ export class Card extends Container {
     public dirs: Direction[];
     public index: number;
     public scaled = false;
-    private cardRotation: number = 0;
+    public cardRotation: number = 0;
     constructor(queue: CardQueue, options: CardOptions, index: number) {
         super();
         this.queue = queue;
@@ -129,10 +129,14 @@ export class Card extends Container {
     };
 
     private onDragStart = (e: FederatedPointerEvent) => {
-        this.dragStartPos = this.toLocal(e.global) as Point;
-        this.graphics.on('pointermove', this.onDragMove);
+        if (this.queue.game.ourTurn()) {
+            this.dragStartPos = this.toLocal(e.global) as Point;
+            this.graphics.on('pointermove', this.onDragMove);
 
-        this.dragStartTime = Date.now();
+            this.dragStartTime = Date.now();
+        } else {
+            console.log("Not your turn.")
+        }
     }
 
     private onDragMove = (e: FederatedPointerEvent) => {
@@ -162,9 +166,9 @@ export class Card extends Container {
             }
 
             let rotation = Math.floor((trueAngle + 45) / 90);
+            server.rotateCard(this.index, rotation, this.queue.game.playerColor);
             this.rotateCard(rotation - this.cardRotation);
-            // Snap angle to closest 90 degree increment.
-            this.graphics.angle = rotation * 90;
+            this.queue.game.updateTurn();
         }
         //console.log(`end drag: ${e.offsetX} ${e.offsetY}`)
     }
@@ -188,5 +192,7 @@ export class Card extends Container {
             this.dirs[i] = mod((this.dirs[i] - rotation), 4);
         }
         this.cardRotation = mod((this.cardRotation + rotation), 4);
+        
+        this.graphics.angle = this.cardRotation * 90;
     }
 }
