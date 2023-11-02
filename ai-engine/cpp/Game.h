@@ -116,7 +116,7 @@ struct Game {
     all_enemies(dynamic_bitset(area(), 0)),
     all_players(dynamic_bitset(area(), 0)),
     wall_mask(dynamic_bitset(area(), 0)) {
-
+    
     for (uint32_t i = 0; i < 4; i++) {
       players[i] = dynamic_bitset(area(), 0);
       player_scores[i] = dynamic_bitset(area(), 0);
@@ -154,6 +154,7 @@ struct Game {
         }
       }
     }
+
   } /* Game() */
 
   /*

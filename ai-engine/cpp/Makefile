@@ -1,11 +1,12 @@
 # Compiler and compiler flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra
+CXXFLAGS = -std=c++17 -Wall -Wextra -fsanitize=address -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
 
 # Source file and executable name
 INCLUDES = -I./boost_1_83_0
-DEPS = Game.h Utils.h Helpers.h CardQueue.h
-EXECUTABLES = TestGame TestGamePerf TestBitset Main
+DEPS = Game.h Utils.h Helpers.h CardQueue.h Search.h
+#EXECUTABLES = TestGame TestGamePerf TestBitset Main
+EXECUTABLES = Main
 
 # Default target
 all: debug

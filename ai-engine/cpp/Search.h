@@ -17,7 +17,8 @@ using dynamic_bitset = boost::dynamic_bitset<>;
 
 struct Search {
     Game game;
-    Search(GameConfig gc) : game(gc) {}
+    Scorer scorer;
+    Search(GameConfig gc, int sc=0) : game(gc), scorer(sc) {}
 
     map<Game, int> evals;
 
@@ -53,7 +54,7 @@ struct Search {
                 auto tmp_state = state;
                 if (tmp_state.is_enemy_turn()) {
                     tmp_state.enemy_move(choice);
-                    int tmp_eval = score(tmp_state);
+                    int tmp_eval = scorer.score(tmp_state);
 
                     // Prune poor branches, can be improved in future
                     if (tmp_eval < state_eval) {
@@ -67,7 +68,7 @@ struct Search {
                 }
                 else {
                     tmp_state.player_move(choice);
-                    int tmp_eval = score(tmp_state);
+                    int tmp_eval = scorer.score(tmp_state);
 
                     // Prune poor branches, can be improved in future
                     if (tmp_eval > state_eval) {

@@ -3,7 +3,7 @@
 #include "Search.h"
 #include "Utils.h"
 using namespace std;
-
+ 
 enum Request {
   INIT,
   GET,
@@ -50,7 +50,7 @@ struct Handler {
   /*
    * reads in a bunch of key-value pairs.
    */
-  
+
   map<string, string> load_params() {
     map<string, string> params;
     params["hand_size"] = "3";
@@ -75,7 +75,7 @@ struct Handler {
    * Creates the search tree,
    * Based on parameters read in from the server.
    */
-
+ 
   void init() {
     auto params = load_params();
     if (!params.count("seed")) {
