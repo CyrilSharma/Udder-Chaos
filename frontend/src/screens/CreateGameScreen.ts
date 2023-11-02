@@ -72,6 +72,12 @@ export class CreateGameScreen extends Container {
     }
 
     public getLobbyList() {
-        return this.lobbyList;
+        let tmp = this.lobbyList;
+        for (let i = 0; i < tmp.numPlayers(); i++) {
+            if (tmp.players[i].color == 4) {
+                tmp.players[i].color = -1;
+            }
+        }
+        return tmp;
     }
 }

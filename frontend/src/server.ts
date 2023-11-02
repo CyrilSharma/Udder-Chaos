@@ -40,8 +40,8 @@ class Server {
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
             
             createGameScreen.addGameCode(roomCode);
+            createGameScreen.getLobbyList().setCurrentPlayer(playerList.length - 1);
             createGameScreen.getLobbyList().setPlayers(playerList);
-            createGameScreen.getLobbyList().setCurrentPlayer(playerList.length);
         });
         
         this.socket.on("join-error", (error) => {
@@ -52,7 +52,6 @@ class Server {
         this.socket.on("player-list", (playerlist) => {
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
             createGameScreen.getLobbyList().setPlayers(playerlist);
-            //createGameScreen.getPlayerList().setPlayers(playerList);
         });
 
         this.socket.on("kick-player", () => {

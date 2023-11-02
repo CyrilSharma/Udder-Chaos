@@ -42,6 +42,10 @@ export class SizedButton extends FancyButton {
         this.label.text = str;
     }
 
+    public getText() : string {
+        return this.label.text;
+    }
+
     public resize(bounds: Array<number>) {
         // Top, bottom, left, right
         this.x = bounds[2] + (bounds[3] - bounds[2]) * this.percentX;

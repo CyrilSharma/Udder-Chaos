@@ -45,6 +45,10 @@ export class ColorSelector extends FancyButton {
     public setColor(color: number) {
         this.color = color;
     }
+    
+    public getColor() : number {
+        return this.color;
+    }
 
     public swapColor(available: Array<boolean>) : number {
         let temp = this.color;

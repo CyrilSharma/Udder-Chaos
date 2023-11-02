@@ -19,7 +19,7 @@ export class LobbyList extends FancyButton {
 
     private playersList: Array<SizedButton>;
     private nameInput: Input;
-    private players: Array<PlayerInfo>;
+    public players: Array<PlayerInfo>;
 
     constructor(currentPlayerNumber: number, menuContainer: MenuContainer, pX: number, pY: number, pW: number, pH: number) {
         super();
@@ -118,7 +118,6 @@ export class LobbyList extends FancyButton {
         if (this.players[tmpIndex].color != 4) {
             this.available[this.players[tmpIndex].color] = false;
         }
-        console.log(this.players[tmpIndex].color);
     }
 
     public addPlayer(player: PlayerInfo) {
@@ -162,16 +161,16 @@ export class LobbyList extends FancyButton {
 
         // update the order of the players list
         let tmp = this.players[index];
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < this.players.length; i++) {
             if (i > index) {
                 this.players[i-1] = this.players[i];
             }
         }
-        this.players[3] = tmp;
+        this.players[this.players.length - 1] = tmp;
 
         // update UI
         this.playersList.forEach(button => {
-            for (let i = 0; i < 4; i++) {
+            for (let i = 0; i < this.players.length; i++) {
                 if (button.label.text == this.players[i].name) {
                     button.y = -90 + 60 * i;
                 }
@@ -186,23 +185,116 @@ export class LobbyList extends FancyButton {
         }
         
         for (let i = 0; i < 4; i++) {
-            if (this.playersList[i].label.text == this.players[3].name) {
+            if (this.playersList[i].label.text == this.players[this.players.length - 1].name) {
                 this.playersList[i].changeText("");
             }
         }
 
-        //this.playersList[3].changeText("");
         this.players.pop();
     }
 
     // untested
     public setPlayers(players: PlayerInfo[]) {
-        this.players.forEach((player) => {
-            this.removePlayer(player);
+
+        players.forEach(player => {
+            if (player.color == -1) {
+                player.color = 4;
+            }
         });
-        players.forEach((player) => {
-            this.addPlayer(player);
+
+        if (players.length > this.players.length) { // CASE 1
+            // find new player and add
+
+            for (let i = 0; i < players.length; i++) {
+                let found = false;
+                this.players.forEach(player => {
+                    if (players[i].name == player.name) {
+                        found = true;
+                    }
+                });
+                if (!found) {
+                    this.addPlayer(players[i]);
+                }
+            }
+
+        } else if (players.length < this.players.length) { // CASE 2
+            // remove player no longer in list
+
+            for (let i = 0; i < this.players.length; i++) {
+                let found = false;
+                players.forEach(player => {
+                    if (this.players[i].name == player.name) {
+                        found = true;
+                    }
+                });
+                if (!found) {
+                    this.removePlayer(this.players[i]);
+                    break;
+                }
+            }
+
+        } else if (players.length == this.players.length) { // CASE 3
+            // find changed player and update them
+
+            let index1 = -1;
+            let index2 = -1;
+            for (let i = 0; i < this.players.length; i++) {
+                let found = false;
+                for (let j = 0; j < players.length; j++) {
+                    if (this.players[i].name == players[j].name) {
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    index1 = i;
+                }
+            }
+            for (let i = 0; i < players.length; i++) {
+                let found = false;
+                for (let j = 0; j < this.players.length; j++) {
+                    if (players[i].name == this.players[j].name) {
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    index2 = i;
+                }
+            }
+
+            if (index1 == -1 || index2 == -1) {
+                return;
+            }
+
+            for (let i = 0; i < 4; i++) {
+                if (this.playersList[i].getText() == this.players[index1].name) {
+                    this.playersList[i].changeText(players[index2].name);
+                }
+            }
+            this.players[index1] = players[index2];
+        }
+
+        this.players.forEach(player => {
+            this.setPlayerColor(player);
         });
+
+    }
+
+    public setCurrentPlayer(playerNum: number) {
+        this.currentPlayerNumber = playerNum;
+        this.nameInput.y = this.playersList[playerNum].y - 25;
+    }
+
+    public setPlayerColor(player: PlayerInfo) {
+        if (player.color == -1) {
+            player.color = 4;
+        }
+        for (let i = 0; i < 4; i++) {
+            if (this.playersList[i].getText() == player.name) {
+                this.setAvailable(this.colorSelectors[i].getColor());
+                this.colorSelectors[i].setColor(player.color);
+                this.setTaken(player.color);
+            }
+        }
     }
 
     // untested
@@ -216,9 +308,5 @@ export class LobbyList extends FancyButton {
         this.y = bounds[0] + (bounds[1] - bounds[0]) * this.percentY;
         this.width = (bounds[3] - bounds[2]) * this.percentWidth;
         this.height = (bounds[1] - bounds[0]) * this.percentHeight;
-    }
-
-    public setCurrentPlayer(playerNum: number) {
-        this.currentPlayerNumber = playerNum;
     }
 }
