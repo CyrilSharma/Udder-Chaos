@@ -1,7 +1,7 @@
 import { FancyButton, Button } from "@pixi/ui";
 import { Graphics, Text, TextStyle } from "pixi.js";
 
-const playerColors = [0xff0000, 0x0085ff, 0xad00ff, 0xffab2e, 0x9f9f9f];
+const playerColors = [0xff0000, 0xffab2e, 0x0085ff, 0xad00ff, 0x9f9f9f];
 
 export class ColorSelector extends FancyButton {
 

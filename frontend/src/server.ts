@@ -137,7 +137,7 @@ class Server {
     }
 
     public async rotateCard(cardIndex: number, rotation: number, color: number) {
-        //console.log(`Sending rotate-card with index: ${cardIndex}`);
+        console.log(`Sending rotate-card with index: ${cardIndex}`);
         this.socket.emit("make-move", MoveType.RotateCard, {"index": cardIndex, "rotation": rotation}, color);
     }
 
