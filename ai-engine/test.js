@@ -29,6 +29,7 @@ test('Verify Init Method', async () => {
     }
 
     const line = await read_output();
+    console.log(`Line: ${line}`);
     expect(line == "SUCCESS");
 });
 

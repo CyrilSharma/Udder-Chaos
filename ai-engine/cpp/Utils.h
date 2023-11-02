@@ -91,10 +91,10 @@ tuple<vector<vector<int>>, vector<Piece>> load_setup(mt19937 rng) {
     count += 1;
   }
 
-  int idx = uniform_int_distribution<int>(0, count)(rng);
+  int idx = uniform_int_distribution<int>(0, count - 1)(rng);
   ifstream file ("Maps/map" + to_string(idx) + ".txt");
   if (!file.is_open()) {
-    cout << "FAILURE: Invalid Map Index" << endl;
+    cout << "FAILURE: Invalid Map Index: " << idx << endl;
     exit(1);
   }
 

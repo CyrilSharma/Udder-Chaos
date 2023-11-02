@@ -79,7 +79,14 @@ export class Room {
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
             // Send starting game info to players
-            this.io.to(this.roomCode).emit('start-game', this.roomCode, this.getPlayerIds());
+            let hash = 0;
+            for (let i = 0; i < this.roomCode.length; i++) {
+                const charCode = this.roomCode.charCodeAt(i);
+                hash += (charCode * 19762) % 26531;
+            }
+            console.log(`Hash: ${hash}`);
+            this.io.to(this.roomCode).emit('start-game', hash, this.getPlayerIds());
+            this.io.to(this.roomCode).emit('init-ai', hash);
         }
         else {
             // Not enough players yet

@@ -50,7 +50,6 @@ export function initPlayer(playerBool, socket) {
         // Init player socket listeners
         socket.on('create-room', createRoom);
         socket.on('join-room', joinRoom);
-
         socket.on('disconnect', () => {
             console.log('A user disconnected ' + socket.id);
         });
@@ -62,14 +61,18 @@ export function initPlayer(playerBool, socket) {
             console.log('AI has already connected!');
             return;
         }
+        
         ai_socket = socket;
+        for (let room in rooms) {
+            ai_socket.join(room.roomCode);   
+        }
 
-        socket.on("make-move", (roomCode, cardIndex, color) => {
+        ai_socket.on("make-move", (roomCode, cardIndex, color) => {
             rooms[roomCode].makeMove(socket, cardIndex, color);
             console.log("AI made a move " + cardIndex + "," + color);
         });
 
-        socket.on('disconnect', () => {
+        ai_socket.on('disconnect', () => {
             console.log('AI has disconnected.');
             ai_socket = null;
         });
@@ -81,13 +84,13 @@ export function initPlayer(playerBool, socket) {
  * Inits the player object within the room
  */
 function createRoom() {
-    // TODO: Add already existing player checking
     let roomCode = generateRoomCode();
     let room = new Room(io, roomCode);
     rooms[roomCode] = room;
-
     room.addNewPlayer(this, true);
-
+    if (ai_socket != null) {
+        ai_socket.join(roomCode);
+    }
     console.log(this.id + " created a room: " + roomCode)
 }
 

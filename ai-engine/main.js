@@ -4,6 +4,12 @@ const readline = require('node:readline');
 
 const ai = spawn('cpp/Main');
 ai.stdin.setEncoding('utf-8');
+ai.stderr.on('data', (info) => {
+    console.log(info.toString('utf8'));
+});
+ai.on('exit', (code) => {
+    console.log(`AI Exited: ${code}!`);
+})
 
 const rl = readline.createInterface({
     input: ai.stdout,
@@ -29,13 +35,16 @@ const url =
 
 const socket = io(url)
 
-socket.on("start-game", async (roomcode, seed) => {
+socket.on("init-ai", async (seed) => {
+    console.log("AI Initialized!");
+    console.log(`Seed: ${seed}`);
     ai.stdin.write('INIT\n');
-    ai.stdin.write(`game_id: {roomcode}\n`);
-    ai.stdin.write(`seed: {seed}\n`);
+    ai.stdin.write(`game_id: ${seed}\n`);
+    ai.stdin.write(`seed: ${seed}\n`);
     ai.stdin.write(`END\n`);
+    console.log("Sent commands to AI...");
     const output = await read_output();
-    console.log(`Output: {output}`)
+    console.log(`Output: ${output}`)
 });
 
 socket.on("connect", () => {
@@ -45,12 +54,12 @@ socket.on("connect", () => {
 
 socket.on("query-move", async (roomCode) => {
     ai.stdin.write('GET\n');
-    ai.stdin.write(`game_id: {roomcode}\n`);
+    ai.stdin.write(`game_id: ${roomCode}\n`);
     ai.stdin.write(`END\n`);
     const move = await read_output();
     const status = await read_output();
-    console.log(`Got: {move}`)
-    console.log(`Status: {status}`)
+    console.log(`Got: ${move}`)
+    console.log(`Status: ${status}`)
     let color = Math.floor(Math.random() * 4) + 5;
     socket.emit("make-move", roomCode, move, color);
 });
