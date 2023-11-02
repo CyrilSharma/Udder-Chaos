@@ -31,7 +31,7 @@ struct Scorer {
         // Enemy piece count
         // Player score amount
         // Game turn (later is better for ai)
-        if (game.all_players.count() > 0) cout << game.all_players.count() << endl;
+        if (game.all_players.count() > 0) cerr << game.all_players.count() << endl;
         int ppscore = 2 * game.all_players.count(); 
         int epscore = -3 * game.all_enemies.count();
         // cerr << "SCORE IS: " << ppscore + epscore << endl;
