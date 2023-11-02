@@ -44,4 +44,10 @@ export class DayCounter extends FancyButton {
         }
     }
 
+    public resize(width: number) {
+        let tmpW = this.width;
+        let tmpH = this.height;
+        this.width = width * 0.8;
+        this.height = this.width * tmpH / tmpW;
+    }
 }

@@ -225,3 +225,7 @@ function parseCSVGrid(csvString: string) {
     }
     return grid;
 };
+
+function addPlayersName(players: PlayerInfo) {
+    
+}

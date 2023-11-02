@@ -56,6 +56,51 @@ export class PlayerGameInfo extends Container {
 
     }
 
+    public changeText(text: string) {
+        this.playerName.text = text;
+    }
+
+    public setUnits(units: number) {
+        this.units.text = units;
+    }
+
+    public setColor(color: number) {
+        switch(color) {
+            case 0:
+                this.displayArea.defaultView = new Graphics()
+                    .beginFill(0xffffff)
+                    .lineStyle(5, 0xff0000, 1, 0)
+                    .drawRoundedRect(0, 0, 400, 80, 15)
+                break;
+            case 1:
+                this.displayArea.defaultView = new Graphics()
+                    .beginFill(0xffffff)
+                    .lineStyle(5, 0x0085ff, 1, 0)
+                    .drawRoundedRect(0, 0, 400, 80, 15)
+                break;
+            case 2:
+                this.displayArea.defaultView = new Graphics()
+                    .beginFill(0xffffff)
+                    .lineStyle(5, 0xad00ff, 1, 0)
+                    .drawRoundedRect(0, 0, 400, 80, 15)
+                break;
+            case 3:
+                this.displayArea.defaultView = new Graphics()
+                    .beginFill(0xffffff)
+                    .lineStyle(5, 0xffab2e, 1, 0)
+                    .drawRoundedRect(0, 0, 400, 80, 15)
+                break;
+            default:
+                this.ufo = Sprite.from('../../raw-assets/player_red.png');
+                break;
+        }
+    }
+
+    public resize(width: number) {
+        this.width = width;
+        this.height = this.width * 0.2;
+
+    }
 
 
 }

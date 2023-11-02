@@ -319,4 +319,22 @@ export class Board extends Container {
             });
         }
     }
+
+    public resize(bounds: Array<number>, left: number, right: number, bottom: number) {
+        // Top, bottom, left, right
+        // this.width = (bounds[3] - bounds[2]);
+        // this.height = (bounds[1] - bounds[0]);
+
+        if (bottom < right - left) {
+            this.height = bottom;
+            this.width = bottom;
+        } else {
+            this.width = right - left;
+            this.height = right - left;
+        }
+
+        this.x = this.width * -0.5;
+        this.y = this.height * -0.5;
+        
+    }
 }
