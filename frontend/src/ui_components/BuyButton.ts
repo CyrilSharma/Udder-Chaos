@@ -1,15 +1,15 @@
 import { Button, FancyButton } from '@pixi/ui';
 import { Container, Graphics } from 'pixi.js';
-import type { TextStyle } from 'pixi.js';
 import { Text } from 'pixi.js';
 
-export class MenuButton extends Container {
+export class BuyButton extends Container {
 
     private button: FancyButton;
     private posx: number;
     private posy: number;
     private AR: number;
     private size: number;
+    public dragging: boolean = false;
 
     constructor(text: string, posx: number, posy: number, color: number, AR: number, size: number, bevel: number) {
         super();
@@ -38,6 +38,10 @@ export class MenuButton extends Container {
             })
         });
 
+        this.button.on('pointerdown', this.onDragStart, this);
+        this.button.on('pointerup', this.onDragEnd, this);
+        this.button.on('pointerupoutside', this.onDragEnd, this);
+
         this.addChild(this.button);
     }
 
@@ -65,4 +69,13 @@ export class MenuButton extends Container {
         this.button.view.y = height * this.posy;
     }
 
+    private onDragStart() {
+        console.log('down');
+        this.dragging = true;
+    }
+
+    private onDragEnd() {
+        console.log('up');
+        this.dragging = false;
+    }
 }

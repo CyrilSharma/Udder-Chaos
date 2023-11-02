@@ -1,10 +1,17 @@
 import { Container, Graphics, Text, TextStyle } from 'pixi.js';
 import { FancyButton, Button } from '@pixi/ui';
 
+
+type PlayerInfo = {
+    name: string,
+    color: number
+}
+
 export class PlayerListDisplay extends Container {
 
     public theList: Graphics;
-    private players: Array<string>;
+    private players: Array<PlayerInfo>;
+
     public text: Text;
 
     constructor() {
@@ -19,7 +26,7 @@ export class PlayerListDisplay extends Container {
         this.addChild(this.text);
     }
 
-    public addPlayer(player: string) {
+    public addPlayer(player: PlayerInfo) {
         if (this.players.length >= 4) {
             return;
         }
@@ -27,12 +34,13 @@ export class PlayerListDisplay extends Container {
         this.updateTheList();
     }
 
-    public removePlayer(player: string) {
+
+    public removePlayer(player: PlayerInfo) {
         this.players?.splice(this.players.indexOf(player));
         this.updateTheList();
     }
 
-    public setPlayers(players: string[]) {
+    public setPlayers(players: PlayerInfo[]) {
         this.players = players;
         this.updateTheList();
     }
@@ -43,8 +51,10 @@ export class PlayerListDisplay extends Container {
 
     public updateTheList() {
         let text = "";
-        this.players.forEach(element => {
-            text = text + element + "\n";
+
+        this.players.forEach(player => {
+            text = text + player.color + " : " + player.name + "\n";
+
         });
         console.log("text: " + text);
         this.text.text = text;

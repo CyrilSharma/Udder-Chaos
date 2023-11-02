@@ -5,6 +5,7 @@ import { SettingsScreen } from './SettingsScreen';
 import server from "../server";
 import { JoinGameScreen } from './JoinGameScreen';
 import { MenuButton } from '../ui_components/MenuButton';
+import { TestingScreen } from './TestingScreen';
 
 /** Screen shows upon opening the website */
 export class HomeScreen extends Container {
@@ -28,23 +29,24 @@ export class HomeScreen extends Container {
         this.addChild(this.logo);
 
         // Create Game
-        this.createGameButton = new MenuButton("Create Game", 0.3, 0.6, 0xF4C418, 4, 0.15, 30);
+        this.createGameButton = new MenuButton("Create Game", 0.2, 0.6, 0xF4C418, 4, 0.15, 30);
         this.createGameButton.getButton().onPress.connect(() => {
             server.createRoom();
         });
         this.addChild(this.createGameButton.getButton());
 
         // Join Game
-        this.joinGameButton = new MenuButton("Join Game", 0.7, 0.6, 0xF4C418, 4, 0.15, 30);
+        this.joinGameButton = new MenuButton("Join Game", 0.8, 0.6, 0xF4C418, 4, 0.15, 30);
         this.joinGameButton.getButton().onPress.connect(() => {
             navigation.showScreen(JoinGameScreen);
         });
         this.addChild(this.joinGameButton.getButton());
 
         // Settings
-        this.settingsButton = new MenuButton("Settings", 0.5, 0.89, 0xF4C418, 4, 0.15, 30);
+        this.settingsButton = new MenuButton("Settings", 0.5, 0.8, 0xF4C418, 4, 0.15, 30);
         this.settingsButton.getButton().onPress.connect(() => {
-            navigation.showScreen(SettingsScreen);
+            navigation.showScreen(TestingScreen);
+            //navigation.showScreen(SettingsScreen);
         });
         this.addChild(this.settingsButton.getButton());
     }

@@ -9,7 +9,8 @@ const COLOR = {
     RED: 0,
     YELLOW: 1,
     BLUE: 2,
-    PURPLE: 3,    
+    PURPLE: 3,
+    UNSET: 4  
 }
 
 const MAX_PLAYERS = 4;
@@ -24,6 +25,8 @@ export class Room {
         this.roomCode = roomCode;
         this.players = [];
         this.moveList = [];
+        this.turn = 0;
+        this.setSeed(roomCode);
     }
 
     addNewPlayer(socket, host=false) {
@@ -37,8 +40,7 @@ export class Room {
         this.players.push(player);
 
         player.joinRoom();
-        socket.to(this.roomCode).emit("player-list", this.getPlayerNames());
-        this.io.to(this.roomCode).emit("receive-message", "ROOOM")
+        socket.to(this.roomCode).emit("add-player", player.getPlayerInfo());
         console.log(socket.id + " joined the room: " + this.roomCode);
     }
 
@@ -52,19 +54,23 @@ export class Room {
 
         if (this.players.length > 0) {
             // There are still players in the game
-            this.io.to(this.roomCode).emit("player-list", this.getPlayerNames());
+            //this.updatePlayerList(this.io);
         }
         else {
             removeRoom(this.roomCode);
         }
     }
 
-    getPlayerNames() {
-        let names = []
+    updatePlayer(player) {
+        player.socket.to(this.roomCode).emit("update-player-info", player.getPlayerInfo());
+    }
+
+    getPlayerInfo() {
+        let playerList = [];
         for (let player of this.players) {
-            names.push(player.name)
+            playerList.push(player.getPlayerInfo());
         }
-        return names;
+        return playerList;
     }
 
     getPlayerIds() {
@@ -76,11 +82,29 @@ export class Room {
         return ids;
     }
 
+    setSeed(seed) {
+        if (seed === "") {
+            return;
+        }
+        let numSeed = 0;
+        for (let i = 0; i < seed.length; i++) {
+            numSeed += seed.charCodeAt(i);
+        }
+        this.seed = numSeed;
+    }
+
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
             console.log(`Hash: ${hashcode(this.roomCode)}`);
-            this.io.to(this.roomCode).emit('start-game', hashcode(this.roomCode), this.getPlayerIds());
-            this.io.to(this.roomCode).emit('init-ai', hashcode(this.roomCode));
+            for (let i = 0; i < MAX_PLAYERS; i++) {
+                if (this.players[i].color == 4) {
+                    // If any player is unset color, stop with error.
+                    host.emit("start-game-error", "Everyone must choose a color!");
+                    return;
+                }
+            }
+            this.io.to(this.roomCode).emit('start-game', this.seed, this.getPlayerInfo());
+            this.io.to(this.roomCode).emit('init-ai', this.seed);
         }
         else {
             host.emit("start-game-error", "Not enough players to start the game!");
@@ -88,13 +112,13 @@ export class Room {
     }
 
     // Emit move to all players
-    makeMove(socket, cardIndex, color) {
-        this.moveList.push((cardIndex, color));
-        socket.to(this.roomCode).emit("share-move", cardIndex, color);
+    makeMove(socket, moveType, moveData, color) {
+        this.moveList.push((moveType, moveData, color));
+        socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
         // TODO: send strings to the AI instead of just the seed (this is not unique!!)
-        socket.to(this.roomCode).emit("share-move-ai", hashcode(this.roomCode), cardIndex, color);
-        console.log(this.moveList)
-        if (this.moveList.length % 3 == 2) {
+        socket.to(this.roomCode).emit("share-move-ai", , moveData["index"], color);
+        if (moveType < 2) { this.turn += 1; }
+        if (this.turn % 3 == 2) {
             console.log("Query the AI move");
             ai_socket.emit("query-move", hashcode(this.roomCode), this.roomCode);
         }
@@ -119,6 +143,7 @@ class Player {
         this.socket = socket;
         this.name = "Guest " + Math.floor(Math.random() * 1000);
         this.team = team;
+        this.color = 4;
         this.room = room;
         this.host = host;
 
@@ -126,12 +151,23 @@ class Player {
     }
 
     initSocket() {
-        this.socket.on("start-game", () => {
+        this.socket.on("update-name", (name) => {
+            this.name = name;
+            this.room.updatePlayer(this);
+        });
+
+        this.socket.on("update-color", (color) => {
+            this.color = color;
+            this.room.updatePlayer(this);
+        });
+
+        this.socket.on("start-game", (seed) => {
+            this.room.setSeed(seed);
             this.room.startGame(this.socket);
         });
 
-        this.socket.on("play-card", (cardIndex, color) => {
-            this.room.makeMove(this.socket, cardIndex, color);
+        this.socket.on("make-move", (moveType, moveData, color) => {
+           this.room.makeMove(this.socket, moveType, moveData, color); 
         });
 
         this.socket.on("leave-room", () => {
@@ -144,9 +180,13 @@ class Player {
         });
     }
 
+    getPlayerInfo() {
+        return {"id": this.socket.id, "name": this.name, "color": this.color};
+    }
+
     joinRoom() {
         this.socket.join(this.room.roomCode);
-        this.socket.emit("load-room", this.room.roomCode, this.room.getPlayerNames());
+        this.socket.emit("load-room", this.room.roomCode, this.room.getPlayerInfo());
         this.socket.emit("receive-message", "joined the room");
     }
 

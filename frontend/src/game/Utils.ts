@@ -1,7 +1,21 @@
 import { MAPS } from "../maps/Maps"
 import { Piece } from "./Piece"
 import MersenneTwister from 'mersenne-twister';
+import { Point } from 'pixi.js';
+import '@pixi/math-extras';
 
+// Constants
+export const COW_REGEN_RATE = 12; // Respawn after 3 days
+export const COW_SACRIFICE = 3; 
+export const SCORE_GOAL = 10;
+export const DAYS_PER_ROUND = 3;
+
+//-----Menu-----//
+export type PlayerInfo = {
+    id: string,
+    name: string,
+    color: number
+}
 
 //-----Tiles-----//
 export const TileEnum = {
@@ -9,6 +23,10 @@ export const TileEnum = {
     Pasture: 1,
     Impassible: 2,
     Destination: 3,
+    Red_Enemy_Spawn: 4,
+    Yellow_Enemy_Spawn: 5,
+    Blue_Enemy_Spawn: 6,
+    Purple_Enemy_Spawn: 7,
 };
 // Weighting of tiles when generating a random board
 export const TileWeights = {
@@ -63,8 +81,22 @@ export function getTeam(piece_type: number) {
     return Error('Invalid Piece Type');
 }
 export function canMoveOver(attacker: number, defender: number) {
-    return getTeam(attacker) == TeamEnum.Enemy && getTeam(defender) == TeamEnum.Player ||
-        getTeam(attacker) == TeamEnum.Player && getTeam(defender) == TeamEnum.Cow;
+    // If on differing teams, i.e, moving into cow space, jet kills ufo, ufo kills jet.
+    return (getTeam(defender) != getTeam(attacker))
+}
+export function checkActionType(attacker: number, defender: number) {
+    if (getTeam(defender) == TeamEnum.Cow && getTeam(attacker) == TeamEnum.Player) {
+        return ActionType.Abduct_Action; 
+    }
+    else if (
+        (getTeam(defender) == TeamEnum.Enemy && getTeam(attacker) == TeamEnum.Player) ||
+        (getTeam(defender) == TeamEnum.Player && getTeam(attacker) == TeamEnum.Enemy)
+    ) {
+        return ActionType.Kill_Action;
+    }
+    else {
+        return -1;
+    }
 }
 export const Player = PieceEnum;
 // Move direction values for now
@@ -149,7 +181,6 @@ export type GameSettings = {
 //-----Map Functions-----//
 export function loadMap(seed: number) {
     const grid: Grid = parseCSVGrid(MAPS[seed]);
-    console.log(grid);
     return grid;
 }
 
@@ -202,3 +233,17 @@ function parseCSVGrid(csvString: string) {
     }
     return grid;
 };
+
+// --- Math --- //
+
+export function angleBetween(vectorOne: Point, vectorTwo: Point) {
+    let angle = Math.atan2( vectorOne.x*vectorTwo.y - vectorOne.y*vectorTwo.x, vectorOne.x*vectorTwo.x + vectorOne.y*vectorTwo.y);
+    if (angle < 0) {
+        angle += 2 * Math.PI;
+    }
+    return angle;
+}
+
+export function mod(n: number, m: number) {
+    return ((n % m) + m) % m;
+  }

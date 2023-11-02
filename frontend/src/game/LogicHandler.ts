@@ -1,6 +1,6 @@
 import { Container } from "pixi.js";
 import { Piece } from "./Piece";
-import { DirectionEnum, GameConfig, Grid, PieceAction, Position, TileEnum, dx, dy, getTeam, TeamEnum, canMoveOver, ActionType } from "./Utils";
+import { DirectionEnum, GameConfig, Grid, PieceAction, Position, TileEnum, dx, dy, getTeam, TeamEnum, canMoveOver, checkActionType, ActionType } from "./Utils";
 import { Game } from "./Game";
 import { Card } from "./Card";
 
@@ -30,7 +30,7 @@ export class LogicHandler {
             let moves: PieceAction[] = [];
             let post_actions: PieceAction[] = [];
 
-            // For each piece, move it if needed
+            // For each of the player's piece, move it if needed
             this.game.board.pieces.forEach((piece) => {
                 if (piece.type == color) {
                     this.movePiece(piece, dir, pre_actions, moves, post_actions);
@@ -39,7 +39,6 @@ export class LogicHandler {
 
             // Send updates to game board
             await this.game.board.updateGame([pre_actions, moves, post_actions]);
-            console.log("hello " + i)
         }
     }
 
@@ -49,8 +48,6 @@ export class LogicHandler {
         let cur: Position = { row: piece.row, column: piece.column };
         // Destination position
         let dest: Position = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
-
-        console.log(`Moving ${[cur.row, cur.column]}`);
 
         // Collision check with board obstacle tiles
         if (this.game.board.getTileAtPosition(dest) == TileEnum.Impassible) {
@@ -108,16 +105,18 @@ export class LogicHandler {
         }
 
         // If move places you on another piece, then update move type accordingly
-        if (this.game.board.getPieceByPosition(dest) != null) {
-            if (!canMoveOver(piece.type, this.game.board.getPieceByPosition(dest)!.type)) {
-                if (piece.type != this.game.board.getPieceByPosition(dest)!.type) 
+        let destPiece = this.game.board.getPieceByPosition(dest);
+        if (destPiece != null) {
+            // If moving to a friendly unit, that's okay.
+            if (!canMoveOver(piece.type, destPiece!.type)) {
+                if (piece.type != destPiece!.type) 
                     throw Error("Can't move onto this piece!!!");
             }
             else {
-                switch (getTeam(piece.type)) {
-                    case TeamEnum.Player: { post_actions.push({ action: ActionType.Abduct_Action, piece: piece, move: dest }); break; }
-                    case TeamEnum.Enemy: { pre_actions.push({ action: ActionType.Kill_Action, piece: piece, move: dest }); break; }
-                    default: { throw Error("Illegal move handling in logic handler"); break; }
+                switch (checkActionType(piece.type, destPiece!.type)) {
+                    case ActionType.Abduct_Action: { post_actions.push({ action: ActionType.Abduct_Action, piece: piece, move: dest }); break; }
+                    case ActionType.Kill_Action: { pre_actions.push({ action: ActionType.Kill_Action, piece: piece, move: dest }); break; }
+                    default: { break; }
                 }
             }
         }

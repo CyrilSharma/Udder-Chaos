@@ -3,9 +3,14 @@ import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
-import { Player, initSeed } from "./game/Utils"
-//import seedrandom from 'seedrandom'
+import { Player, initSeed, Position, PlayerInfo } from "./game/Utils"
 import { JoinGameScreen } from "./screens/JoinGameScreen";
+
+const MoveType = {
+    PlayCard: 0,
+    RotateCard: 1,
+    PurchaseUFO: 2,
+}
 
 class Server {
     public color!: number;
@@ -27,11 +32,20 @@ class Server {
             console.log(error);
         });
 
-        this.socket.on("load-room", async (roomCode, playerList) => {
+        this.socket.on("load-room", async (roomCode, playerList: PlayerInfo[]) => {
+            console.log("hi");
+            console.log(playerList);
+            console.log(this.socket.id);
+
             await navigation.showScreen(CreateGameScreen);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            
             createGameScreen.addGameCode(roomCode);
-            createGameScreen.getPlayerList().setPlayers(playerList);
+            createGameScreen.getLobbyList().setCurrentPlayer(playerList.length - 1);
+            playerList.forEach((player) => {
+                console.log("here");
+                createGameScreen.getLobbyList().addPlayer(player);
+            });
         });
         
         this.socket.on("join-error", (error) => {
@@ -39,10 +53,17 @@ class Server {
             joinGameScreen.showError(error);
         });
 
-        this.socket.on("player-list", (playerList) => {
+        this.socket.on("add-player", (playerInfo: PlayerInfo) => {
+            console.log(playerInfo);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
-            createGameScreen.getPlayerList().setPlayers(playerList);
+            createGameScreen.getLobbyList().addPlayer(playerInfo);
         });
+
+        this.socket.on("update-player-info", (playerInfo: PlayerInfo) => {
+            console.log(playerInfo);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.getLobbyList().updatePlayer(playerInfo);
+        })
 
         this.socket.on("kick-player", () => {
             this.socket.emit("leave-room");
@@ -53,12 +74,18 @@ class Server {
             console.log(error);
         });
 
-        this.socket.on("start-game", async (seed, socketIds) => {
-
+        this.socket.on("start-game", async (seed: number, playerList: PlayerInfo[]) => {
             initSeed(seed);
 
-            let color = socketIds.indexOf(this.socket.id) + 1;
-            console.log("You are color: " + color);
+            let color = 1;
+
+            console.log(playerList);
+
+            playerList.forEach((player: PlayerInfo) => {
+                if (player.id == this.socket.id) {
+                    color += player.color;
+                }
+            });
 
             await navigation.showScreen(GameScreen);
 
@@ -68,10 +95,22 @@ class Server {
             this.color = color;
         });
 
-        this.socket.on("share-move", (cardIndex, color) => {
+        this.socket.on("share-move", (moveType, moveData, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
-            gameScreen.playCard(cardIndex, color);
-            console.log(`Server playing card: ${cardIndex}, color: ${color}`);
+            
+            switch (moveType) {
+                case MoveType.PlayCard:
+                    gameScreen.playCard(moveData["index"], color);
+                    //console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
+                    break;
+                case MoveType.RotateCard:
+                    gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
+                    //console.log(`Server rotating card: ${moveData["index"]} ${moveData["rotation"]}, color: ${color}`);
+                    break;
+                case MoveType.PurchaseUFO:
+                    gameScreen.purchaseUFO(moveData, color);
+                    break;
+            }
         });
     }
 
@@ -83,13 +122,35 @@ class Server {
         this.socket.emit("join-room", roomCode.toUpperCase());
     }
 
-    public async startGame() {
-        this.socket.emit("start-game");
+    public async startGame(seed: string) {
+        console.log(seed);
+        if (seed === "Seed") {
+            seed = "";
+        }
+        console.log(seed);
+        this.socket.emit("start-game", seed);
     }
 
     public async playCard(cardIndex: number, color: number) {
-        console.log(`Sending play-card with index: ${cardIndex}`);
-        this.socket.emit("play-card", cardIndex, color);
+        //console.log(`Sending play-card with index: ${cardIndex}`);
+        this.socket.emit("make-move", MoveType.PlayCard, {"index": cardIndex}, color);
+    }
+
+    public async rotateCard(cardIndex: number, rotation: number, color: number) {
+        console.log(`Sending rotate-card with index: ${cardIndex}`);
+        this.socket.emit("make-move", MoveType.RotateCard, {"index": cardIndex, "rotation": rotation}, color);
+    }
+
+    public async updatePlayerName(name: string) {
+        this.socket.emit("update-name", name);
+    }
+
+    public async updatePlayerColor(color: number) {
+        this.socket.emit("update-color", color);
+    }
+
+    public async purchaseUFO(position: Position, color: number) {
+        this.socket.emit("make-move", MoveType.PurchaseUFO, position, color)
     }
 
     public async leaveRoom() {
