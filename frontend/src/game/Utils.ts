@@ -1,10 +1,14 @@
 import { MAPS } from "../maps/Maps"
 import { Piece } from "./Piece"
 import MersenneTwister from 'mersenne-twister';
+import { Point } from 'pixi.js';
+import '@pixi/math-extras';
 
 // Constants
 export const COW_REGEN_RATE = 12; // Respawn after 3 days
 export const COW_SACRIFICE = 3; 
+export const SCORE_GOAL = 4;
+export const DAYS_PER_ROUND = 310;
 
 //-----Menu-----//
 export type PlayerInfo = {
@@ -143,8 +147,12 @@ export function shuffle(array: any[]) {
 }
 
 let gen = new MersenneTwister();
-export function initSeed(seed: number) {
-    gen.init_seed(seed);
+export function initSeed(seed: string) {
+    let numSeed = 0;
+    for (let i = 0; i < seed.length; i++) {
+        numSeed += seed.charCodeAt(i);
+    }
+    gen.init_seed(numSeed);
 }
 
 export function random() {
@@ -226,3 +234,17 @@ function parseCSVGrid(csvString: string) {
     }
     return grid;
 };
+
+// --- Math --- //
+
+export function angleBetween(vectorOne: Point, vectorTwo: Point) {
+    let angle = Math.atan2( vectorOne.x*vectorTwo.y - vectorOne.y*vectorTwo.x, vectorOne.x*vectorTwo.x + vectorOne.y*vectorTwo.y);
+    if (angle < 0) {
+        angle += 2 * Math.PI;
+    }
+    return angle;
+}
+
+export function mod(n: number, m: number) {
+    return ((n % m) + m) % m;
+  }

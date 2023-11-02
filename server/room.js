@@ -25,6 +25,7 @@ export class Room {
         this.roomCode = roomCode;
         this.players = [];
         this.moveList = [];
+        this.turn = 0;
     }
 
     addNewPlayer(socket, host=false) {
@@ -97,7 +98,11 @@ export class Room {
         //TODO: Check if player's turn 
         this.moveList.push((moveType, moveData, color));
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
-        if (this.moveList.length % 3 == 2) {
+        console.log(this.moveList);
+        if (moveType < 2) {
+            this.turn += 1;
+        }
+        if (this.turn % 3 == 2) {
             console.log("Query the AI move");
             ai_socket.emit("query-move", this.roomCode);
         }

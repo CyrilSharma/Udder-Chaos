@@ -3,13 +3,13 @@ import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
-import { PlayerInfo, initSeed } from "./game/Utils"
-//import seedrandom from 'seedrandom'
+import { Player, initSeed, Position } from "./game/Utils"
 import { JoinGameScreen } from "./screens/JoinGameScreen";
 
 const MoveType = {
     PlayCard: 0,
-    RotateCard: 1
+    RotateCard: 1,
+    PurchaseUFO: 2,
 }
 
 class Server {
@@ -108,6 +108,9 @@ class Server {
                     gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
                     //console.log(`Server rotating card: ${moveData["index"]} ${moveData["rotation"]}, color: ${color}`);
                     break;
+                case MoveType.PurchaseUFO:
+                    gameScreen.purchaseUFO(moveData, color);
+                    break;
             }
         });
     }
@@ -140,6 +143,10 @@ class Server {
 
     public async updatePlayerColor(color: number) {
         this.socket.emit("update-color", color);
+    }
+
+    public async purchaseUFO(position: Position, color: number) {
+        this.socket.emit("make-move", MoveType.PurchaseUFO, position, color)
     }
 
     public async leaveRoom() {
