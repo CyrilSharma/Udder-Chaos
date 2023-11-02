@@ -50,9 +50,19 @@ socket.on("query-move", async (game_id, room_code) => {
     ai.stdin.write(`game_id: ${game_id}\n`);
     ai.stdin.write(`END\n`);
     const move = (await it.next()).value;
-    console.log(`Got: ${move}`);
+    const color = (await it.next()).value;
+    const status = (await it.next()).value;
+    console.log(`Receieved: (${move}, ${color}, ${status})`);
+    socket.emit("make-move", room_code, move, color);
+});
+
+socket.on("share-move-ai", async (game_id, idx, color) => {
+    console.log("share-move-ai");
+    console.log(`game_id: ${game_id}, idx: ${idx}`);
+    ai.stdin.write('MOVE\n');
+    ai.stdin.write(`game_id: ${game_id}\n`);
+    ai.stdin.write(`move: ${idx}\n`);
+    ai.stdin.write(`END\n`);
     const status = (await it.next()).value;
     console.log(`Status: ${status}`);
-    let color = Math.floor(Math.random() * 4) + 5;
-    socket.emit("make-move", room_code, move, color);
 });

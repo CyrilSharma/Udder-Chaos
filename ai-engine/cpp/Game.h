@@ -411,6 +411,7 @@ struct Game {
   } /* viewCards() */
 
 };
+
 // Print
 ostream& operator<<(ostream& os, Game& game) {
   os << "Game: \n";

@@ -38,7 +38,6 @@ struct Handler {
   void run() {
     for (int ct = 1; ; ct++) {
       Request r = get_request();
-      cout << "Instruction: " << ct << endl;
       switch (r) {
         case INIT: init(); break;
         case GET:  get();  break;
@@ -54,6 +53,7 @@ struct Handler {
 
   map<string, string> load_params() {
     map<string, string> params;
+    params["timeout"] = "1000";
     params["hand_size"] = "3";
     params["round_length"] = "6";
     params["ncards"] = "16";
@@ -108,14 +108,12 @@ struct Handler {
   void get() {
     auto params = load_params();
     auto game_id = stoll(params["game_id"]);
-    cerr << "GET\n";
     if (searches.count(game_id)) {
       auto res = searches.at(game_id).getMove(stoll(params["timeout"]));
-      cerr << "PATH1\n";
-      cout << res.first << "\n" << res.second << endl;
+      // Frontend expects color to be >= 5 if it's an enemy.
+      cout << res.first << "\n" << (res.second + 5) << endl;
       cout << "SUCCESS" << endl;
     } else {
-      cerr << "PATH2\n";
       cerr << "Invalid Game ID!" << endl;
       exit(1);
     }
@@ -132,12 +130,11 @@ struct Handler {
     auto mv = stoi(params["move"]);
     if (searches.count(game_id)) {
       searches.at(game_id).makeMove(mv);
+      cout << "SUCCESS" << endl;
     } else {
-      cerr << "Game ID not found" << endl;
+      cout << "Game ID not found" << endl;
       exit(1);
     }
-    
-    // We don't have a function for this yet.
   } /* move() */
 
   /*

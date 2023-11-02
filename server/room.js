@@ -89,9 +89,10 @@ export class Room {
 
     // Emit move to all players
     makeMove(socket, cardIndex, color) {
-        //TODO: Check if player's turn 
         this.moveList.push((cardIndex, color));
         socket.to(this.roomCode).emit("share-move", cardIndex, color);
+        // TODO: send strings to the AI instead of just the seed (this is not unique!!)
+        socket.to(this.roomCode).emit("share-move-ai", hashcode(this.roomCode), cardIndex, color);
         console.log(this.moveList)
         if (this.moveList.length % 3 == 2) {
             console.log("Query the AI move");

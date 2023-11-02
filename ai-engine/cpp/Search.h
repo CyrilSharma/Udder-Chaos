@@ -26,7 +26,7 @@ struct Search {
 
     // Update internal state of search
     void makeMove(int move) {
-        game.player_move(move);
+      game.player_move(move);
     }
 
     // Timeout passed in for now, might be a const or smt later
@@ -130,6 +130,7 @@ struct Search {
             cerr << "Turns ahead reached: " << turns << endl;
         }
 
+        game.enemy_move(best_move.first, best_move.second);
         return best_move;
     }
 };
