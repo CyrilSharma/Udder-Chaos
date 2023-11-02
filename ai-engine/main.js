@@ -9,22 +9,14 @@ ai.stderr.on('data', (info) => {
 });
 ai.on('exit', (code) => {
     console.log(`AI Exited: ${code}!`);
-})
-
-const rl = readline.createInterface({
-    input: ai.stdout,
-    terminal: false
 });
 
-// Promisify the readline interface to read one line
-function read_output() {
-    return new Promise((resolve) => {
-        rl.once('line', (line) => {
-            resolve(line);
-            rl.close();
-        });
-    });
-  }
+// https://stackoverflow.com/questions/43638105/how-to-get-synchronous-readline-or-simulate-it-using-async-in-nodejs
+const rl = readline.createInterface({
+    input: ai.stdout,
+    crlfDelay: Infinity
+});
+const it = rl[Symbol.asyncIterator]();
 
 // Handles connections.
 var mode = process.env.NODE_ENV;
@@ -43,7 +35,7 @@ socket.on("init-ai", async (seed) => {
     ai.stdin.write(`seed: ${seed}\n`);
     ai.stdin.write(`END\n`);
     console.log("Sent commands to AI...");
-    const output = await read_output();
+    const output = (await it.next()).value;
     console.log(`Output: ${output}`)
 });
 
@@ -52,14 +44,15 @@ socket.on("connect", () => {
     socket.emit("init-connection", false);
 });
 
-socket.on("query-move", async (roomCode) => {
+socket.on("query-move", async (game_id, room_code) => {
+    console.log("query-move");
     ai.stdin.write('GET\n');
-    ai.stdin.write(`game_id: ${roomCode}\n`);
+    ai.stdin.write(`game_id: ${game_id}\n`);
     ai.stdin.write(`END\n`);
-    const move = await read_output();
-    const status = await read_output();
-    console.log(`Got: ${move}`)
-    console.log(`Status: ${status}`)
+    const move = (await it.next()).value;
+    console.log(`Got: ${move}`);
+    const status = (await it.next()).value;
+    console.log(`Status: ${status}`);
     let color = Math.floor(Math.random() * 4) + 5;
-    socket.emit("make-move", roomCode, move, color);
+    socket.emit("make-move", room_code, move, color);
 });

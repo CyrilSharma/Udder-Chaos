@@ -37,6 +37,7 @@ struct Search {
 
         // Remove evals for states made before this turn, we no longer use them
         auto it = evals.begin();
+
         while (it != evals.end() && it->first.turn < game.turn) it = evals.erase(it);
 
         // Score, first move, game state

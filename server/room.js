@@ -78,18 +78,11 @@ export class Room {
 
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
-            // Send starting game info to players
-            let hash = 0;
-            for (let i = 0; i < this.roomCode.length; i++) {
-                const charCode = this.roomCode.charCodeAt(i);
-                hash += (charCode * 19762) % 26531;
-            }
-            console.log(`Hash: ${hash}`);
-            this.io.to(this.roomCode).emit('start-game', hash, this.getPlayerIds());
-            this.io.to(this.roomCode).emit('init-ai', hash);
+            console.log(`Hash: ${hashcode(this.roomCode)}`);
+            this.io.to(this.roomCode).emit('start-game', hashcode(this.roomCode), this.getPlayerIds());
+            this.io.to(this.roomCode).emit('init-ai', hashcode(this.roomCode));
         }
         else {
-            // Not enough players yet
             host.emit("start-game-error", "Not enough players to start the game!");
         }
     }
@@ -102,9 +95,18 @@ export class Room {
         console.log(this.moveList)
         if (this.moveList.length % 3 == 2) {
             console.log("Query the AI move");
-            ai_socket.emit("query-move", this.roomCode);
+            ai_socket.emit("query-move", hashcode(this.roomCode), this.roomCode);
         }
     }
+}
+
+function hashcode(roomCode) {
+    let hash = 0;
+    for (let i = 0; i < roomCode.length; i++) {
+        const charCode = roomCode.charCodeAt(i);
+        hash += (charCode * 19762) % 26531;
+    }
+    return hash;
 }
 
 /*
