@@ -11,7 +11,7 @@ export class DayCounter extends FancyButton {
     constructor() {
         super();
 
-        this.day = 1;
+        this.day = 0;
         console.log(this.day);
 
         this.days = new Array<RoundedTriangle>;

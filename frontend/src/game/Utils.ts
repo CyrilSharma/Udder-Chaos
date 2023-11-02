@@ -10,6 +10,13 @@ export const COW_SACRIFICE = 3;
 export const SCORE_GOAL = 4;
 export const DAYS_PER_ROUND = 310;
 
+//-----Menu-----//
+export type PlayerInfo = {
+    id: string,
+    name: string,
+    color: number
+}
+
 //-----Tiles-----//
 export const TileEnum = {
     Plain: 0,
