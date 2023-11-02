@@ -43,6 +43,12 @@ export class ColorSelector extends FancyButton {
     }
 
     public setColor(color: number) {
+        this.selectorButton.defaultView = this.icons[color];
+        if (color == 4) {
+            this.selectorButton.text = this.question;
+        } else {
+            this.selectorButton.text = "";
+        }
         this.color = color;
     }
     
@@ -56,17 +62,11 @@ export class ColorSelector extends FancyButton {
             temp++;
             temp %= 5;
             if (available[temp]) {
-                this.selectorButton.defaultView = this.icons[temp];
-                if (temp == 4) {
-                    this.selectorButton.text = this.question;
-                } else {
-                    this.selectorButton.text = "";
-                }
                 available[this.color] = true;
                 if (temp != 4) {
                     available[temp] = false;
                 }
-                this.color = temp;
+                this.setColor(temp);
                 return this.color;
             }
         } while (!available[temp]);

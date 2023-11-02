@@ -35,13 +35,17 @@ class Server {
         this.socket.on("load-room", async (roomCode, playerList: PlayerInfo[]) => {
             console.log("hi");
             console.log(playerList);
+            console.log(this.socket.id);
 
             await navigation.showScreen(CreateGameScreen);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
             
             createGameScreen.addGameCode(roomCode);
             createGameScreen.getLobbyList().setCurrentPlayer(playerList.length - 1);
-            createGameScreen.getLobbyList().setPlayers(playerList);
+            playerList.forEach((player) => {
+                console.log("here");
+                createGameScreen.getLobbyList().addPlayer(player);
+            });
         });
         
         this.socket.on("join-error", (error) => {
@@ -49,10 +53,17 @@ class Server {
             joinGameScreen.showError(error);
         });
 
-        this.socket.on("player-list", (playerlist) => {
+        this.socket.on("add-player", (playerInfo: PlayerInfo) => {
+            console.log(playerInfo);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
-            createGameScreen.getLobbyList().setPlayers(playerlist);
+            createGameScreen.getLobbyList().addPlayer(playerInfo);
         });
+
+        this.socket.on("update-player-info", (playerInfo: PlayerInfo) => {
+            console.log(playerInfo);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.getLobbyList().updatePlayer(playerInfo);
+        })
 
         this.socket.on("kick-player", () => {
             this.socket.emit("leave-room");
@@ -67,6 +78,13 @@ class Server {
 
             // Math.seedrandom(seed);
             initSeed(seed);
+
+            let playerList = [
+                {"id": "toheuthoeu", "name": "Bob", "color": 3},
+                {"id": "toheuthoeu", "name": "Bob", "color": 3},
+                {"id": "toheuthoeu", "name": "Bob", "color": 3},
+                {"id": "toheuthoeu", "name": "Bob", "color": 3}
+            ]
 
             let color = socketIds.indexOf(this.socket.id) + 1;
 
@@ -114,6 +132,14 @@ class Server {
     public async rotateCard(cardIndex: number, rotation: number, color: number) {
         //console.log(`Sending rotate-card with index: ${cardIndex}`);
         this.socket.emit("make-move", MoveType.RotateCard, {"index": cardIndex, "rotation": rotation}, color);
+    }
+
+    public async updatePlayerName(name: string) {
+        this.socket.emit("update-name", name);
+    }
+
+    public async updatePlayerColor(color: number) {
+        this.socket.emit("update-color", color);
     }
 
     public async leaveRoom() {

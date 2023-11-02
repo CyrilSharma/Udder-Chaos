@@ -8,6 +8,7 @@ export const COW_SACRIFICE = 3;
 
 //-----Menu-----//
 export type PlayerInfo = {
+    id: string,
     name: string,
     color: number
 }

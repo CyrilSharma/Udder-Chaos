@@ -9,7 +9,8 @@ const COLOR = {
     RED: 0,
     YELLOW: 1,
     BLUE: 2,
-    PURPLE: 3,    
+    PURPLE: 3,
+    UNSET: 4  
 }
 
 const MAX_PLAYERS = 4;
@@ -37,7 +38,7 @@ export class Room {
         this.players.push(player);
 
         player.joinRoom();
-        this.updatePlayerList(socket);
+        socket.to(this.roomCode).emit("add-player", player.getPlayerInfo());
         console.log(socket.id + " joined the room: " + this.roomCode);
     }
 
@@ -51,22 +52,22 @@ export class Room {
 
         if (this.players.length > 0) {
             // There are still players in the game
-            this.updatePlayerList(this.io);
+            //this.updatePlayerList(this.io);
         }
         else {
             removeRoom(this.roomCode);
         }
     }
 
-    updatePlayerList(socket) {
-        socket.to(this.roomCode).emit("player-list", this.getPlayerInfo());
+    updatePlayer(player) {
+        player.socket.to(this.roomCode).emit("update-player-info", player.getPlayerInfo());
     }
 
     getPlayerInfo() {
         let playerList = [];
         console.log(this.players);
         for (let player of this.players) {
-            playerList.push({"name": player.name, "color": player.color});
+            playerList.push(player.getPlayerInfo());
         }
         return playerList;
     }
@@ -96,7 +97,6 @@ export class Room {
         //TODO: Check if player's turn 
         this.moveList.push((moveType, moveData, color));
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
-        console.log(this.moveList);
         if (this.moveList.length % 3 == 2) {
             console.log("Query the AI move");
             ai_socket.emit("query-move", this.roomCode);
@@ -113,7 +113,7 @@ class Player {
         this.socket = socket;
         this.name = "Guest " + Math.floor(Math.random() * 1000);
         this.team = team;
-        this.color = -1;
+        this.color = 4;
         this.room = room;
         this.host = host;
 
@@ -121,10 +121,14 @@ class Player {
     }
 
     initSocket() {
-        this.socket.on("update-player-list", (name, color) => {
+        this.socket.on("update-name", (name) => {
             this.name = name;
+            this.room.updatePlayer(this);
+        });
+
+        this.socket.on("update-color", (color) => {
             this.color = color;
-            this.room.updatePlayerList(this.socket);
+            this.room.updatePlayer(this);
         });
 
         this.socket.on("start-game", () => {
@@ -145,10 +149,13 @@ class Player {
         });
     }
 
+    getPlayerInfo() {
+        return {"id": this.socket.id, "name": this.name, "color": this.color};
+    }
+
     joinRoom() {
         this.socket.join(this.room.roomCode);
         this.socket.emit("load-room", this.room.roomCode, this.room.getPlayerInfo());
-        console.log(this.room.getPlayerInfo());
         this.socket.emit("receive-message", "joined the room");
     }
 
