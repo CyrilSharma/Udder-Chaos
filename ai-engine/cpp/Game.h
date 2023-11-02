@@ -176,9 +176,7 @@ struct Game {
 
   // Temp player turn check
   bool is_enemy_turn() const {
-    // DEBUG RETURN TRUE
-    return true;
-    // return turn % 3 == 2;
+    return turn % 3 == 2;
   }
 
 
@@ -411,4 +409,15 @@ struct Game {
     }
     return out;
   } /* viewCards() */
+
 };
+// Print
+ostream& operator<<(ostream& os, Game& game) {
+  os << "Game: \n";
+  printvv(game.viewBoard());
+  printv(game.viewPieces());
+  printv(game.viewCards());
+  os << "turn: " << game.turn;
+  return os;
+}
+

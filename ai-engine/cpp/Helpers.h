@@ -19,6 +19,7 @@ struct Card {
     return moves != other.moves;
   }
 };
+
 ostream& operator<<(ostream& os, const Card& card) {
   os << "Card: ";
   for (auto move: card.moves) {

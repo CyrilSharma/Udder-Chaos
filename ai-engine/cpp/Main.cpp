@@ -125,13 +125,20 @@ struct Handler {
 
   void move() {
     auto params = load_params();
-    (void) params;
+    auto game_id = stoll(params["game_id"]);
+    auto mv = stoi(params["move"]);
+    if (searches.count(game_id)) {
+      searches.at(game_id).makeMove(mv);
+    } else {
+      cerr << "Game ID not found" << endl;
+      exit(1);
+    }
+    
     // We don't have a function for this yet.
-  } /* get() */
+  } /* move() */
 
   /*
-   * gets the AIs move for the specified game.
-   * advances the internal state of the search tree.
+   * sir this is a Wendys
    */
 
   void buy() {

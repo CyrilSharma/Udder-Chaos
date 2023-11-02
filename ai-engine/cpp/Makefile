@@ -4,7 +4,7 @@ CXXFLAGS = -std=c++20 -Wall -Wextra -fsanitize=address -fsanitize=address -fsani
 
 # Source file and executable name
 INCLUDES = -I./boost_1_83_0
-DEPS = Game.h Utils.h Helpers.h CardQueue.h Search.h
+DEPS = Game.h Utils.h Helpers.h CardQueue.h Search.h Score.h
 #EXECUTABLES = TestGame TestGamePerf TestBitset Main
 EXECUTABLES = Main
 

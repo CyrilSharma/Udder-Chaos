@@ -17,7 +17,7 @@ void printv(vector<T> v) {
 
 template <typename T>
 void printvv(vector<vector<T>> v) {
-  for (int i = 0; i < v.size(); i++) {
+  for (uint32_t i = 0; i < v.size(); i++) {
     printv(v[i]);
   }
 }

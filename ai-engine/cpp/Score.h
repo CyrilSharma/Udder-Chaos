@@ -24,13 +24,17 @@ struct Scorer {
         exit(1);
     }
 
-    uint32_t _score(const Game &game) {
+    int _score(const Game &game) {
         // future heuristic ideas
         // Piece positions
         // Player piece count
         // Enemy piece count
         // Player score amount
         // Game turn (later is better for ai)
-        return 2 * game.all_players.count() - 3 * game.all_enemies.count();
+        if (game.all_players.count() > 0) cout << game.all_players.count() << endl;
+        int ppscore = 2 * game.all_players.count(); 
+        int epscore = -3 * game.all_enemies.count();
+        // cerr << "SCORE IS: " << ppscore + epscore << endl;
+        return ppscore + epscore;
     }
 };
