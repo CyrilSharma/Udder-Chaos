@@ -8,15 +8,34 @@ export class PlayerGameInfo extends Container {
     private playerName: Text;
     private ufo: Sprite;
     private units: Text;
+    private playerNameShad: Text;
+    private color: number;
 
     constructor(color: number) {
         super();
 
+        switch(color) {
+            case 0:
+                this.color = 0xff0000;
+                break;
+            case 1:
+                this.color = 0x0085ff;
+                break;
+            case 2:
+                this.color = 0xad00ff;
+                break;
+            case 3:
+                this.color = 0xffab2e;
+                break;
+            default:
+                this.color = 0x252525;
+                break;
+        }
         this.displayArea = new FancyButton({
             defaultView: (new Button(
                new Graphics()
                    .beginFill(0xffffff)
-                   .lineStyle(5, color, 1, 0)
+                   .lineStyle(5, this.color, 1, 0)
                    .drawRoundedRect(0, 0, 400, 80, 15)
             )).view,
             anchor: 0.5
@@ -29,9 +48,23 @@ export class PlayerGameInfo extends Container {
             fill: "#000000",
             align: "left",
         }));
+        this.playerNameShad = new Text("Player name", new TextStyle({
+            fontFamily: "Concert One",
+            fontSize: 40,
+            fill: "#000000",
+            align: "left",
+            dropShadow: true,
+            dropShadowAlpha: 0.5,
+            dropShadowBlur: 1,
+            dropShadowColor: this.color
+        }));
         this.playerName.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.playerName.x = -70;
+        this.playerNameShad.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
+        this.playerNameShad.x = -70;
         this.addChild(this.playerName);
+        this.addChild(this.playerNameShad);
+        this.playerNameShad.visible = false;
 
         this.ufo = Sprite.from('../../raw-assets/hat_duck.gif');
         this.ufo.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
@@ -58,6 +91,7 @@ export class PlayerGameInfo extends Container {
 
     public changeText(text: string) {
         this.playerName.text = text;
+        this.playerNameShad.text = text;
     }
 
     public setUnits(units: number) {
@@ -67,33 +101,40 @@ export class PlayerGameInfo extends Container {
     public setColor(color: number) {
         switch(color) {
             case 0:
-                this.displayArea.defaultView = new Graphics()
-                    .beginFill(0xffffff)
-                    .lineStyle(5, 0xff0000, 1, 0)
-                    .drawRoundedRect(0, 0, 400, 80, 15)
+                this.color = 0xff0000;
                 break;
             case 1:
-                this.displayArea.defaultView = new Graphics()
-                    .beginFill(0xffffff)
-                    .lineStyle(5, 0x0085ff, 1, 0)
-                    .drawRoundedRect(0, 0, 400, 80, 15)
+                this.color = 0x0085ff;
                 break;
             case 2:
-                this.displayArea.defaultView = new Graphics()
-                    .beginFill(0xffffff)
-                    .lineStyle(5, 0xad00ff, 1, 0)
-                    .drawRoundedRect(0, 0, 400, 80, 15)
+                this.color = 0xad00ff;
                 break;
             case 3:
-                this.displayArea.defaultView = new Graphics()
-                    .beginFill(0xffffff)
-                    .lineStyle(5, 0xffab2e, 1, 0)
-                    .drawRoundedRect(0, 0, 400, 80, 15)
+                this.color = 0xffab2e;
                 break;
             default:
-                this.ufo = Sprite.from('../../raw-assets/player_red.png');
+                this.color = 0x252525;
                 break;
         }
+        this.displayArea = new FancyButton({
+            defaultView: (new Button(
+               new Graphics()
+                   .beginFill(0xffffff)
+                   .lineStyle(5, this.color, 1, 0)
+                   .drawRoundedRect(0, 0, 400, 80, 15)
+            )).view,
+            anchor: 0.5
+        });
+        this.playerNameShad = new Text("Player name", new TextStyle({
+            fontFamily: "Concert One",
+            fontSize: 40,
+            fill: "#000000",
+            align: "left",
+            dropShadow: true,
+            dropShadowAlpha: 0.5,
+            dropShadowBlur: 0.2,
+            dropShadowColor: this.color
+        }));
     }
 
     public resize(width: number) {
@@ -102,5 +143,13 @@ export class PlayerGameInfo extends Container {
 
     }
 
-
+    public addShadow() {
+        this.playerName.visible = false;
+        this.playerNameShad.visible = true;
+    }
+    
+    public removeShadow() {
+        this.playerName.visible = true;
+        this.playerNameShad.visible = false;
+    }
 }

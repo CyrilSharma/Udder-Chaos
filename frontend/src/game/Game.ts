@@ -63,13 +63,13 @@ export class Game extends Container {
         this.leftPanel.gamePanel.alpha = 0;
         this.rightPanel.gamePanel.alpha = 0;
         this.bottomPanel.gamePanel.alpha = 0;
-        
+
         this.playerColorIcon = new PlayerColorIcon(0);
         this.player1 = new PlayerGameInfo(0);
         this.player2 = new PlayerGameInfo(1);
         this.player3 = new PlayerGameInfo(2);
         this.player4 = new PlayerGameInfo(3);
-        this.playerAI = new PlayerGameInfo(0);
+        this.playerAI = new PlayerGameInfo(-1);
         this.playerAI.changeText("AI")
         this.dayCounter = new DayCounter();
         this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
@@ -120,6 +120,7 @@ export class Game extends Container {
         if (this.turn > 6) {
             this.turn -= 6;
             this.dayCycle++;
+            this.dayCounter.cycleDay(this.dayCounter);
             if (this.dayCycle >= DAYS_PER_ROUND) {
                 this.dayCycle -= DAYS_PER_ROUND;
                 this.startNewRound();
@@ -154,7 +155,7 @@ export class Game extends Container {
     // Actually not much to do on the game side since the board is
     // reset when a new game is setup rather than when the old one finishes
     public endGame(success: boolean, message: string) {
-        console.log(message);
+        //console.log(message);
         this.board.endGame(success, message);
         this.gameOver = true;
     }
@@ -182,7 +183,6 @@ export class Game extends Container {
         this.boardPanel.resize(width, height);
         this.bottomPanel.resize(width, height);
         this.boardPanel.y = this.bottomPanel.getBox()[1] * 0.5 + (this.bottomPanel.getBox()[0] - this.bottomPanel.getBox()[1]) * 0.5;
-        console.log(this.boardPanel.getBox());
         this.board.resize(this.boardPanel.getBox(), this.leftPanel.getBox()[3], this.rightPanel.getBox()[2], this.bottomPanel.getBox()[0]);
 
         this.playerColorIcon.y = 300;
@@ -195,6 +195,7 @@ export class Game extends Container {
         this.player2.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.player3.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.player4.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
+        this.player1.addShadow();
         this.playerAI.resize(this.rightPanel.getBox()[3] - this.rightPanel.getBox()[2]);
 
         this.dayCounter.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);

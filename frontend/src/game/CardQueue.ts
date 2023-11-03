@@ -42,7 +42,7 @@ export class CardQueue extends Container {
                 size: 50,
                 rotation: Math.floor(random() * 4),
             };
-            console.log(config);
+            //console.log(config);
             let card = new Card(this, config, i);
             this.cardContainer.addChild(card);
             this.queue.push(card);
@@ -132,6 +132,9 @@ export class CardQueue extends Container {
     public checkCardInHand(input: Card, color: number) {
         // Get correct team
         var hand;
+        console.log(TeamEnum.Player)
+        console.log(color)
+        console.log(getTeam(color))
         if (getTeam(color) == TeamEnum.Player) {
             hand = this.player_hand;
         } else if (getTeam(color) == TeamEnum.Enemy) {

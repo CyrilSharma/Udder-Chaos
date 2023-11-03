@@ -227,7 +227,7 @@ export class Board extends Container {
                 }
             }
         }
-        console.log(`player pieces: ${this.playerPieces}`)
+        //console.log(`player pieces: ${this.playerPieces}`)
     }
 
     // Creating and rendering individual tile
