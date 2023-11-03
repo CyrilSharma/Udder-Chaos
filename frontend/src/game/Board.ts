@@ -151,6 +151,7 @@ export class Board extends Container {
         let piece = action.piece;
         let dest = action.move;
         this.setPieceLocation(piece, dest);
+        console.log(piece.type)
     }
 
     public obstructed_move(action: PieceAction) {

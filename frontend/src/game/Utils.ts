@@ -6,10 +6,10 @@ import '@pixi/math-extras';
 
 // Constants
 export const COW_REGEN_RATE = 12; // Respawn after 3 days
-export const COW_SACRIFICE = 3; 
+export const COW_SACRIFICE = 1; 
 
-export const SCORE_GOAL = 10;
-export const DAYS_PER_ROUND = 3;
+export const SCORE_GOAL = 1;
+export const DAYS_PER_ROUND = 7;
 
 //-----Menu-----//
 export type PlayerInfo = {
