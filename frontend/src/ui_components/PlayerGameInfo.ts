@@ -18,13 +18,13 @@ export class PlayerGameInfo extends Container {
             case 0:
                 this.color = 0xff0000;
                 break;
-            case 1:
+            case 2:
                 this.color = 0x0085ff;
                 break;
-            case 2:
+            case 3:
                 this.color = 0xad00ff;
                 break;
-            case 3:
+            case 1:
                 this.color = 0xffab2e;
                 break;
             default:
@@ -103,13 +103,13 @@ export class PlayerGameInfo extends Container {
             case 0:
                 this.color = 0xff0000;
                 break;
-            case 1:
+            case 2:
                 this.color = 0x0085ff;
                 break;
-            case 2:
+            case 3:
                 this.color = 0xad00ff;
                 break;
-            case 3:
+            case 1:
                 this.color = 0xffab2e;
                 break;
             default:
