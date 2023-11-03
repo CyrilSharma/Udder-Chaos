@@ -29,7 +29,7 @@ struct CardQueue {
   int choose(int choice) {
     int used_idx = get(choice);
     int new_idx = get(reserve);
-    dynamic_bitset m(queue_length(), (1ULL << reserve) - 1);
+    dynamic_bitset m(queue_length(), (1ULL << (reserve * bits_per)) - 1);
     queue = ((queue >> bits_per) & ~m) | (queue & m);
     set(choice, new_idx);
     set(elements - 1, used_idx);

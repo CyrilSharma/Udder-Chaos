@@ -158,9 +158,6 @@ vector<Card> load_cards(mt19937 rng, int ncards) {
     Direction::DOWN, Direction::UP,
   };
   for (int i = 0; i < ncards; i++) {
-    cards[i] = Card();
-  }
-  for (int i = 0; i < ncards; i++) {
     vector<Direction> moves = {
       directions[i % 4], directions[i % 4]
     };
