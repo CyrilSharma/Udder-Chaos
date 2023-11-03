@@ -50,18 +50,18 @@ export class PlayerGameInfo extends Container {
         }));
         this.playerNameShad = new Text("Player name", new TextStyle({
             fontFamily: "Concert One",
-            fontSize: 40,
+            fontSize: 50,
             fill: "#000000",
-            align: "left",
+            align: "center",
             dropShadow: true,
-            dropShadowAlpha: 0.5,
-            dropShadowBlur: 1,
+            dropShadowAlpha: 1,
+            dropShadowBlur: 15,
             dropShadowColor: this.color
         }));
         this.playerName.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.playerName.x = -70;
         this.playerNameShad.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
-        this.playerNameShad.x = -70;
+        this.playerNameShad.x = -60;
         this.addChild(this.playerName);
         this.addChild(this.playerNameShad);
         this.playerNameShad.visible = false;
