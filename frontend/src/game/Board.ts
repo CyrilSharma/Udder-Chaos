@@ -416,7 +416,9 @@ export class Board extends Container {
     public spawnEnemies() {
         for (let i = 0; i < 4; i++) {
             this.enemyRegen[i].forEach((tilePosition) => {
-                this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
+                if (this.getPieceByPosition(tilePosition) == null) {
+                    this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
+                }
             });
         }
     }

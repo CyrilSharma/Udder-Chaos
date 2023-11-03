@@ -171,10 +171,10 @@ export class Game extends Container {
 
     public cowSacrifice() {
         if (this.totalScore >= COW_SACRIFICE) {
-            this.totalScore -= COW_SACRIFICE;
-            this.gameState.updateScore(this.totalScore);
+            this.scorePoints(-COW_SACRIFICE);
         }
         else {
+            this.scorePoints(-this.totalScore)
             console.log("Failed to sacrifice enough cows!")
             this.endGame(false, "You failed to sacrifice enough cows to Homeworld.");
         }
@@ -191,7 +191,7 @@ export class Game extends Container {
     }
 
     public ourTurn() {
-        // return !this.gameOver && !this.animating; // debug always allow current player to move
+        //return !this.gameOver && !this.animating; // debug always allow current player to move
         return !this.gameOver && !this.animating &&
             this.playerColor == 1 && this.turn == 1 || 
             this.playerColor == 2 && this.turn == 2 || 
