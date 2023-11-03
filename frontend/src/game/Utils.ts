@@ -143,7 +143,6 @@ export function shuffle(array: any[]) {
         const j = Math.floor(random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
-  
     return array;
 }
 
@@ -161,20 +160,24 @@ export type Position = {
     row: number;
     column: number;
 };
+
+// Information needed for rendering.
 export type GameConfig = {
     grid: Grid;
     starts: Position[][];
     tileSize: number;
 };
+
 export type PieceAction = {action: number; piece: Piece; move: Position};
+
 // We categorize the moves to allow for unique animations.
 export type BoardUpdate = PieceAction[][];
 
-//     normal_moves: PieceMove[]; // Moves which kill nothing.
-//     kill_moves: PieceMove[]; // Moves which kill a unit.
-//     abduct_moves: PieceMove[]; // Moves which abduct a cow.
-//     score_moves: PieceMove[]; // Moves which score cows.
-// };
+// Information needed for setting up the game.
+export type GameSettings = {
+    seed: number
+    // add more when we have settings.
+};
 
 //-----Map Functions-----//
 export function loadMap(seed: number) {

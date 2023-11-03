@@ -179,6 +179,25 @@ export class Board extends Container {
         // Remove a piece from this player
         if (getTeam(target.type) == TeamEnum.Player) {
             this.playerPieces[target.type] -= 1;
+            switch (target.type) {
+                case 0:
+                    break;
+                case 1:
+                    this.game.player1.setUnits(this.playerPieces[0]);
+                    break;
+                case 2:
+                    this.game.player2.setUnits(this.playerPieces[1]);
+                    break;
+                case 3:
+                    this.game.player3.setUnits(this.playerPieces[2]);
+                    break;
+                case 4:
+                    this.game.player4.setUnits(this.playerPieces[3]);
+                    break;
+                default:
+                    //this.game.playerAI.setUnits(this.playerPieces[4]);
+                    break;
+            }
 
             // If this player has no more pieces end the game
             if (this.playerPieces[target.type] == 0) {
@@ -274,6 +293,25 @@ export class Board extends Container {
             if (this.game.buyButton.dragging && this.game.ourTurn()) {
                 server.purchaseUFO(position, this.game.playerColor);
                 this.purchaseUFO(position, this.game.playerColor);
+                switch (this.game.playerColor) {
+                    case 0:
+                        break;
+                    case 1:
+                        this.game.player1.setUnits(this.playerPieces[0]);
+                        break;
+                    case 2:
+                        this.game.player2.setUnits(this.playerPieces[1]);
+                        break;
+                    case 3:
+                        this.game.player3.setUnits(this.playerPieces[2]);
+                        break;
+                    case 4:
+                        this.game.player4.setUnits(this.playerPieces[3]);
+                        break;
+                    default:
+                        //this.game.playerAI.setUnits(this.playerPieces[4]);
+                        break;
+                }
             }
         });
 
