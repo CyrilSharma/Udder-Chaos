@@ -40,7 +40,7 @@ export class Piece extends Container {
 
     constructor() {
         super();
-        this.image = Sprite.from("raw-assets/cow.png"); // temp assign image to something
+        this.image = Sprite.from("images/cow.png"); // temp assign image to something
         this.image.x = 500;
         this.image.y = 500;
         this.image.anchor.set(0.5, 0.5);

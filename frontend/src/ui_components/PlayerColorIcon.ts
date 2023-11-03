@@ -23,19 +23,19 @@ export class PlayerColorIcon extends Sprite {
 
         switch(color) {
             case 0:
-                this.ufo = Sprite.from('../../raw-assets/player_red.png');
+                this.ufo = Sprite.from('../../images/raw-player_red.png');
                 break;
             case 2:
-                this.ufo = Sprite.from('../../raw-assets/player_blue.png');
+                this.ufo = Sprite.from('../../images/raw-player_blue.png');
                 break;
             case 3:
-                this.ufo = Sprite.from('../../raw-assets/player_purple.png');
+                this.ufo = Sprite.from('../../images/raw-player_purple.png');
                 break;
             case 1:
-                this.ufo = Sprite.from('../../raw-assets/player_yellow.png');
+                this.ufo = Sprite.from('../../images/raw-player_yellow.png');
                 break;
             default:
-                this.ufo = Sprite.from('../../raw-assets/player_red.png');
+                this.ufo = Sprite.from('../../images/raw-player_red.png');
                 break;
         }
         this.ufo.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
