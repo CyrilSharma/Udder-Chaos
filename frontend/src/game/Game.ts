@@ -34,7 +34,7 @@ export class Game extends Container {
     public rightPanel: GamePanel;
     public boardPanel: GamePanel;
     public bottomPanel: GamePanel;
-    private playerColorIcon: PlayerColorIcon;
+    private playerColorIcon!: PlayerColorIcon;
     private dayCounter: DayCounter;
     private scoreCounter: ScoreCounter;
     private player1: PlayerGameInfo;
@@ -64,7 +64,6 @@ export class Game extends Container {
         this.rightPanel.gamePanel.alpha = 0;
         this.bottomPanel.gamePanel.alpha = 0;
 
-        this.playerColorIcon = new PlayerColorIcon(0);
         this.player1 = new PlayerGameInfo(0);
         this.player2 = new PlayerGameInfo(1);
         this.player3 = new PlayerGameInfo(2);
@@ -76,7 +75,6 @@ export class Game extends Container {
         this.scoreCounter = new ScoreCounter(0, 0, 0.5, 0.5, "0 of 30", this.leftPanel.width, this.leftPanel.height, 40, 0xffffff);
 
         this.boardPanel.addChild(this.board);
-        this.leftPanel.addChild(this.playerColorIcon);
         this.leftPanel.addChild(this.player1);
         this.leftPanel.addChild(this.player2);
         this.leftPanel.addChild(this.player3);
@@ -110,6 +108,8 @@ export class Game extends Container {
     public setPlayerColor(color: number) {
         this.playerColor = color;
         this.gameState.updateColor(color);
+        this.playerColorIcon = new PlayerColorIcon(color);
+        this.leftPanel.addChild(this.playerColorIcon);
         this.playerColorIcon.changeColor(color);
     }
 
@@ -215,7 +215,9 @@ export class Game extends Container {
         this.boardPanel.y = this.bottomPanel.getBox()[1] * 0.5 + (this.bottomPanel.getBox()[0] - this.bottomPanel.getBox()[1]) * 0.5;
         this.board.resize(this.boardPanel.getBox(), this.leftPanel.getBox()[3], this.rightPanel.getBox()[2], this.bottomPanel.getBox()[0]);
 
-        this.playerColorIcon.y = 300;
+        if (this.playerColorIcon) {
+            this.playerColorIcon.y = 300;
+        }
         this.player1.y = 50;
         this.player2.y = 100;
         this.player3.y = 150;
