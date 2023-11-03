@@ -37,11 +37,11 @@ export class Game extends Container {
     private playerColorIcon!: PlayerColorIcon;
     private dayCounter: DayCounter;
     private scoreCounter: ScoreCounter;
-    private player1: PlayerGameInfo;
-    private player2: PlayerGameInfo;
-    private player3: PlayerGameInfo;
-    private player4: PlayerGameInfo;
-    private playerAI: PlayerGameInfo;
+    public player1: PlayerGameInfo;
+    public player2: PlayerGameInfo;
+    public player3: PlayerGameInfo;
+    public player4: PlayerGameInfo;
+    public playerAI: PlayerGameInfo;
     public buyButton: BuyButton;
     public gameOver: boolean = false;
     public animating: boolean = false;

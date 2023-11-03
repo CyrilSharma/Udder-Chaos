@@ -177,15 +177,26 @@ export class CardQueue extends Container {
         }
 
         // Draw card queue
-        pos = 0;
-        for (const card of this.queue) {
-            if (pos == this.queue.length - 1) {
-                pos++;
+        // pos = 0;
+        // for (const card of this.queue) {
+        //     if (pos == this.queue.length - 1) {
+        //         pos++;
+        //     }
+        //     card.y = this.game.rightPanel.y + this.game.rightPanel.height * 0.2 - pos * card.height * 0.7;
+        //     card.x = this.game.rightPanel.x;
+        //     this.cardContainer.addChild(card);
+        //     pos++;
+        // }
+
+        pos = this.queue.length;
+        for (let i = this.queue.length - 1; i >= 0; i--) {
+            if (i == 0) {
+                pos--;
             }
-            card.y = this.game.rightPanel.y + this.game.rightPanel.height * 0.2 - pos * card.height * 0.7;
-            card.x = this.game.rightPanel.x;
-            this.cardContainer.addChild(card);
-            pos++;
+            this.queue[i].y = this.game.rightPanel.y - this.game.rightPanel.height * 0.29 + (pos) * this.queue[i].height * 0.7;
+            this.queue[i].x = this.game.rightPanel.x;
+            this.cardContainer.addChild(this.queue[i]);
+            pos--;
         }
 
         // Draw enemy hand
