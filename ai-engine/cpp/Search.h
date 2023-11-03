@@ -25,13 +25,20 @@ struct Search {
     map<Game, int> evals;
 
     // Update internal state of search
-    void makeMove(int move) {
+    void makePlayerMove(int move) {
       game.player_move(move);
     }
 
+    // Update internal state of search (with AI move!)
+    void makeAIMove(int move, int color) {
+        game.enemy_move(move, color);
+    }
+
     // Timeout passed in for now, might be a const or smt later
-    pair<int, int> getMove(uint64_t timeout = 1000, bool verbose = false, int max_it = 1e9) {
-        if (verbose) cerr << "CURRENT GAME:\n" << game << endl;
+    // verbosity: Debug print level. 1 is some basic prints, 2 is more in depth
+    pair<int, int> getMove(uint64_t timeout = 1000, int verbosity = 0, int max_it = 1e9) {
+        if (verbosity > 0) cerr << game << endl;
+        if (verbosity > 0) cerr << "Initiating search with timeout = " << timeout << " and max_iterations = " << max_it << endl;
 
         auto start = curTime();
 
@@ -55,7 +62,7 @@ struct Search {
         int iteration = 1, turns = 0;
         // basic time check for now, can optimize later
         while (iteration < max_it && curTime() - start < timeout) {
-            if (verbose && iteration % 100 == 0) cerr << "iteration: " << iteration << endl;
+            if (verbosity > 0 && iteration % 100 == 0) cerr << "iteration: " << iteration << endl;
             // Store state metadata with score and the first move made
             assert(!states.empty()); 
             auto [state_metadata, state] = states.top(); states.pop();
@@ -74,6 +81,9 @@ struct Search {
 
                         // Prune poor branches, can be improved in future
                         if (tmp_eval < state_eval) {
+                            if (verbosity > 1) {
+                                cerr << "Pruned state: state_eval = " << state_eval << ", tmp_eval = " << tmp_eval << endl;
+                            }
                             continue;
                         }
 
@@ -91,6 +101,7 @@ struct Search {
 
                     // Prune poor branches, can be improved in future
                     if (tmp_eval > state_eval) {
+                        if (verbosity > 1) cerr << "Pruned state: state_eval = " << state_eval << ", tmp_eval = " << tmp_eval << endl;
                         continue;
                     }
 
@@ -107,7 +118,7 @@ struct Search {
             if (state_eval > best_eval && state_metadata.second.first != -1) {
                 best_eval = state_eval;
                 best_move = state_metadata.second;
-                if (verbose) {
+                if (verbosity > 0) {
                     cerr << "Updating best move. New best eval is: " << best_eval << endl;
                     cerr << "Move(card, color) is: " << state_metadata.second.first << ", " << state_metadata.second.second << endl; 
                 }
@@ -119,12 +130,14 @@ struct Search {
             // Once run out of this layer move to next layer
             if (states.empty()) {
                 states.swap(next_states);
+
                 ++turns;
+                if (verbosity > 0) cerr << "Layer " << turns << " finished searching." << endl;
             }
             ++iteration;
         } 
 
-        if (verbose) {
+        if (verbosity > 0) {
             cerr << "Total iterations: " << iteration << endl;
             cerr << "Turns ahead reached: " << turns << endl;
         }

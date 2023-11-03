@@ -88,8 +88,11 @@ struct Handler {
       exit(1);
     }
 
+    int map = -1;
+    if (params.count("map")) map = stoi(params["map"]);
+
     auto rng = mt19937(stoll(params["seed"]));
-    auto [board, pieces] = load_setup(rng);
+    auto [board, pieces] = load_setup(rng, map);
     auto cards = load_cards(rng, stoll(params["ncards"]));
     auto gc = GameConfig(
       board, pieces, cards,
@@ -97,7 +100,14 @@ struct Handler {
       stoll(params["round_length"])
     );
     auto game_id = stoll(params["game_id"]);
-    searches.insert({game_id, Search(gc)});
+    auto scorer = (params.count("scorer") ? stoi(params["scorer"]) : 0);
+    searches.insert({game_id, Search(gc, scorer)});
+
+    if (params.count("turn")) {
+      int turn = stoi(params["turn"]);
+      searches.at(game_id).game.turn = turn;
+    }
+
     cerr << searches.at(game_id).game << endl;
     cout << "SUCCESS" << endl;
   } /* init() */
@@ -110,16 +120,24 @@ struct Handler {
   void get() {
     auto params = load_params();
     auto game_id = stoll(params["game_id"]);
-    auto verbose = (params.find("verbose") != params.end()) && (params["verbose"] == " true");
+    auto verbosity = (params.find("verbosity") != params.end() ? stoi(params["verbosity"]) : 0) ;
     auto max_it = (params.find("max_it") != params.end() ? stoi(params["max_it"]) : 1e9);
     if (searches.count(game_id)) {
-      auto res = searches.at(game_id).getMove(stoll(params["timeout"]), verbose = verbose, max_it = max_it);
+      auto res = searches.at(game_id).getMove(stoll(params["timeout"]), verbosity = verbosity, max_it = max_it);
       cout << res.first << "\n" << res.second << endl;
+
+      if (params.count("answer_card") && params.count("answer_color")) {
+        int ansCrd = stoi(params["answer_card"]), ansClr = stoi(params["answer_color"]);
+        assert(ansCrd == res.first && ansClr == res.second);
+        cerr << "Search matches answer." << endl;
+      }
+
       cout << "SUCCESS" << endl;
     } else {
       cerr << "Invalid Game ID!" << endl;
       exit(1);
     }
+    cerr << searches.at(game_id).game << endl;
   } /* get() */
 
   /*
@@ -132,7 +150,7 @@ struct Handler {
     auto game_id = stoll(params["game_id"]);
     auto mv = stoi(params["move"]);
     if (searches.count(game_id)) {
-      searches.at(game_id).makeMove(mv);
+      searches.at(game_id).makePlayerMove(mv);
       cerr << searches.at(game_id).game << endl;
     } else {
       cerr << "Game ID not found" << endl;

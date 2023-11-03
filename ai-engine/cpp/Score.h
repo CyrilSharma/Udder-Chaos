@@ -6,24 +6,40 @@
 struct Scorer {
     enum {def = 0, playerPcCt = 1, enemyPcCt = 2, turn = 3, constant = 4};
 
-    // Score weighting
+    // Score weighting - higher is better (for ai)
     enum {epwt = 3, ppwt = -3};
 
     // constructor with scorer type, 0 is default, anything else is a debug scorer
     int typ;
-    Scorer (int typ = 0) : typ(typ) {}
+    Scorer (int typ = 0) : typ(typ) {
+        if (typ != 0) {
+            cerr << "Custom scorer: heuristic = " << typ << endl;
+        }
+    }
+
+    int count_players(Game &game) {
+        int ppct = 0;
+        for (int i = 0; i < 4; i++) ppct += game.players[i].count();
+        return ppct;
+    }
+
+    int count_enemies(Game &game) {
+        int epct = 0;
+        for (int i = 0; i < 4; i++) epct += game.enemies[i].count();
+        return epct;
+    }
 
     /** Heuristics */
-    uint32_t score(Game &game) {
+    int score(Game &game) {
         switch(typ) {
             // default score
             case def: return _score(game);
             
             // debug scorers
-            case playerPcCt: return game.all_players.count(); 
-            case enemyPcCt: return game.all_enemies.count(); 
+            case playerPcCt: return count_players(game); 
+            case enemyPcCt: return count_enemies(game); 
             case turn: return game.turn; 
-            case constant: return 5; 
+            case constant: return 0; 
         }
         std::cerr << "Scorer invalid type: " << typ << std::endl;
         exit(1);
@@ -36,11 +52,9 @@ struct Scorer {
         // Enemy piece count
         // Player score amount
         // Game turn (later is better for ai)
-        int ppct = 0, epct = 0;
-        for (int i = 0; i < 4; i++) ppct += game.players[i].count(), epct += game.enemies[i].count();
-
-        int ppscore = ppwt*ppct;
-        int epscore = epwt*epct;
+        int ppct = count_players(game), epct = count_enemies(game);
+        int ppscore = ppwt * ppct;
+        int epscore = epwt * epct;
         // cerr << "SCORE IS: " << ppscore + epscore << endl;
         
         return ppscore + epscore;

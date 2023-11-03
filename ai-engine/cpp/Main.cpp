@@ -131,7 +131,7 @@ struct Handler {
     auto game_id = params["game_id"];
     auto mv = stoi(params["move"]);
     if (searches.count(game_id)) {
-      searches.at(game_id).makeMove(mv);
+      searches.at(game_id).makePlayerMove(mv);
       cerr << searches.at(game_id).game << endl;
       cerr << "Played: " << mv << endl;
       cout << "SUCCESS" << endl;

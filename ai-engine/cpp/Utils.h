@@ -112,7 +112,7 @@ vector<Card> random_cards(int ndirs, int ncards) {
  * loads board + pieces based on the random seed.
  */
 
-tuple<vector<vector<int>>, vector<Piece>> load_setup(mt19937 rng) {
+tuple<vector<vector<int>>, vector<Piece>> load_setup(mt19937 rng, int map = -1) {
   int count = 0;
   for (const auto &_ : fs::directory_iterator("Maps")) {
     (void) _;
@@ -121,7 +121,7 @@ tuple<vector<vector<int>>, vector<Piece>> load_setup(mt19937 rng) {
 
   int idx = uniform_int_distribution<int>(0, count - 1)(rng);
   // LOAD DEBUGMAP
-  idx = 3;
+  if (map != -1) idx = map;
   ifstream file ("Maps/map" + to_string(idx) + ".txt");
   if (!file.is_open()) {
     cerr << "FAILURE: Invalid Map Index: " << idx << endl;
