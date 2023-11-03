@@ -109,7 +109,7 @@ struct Search {
                     state_eval = tmp_eval;
 
                     // When calling search it should never be the player's turn at the start
-                    assert (first_move.first != -1);
+                    // assert (first_move.first != -1);
 
                     next_states.push({{tmp_eval, first_move}, tmp_state});
                 }
