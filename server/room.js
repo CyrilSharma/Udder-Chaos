@@ -13,7 +13,7 @@ const COLOR = {
     UNSET: 4  
 }
 
-const MAX_PLAYERS = 4;
+const MAX_PLAYERS = 1;
 
 /*
  * Room class tracks all players within a room/game and related game information.
@@ -116,6 +116,7 @@ export class Room {
         //TODO: Check if player's turn 
         this.moveList.push((moveType, moveData, color));
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
+        //console.log(this.moveList);
         if (moveType < 2) {
             this.turn += 1;
         }
