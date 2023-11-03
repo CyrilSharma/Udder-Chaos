@@ -415,15 +415,68 @@ struct Game {
 // Print
 ostream& operator<<(ostream& os, Game& game) {
   os << "Game: \n";
-  printvv(game.viewBoard());
-  printv(game.viewPieces());
+  auto board = game.viewBoard();
+  for (uint64_t i = 0; i < game.height; i++) {
+    for (uint64_t j = 0; j < game.width; j++) {
+      if (board[i][j] == 0) {
+        os << Color::Modifier(Color::BG_GREEN);
+        os << ' ';
+      } else if (board[i][j] == 1) {
+        os << Color::Modifier(Color::BG_DEFAULT);
+        os << 'C';
+      }
+      else if (board[i][j] == 2) {
+        os << Color::Modifier(Color::BG_GREEN);
+        os << ' ';
+      }
+      os << Color::Modifier(Color::BG_DEFAULT);
+    }
+    os << '\n';
+  }
+
+  Color::Modifier mods[4] = {
+    Color::Modifier(Color::BG_RED),
+    Color::Modifier(Color::BG_BLUE),
+    Color::Modifier(Color::BG_YELLOW),
+    Color::Modifier(Color::BG_PURPLE)
+  };
+  for (uint64_t i = 0; i < game.height; i++) {
+    for (uint64_t j = 0; j < game.width; j++) {
+      bool found = false;
+      for (uint64_t k = 0; k < 4; k++) {
+        auto entry = game.players[k][i * game.width + j];
+        if (entry != 0) {
+          os << mods[k];
+          os << 'P';
+          found = true;
+          break;
+        }
+      }
+      for (uint64_t k = 0; k < 4; k++) {
+        auto entry = game.enemies[k][i * game.width + j];
+        if (entry != 0) {
+          os << mods[k];
+          os << 'E';
+          found = true;
+          break;
+        }
+      }
+      if (found) continue;
+      os << Color::Modifier(Color::BG_DEFAULT);
+      os << '=';
+    }
+    os << '\n';
+  }
+  
   printv(game.viewCards());
   os << "turn: " << game.turn << endl;
   os << "hand size: " << game.hand_size << endl;
   int ppct = 0, epct = 0;
-  for (int i = 0; i < 4; i++) ppct += game.players[i].count(), epct += game.enemies[i].count();
+  for (int i = 0; i < 4; i++) {
+    ppct += game.players[i].count();
+    epct += game.enemies[i].count();
+  }
   os << "player pieces: " << ppct << endl;
   os << "enemy pieces: " << epct << endl;
   return os;
 }
-

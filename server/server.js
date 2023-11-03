@@ -69,9 +69,13 @@ export function initPlayer(playerBool, socket) {
             ai_socket.join(room.roomCode);   
         }
 
-        ai_socket.on("make-move", (roomCode, cardIndex, color) => {
-            rooms[roomCode].makeMove(socket, cardIndex, color);
-            console.log("AI made a move " + cardIndex + "," + color);
+        ai_socket.on("make-move", (roomCode, moveType, moveData, color) => {
+            console.log("Make Move was called!");
+            console.log(`Roomcode: ${roomCode}`);
+            if (rooms[roomCode]) {
+                rooms[roomCode].makeMove(socket, moveType, moveData, color);
+                console.log("AI made a move " + moveType + "," + color);
+            }
         });
 
         ai_socket.on('disconnect', () => {

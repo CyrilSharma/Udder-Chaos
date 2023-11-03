@@ -26,6 +26,7 @@ export class Room {
         this.players = [];
         this.moveList = [];
         this.turn = 0;
+        this.seed = 0;
         this.setSeed(roomCode);
     }
 
@@ -95,7 +96,6 @@ export class Room {
 
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
-            console.log(`Hash: ${hashcode(this.roomCode)}`);
             for (let i = 0; i < MAX_PLAYERS; i++) {
                 if (this.players[i].color == 4) {
                     // If any player is unset color, stop with error.
@@ -104,7 +104,7 @@ export class Room {
                 }
             }
             this.io.to(this.roomCode).emit('start-game', this.seed, this.getPlayerInfo());
-            this.io.to(this.roomCode).emit('init-ai', this.seed);
+            this.io.to(this.roomCode).emit('init-ai', this.roomCode, this.seed);
         }
         else {
             host.emit("start-game-error", "Not enough players to start the game!");
@@ -115,12 +115,11 @@ export class Room {
     makeMove(socket, moveType, moveData, color) {
         this.moveList.push((moveType, moveData, color));
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
-        // TODO: send strings to the AI instead of just the seed (this is not unique!!)
-        socket.to(this.roomCode).emit("share-move-ai", , moveData["index"], color);
+        socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveData["index"], color);
         if (moveType < 2) { this.turn += 1; }
         if (this.turn % 3 == 2) {
             console.log("Query the AI move");
-            ai_socket.emit("query-move", hashcode(this.roomCode), this.roomCode);
+            ai_socket.emit("query-move", this.roomCode);
         }
     }
 }
@@ -167,6 +166,7 @@ class Player {
         });
 
         this.socket.on("make-move", (moveType, moveData, color) => {
+           console.log(`make-move: type: ${moveType}, data: ${moveData}, color: ${color}`)
            this.room.makeMove(this.socket, moveType, moveData, color); 
         });
 

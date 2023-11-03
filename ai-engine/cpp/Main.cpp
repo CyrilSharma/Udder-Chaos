@@ -13,7 +13,7 @@ enum Request {
 
 // Communicates with a node.js server via stdin and stdout.
 struct Handler {
-  map<int, Search> searches;
+  map<string, Search> searches;
   Handler() {}
 
   /*
@@ -95,7 +95,7 @@ struct Handler {
       stoll(params["hand_size"]),
       stoll(params["round_length"])
     );
-    auto game_id = stoll(params["game_id"]);
+    auto game_id = params["game_id"];
     searches.insert({game_id, Search(gc)});
     cout << "SUCCESS" << endl;
   } /* init() */
@@ -107,7 +107,7 @@ struct Handler {
 
   void get() {
     auto params = load_params();
-    auto game_id = stoll(params["game_id"]);
+    auto game_id = params["game_id"];
     if (searches.count(game_id)) {
       auto res = searches.at(game_id).getMove(stoll(params["timeout"]));
       // Frontend expects color to be >= 5 if it's an enemy.
@@ -126,7 +126,7 @@ struct Handler {
 
   void move() {
     auto params = load_params();
-    auto game_id = stoll(params["game_id"]);
+    auto game_id = params["game_id"];
     auto mv = stoi(params["move"]);
     if (searches.count(game_id)) {
       searches.at(game_id).makeMove(mv);

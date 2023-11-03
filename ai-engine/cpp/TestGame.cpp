@@ -390,6 +390,8 @@ TEST_CASE("Test Enemy Movement / Logic") {
       (cur_pieces1[j].j == cur_pieces2[j].j)
     ));
   }
+  cout << game_p << endl;
+  cout << game_e << endl;
 }
 
 /*

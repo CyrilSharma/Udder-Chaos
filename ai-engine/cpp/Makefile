@@ -6,7 +6,8 @@ CXXFLAGS = -std=c++20 -Wall -Wextra -fsanitize=address -fsanitize=address -fsani
 INCLUDES = -I./boost_1_83_0
 DEPS = Game.h Utils.h Helpers.h CardQueue.h Search.h Score.h
 # EXECUTABLES = TestSearch
-EXECUTABLES = Main
+# EXECUTABLES = Main
+EXECUTABLES = TestGame
 # Default target
 all: debug
 
