@@ -155,7 +155,8 @@ TEST_CASE("Testing Player Movement") {
     vector<vector<int>> checkers(height, vector<int>(width));
     for (int i = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
-        checkers[i][j] = ((i + j) % 2) == 0;
+        checkers[i][j] = (((i + j) % 2) == 0) 
+          ? TileType::IMPASSIBLE : TileType::PLAIN;
       }
     }
     config = { checkers, pieces, cards };
@@ -230,7 +231,7 @@ TEST_CASE("Test Cow Capturing") {
   for (int i = 1; i < 11; i++) {
     for (int j = 1; j < 11; j++) {
       if (rand() % 4 == 0) {
-        board[i][j] = 2;
+        board[i][j] = TileType::COW;
         ncows += 1;
       }
     }
@@ -264,7 +265,7 @@ TEST_CASE("Test Cow Capturing") {
       if (ni < 0 || ni >= height || nj < 0 || nj >= width)
         continue;
       p.i = ni, p.j = nj;
-      if (board[ni][nj] == 2) {
+      if (board[ni][nj] == TileType::COW) {
         // sus way to say the cow is gone now.
         board[ni][nj] = 0;
         pieces[i].score |= 1;

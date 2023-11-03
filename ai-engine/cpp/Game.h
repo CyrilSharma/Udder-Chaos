@@ -147,9 +147,10 @@ struct Game {
         int tile = config.board[i][j];
         auto m = dynamic_bitset(area(), 1);
         m <<= (i * width + j);
-        if (tile == 1) {
+        if (tile == TileType::PLAIN) {}
+        else if (tile == TileType::IMPASSIBLE) {
           impassible |= m;
-        } else if (tile == 2) {
+        } else if (tile == TileType::COW) {
           cows |= m;
         }
       }
@@ -335,13 +336,13 @@ struct Game {
     vector<vector<int>> out(height, vector<int>(width));
     for (uint32_t i = 0; i < height; i++) {
       for (uint32_t j = 0; j < width; j++) {
-        out[i][j] = 0;
+        out[i][j] = TileType::PLAIN;
         auto mask = dynamic_bitset(area(), 1);
         mask <<= (width * i + j);
         if ((impassible & mask).any()) {
-          out[i][j] = 1;
+          out[i][j] = TileType::IMPASSIBLE;
         } else if ((cows & mask).any()) {
-          out[i][j] = 2;
+          out[i][j] = TileType::COW;
         }
       }
     }
@@ -421,16 +422,17 @@ ostream& operator<<(ostream& os, Game& game) {
       if (board[i][j] == 0) {
         os << Color::Modifier(Color::BG_GREEN);
         os << ' ';
-      } else if (board[i][j] == 1) {
+      } else if (board[i][j] == TileType::COW) {
         os << Color::Modifier(Color::BG_DEFAULT);
         os << 'C';
       }
-      else if (board[i][j] == 2) {
-        os << Color::Modifier(Color::BG_GREEN);
+      else if (board[i][j] == TileType::IMPASSIBLE) {
+        os << Color::Modifier(Color::BG_BLACK);
         os << ' ';
       }
       os << Color::Modifier(Color::BG_DEFAULT);
     }
+    os << Color::Modifier(Color::BG_DEFAULT);
     os << '\n';
   }
 
@@ -461,12 +463,15 @@ ostream& operator<<(ostream& os, Game& game) {
           break;
         }
       }
-      if (found) continue;
       os << Color::Modifier(Color::BG_DEFAULT);
+      if (found) continue;
       os << '=';
     }
+    os << Color::Modifier(Color::BG_DEFAULT);
     os << '\n';
   }
+
+  os << Color::Modifier(Color::BG_DEFAULT);
   
   printv(game.viewCards());
   os << "turn: " << game.turn << endl;

@@ -97,6 +97,7 @@ struct Handler {
     );
     auto game_id = params["game_id"];
     searches.insert({game_id, Search(gc)});
+    cerr << searches.at(game_id).game << endl;
     cout << "SUCCESS" << endl;
   } /* init() */
 
@@ -110,6 +111,7 @@ struct Handler {
     auto game_id = params["game_id"];
     if (searches.count(game_id)) {
       auto res = searches.at(game_id).getMove(stoll(params["timeout"]));
+      cerr << searches.at(game_id).game << endl;
       // Frontend expects color to be >= 5 if it's an enemy.
       cout << res.first << "\n" << (res.second + 5) << endl;
       cout << "SUCCESS" << endl;
@@ -130,6 +132,7 @@ struct Handler {
     auto mv = stoi(params["move"]);
     if (searches.count(game_id)) {
       searches.at(game_id).makeMove(mv);
+      cerr << searches.at(game_id).game << endl;
       cout << "SUCCESS" << endl;
     } else {
       cout << "Game ID not found" << endl;

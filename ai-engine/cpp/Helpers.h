@@ -10,6 +10,13 @@ enum Direction {
   DOWN = 3
 };
 
+enum TileType {
+  PLAIN = 0,
+  COW = 1,
+  IMPASSIBLE = 2,
+  SCORE = 3
+};
+
 struct Card {
   std::vector<Direction> moves;
   bool operator==(const Card& other) const {
