@@ -8,7 +8,7 @@ enum Request {
   INIT,
   GET,
   MOVE,
-  BUY,
+  BUY
 };
 
 // Communicates with a node.js server via stdin and stdout.
@@ -23,10 +23,10 @@ struct Handler {
   Request get_request() {
     string request;
     if (!(cin >> request)) exit(0);
-    if (request == "INIT") return Request::INIT;
-    if (request == "GET")  return Request::GET;
-    if (request == "MOVE") return Request::MOVE;
-    if (request == "BUY")  return Request::BUY;
+    if (request == "INIT")  return Request::INIT;
+    if (request == "GET")   return Request::GET;
+    if (request == "MOVE")  return Request::MOVE;
+    if (request == "BUY")   return Request::BUY;
     cout << "FAILURE: Invalid Request" << endl;
     exit(1);
   } /* get_request() */
@@ -39,10 +39,10 @@ struct Handler {
     for (int ct = 1; ; ct++) {
       Request r = get_request();
       switch (r) {
-        case INIT: init(); break;
-        case GET:  get();  break;
-        case MOVE: move(); break;
-        case BUY:  buy();  break;
+        case INIT:   init();  break;
+        case GET:    get();   break;
+        case MOVE:   move();  break;
+        case BUY:    buy();   break;
       }
     }
   } /* run() */
@@ -56,7 +56,7 @@ struct Handler {
     params["timeout"] = "1000";
     params["hand_size"] = "3";
     params["round_length"] = "6";
-    params["ncards"] = "16";
+    params["ncards"] = "15";
     string param, value, line;
     while (getline(cin, line)) {
       if (line == "END") break;
@@ -78,7 +78,10 @@ struct Handler {
    */
  
   void init() {
+    cerr << "INIT" << endl;
     auto params = load_params();
+    cerr << "ncards:  " << params["ncards"] << endl;
+    cerr << "game_id: " << params["game_id"] << endl;
     if (!params.count("seed")) {
       cout << "FAILURE: Seed not provided" << endl;
       exit(1);
@@ -87,9 +90,9 @@ struct Handler {
       exit(1);
     }
 
-    auto rng = mt19937(stoll(params["seed"]));
-    auto [board, pieces] = load_setup(rng);
-    auto cards = load_cards(rng, stoll(params["ncards"]));
+    init_seed(stoll(params["seed"]));
+    auto [board, pieces] = load_setup();
+    auto cards = load_cards(stoll(params["ncards"]));
     auto gc = GameConfig(
       board, pieces, cards,
       stoll(params["hand_size"]),

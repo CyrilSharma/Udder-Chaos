@@ -91,8 +91,26 @@ class Server {
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
-
             this.color = color;
+
+            let cards = []
+            let arrays = [
+                gameScreen.game.cards.player_hand,
+                gameScreen.game.cards.enemy_hand,
+                gameScreen.game.cards.queue,
+            ]
+            for (let array of arrays) {
+                for (let card of array) {
+                    let dirs = []
+                    for (let dir of card.dirs) {
+                        dirs.push(dir)
+                    }
+                    cards.push(dirs)
+                }
+            }
+            if (playerList[0].id == this.socket.id) {
+                this.socket.emit("init-ai", cards);
+            }
         });
 
         this.socket.on("share-move", (moveType, moveData, color) => {

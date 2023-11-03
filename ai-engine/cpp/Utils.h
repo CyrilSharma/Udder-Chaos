@@ -108,20 +108,28 @@ vector<Card> random_cards(int ndirs, int ncards) {
   return cards;
 }
 
+
+/*
+ * initialized the seed.
+ */
+
+mt19937 rng;
+void init_seed(uint64_t seed) {
+  rng = mt19937(seed);
+} /* init_seed() */
+
 /*
  * loads board + pieces based on the random seed.
  */
 
-tuple<vector<vector<int>>, vector<Piece>> load_setup(mt19937 rng, int map = -1) {
+tuple<vector<vector<int>>, vector<Piece>> load_setup() {
   int count = 0;
   for (const auto &_ : fs::directory_iterator("Maps")) {
     (void) _;
     count += 1;
   }
-
-  int idx = floor(uniform_real_distribution<double>()(rng) * (count + 1));
-  // LOAD DEBUGMAP
-  if (map != -1) idx = map;
+  uniform_real_distribution<double> dist { 0.0, 1.0 };
+  int idx = floor(dist(rng) * count);
   ifstream file ("Maps/map" + to_string(idx) + ".txt");
   if (!file.is_open()) {
     cerr << "FAILURE: Invalid Map Index: " << idx << endl;
@@ -151,40 +159,24 @@ tuple<vector<vector<int>>, vector<Piece>> load_setup(mt19937 rng, int map = -1) 
  * this method is kept in sync with the frontend.
  */
 
-vector<Card> load_cards(mt19937 rng, int ncards) {
-  vector<Card> cards(ncards);
+vector<Card> load_cards(int ncards) {
+  // We reverse UP and DOWN because our board
+  // Is represented differently.
   Direction directions[4] = {
-    Direction::RIGHT, Direction::UP,
-    Direction::LEFT, Direction::DOWN,
-  };
-  vector<tuple<int,int,int>> presets = {
-    {0, 0, 0},
-    {0, 0, 1},
-    {0, 1, 0},
-    {0, 1, 1},
-    {1, 0, 0},
-    {1, 0, 1},
-    {1, 1, 0},
+    Direction::RIGHT, Direction::DOWN,
+    Direction::LEFT, Direction::UP
   };
 
-  std::uniform_real_distribution<double> dist{0.0, 1.0};
+  vector<Card> cards(ncards);
   for (int i = 0; i < ncards; i++) {
-    auto [d1, d2, d3] = presets[i % presets.size()];
-    vector<Direction> moves = {
-      directions[static_cast<int>(d1 + floor(dist(rng) * 4)) % 4],
-      directions[static_cast<int>(d2 + floor(dist(rng) * 4)) % 4],
-      directions[static_cast<int>(d3 + floor(dist(rng) * 4)) % 4],
+    int d1, d2, d3; cin >> d1 >> d2 >> d3;
+    cerr << d1 << " " << d2 << " " << d3 << endl;
+    vector<Direction> moves {
+      directions[d1],
+      directions[d2],
+      directions[d3]
     };
-    // We represent the board differently.
-    for (auto &move: moves) {
-      if (move == Direction::UP)   move = Direction::DOWN;
-      if (move == Direction::DOWN) move = Direction::UP;
-    }
     cards[i] = Card { moves };
-  }
-  for (int i = ncards - 1; i > 0; i--) {
-    int j = static_cast<int>(floor(dist(rng) * (i + 1)));
-    swap(cards[i], cards[j]);
   }
   return cards;
 } /* load_cards() */

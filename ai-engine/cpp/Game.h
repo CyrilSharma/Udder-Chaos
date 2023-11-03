@@ -476,13 +476,14 @@ ostream& operator<<(ostream& os, Game& game) {
     else if (i < 2*game.hand_size) os << Color::Modifier(Color::FG_RED)  << "Enemy  <= " << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
     else             os << "Queue  <= " << cards[i] << '\n';
   }
-  os << "turn: " << game.turn << endl;
+  os << "turn: " << game.turn << '\n';
+  os << "hand size: " << game.hand_size << '\n';
   int ppct = 0, epct = 0;
   for (int i = 0; i < 4; i++) {
     ppct += game.players[i].count();
     epct += game.enemies[i].count();
   }
-  os << "player pieces: " << ppct << endl;
-  os << "enemy pieces: " << epct << endl;
+  os << "player pieces: " << ppct << '\n';
+  os << "enemy pieces: " << epct << '\n';
   return os;
 }

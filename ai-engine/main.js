@@ -11,9 +11,10 @@ const MoveType = {
 
 const ai = spawn('cpp/Main');
 ai.stdin.setEncoding('utf-8');
-ai.stderr.on('data', (info) => {
-    console.log(info.toString('utf8'));
-});
+ai.stderr.on('data', (data) => {
+    process.stdout.write(data);
+})
+
 ai.on('exit', (code) => {
     console.log(`AI Exited: ${code}!`);
 });
@@ -34,13 +35,22 @@ const url =
 
 const socket = io(url)
 
-socket.on("init-ai", async (room_code, seed) => {
+socket.on("init-ai", async (room_code, seed, cards) => {
     console.log("AI Initialized!");
     console.log(`Seed: ${seed}`);
     ai.stdin.write('INIT\n');
     ai.stdin.write(`game_id: ${room_code}\n`);
     ai.stdin.write(`seed: ${seed}\n`);
+    ai.stdin.write(`ncards: ${cards.length}\n`);
     ai.stdin.write(`END\n`);
+    console.log(`cards.length: ${cards.length}\n`);
+    console.log(`cards[0].length: ${cards[0].length}\n`);
+    for (let card of cards) {
+        for (let dir of card) {
+            ai.stdin.write(`${dir} `);
+        }
+        ai.stdin.write('\n');
+    }
     console.log("Sent commands to AI...");
     const output = (await it.next()).value;
     console.log(`Output: ${output}`)

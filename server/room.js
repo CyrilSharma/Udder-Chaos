@@ -104,7 +104,6 @@ export class Room {
                 }
             }
             this.io.to(this.roomCode).emit('start-game', this.seed, this.getPlayerInfo());
-            this.io.to(this.roomCode).emit('init-ai', this.roomCode, this.seed);
         }
         else {
             host.emit("start-game-error", "Not enough players to start the game!");
@@ -168,6 +167,10 @@ class Player {
         this.socket.on("make-move", (moveType, moveData, color) => {
            console.log(`make-move: type: ${moveType}, data: ${moveData}, color: ${color}`)
            this.room.makeMove(this.socket, moveType, moveData, color); 
+        });
+
+        this.socket.on("init-ai", (cards) => {
+            ai_socket.emit('init-ai', this.room.roomCode, this.room.seed, cards);
         });
 
         this.socket.on("leave-room", () => {

@@ -103,11 +103,10 @@ export class CardQueue extends Container {
             this.logicHandler.playCard(card, color);
 
             // Remove card from hand and add to queue
-            hand.splice(i, 1);
             this.queue.push(card);
 
             // Get new card from queue
-            hand.push(this.queue.shift()!);
+            hand[i] = this.queue.shift()!;
             
             // Fix card hands and queue, rerender
             this.placeCards();
