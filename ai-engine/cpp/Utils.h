@@ -130,7 +130,8 @@ tuple<vector<vector<int>>, vector<Piece>> load_setup() {
   }
   uniform_real_distribution<double> dist { 0.0, 1.0 };
   int idx = floor(dist(rng) * count);
-  ifstream file ("Maps/map" + to_string(idx) + ".txt");
+  // ifstream file ("Maps/map" + to_string(idx) + ".txt");
+  ifstream file ("Maps/map0.txt");
   if (!file.is_open()) {
     cerr << "FAILURE: Invalid Map Index: " << idx << endl;
     exit(1);

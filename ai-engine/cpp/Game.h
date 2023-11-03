@@ -435,8 +435,8 @@ ostream& operator<<(ostream& os, Game& game) {
 
   Color::Modifier mods[4] = {
     Color::Modifier(Color::BG_RED),
-    Color::Modifier(Color::BG_BLUE),
     Color::Modifier(Color::BG_YELLOW),
+    Color::Modifier(Color::BG_BLUE),
     Color::Modifier(Color::BG_PURPLE)
   };
   for (uint64_t i = 0; i < game.height; i++) {
