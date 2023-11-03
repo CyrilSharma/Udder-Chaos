@@ -20,8 +20,8 @@ export class BuyButton extends Container {
         this.button = new FancyButton({
             defaultView: (new Button(
                 new Graphics()
-                        .beginFill(0xffcc66)
-                        .drawCircle(40, 40, 40)
+                    .beginFill(0x5f5f5f)
+                    .drawCircle(40, 40, 40)
             )).view,
             pressedView: (new Button(
                 new Graphics()
@@ -53,6 +53,18 @@ export class BuyButton extends Container {
 
     public getButton() {
         return this.button;
+    }
+
+    public updateButton(num: number) {
+        if (num != 0) {
+            this.button.defaultView = new Graphics()
+                .beginFill(0xffcc66)
+                .drawCircle(40, 40, 40)
+        } else {
+            this.button.defaultView = new Graphics()
+                .beginFill(0x5f5f5f)
+                .drawCircle(40, 40, 40)
+        }
     }
 
     public resize(width: number, height: number) {

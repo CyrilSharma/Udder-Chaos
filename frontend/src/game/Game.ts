@@ -206,6 +206,7 @@ export class Game extends Container {
             this.endGame(true, "You saved Homeworld with enough cows!")
         }
         this.scoreCounter.updateScore(this.totalScore.toString() + " ");
+        this.buyButton.updateButton(this.totalScore);
     }
 
     public resize(width: number, height: number) {
