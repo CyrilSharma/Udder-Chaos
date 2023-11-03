@@ -119,7 +119,7 @@ tuple<vector<vector<int>>, vector<Piece>> load_setup(mt19937 rng) {
     count += 1;
   }
 
-  int idx = uniform_int_distribution<int>(0, count - 1)(rng);
+  int idx = floor(uniform_real_distribution<double>()(rng) * count - 1);
   ifstream file ("Maps/map" + to_string(idx) + ".txt");
   if (!file.is_open()) {
     cerr << "FAILURE: Invalid Map Index: " << idx << endl;
@@ -152,17 +152,36 @@ tuple<vector<vector<int>>, vector<Piece>> load_setup(mt19937 rng) {
 vector<Card> load_cards(mt19937 rng, int ncards) {
   vector<Card> cards(ncards);
   Direction directions[4] = {
-    Direction::LEFT, Direction::RIGHT,
-    Direction::DOWN, Direction::UP,
+    Direction::RIGHT, Direction::UP,
+    Direction::LEFT, Direction::DOWN,
   };
+  vector<tuple<int,int,int>> presets = {
+    {0, 0, 0},
+    {0, 0, 1},
+    {0, 1, 0},
+    {0, 1, 1},
+    {1, 0, 0},
+    {1, 0, 1},
+    {1, 1, 0},
+  };
+
+  std::uniform_real_distribution<double> dist{0.0, 1.0};
   for (int i = 0; i < ncards; i++) {
+    auto [d1, d2, d3] = presets[i % presets.size()];
     vector<Direction> moves = {
-      directions[i % 4], directions[i % 4]
+      directions[static_cast<int>(d1 + floor(dist(rng) * 4)) % 4],
+      directions[static_cast<int>(d2 + floor(dist(rng) * 4)) % 4],
+      directions[static_cast<int>(d3 + floor(dist(rng) * 4)) % 4],
     };
+    // We represent the board differently.
+    for (auto &move: moves) {
+      if (move == Direction::UP)   move = Direction::DOWN;
+      if (move == Direction::DOWN) move = Direction::UP;
+    }
     cards[i] = Card { moves };
   }
   for (int i = ncards - 1; i > 0; i--) {
-    int j = uniform_int_distribution<int>(0, i)(rng);
+    int j = static_cast<int>(floor(dist(rng) * (i + 1)));
     swap(cards[i], cards[j]);
   }
   return cards;
