@@ -1,5 +1,4 @@
-import { Container, Sprite, ObservablePoint } from 'pixi.js';
-import {  Text } from 'pixi.js';
+import { Container, Sprite, ObservablePoint, Text } from 'pixi.js';
 import { Board } from './Board';
 import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum, DAYS_PER_ROUND } from './Utils';
 import { app } from '../main';
@@ -13,6 +12,7 @@ import { DayCounter } from '../ui_components/DayCounter';
 import { BuyButton } from '../ui_components/BuyButton';
 import { ScoreCounter } from '../ui_components/ScoreCount';
 import { SizedButton } from '../ui_components/SizedButton';
+
 
 // This seems a little redundant right now,
 // But it will house the cards as well,
@@ -88,12 +88,14 @@ export class Game extends Container {
         this.rightPanel.addChild(this.upNext);
         this.rightPanel.addChild(this.playerAI);
 
+
         this.addChild(this.gameState);
         this.addChild(this.leftPanel);
         this.addChild(this.rightPanel);
         this.addChild(this.boardPanel);
         this.addChild(this.bottomPanel);
         this.addChild(this.cards);
+
     }
 
     public setup(config: GameConfig) {
@@ -182,6 +184,7 @@ export class Game extends Container {
     // reset when a new game is setup rather than when the old one finishes
     public endGame(success: boolean, message: string) {
         //console.log(message);
+
         this.board.endGame(success, message);
         this.gameOver = true;
     }
@@ -201,6 +204,7 @@ export class Game extends Container {
         if (this.totalScore >= SCORE_GOAL) {
             this.endGame(true, "You saved Homeworld with enough cows!")
         }
+
     }
 
     public resize(width: number, height: number) {
@@ -237,5 +241,6 @@ export class Game extends Container {
 
         this.board.winScreen.resize(this.board.getWidth(), this.board.getHeight());
         this.board.loseScreen.resize(this.board.getWidth(), this.board.getHeight());
+
     }
 }

@@ -36,7 +36,7 @@ export class CreateGameScreen extends Container {
 
         this.startButton = new SizedButton(0.5, 0.9, 0.3, 0.15, "Start Game", this.menuContainer.width, this.menuContainer.height, 40, 0x6060fc);
         this.startButton.onPress.connect(() => {
-            server.startGame();
+            server.startGame(this.seedBox.seed.value);
         });
         this.menuContainer.addChild(this.startButton);
 

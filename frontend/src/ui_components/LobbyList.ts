@@ -4,6 +4,7 @@ import { ColorSelector } from './ColorSelector';
 import { MenuContainer } from './MenuContainer';
 import { SizedButton } from './SizedButton';
 import { PlayerInfo } from "../game/Utils"
+import server from "../server";
 
 export class LobbyList extends FancyButton {
 
@@ -47,7 +48,7 @@ export class LobbyList extends FancyButton {
             this.listContainer.addChild(this.colorSelectors[i]);
             this.colorSelectors[i].onPress.connect(() => {
                 if (i == this.currentPlayerNumber) {
-                this.swapColor(i);
+                    this.swapColor(i);
                 }
             });
 
@@ -93,6 +94,8 @@ export class LobbyList extends FancyButton {
             this.playersList[this.currentPlayerNumber].changeText(this.nameInput.value);
             this.nameInput.x = this.playersList[0].x - this.nameInput.width * 0.5;
             this.nameInput.y = this.playersList[this.currentPlayerNumber].y - this.nameInput.height * 0.5;
+
+            server.updatePlayerName(this.nameInput.value);
         });
         this.nameInput.x = this.playersList[0].x - 42;
         this.listContainer.addChild(this.nameInput);
@@ -118,10 +121,11 @@ export class LobbyList extends FancyButton {
         if (this.players[tmpIndex].color != 4) {
             this.available[this.players[tmpIndex].color] = false;
         }
+
+        server.updatePlayerColor(tmp);
     }
 
     public addPlayer(player: PlayerInfo) {
-
         if (this.players.length >= 4) {
             return;
         }
@@ -134,6 +138,10 @@ export class LobbyList extends FancyButton {
             }
         }
 
+        if (player.color != 4) {
+            this.setPlayerColor(player, this.players.length - 1);
+        }
+
         if (this.players.length - 1 == this.currentPlayerNumber && this.playersList[this.currentPlayerNumber].label.text == player.name) {
             this.nameInput.value = player.name;
         }
@@ -141,7 +149,6 @@ export class LobbyList extends FancyButton {
         for (let i = 0; i < 4; i++) {
             this.colorSelectors[i].y = this.playersList[i].y;
         }
-
     }
 
     public removePlayer(player: PlayerInfo) {
@@ -193,90 +200,14 @@ export class LobbyList extends FancyButton {
         this.players.pop();
     }
 
-    // untested
-    public setPlayers(players: PlayerInfo[]) {
-
-        players.forEach(player => {
-            if (player.color == -1) {
-                player.color = 4;
+    public updatePlayer(player: PlayerInfo) {
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i].id === player.id) {
+                console.log("change color")
+                this.setPlayerColor(player, i);
+                this.setPlayerName(player, i);
             }
-        });
-
-        if (players.length > this.players.length) { // CASE 1
-            // find new player and add
-
-            for (let i = 0; i < players.length; i++) {
-                let found = false;
-                this.players.forEach(player => {
-                    if (players[i].name == player.name) {
-                        found = true;
-                    }
-                });
-                if (!found) {
-                    this.addPlayer(players[i]);
-                }
-            }
-
-        } else if (players.length < this.players.length) { // CASE 2
-            // remove player no longer in list
-
-            for (let i = 0; i < this.players.length; i++) {
-                let found = false;
-                players.forEach(player => {
-                    if (this.players[i].name == player.name) {
-                        found = true;
-                    }
-                });
-                if (!found) {
-                    this.removePlayer(this.players[i]);
-                    break;
-                }
-            }
-
-        } else if (players.length == this.players.length) { // CASE 3
-            // find changed player and update them
-
-            let index1 = -1;
-            let index2 = -1;
-            for (let i = 0; i < this.players.length; i++) {
-                let found = false;
-                for (let j = 0; j < players.length; j++) {
-                    if (this.players[i].name == players[j].name) {
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    index1 = i;
-                }
-            }
-            for (let i = 0; i < players.length; i++) {
-                let found = false;
-                for (let j = 0; j < this.players.length; j++) {
-                    if (players[i].name == this.players[j].name) {
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    index2 = i;
-                }
-            }
-
-            if (index1 == -1 || index2 == -1) {
-                return;
-            }
-
-            for (let i = 0; i < 4; i++) {
-                if (this.playersList[i].getText() == this.players[index1].name) {
-                    this.playersList[i].changeText(players[index2].name);
-                }
-            }
-            this.players[index1] = players[index2];
         }
-
-        this.players.forEach(player => {
-            this.setPlayerColor(player);
-        });
-
     }
 
     public setCurrentPlayer(playerNum: number) {
@@ -284,17 +215,15 @@ export class LobbyList extends FancyButton {
         this.nameInput.y = this.playersList[playerNum].y - 25;
     }
 
-    public setPlayerColor(player: PlayerInfo) {
-        if (player.color == -1) {
-            player.color = 4;
-        }
-        for (let i = 0; i < 4; i++) {
-            if (this.playersList[i].getText() == player.name) {
-                this.setAvailable(this.colorSelectors[i].getColor());
-                this.colorSelectors[i].setColor(player.color);
-                this.setTaken(player.color);
-            }
-        }
+    public setPlayerName(player: PlayerInfo, i: number) {
+        console.log(player.name);
+        this.playersList[i].changeText(player.name);
+    }
+
+    public setPlayerColor(player: PlayerInfo, i: number) {
+        this.setAvailable(this.colorSelectors[i].getColor());
+        this.colorSelectors[i].setColor(player.color);
+        this.setTaken(player.color);
     }
 
     // untested

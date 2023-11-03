@@ -11,6 +11,7 @@ export class BuyButton extends Container {
     private ufo: Sprite;
 
     constructor(posx: number, posy: number) {
+
         super();
         
         this.posx = posx;
@@ -47,6 +48,7 @@ export class BuyButton extends Container {
 
         this.addChild(this.button);
         this.addChild(this.ufo);
+
     }
 
     public getButton() {
@@ -54,10 +56,8 @@ export class BuyButton extends Container {
     }
 
     public resize(width: number, height: number) {
-            
         // try and resize relative to parent
         this.button.view.width = this.button.parent.getLocalBounds().width;
-
         this.button.view.x = width * this.posx;
         this.button.view.y = height * this.posy;
     }

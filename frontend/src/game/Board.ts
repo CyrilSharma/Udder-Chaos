@@ -376,7 +376,6 @@ export class Board extends Container {
         }
     }
 
-
     public resize(bounds: Array<number>, left: number, right: number, bottom: number) {
         // Top, bottom, left, right
         // this.width = (bounds[3] - bounds[2]);

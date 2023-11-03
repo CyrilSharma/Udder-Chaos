@@ -7,11 +7,13 @@ import '@pixi/math-extras';
 // Constants
 export const COW_REGEN_RATE = 12; // Respawn after 3 days
 export const COW_SACRIFICE = 3; 
-export const SCORE_GOAL = 4;
-export const DAYS_PER_ROUND = 310;
+
+export const SCORE_GOAL = 10;
+export const DAYS_PER_ROUND = 3;
 
 //-----Menu-----//
 export type PlayerInfo = {
+    id: string,
     name: string,
     color: number
 }
@@ -234,9 +236,6 @@ function parseCSVGrid(csvString: string) {
     return grid;
 };
 
-function addPlayersName(players: PlayerInfo) {
-    
-}
 // --- Math --- //
 
 export function angleBetween(vectorOne: Point, vectorTwo: Point) {
@@ -249,4 +248,5 @@ export function angleBetween(vectorOne: Point, vectorTwo: Point) {
 
 export function mod(n: number, m: number) {
     return ((n % m) + m) % m;
-  }
+}
+

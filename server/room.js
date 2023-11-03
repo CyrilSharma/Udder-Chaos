@@ -9,7 +9,8 @@ const COLOR = {
     RED: 0,
     YELLOW: 1,
     BLUE: 2,
-    PURPLE: 3,    
+    PURPLE: 3,
+    UNSET: 4  
 }
 
 const MAX_PLAYERS = 1;
@@ -25,6 +26,7 @@ export class Room {
         this.players = [];
         this.moveList = [];
         this.turn = 0;
+        this.setSeed(roomCode);
     }
 
     addNewPlayer(socket, host=false) {
@@ -38,7 +40,7 @@ export class Room {
         this.players.push(player);
 
         player.joinRoom();
-        this.updatePlayerList(socket);
+        socket.to(this.roomCode).emit("add-player", player.getPlayerInfo());
         console.log(socket.id + " joined the room: " + this.roomCode);
     }
 
@@ -52,22 +54,21 @@ export class Room {
 
         if (this.players.length > 0) {
             // There are still players in the game
-            this.updatePlayerList(this.io);
+            //this.updatePlayerList(this.io);
         }
         else {
             removeRoom(this.roomCode);
         }
     }
 
-    updatePlayerList(socket) {
-        socket.to(this.roomCode).emit("player-list", this.getPlayerInfo());
+    updatePlayer(player) {
+        player.socket.to(this.roomCode).emit("update-player-info", player.getPlayerInfo());
     }
 
     getPlayerInfo() {
         let playerList = [];
-        console.log(this.players);
         for (let player of this.players) {
-            playerList.push({"name": player.name, "color": player.color});
+            playerList.push(player.getPlayerInfo());
         }
         return playerList;
     }
@@ -81,10 +82,28 @@ export class Room {
         return ids;
     }
 
+    setSeed(seed) {
+        if (seed === "") {
+            return;
+        }
+        let numSeed = 0;
+        for (let i = 0; i < seed.length; i++) {
+            numSeed += seed.charCodeAt(i);
+        }
+        this.seed = numSeed;
+    }
+
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
             // Send starting game info to players
-            this.io.to(this.roomCode).emit('start-game', this.roomCode, this.getPlayerIds());
+            for (let i = 0; i < MAX_PLAYERS; i++) {
+                if (this.players[i].color == 4) {
+                    // If any player is unset color, stop with error.
+                    host.emit("start-game-error", "Everyone must choose a color!");
+                    return;
+                }
+            }
+            this.io.to(this.roomCode).emit('start-game', this.seed, this.getPlayerInfo());
         }
         else {
             // Not enough players yet
@@ -97,7 +116,7 @@ export class Room {
         //TODO: Check if player's turn 
         this.moveList.push((moveType, moveData, color));
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
-        console.log(this.moveList);
+        //console.log(this.moveList);
         if (moveType < 2) {
             this.turn += 1;
         }
@@ -117,7 +136,7 @@ class Player {
         this.socket = socket;
         this.name = "Guest " + Math.floor(Math.random() * 1000);
         this.team = team;
-        this.color = -1;
+        this.color = 4;
         this.room = room;
         this.host = host;
 
@@ -125,13 +144,18 @@ class Player {
     }
 
     initSocket() {
-        this.socket.on("update-player-list", (name, color) => {
+        this.socket.on("update-name", (name) => {
             this.name = name;
-            this.color = color;
-            this.room.updatePlayerList(this.socket);
+            this.room.updatePlayer(this);
         });
 
-        this.socket.on("start-game", () => {
+        this.socket.on("update-color", (color) => {
+            this.color = color;
+            this.room.updatePlayer(this);
+        });
+
+        this.socket.on("start-game", (seed) => {
+            this.room.setSeed(seed);
             this.room.startGame(this.socket);
         });
 
@@ -149,10 +173,13 @@ class Player {
         });
     }
 
+    getPlayerInfo() {
+        return {"id": this.socket.id, "name": this.name, "color": this.color};
+    }
+
     joinRoom() {
         this.socket.join(this.room.roomCode);
         this.socket.emit("load-room", this.room.roomCode, this.room.getPlayerInfo());
-        console.log(this.room.getPlayerInfo());
         this.socket.emit("receive-message", "joined the room");
     }
 
