@@ -291,6 +291,10 @@ export class Board extends Container {
         this.setPieceLocation(piece, position);
         this.pieces.push(piece);
         this.piecesContainer.addChild(piece);
+
+        if (PieceEnum.Player_Red <= pieceType && pieceType <= PieceEnum.Player_Purple) {
+            this.playerPieces[pieceType] += 1;
+        }
     }
 
     /**  Moves piece */
