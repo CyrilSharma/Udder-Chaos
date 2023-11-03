@@ -119,7 +119,7 @@ tuple<vector<vector<int>>, vector<Piece>> load_setup(mt19937 rng) {
     count += 1;
   }
 
-  int idx = floor(uniform_real_distribution<double>()(rng) * count - 1);
+  int idx = floor(uniform_real_distribution<double>()(rng) * (count + 1));
   ifstream file ("Maps/map" + to_string(idx) + ".txt");
   if (!file.is_open()) {
     cerr << "FAILURE: Invalid Map Index: " << idx << endl;
