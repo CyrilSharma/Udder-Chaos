@@ -27,6 +27,7 @@ TEST_CASE("Testing the Creation Function") {
 
   auto config = GameConfig(board, pieces, cards);
   auto game = Game(config);
+  cout << game << endl;
 
   CHECK_MESSAGE(
     checkvv(game.viewBoard(), board),
@@ -103,12 +104,14 @@ TEST_CASE("Testing Player Movement") {
 
   SUBCASE("No walls, edges, collisions") {
     auto g0 = Game(config);
+    cout << g0 << endl;
     for (int i = 0; i < 5; i++) {
       auto dir = dirs[rand() % 4];
       g0.play_player_movement(dir);
       easy_update(dir);
       verify(g0);
     }
+    cout << g0 << endl;
   }
 
   SUBCASE("Just Edges") {
@@ -415,6 +418,13 @@ TEST_CASE("Test Cards") {
   SUBCASE("Test Choose") {
     for (int i = reserve - 1; i < nelements; i++) {
       CHECK(queue.choose(reserve - 1) == i);
+    }
+    for (int i = 0; i < nelements; i++) {
+      queue.set(i, i);
+    }
+    queue.choose(reserve - 2);
+    for (int i = reserve; i < nelements - 1; i++) {
+      CHECK(queue.choose(reserve - 2) == i);
     }
   }
 }
