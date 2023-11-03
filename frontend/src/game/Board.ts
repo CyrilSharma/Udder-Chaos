@@ -93,6 +93,9 @@ export class Board extends Container {
             this.respawnCounter[tile].alpha = 0;
             this.respawnCounter[tile].on('mouseover', () => {
                 this.respawnCounter[tile].alpha = 1;
+                if (this.getPieceByPosition({row: Math.floor(tile/16), column: tile % 16})?.type == TeamEnum.Player) {
+                    this.respawnCounter[tile].alpha = 0;
+                } // 8 10 11 14 15
             });
             this.respawnCounter[tile].on('mouseout', () => {
                 this.respawnCounter[tile].alpha = 0;
