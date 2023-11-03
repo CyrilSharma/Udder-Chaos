@@ -105,7 +105,6 @@ export class Card extends Container {
 
     /** Card behavior when clicked (when played) */
     private tapCard() {
-        console.log("tap!")
         // Make sure it is out turn
         if (this.queue.game.ourTurn() && this.queue.checkCardInHand(this, this.queue.game.playerColor)) {
             // Play card both locally and on the server
@@ -120,9 +119,7 @@ export class Card extends Container {
     }
 
     private onPointerEnter = (e: FederatedPointerEvent) => {
-        //console.log("Hover over card " + this.index);
         this.queue.bringCardToTop(this);
-        console.log(this.dirs);
         this.upscale();
     };
 
@@ -161,7 +158,6 @@ export class Card extends Container {
 
             if (this.cardRotation * 90 - ALLOWED_POS_OFFSET <= trueAngle && trueAngle <= this.cardRotation * 90 + ALLOWED_POS_OFFSET) {
                 let endTime = Date.now();
-                console.log("no ratation");
                 if (endTime - this.dragStartTime < ALLOWED_TIME_OFFSET) {
                     this.tapCard();
                 }

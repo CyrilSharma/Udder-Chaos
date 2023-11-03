@@ -38,7 +38,7 @@ export class CardQueue extends Container {
         for (let i = 0; i < this.ncards; i++) {
             let config = {
                 color: ColorEnum.RED,
-                dirs: Array.from(CARD_PRESETS[i % CARD_PRESETS.length]), // Evenly generate a number of each card, for now literally just make it move twice
+                dirs: Array.from(CARD_PRESETS[i % CARD_PRESETS.length]),
                 size: 50,
                 rotation: Math.floor(random() * 4),
             };

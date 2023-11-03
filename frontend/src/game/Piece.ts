@@ -1,5 +1,14 @@
 import { Container, Sprite, Texture, Text, Graphics } from 'pixi.js';
-import { TeamEnum, getTeam } from './Utils'
+import { TeamEnum, getTeam, Position } from './Utils'
+import * as PIXI from "pixi.js";
+import { gsap } from "gsap";
+import { PixiPlugin } from "gsap/PixiPlugin";
+
+// register the plugin
+gsap.registerPlugin(PixiPlugin);
+
+// give the plugin a reference to the PIXI object
+PixiPlugin.registerPIXI(PIXI);
 
 /** Default piece options */
 const defaultPieceOptions = {
@@ -83,9 +92,13 @@ export class Piece extends Container {
     }
 
     /** Animation to come soon... */
-    public async animateMove(x: number, y: number) {
-        this.row = y;
-        this.column = x;
+    public async animateMove(newX: number, newY: number) {
+        console.log("here");
+        gsap.to(this, {
+            pixi: { x: newX, y: newY },
+            duration: 0.5,
+            ease: "power.out"
+        });
     }
 
     public async addScore(amt: number = 1) {
