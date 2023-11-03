@@ -128,6 +128,32 @@ export class Game extends Container {
             this.totalDayCount++;
             this.gameState.updateDay(this.totalDayCount);
         }
+        switch (this.turn) {
+            case 1:
+                this.playerAI.removeShadow();
+                this.player1.addShadow();
+                break;
+            case 2:
+                this.player1.removeShadow();
+                this.player2.addShadow();
+                break;
+            case 3:
+                this.player2.removeShadow();
+                this.playerAI.addShadow();
+                break;
+            case 4:
+                this.playerAI.removeShadow();
+                this.player3.addShadow();
+                break;
+            case 5:
+                this.player3.removeShadow();
+                this.player4.addShadow();
+                break;
+            case 6:
+                this.player4.removeShadow();
+                this.playerAI.addShadow();
+                break;
+        }
         this.gameState.updateTurn(this.turn);
         this.turnCount += 1;
         this.board.spawnCows(this.turnCount);

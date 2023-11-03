@@ -12,7 +12,7 @@ export class DayCounter extends FancyButton {
         super();
 
         this.day = 0;
-        console.log(this.day);
+        //console.log(this.day);
 
         this.days = new Array<RoundedTriangle>;
         for (let i = 0; i < 6; i++) {

@@ -1,4 +1,5 @@
-import { Container, Sprite } from 'pixi.js';
+import { Container, Sprite, Graphics } from 'pixi.js';
+import { Button, FancyButton } from '@pixi/ui';
 import { Piece } from './Piece';
 import { Game } from './Game';
 import {
@@ -55,6 +56,8 @@ export class Board extends Container {
     public pastureRegen: Position[][] = [];
     /** Enemy tiles to spawn enemies each round */
     public enemyRegen: Position[][] = [];
+    /** Array holding respawn counter objects */
+    public respawnCounter: FancyButton[] = [];
 
     // We pass the game to allow for callbacks...
     constructor(game: Game) {
@@ -75,6 +78,26 @@ export class Board extends Container {
         }
         for (let i = 0; i < 4; i++) {
             this.enemyRegen.push([])
+        }
+
+        for (let tile = 0; tile < 256; tile++) {
+            this.respawnCounter[tile] = new FancyButton({
+                defaultView: (new Button(
+                    new Graphics()
+                            .beginFill(0xffffff)
+                            .drawCircle(20, 20, 20)
+                )).view,
+                anchor: 0.5,
+                text: ""
+            });
+            this.respawnCounter[tile].alpha = 0;
+            this.respawnCounter[tile].on('mouseover', () => {
+                this.respawnCounter[tile].alpha = 1;
+            });
+            this.respawnCounter[tile].on('mouseout', () => {
+                this.respawnCounter[tile].alpha = 0;
+            });            
+            this.addChild(this.respawnCounter[tile]);
         }
     }
 
@@ -319,8 +342,30 @@ export class Board extends Container {
         // Loop through pasture tiles that need new cows
         this.pastureRegen[turnCount % COW_REGEN_RATE].forEach((tilePosition) => {
             this.createPiece(tilePosition, PieceEnum.Cow);
+            let tile = tilePosition.row * 16 + tilePosition.column;
+            this.respawnCounter[tile].text = "";
         });
         this.pastureRegen[turnCount % COW_REGEN_RATE] = [];
+
+        // Update spawn numbers
+        for (let i = 0; i < COW_REGEN_RATE; i++) {
+            //console.log(`(turnCount + i) % COW_REGEN_RATE = ${(turnCount + i) % COW_REGEN_RATE}`);
+            this.pastureRegen[(turnCount + i) % COW_REGEN_RATE].forEach((tilePosition) => {
+                //console.log(`Tile Position is : ${tilePosition.row}, ${tilePosition.column}`);
+                //console.log(`^^^ respawns in ${(COW_REGEN_RATE - turnCount) % COW_REGEN_RATE} days`);
+                let days = ((turnCount + i) % COW_REGEN_RATE) - turnCount % 12;
+                //let days = (COW_REGEN_RATE - i) % COW_REGEN_RATE
+                if (days < 0) {
+                    days += 12;
+                }
+                let view = this.getViewPosition(tilePosition);
+                let tile = tilePosition.row * 16 + tilePosition.column;
+                //console.log(`Tile num: ${tile}`);
+                this.respawnCounter[tile].text = days;
+                this.respawnCounter[tile].x = view.x + this.tileSize * 0.5;
+                this.respawnCounter[tile].y = view.y + this.tileSize * 0.5;         
+            });
+        }
     }
 
     public spawnEnemies() {
