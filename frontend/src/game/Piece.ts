@@ -1,5 +1,14 @@
 import { Container, Sprite, Texture, Text, Graphics } from 'pixi.js';
-import { TeamEnum, getTeam } from './Utils'
+import { TeamEnum, getTeam, Position } from './Utils'
+import * as PIXI from "pixi.js";
+import { gsap } from "gsap";
+import { PixiPlugin } from "gsap/PixiPlugin";
+
+// register the plugin
+gsap.registerPlugin(PixiPlugin);
+
+// give the plugin a reference to the PIXI object
+PixiPlugin.registerPIXI(PIXI);
 
 /** Default piece options */
 const defaultPieceOptions = {
@@ -32,9 +41,9 @@ export class Piece extends Container {
     constructor() {
         super();
         this.image = Sprite.from("raw-assets/cow.png"); // temp assign image to something
-        this.image.anchor.set(0.5);
         this.image.x = 500;
         this.image.y = 500;
+        this.image.anchor.set(0.5, 0.5);
         this.addChild(this.image);
         
         this.scoreDisplay = new Container();
@@ -83,9 +92,50 @@ export class Piece extends Container {
     }
 
     /** Animation to come soon... */
-    public async animateMove(x: number, y: number) {
-        this.row = y;
-        this.column = x;
+    public async animateMove(newX: number, newY: number) {
+        gsap.to(this, {
+            pixi: { x: newX, y: newY },
+            duration: 0.5,
+            ease: "power.out"
+        });
+    }
+
+    public async animateBounce(newX: number, newY: number) {
+        let oldX = this.x;
+        let oldY = this.y;
+        gsap.to(this, {
+            pixi: { x: newX, y: newY },
+            duration: 0.1,
+            ease: "power1.in"
+        });
+        gsap.to(this, {
+            pixi: { x: oldX, y: oldY },
+            duration: 0.4,
+            delay: 0.1,
+            ease: "back.out"
+        });
+    }
+
+    public async animateAbducted(tileSize: number) {
+        let newY = this.y - (tileSize / 3);
+        gsap.to(this, {
+            pixi: { y: newY },
+            duration: 0.3,
+            ease: "linear"
+        });
+        await gsap.to(this.image, {
+            pixi: { scale: 0, rotation: 360 },
+            duration: 0.3,
+            ease: "linear"
+        });   
+    }
+    
+    public async animateDestroy() {
+        await gsap.to(this.image, {
+            pixi: { scale: 0},
+            duration: 0.5,
+            ease: "elastic.in"
+        })
     }
 
     public async addScore(amt: number = 1) {

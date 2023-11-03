@@ -126,6 +126,7 @@ export class Board extends Container {
     // Takes a board update, and performs corresponding updates and rerenders at the end.
     public async updateGame(update: BoardUpdate) {
         // Loop through steps in update
+        this.game.animating = true;
         for (let i = 0; i < update.length; i++) {
             for (let j = 0; j < update[i].length; j++) {
                 switch (update[i][j].action) {
@@ -139,9 +140,10 @@ export class Board extends Container {
             }
             if (update[i].length > 0) {
                 // Sleep for animation time
-                await new Promise(r => setTimeout(r, 200))
+                await new Promise(r => setTimeout(r, 500))
             }
         }
+        this.game.animating = false;
     }
 
     // TODO: Learn how to animate things.
@@ -153,14 +155,24 @@ export class Board extends Container {
 
     public obstructed_move(action: PieceAction) {
         // Do an animation toward the destination but fail.
+        let piece = action.piece;
+        let dest = action.move;
+        
+        let xShift = dest.column - piece.column;
+        let yShift = dest.row - piece.row;
+
+        const viewPosition = this.getViewPosition(dest);
+        // Actually display pieces at the right location
+        action.piece.animateBounce(piece.x + xShift * this.tileSize / 4, piece.y + yShift * this.tileSize / 4);
     }
 
     // Enemy killing a player piece
-    public kill_action(action: PieceAction) {
+    public async kill_action(action: PieceAction) {
         let piece = action.piece;
         let dest = action.move;
 
         const target = this.getPieceByPosition(dest)!;
+        await target.animateDestroy();
         this.removePiece(target);
 
         // Remove a piece from this player
@@ -176,11 +188,12 @@ export class Board extends Container {
 
     // Player killing a cow piece
     // TODO: change cow to be not a piece...
-    public abduct_action(action: PieceAction) {
+    public async abduct_action(action: PieceAction) {
         let piece = action.piece;
         let dest = action.move;
 
         const target = this.getPieceByPosition(dest, TeamEnum.Cow)!;
+        await target.animateAbducted(this.tileSize);
         this.removePiece(target);
         piece.addScore();
 
@@ -217,14 +230,6 @@ export class Board extends Container {
             }
             // console.log(config.starts[piecetype]);
             for (const position of config.starts[piecetype]) {
-                // Random generate tiles that are occupied by a piece to not be impassible or destinations
-                if (grid[position.row][position.column] == TileEnum.Impassible) {
-                    // console.log("Piece spawning on top of a tile...");
-                    let rand = Math.floor(random() * 2);
-                    if (rand == 0) grid[position.row][position.column] = TileEnum.Plain;
-                    else grid[position.row][position.column] = TileEnum.Pasture;
-                    // console.log(`Fixed ${[position.row, position.column]} to ${grid[position.row][position.column]}`);
-                }
                 this.createPiece(position, piecetype);
 
                 if (getTeam(piecetype) == TeamEnum.Player) {
@@ -294,8 +299,7 @@ export class Board extends Container {
         piece.row = position.row;
         piece.column = position.column;
         // Actually display pieces at the right location
-        piece.x = viewPosition.x - 8 * this.tileSize / 4;
-        piece.y = viewPosition.y - 8 * this.tileSize / 4;
+        piece.animateMove(viewPosition.x - 8 * this.tileSize / 4, viewPosition.y - 8 * this.tileSize / 4)
     }
 
     /**  Return visual piece location on the board */

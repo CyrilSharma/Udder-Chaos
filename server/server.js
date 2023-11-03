@@ -70,7 +70,7 @@ export function initPlayer(playerBool, socket) {
             if (rooms[roomCode]) {
                 rooms[roomCode].makeMove(socket, moveType, moveData, color);
                 console.log("AI made a move " + moveType + "," + color);
-            }  
+            }
         });
 
         socket.on('disconnect', () => {

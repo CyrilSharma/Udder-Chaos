@@ -101,7 +101,7 @@ class Server {
             switch (moveType) {
                 case MoveType.PlayCard:
                     gameScreen.playCard(moveData["index"], color);
-                    //console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
+                    console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
                     break;
                 case MoveType.RotateCard:
                     gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
