@@ -173,10 +173,10 @@ Step | Directions | Expected Output
 2 | See above | Note that evaluations are displayed for good moves
 3 | run searchPrune1, searchPrune2 | Note that it prunes things
 4 | run searchIterative if asked | Note that you can see things
-5 | 
+5 | run searchTests and scroll up | Note that a different heuristic can be passed in, show source if needed
 
 ## User Story 7
-Automated
+
 
 ## User Story 8
 Start on the game screen
