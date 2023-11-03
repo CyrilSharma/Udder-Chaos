@@ -66,7 +66,7 @@ export class PlayerGameInfo extends Container {
         this.addChild(this.playerNameShad);
         this.playerNameShad.visible = false;
 
-        this.ufo = Sprite.from('../../raw-assets/hat_duck.gif');
+        this.ufo = Sprite.from('../../images/black_ufo.png');
         this.ufo.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.ufo.x = 150;
         this.ufo.scale.x = 0.25;

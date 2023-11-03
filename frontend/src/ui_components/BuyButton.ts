@@ -36,7 +36,7 @@ export class BuyButton extends Container {
             })
         });
 
-        this.ufo = Sprite.from('../../raw-assets/hat_duck.gif');
+        this.ufo = Sprite.from('../../images/black_ufo.png');
         this.ufo.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.ufo.y = 25;
         this.ufo.scale.x = 0.1;
