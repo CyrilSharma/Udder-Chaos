@@ -82,7 +82,7 @@ struct Search {
                         // Prune poor branches, can be improved in future
                         if (tmp_eval < state_eval) {
                             if (verbosity > 1) {
-                                cerr << "Pruned state: state_eval = " << state_eval << ", tmp_eval = " << tmp_eval << endl;
+                                cerr << "Pruned state (enemy): state_eval = " << state_eval << ", tmp_eval = " << tmp_eval << endl;
                             }
                             continue;
                         }
@@ -101,7 +101,7 @@ struct Search {
 
                     // Prune poor branches, can be improved in future
                     if (tmp_eval > state_eval) {
-                        if (verbosity > 1) cerr << "Pruned state: state_eval = " << state_eval << ", tmp_eval = " << tmp_eval << endl;
+                        if (verbosity > 1) cerr << "Pruned state (player): state_eval = " << state_eval << ", tmp_eval = " << tmp_eval << endl;
                         continue;
                     }
 
@@ -121,6 +121,7 @@ struct Search {
                 if (verbosity > 0) {
                     cerr << "Updating best move. New best eval is: " << best_eval << endl;
                     cerr << "Move(card, color) is: " << state_metadata.second.first << ", " << state_metadata.second.second << endl; 
+                    if (verbosity > 1) cerr << "State is " << state << endl;
                 }
             }
 

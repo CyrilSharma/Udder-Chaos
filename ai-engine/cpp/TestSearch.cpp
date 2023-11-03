@@ -88,10 +88,10 @@ struct Handler {
       exit(1);
     }
 
-    int map = -1;
+    int map = 0;
     if (params.count("map")) map = stoi(params["map"]);
 
-    auto rng = mt19937(stoll(params["seed"]));
+    init_seed(stoll(params["seed"]));
     auto [board, pieces] = load_setup(map);
     auto cards = load_cards(stoll(params["ncards"]));
     auto gc = GameConfig(

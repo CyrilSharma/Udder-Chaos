@@ -31,10 +31,11 @@ ostream& operator<<(ostream& os, const Card& card) {
   os << "Card: ";
   for (auto move: card.moves) {
     switch (move) {
+      // Reverse down and up for consistency with clientside o.o
       case RIGHT: { os << 'R'; break; }
-      case UP:    { os << 'U'; break; }
+      case UP:    { os << 'D'; break; }
       case LEFT:  { os << 'L'; break; }
-      case DOWN:  { os << 'D'; break; }
+      case DOWN:  { os << 'U'; break; }
     }
   }
   return os;
