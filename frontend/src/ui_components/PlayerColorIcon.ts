@@ -25,13 +25,13 @@ export class PlayerColorIcon extends Sprite {
             case 0:
                 this.ufo = Sprite.from('../../raw-assets/player_red.png');
                 break;
-            case 1:
+            case 2:
                 this.ufo = Sprite.from('../../raw-assets/player_blue.png');
                 break;
-            case 2:
+            case 3:
                 this.ufo = Sprite.from('../../raw-assets/player_purple.png');
                 break;
-            case 3:
+            case 1:
                 this.ufo = Sprite.from('../../raw-assets/player_yellow.png');
                 break;
             default:
@@ -56,21 +56,21 @@ export class PlayerColorIcon extends Sprite {
                     .lineStyle(5, 0xff0000, 1, 0)
                     .drawCircle(50, 50, 50)
                 break;
-            case 1:
+            case 2:
                 //this.ufo = Sprite.from('../../raw-assets/player_blue.png');
                 this.borderButton.defaultView = new Graphics()
                     .beginFill(0xffffff)
                     .lineStyle(5, 0x0085ff, 1, 0)
                     .drawCircle(50, 50, 50)
                 break;
-            case 2:
+            case 3:
                 //this.ufo = Sprite.from('../../raw-assets/player_purple.png');
                 this.borderButton.defaultView = new Graphics()
                     .beginFill(0xffffff)
                     .lineStyle(5, 0xad00ff, 1, 0)
                     .drawCircle(50, 50, 50)
                 break;
-            case 3:
+            case 1:
                 //this.ufo = Sprite.from('../../raw-assets/player_yellow.png');
                 this.borderButton.defaultView = new Graphics()
                     .beginFill(0xffffff)
