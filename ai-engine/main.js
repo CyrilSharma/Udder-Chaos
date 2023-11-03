@@ -14,7 +14,6 @@ socket.on("connect", () => {
 socket.on("query-move", async (roomCode) => {
     await new Promise(r => setTimeout(r, 2000))
     let move = Math.floor(Math.random() * 3);
-    //let color = Math.floor(Math.random() * 4) + 5;
-    let color = 5;
+    let color = Math.floor(Math.random() * 4) + 5;
     socket.emit("make-move", roomCode, 0, {"index": move}, color);
 });
