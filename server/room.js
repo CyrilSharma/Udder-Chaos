@@ -114,8 +114,7 @@ export class Room {
     makeMove(socket, moveType, moveData, color) {
         this.moveList.push((moveType, moveData, color));
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
-        socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveType, moveData, color);
-        // socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveData["index"], color);
+        socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveData["index"], color);
         if (moveType < 2) { this.turn += 1; }
         if (this.turn % 3 == 2) {
             console.log("Query the AI move");
