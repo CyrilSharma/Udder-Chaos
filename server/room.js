@@ -13,7 +13,7 @@ const COLOR = {
     UNSET: 4  
 }
 
-const MAX_PLAYERS = 1;
+const MAX_PLAYERS = 4;
 
 /*
  * Room class tracks all players within a room/game and related game information.
