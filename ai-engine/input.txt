@@ -1,8 +1,8 @@
 INIT
 game_id: 2
-hand_size: 2
+hand_size: 3
 round_length: 5
-ncards: 18 
+ncards: 18
 seed: 1102
 END
 MOVE

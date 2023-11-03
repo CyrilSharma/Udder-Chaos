@@ -37,7 +37,6 @@ ostream& operator<<(ostream& os, const Card& card) {
       case DOWN:  { os << 'D'; break; }
     }
   }
-  os << '\n';
   return os;
 }
 

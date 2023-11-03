@@ -194,9 +194,7 @@ struct Game {
     for (Direction move: moves) {
       play_player_movement(move);
     }
-    if (turn & 1) {
-      player_id = (player_id + 1) & 0b11;
-    }
+    player_id = (player_id + 1) & 0b11;
     turn += 1;
   } /* player_move() */
 
@@ -215,7 +213,6 @@ struct Game {
     for (Direction move: moves) {
       play_enemy_movement(move, color);
     }
-    player_id = (player_id + 1) & 0b11;
     turn += 1;
   } /* enemy_move() */
 
@@ -473,7 +470,12 @@ ostream& operator<<(ostream& os, Game& game) {
 
   os << Color::Modifier(Color::BG_DEFAULT);
   
-  printv(game.viewCards());
+  auto cards = game.viewCards();
+  for (size_t i = 0; i < cards.size(); i++) {
+    if (i <= 2)      os << Color::Modifier(Color::FG_BLUE) << "Player <= " << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
+    else if (i <= 5) os << Color::Modifier(Color::FG_RED)  << "Enemy  <= " << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
+    else             os << "Queue  <= " << cards[i] << '\n';
+  }
   os << "turn: " << game.turn << endl;
   os << "hand size: " << game.hand_size << endl;
   int ppct = 0, epct = 0;

@@ -133,6 +133,7 @@ struct Handler {
     if (searches.count(game_id)) {
       searches.at(game_id).makeMove(mv);
       cerr << searches.at(game_id).game << endl;
+      cerr << "Played: " << mv << endl;
       cout << "SUCCESS" << endl;
     } else {
       cout << "Game ID not found" << endl;
