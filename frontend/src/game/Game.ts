@@ -11,6 +11,8 @@ import { PlayerColorIcon } from '../ui_components/PlayerColorIcon';
 import { PlayerGameInfo } from '../ui_components/PlayerGameInfo';
 import { DayCounter } from '../ui_components/DayCounter';
 import { BuyButton } from '../ui_components/BuyButton';
+import { ScoreCounter } from '../ui_components/ScoreCount';
+import { SizedButton } from '../ui_components/SizedButton';
 
 // This seems a little redundant right now,
 // But it will house the cards as well,
@@ -32,16 +34,17 @@ export class Game extends Container {
     public rightPanel: GamePanel;
     public boardPanel: GamePanel;
     public bottomPanel: GamePanel;
-
     private playerColorIcon: PlayerColorIcon;
     private dayCounter: DayCounter;
-
+    private scoreCounter: ScoreCounter;
     private player1: PlayerGameInfo;
     private player2: PlayerGameInfo;
     private player3: PlayerGameInfo;
     private player4: PlayerGameInfo;
+    private playerAI: PlayerGameInfo;
     public buyButton: BuyButton;
     public gameOver: boolean = false;
+    public upNext: SizedButton;
 
     constructor() {
         super();
@@ -49,19 +52,28 @@ export class Game extends Container {
         this.board = new Board(this);
         this.cards = new CardQueue(this);
         this.gameState = new GameState(this);
-        this.buyButton = new BuyButton("Buy", -100, -1, 0xffcc66, 1, 0.1, 30);
+        this.gameState.alpha = 0;
+        this.buyButton = new BuyButton(0, 0);
 
         this.leftPanel = new GamePanel(0.1125, 0.5, 0.22, 1, 200, 1000, 0xffffff);
         this.rightPanel = new GamePanel(0.8875, 0.5, 0.22, 1, 200, 1000, 0x5f5f5f);
         this.boardPanel = new GamePanel(0.5, 0.4, 0.56, 0.6, 500, 500, 0xcc0000);
         this.bottomPanel = new GamePanel(0.5, 0.925, 0.3, 0.15, 500, 150, 0xabcdef);
         this.boardPanel.gamePanel.alpha = 0;
+        this.leftPanel.gamePanel.alpha = 0;
+        this.rightPanel.gamePanel.alpha = 0;
+        this.bottomPanel.gamePanel.alpha = 0;
+        
         this.playerColorIcon = new PlayerColorIcon(0);
         this.player1 = new PlayerGameInfo(0);
         this.player2 = new PlayerGameInfo(1);
         this.player3 = new PlayerGameInfo(2);
         this.player4 = new PlayerGameInfo(3);
+        this.playerAI = new PlayerGameInfo(0);
+        this.playerAI.changeText("AI")
         this.dayCounter = new DayCounter();
+        this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
+        this.scoreCounter = new ScoreCounter(0, 0, 0.5, 0.5, "0 of 30", this.leftPanel.width, this.leftPanel.height, 40, 0xffffff);
 
         this.boardPanel.addChild(this.board);
         this.leftPanel.addChild(this.playerColorIcon);
@@ -70,27 +82,27 @@ export class Game extends Container {
         this.leftPanel.addChild(this.player3);
         this.leftPanel.addChild(this.player4);
         this.leftPanel.addChild(this.dayCounter);
+        this.leftPanel.addChild(this.buyButton);
+        this.leftPanel.addChild(this.scoreCounter);
 
-        // this.addChild(this.board);
-        // this.addChild(this.cards);
-        // this.addChild(this.gameState);
+        this.rightPanel.addChild(this.upNext);
+        this.rightPanel.addChild(this.playerAI);
 
+        this.addChild(this.gameState);
         this.addChild(this.leftPanel);
         this.addChild(this.rightPanel);
         this.addChild(this.boardPanel);
         this.addChild(this.bottomPanel);
-
-
-        this.addChild(this.buyButton);
+        this.addChild(this.cards);
     }
 
     public setup(config: GameConfig) {
         this.config = config;
         this.board.setup(config);
         this.cards.setup();
-        this.cards.y = this.board.getHeight();
+        //this.cards.y = this.board.getHeight();
         this.gameState.setup();
-        this.gameState.y = this.cards.y + this.cards.height;
+        //this.gameState.y = this.cards.y + this.cards.height;
     }
 
     public setPlayerColor(color: number) {
@@ -178,13 +190,23 @@ export class Game extends Container {
         this.player2.y = 100;
         this.player3.y = 150;
         this.player4.y = 200;
+        this.playerAI.y = 200;
         this.player1.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.player2.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.player3.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.player4.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
+        this.playerAI.resize(this.rightPanel.getBox()[3] - this.rightPanel.getBox()[2]);
 
         this.dayCounter.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.dayCounter.y = -250;
+        this.scoreCounter.y = -110;
+
+        this.buyButton.y = this.scoreCounter.y + 70;
+        this.cards.y = 0;
+        this.cards.x = 0;
+        this.upNext.y = -300;
+
+        this.cards.placeCards();
 
         this.board.winScreen.resize(this.board.getWidth(), this.board.getHeight());
         this.board.loseScreen.resize(this.board.getWidth(), this.board.getHeight());

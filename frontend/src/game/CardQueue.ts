@@ -166,36 +166,35 @@ export class CardQueue extends Container {
 
     /** Redraw all cards */
     public placeCards() {
-        let count = 0;
-        let index = 0;
-        const board_width = this.game.board.getWidth();
-        const interval = board_width / (this.ncards + 2);
-        
-        // Draw player hand
+
+        // Draw Player Hand
+        let pos = -1;
         for (const card of this.player_hand) {
-            ///card.index = index++;
-            card.x = interval * (count++);
+            card.x = this.game.bottomPanel.x + pos * this.game.bottomPanel.width * 0.4;
+            card.y = this.game.bottomPanel.y;
             this.cardContainer.addChild(card);
+            pos++;
         }
-        
-        // Visual space between hand and queue
-        count++;
 
         // Draw card queue
+        pos = 0;
         for (const card of this.queue) {
-            ///card.index = index++;
-            card.x = interval * (count++);
+            if (pos == this.queue.length - 1) {
+                pos++;
+            }
+            card.y = this.game.rightPanel.y + this.game.rightPanel.height * 0.2 - pos * card.height * 0.7;
+            card.x = this.game.rightPanel.x;
             this.cardContainer.addChild(card);
+            pos++;
         }
 
-        // Space
-        count++;
-        
         // Draw enemy hand
+        pos = -1;
         for (const card of this.enemy_hand) {
-            ///card.index = index++;
-            card.x = interval * (count++);
+            card.x = this.game.rightPanel.x + pos * this.game.rightPanel.width * 0.2;
+            card.y = this.game.bottomPanel.y;
             this.cardContainer.addChild(card);
+            pos++;
         }
     }
 }
