@@ -144,11 +144,12 @@ export class Board extends Container {
     }
 
     // Enemy killing a player piece
-    public kill_action(action: PieceAction) {
+    public async kill_action(action: PieceAction) {
         let piece = action.piece;
         let dest = action.move;
 
         const target = this.getPieceByPosition(dest)!;
+        await target.animateDestroy();
         this.removePiece(target);
 
         // Remove a piece from this player

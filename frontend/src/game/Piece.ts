@@ -127,8 +127,15 @@ export class Piece extends Container {
             pixi: { scale: 0, rotation: 360 },
             duration: 0.3,
             ease: "linear"
-        });
-        
+        });   
+    }
+    
+    public async animateDestroy() {
+        await gsap.to(this.image, {
+            pixi: { scale: 0},
+            duration: 0.5,
+            ease: "elastic.in"
+        })
     }
 
     public async addScore(amt: number = 1) {
