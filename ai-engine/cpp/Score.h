@@ -5,6 +5,11 @@
 
 struct Scorer {
     enum {def = 0, playerPcCt = 1, enemyPcCt = 2, turn = 3, constant = 4};
+
+    // Score weighting
+    enum {epwt = 3, ppwt = -3};
+
+    // constructor with scorer type, 0 is default, anything else is a debug scorer
     int typ;
     Scorer (int typ = 0) : typ(typ) {}
 
@@ -25,7 +30,6 @@ struct Scorer {
     }
 
     int _score(Game &game) {
-        // cerr << game << endl;
         // future heuristic ideas
         // Piece positions
         // Player piece count
@@ -35,8 +39,8 @@ struct Scorer {
         int ppct = 0, epct = 0;
         for (int i = 0; i < 4; i++) ppct += game.players[i].count(), epct += game.enemies[i].count();
 
-        int ppscore = -2*ppct;
-        int epscore = 3*epct;
+        int ppscore = ppwt*ppct;
+        int epscore = epwt*epct;
         // cerr << "SCORE IS: " << ppscore + epscore << endl;
         
         return ppscore + epscore;

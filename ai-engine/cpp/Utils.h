@@ -120,6 +120,8 @@ tuple<vector<vector<int>>, vector<Piece>> load_setup(mt19937 rng) {
   }
 
   int idx = uniform_int_distribution<int>(0, count - 1)(rng);
+  // LOAD DEBUGMAP
+  idx = 3;
   ifstream file ("Maps/map" + to_string(idx) + ".txt");
   if (!file.is_open()) {
     cerr << "FAILURE: Invalid Map Index: " << idx << endl;

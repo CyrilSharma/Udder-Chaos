@@ -1,20 +1,35 @@
 INIT
 game_id: 2
-hand_size: 2
+hand_size: 3
 round_length: 5
 ncards: 18 
-seed: 1102
+seed: 2
 END
 MOVE
 game_id: 2
-move: 1
+move: 0
 END
 MOVE
 game_id: 2
-move: 1
+move: 0
 END
 GET
 verbose: true
 timeout: 2000
+max_it: 500
+game_id: 2
+END
+MOVE
+game_id: 2
+move: 0
+END
+MOVE
+game_id: 2
+move: 0
+END
+GET
+verbose: true
+timeout: 2000
+max_it: 500
 game_id: 2
 END

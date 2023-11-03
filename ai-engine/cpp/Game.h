@@ -472,12 +472,11 @@ ostream& operator<<(ostream& os, Game& game) {
   
   auto cards = game.viewCards();
   for (size_t i = 0; i < cards.size(); i++) {
-    if (i <= 2)      os << Color::Modifier(Color::FG_BLUE) << "Player <= " << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
-    else if (i <= 5) os << Color::Modifier(Color::FG_RED)  << "Enemy  <= " << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
+    if (i < game.hand_size)      os << Color::Modifier(Color::FG_BLUE) << "Player <= " << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
+    else if (i < 2*game.hand_size) os << Color::Modifier(Color::FG_RED)  << "Enemy  <= " << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
     else             os << "Queue  <= " << cards[i] << '\n';
   }
   os << "turn: " << game.turn << endl;
-  os << "hand size: " << game.hand_size << endl;
   int ppct = 0, epct = 0;
   for (int i = 0; i < 4; i++) {
     ppct += game.players[i].count();

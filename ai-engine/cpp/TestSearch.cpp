@@ -98,6 +98,7 @@ struct Handler {
     );
     auto game_id = stoll(params["game_id"]);
     searches.insert({game_id, Search(gc)});
+    cerr << searches.at(game_id).game << endl;
     cout << "SUCCESS" << endl;
   } /* init() */
 
@@ -110,8 +111,9 @@ struct Handler {
     auto params = load_params();
     auto game_id = stoll(params["game_id"]);
     auto verbose = (params.find("verbose") != params.end()) && (params["verbose"] == " true");
+    auto max_it = (params.find("max_it") != params.end() ? stoi(params["max_it"]) : 1e9);
     if (searches.count(game_id)) {
-      auto res = searches.at(game_id).getMove(stoll(params["timeout"]), verbose);
+      auto res = searches.at(game_id).getMove(stoll(params["timeout"]), verbose = verbose, max_it = max_it);
       cout << res.first << "\n" << res.second << endl;
       cout << "SUCCESS" << endl;
     } else {
@@ -131,6 +133,7 @@ struct Handler {
     auto mv = stoi(params["move"]);
     if (searches.count(game_id)) {
       searches.at(game_id).makeMove(mv);
+      cerr << searches.at(game_id).game << endl;
     } else {
       cerr << "Game ID not found" << endl;
       exit(1);

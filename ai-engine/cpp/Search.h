@@ -52,7 +52,7 @@ struct Search {
         states.push({{0, {-1, -1}}, game});
         pair<int, int> best_move = {0, 0}; int best_eval = INT_MIN;
         
-        int iteration = 1, turns = 1;
+        int iteration = 1, turns = 0;
         // basic time check for now, can optimize later
         while (iteration < max_it && curTime() - start < timeout) {
             if (verbose && iteration % 100 == 0) cerr << "iteration: " << iteration << endl;
@@ -110,7 +110,6 @@ struct Search {
                 if (verbose) {
                     cerr << "Updating best move. New best eval is: " << best_eval << endl;
                     cerr << "Move(card, color) is: " << state_metadata.second.first << ", " << state_metadata.second.second << endl; 
-                    // cerr << "State is: \n" << state << endl;
                 }
             }
 
