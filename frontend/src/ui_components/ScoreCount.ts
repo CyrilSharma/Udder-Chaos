@@ -39,7 +39,7 @@ export class ScoreCounter extends FancyButton {
     }
 
     public updateScore(score: string) {
-        this.label.text = score + "of 30";
+        this.label.text = score + "of 10";
     }
 
     public getText() : string {
