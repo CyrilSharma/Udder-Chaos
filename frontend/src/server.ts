@@ -90,7 +90,7 @@ class Server {
             await navigation.showScreen(GameScreen);
 
             let gameScreen = navigation.currentScreen as GameScreen;
-            gameScreen.setPlayerColor(color);
+            gameScreen.setPlayerColor(color - 1);
 
             this.color = color;
         });
@@ -140,6 +140,7 @@ class Server {
         console.log(`Sending rotate-card with index: ${cardIndex}`);
         this.socket.emit("make-move", MoveType.RotateCard, {"index": cardIndex, "rotation": rotation}, color);
     }
+
 
     public async updatePlayerName(name: string) {
         this.socket.emit("update-name", name);

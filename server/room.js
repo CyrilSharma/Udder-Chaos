@@ -116,6 +116,7 @@ export class Room {
         //TODO: Check if player's turn 
         this.moveList.push((moveType, moveData, color));
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
+        //console.log(this.moveList);
         if (moveType < 2) {
             this.turn += 1;
         }

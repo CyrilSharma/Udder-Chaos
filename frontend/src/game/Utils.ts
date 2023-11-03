@@ -7,6 +7,7 @@ import '@pixi/math-extras';
 // Constants
 export const COW_REGEN_RATE = 12; // Respawn after 3 days
 export const COW_SACRIFICE = 3; 
+
 export const SCORE_GOAL = 10;
 export const DAYS_PER_ROUND = 3;
 
@@ -147,8 +148,12 @@ export function shuffle(array: any[]) {
 }
 
 let gen = new MersenneTwister();
-export function initSeed(seed: number) {
-    gen.init_seed(seed);
+export function initSeed(seed: string) {
+    let numSeed = 0;
+    for (let i = 0; i < seed.length; i++) {
+        numSeed += seed.charCodeAt(i);
+    }
+    gen.init_seed(numSeed);
 }
 
 export function random() {
@@ -243,4 +248,5 @@ export function angleBetween(vectorOne: Point, vectorTwo: Point) {
 
 export function mod(n: number, m: number) {
     return ((n % m) + m) % m;
-  }
+}
+
