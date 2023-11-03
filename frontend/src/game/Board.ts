@@ -132,6 +132,15 @@ export class Board extends Container {
 
     public obstructed_move(action: PieceAction) {
         // Do an animation toward the destination but fail.
+        let piece = action.piece;
+        let dest = action.move;
+        
+        let xShift = dest.column - piece.column;
+        let yShift = dest.row - piece.row;
+
+        const viewPosition = this.getViewPosition(dest);
+        // Actually display pieces at the right location
+        action.piece.animateBounce(piece.x + xShift * this.tileSize / 4, piece.y + yShift * this.tileSize / 4);
     }
 
     // Enemy killing a player piece
@@ -155,11 +164,12 @@ export class Board extends Container {
 
     // Player killing a cow piece
     // TODO: change cow to be not a piece...
-    public abduct_action(action: PieceAction) {
+    public async abduct_action(action: PieceAction) {
         let piece = action.piece;
         let dest = action.move;
 
         const target = this.getPieceByPosition(dest, TeamEnum.Cow)!;
+        await target.animateAbducted(this.tileSize);
         this.removePiece(target);
         piece.addScore();
 
