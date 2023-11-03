@@ -183,16 +183,16 @@ export class Board extends Container {
                 case 0:
                     break;
                 case 1:
-                    this.game.player1.setUnits(this.playerPieces[0]);
+                    this.game.player1.setUnits(this.playerPieces[target.type]);
                     break;
                 case 2:
-                    this.game.player2.setUnits(this.playerPieces[1]);
+                    this.game.player2.setUnits(this.playerPieces[target.type]);
                     break;
                 case 3:
-                    this.game.player3.setUnits(this.playerPieces[2]);
+                    this.game.player3.setUnits(this.playerPieces[target.type]);
                     break;
                 case 4:
-                    this.game.player4.setUnits(this.playerPieces[3]);
+                    this.game.player4.setUnits(this.playerPieces[target.type]);
                     break;
                 default:
                     //this.game.playerAI.setUnits(this.playerPieces[4]);
@@ -251,10 +251,6 @@ export class Board extends Container {
             // console.log(config.starts[piecetype]);
             for (const position of config.starts[piecetype]) {
                 this.createPiece(position, piecetype);
-
-                if (getTeam(piecetype) == TeamEnum.Player) {
-                    this.playerPieces[piecetype] += 1;
-                }
             }
         }
         
@@ -293,25 +289,6 @@ export class Board extends Container {
             if (this.game.buyButton.dragging && this.game.ourTurn()) {
                 server.purchaseUFO(position, this.game.playerColor);
                 this.purchaseUFO(position, this.game.playerColor);
-                switch (this.game.playerColor) {
-                    case 0:
-                        break;
-                    case 1:
-                        this.game.player1.setUnits(this.playerPieces[0]);
-                        break;
-                    case 2:
-                        this.game.player2.setUnits(this.playerPieces[1]);
-                        break;
-                    case 3:
-                        this.game.player3.setUnits(this.playerPieces[2]);
-                        break;
-                    case 4:
-                        this.game.player4.setUnits(this.playerPieces[3]);
-                        break;
-                    default:
-                        //this.game.playerAI.setUnits(this.playerPieces[4]);
-                        break;
-                }
             }
         });
 
@@ -330,9 +307,30 @@ export class Board extends Container {
         this.setPieceLocation(piece, position);
         this.pieces.push(piece);
         this.piecesContainer.addChild(piece);
+        console.log(this.playerPieces[pieceType]);
 
         if (PieceEnum.Player_Red <= pieceType && pieceType <= PieceEnum.Player_Purple) {
             this.playerPieces[pieceType] += 1;
+
+            switch (pieceType) {
+                case 0:
+                    break;
+                case 1:
+                    this.game.player1.setUnits(this.playerPieces[pieceType]);
+                    break;
+                case 2:
+                    this.game.player2.setUnits(this.playerPieces[pieceType]);
+                    break;
+                case 3:
+                    this.game.player3.setUnits(this.playerPieces[pieceType]);
+                    break;
+                case 4:
+                    this.game.player4.setUnits(this.playerPieces[pieceType]);
+                    break;
+                default:
+                    //this.game.playerAI.setUnits(this.playerPieces[4]);
+                    break;
+            }
         }
     }
 
