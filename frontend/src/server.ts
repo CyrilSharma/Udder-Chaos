@@ -16,6 +16,7 @@ class Server {
     public color!: number;
     socket;
 
+    
     constructor() {
         this.socket = io(import.meta.env.VITE_SERVER_URL, { secure: false });
 

@@ -156,6 +156,16 @@ struct Handler {
     (void) params;
     // we don't have a function for this yet.
   } /* buy() */
+
+   /*
+    *
+    */
+
+  void rotate() {
+    auto params = load_params();
+    (void) params;
+    // we don't have a function for this yet.
+  } /* rotate() */
 };
 
 int main() {

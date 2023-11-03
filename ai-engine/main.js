@@ -73,13 +73,24 @@ socket.on("query-move", async (room_code) => {
     socket.emit("make-move", room_code, MoveType.PlayCard, {"index": move}, color);
 });
 
-socket.on("share-move-ai", async (game_id, idx, color) => {
+socket.on("share-move-ai", async (game_id, moveType, moveData, color) => {
     console.log("share-move-ai");
-    console.log(`game_id: ${game_id}, idx: ${idx}`);
-    ai.stdin.write('MOVE\n');
-    ai.stdin.write(`game_id: ${game_id}\n`);
-    ai.stdin.write(`move: ${idx}\n`);
-    ai.stdin.write(`END\n`);
+    console.log(`game_id: ${game_id}, color: ${color}`);
+    if (moveType.PlayCard) {
+        ai.stdin.write('MOVE\n');
+        ai.stdin.write(`game_id: ${game_id}\n`);
+        ai.stdin.write(`move: ${moveData["index"]}\n`);
+        ai.stdin.write(`END\n`);
+    } else if (moveType.PurchaseUFO) {
+        // ai.stdin.write('BUY\n');
+        // ai.stdin.write(`game_id: ${game_id}\n`);
+        // ai.stdin.write(`move: ${moveData["index"]}\n`);
+        // ai.stdin.write(`END\n`);
+    } else if (moveType.RotateCard) {
+
+    } else {
+        console.log("ERROR, INVALID MOVETYPE");
+    }
     const status = (await it.next()).value;
     console.log(`Status: ${status}`);
 });
