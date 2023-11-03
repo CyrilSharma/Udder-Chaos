@@ -122,16 +122,17 @@ void init_seed(uint64_t seed) {
  * loads board + pieces based on the random seed.
  */
 
-tuple<vector<vector<int>>, vector<Piece>> load_setup() {
+tuple<vector<vector<int>>, vector<Piece>> load_setup(int idx = 0) {
   int count = 0;
   for (const auto &_ : fs::directory_iterator("Maps")) {
     (void) _;
     count += 1;
   }
   uniform_real_distribution<double> dist { 0.0, 1.0 };
-  int idx = floor(dist(rng) * count);
-  // ifstream file ("Maps/map" + to_string(idx) + ".txt");
-  ifstream file ("Maps/map0.txt");
+
+  // I am using this for test cases in the search <3
+  ifstream file ("Maps/map" + to_string(idx) + ".txt");
+  // ifstream file ("Maps/map0.txt");
   if (!file.is_open()) {
     cerr << "FAILURE: Invalid Map Index: " << idx << endl;
     exit(1);

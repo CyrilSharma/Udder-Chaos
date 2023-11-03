@@ -92,8 +92,8 @@ struct Handler {
     if (params.count("map")) map = stoi(params["map"]);
 
     auto rng = mt19937(stoll(params["seed"]));
-    auto [board, pieces] = load_setup(rng, map);
-    auto cards = load_cards(rng, stoll(params["ncards"]));
+    auto [board, pieces] = load_setup(map);
+    auto cards = load_cards(stoll(params["ncards"]));
     auto gc = GameConfig(
       board, pieces, cards,
       stoll(params["hand_size"]),
