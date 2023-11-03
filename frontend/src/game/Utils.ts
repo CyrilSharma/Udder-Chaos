@@ -148,12 +148,8 @@ export function shuffle(array: any[]) {
 }
 
 let gen = new MersenneTwister();
-export function initSeed(seed: string) {
-    let numSeed = 0;
-    for (let i = 0; i < seed.length; i++) {
-        numSeed += seed.charCodeAt(i);
-    }
-    gen.init_seed(numSeed);
+export function initSeed(seed: number) {
+    gen.init_seed(seed);
 }
 
 export function random() {

@@ -90,7 +90,7 @@ class Server {
             await navigation.showScreen(GameScreen);
 
             let gameScreen = navigation.currentScreen as GameScreen;
-            gameScreen.setPlayerColor(color - 1);
+            gameScreen.setPlayerColor(color);
 
             this.color = color;
         });

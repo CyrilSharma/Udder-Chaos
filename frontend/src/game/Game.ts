@@ -109,9 +109,9 @@ export class Game extends Container {
     public setPlayerColor(color: number) {
         this.playerColor = color;
         this.gameState.updateColor(color);
-        this.playerColorIcon = new PlayerColorIcon(color);
+        this.playerColorIcon = new PlayerColorIcon(color - 1);
         this.leftPanel.addChild(this.playerColorIcon);
-        this.playerColorIcon.changeColor(color);
+        this.playerColorIcon.changeColor(color - 1);
     }
 
     public updateTurn() {
@@ -205,7 +205,7 @@ export class Game extends Container {
         if (this.totalScore >= SCORE_GOAL) {
             this.endGame(true, "You saved Homeworld with enough cows!")
         }
-
+        this.scoreCounter.updateScore(this.totalScore.toString() + " ");
     }
 
     public resize(width: number, height: number) {
