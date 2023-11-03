@@ -176,7 +176,13 @@ Step | Directions | Expected Output
 5 | run searchTests and scroll up | Note that a different heuristic can be passed in, show source if needed
 
 ## User Story 7
+Start on Visual Studio Code
 
+Step | Directions | Expected Output
+--- | --- | ---
+1 | run searchPrune2 | Note that evals are reused
+2 | run searchIterative | Note that eval scores are in reverse order
+3 | See above | Note custom heuristic
 
 ## User Story 8
 Start on the game screen
