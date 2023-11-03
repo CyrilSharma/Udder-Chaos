@@ -26,6 +26,7 @@ export class Room {
         this.players = [];
         this.moveList = [];
         this.turn = 0;
+        this.seed = 0;
         this.setSeed(roomCode);
     }
 
@@ -95,7 +96,6 @@ export class Room {
 
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
-            // Send starting game info to players
             for (let i = 0; i < MAX_PLAYERS; i++) {
                 if (this.players[i].color == 4) {
                     // If any player is unset color, stop with error.
@@ -106,25 +106,30 @@ export class Room {
             this.io.to(this.roomCode).emit('start-game', this.seed, this.getPlayerInfo());
         }
         else {
-            // Not enough players yet
             host.emit("start-game-error", "Not enough players to start the game!");
         }
     }
 
     // Emit move to all players
     makeMove(socket, moveType, moveData, color) {
-        //TODO: Check if player's turn 
         this.moveList.push((moveType, moveData, color));
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
-        //console.log(this.moveList);
-        if (moveType < 2) {
-            this.turn += 1;
-        }
+        socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveData["index"], color);
+        if (moveType < 2) { this.turn += 1; }
         if (this.turn % 3 == 2) {
             console.log("Query the AI move");
             ai_socket.emit("query-move", this.roomCode);
         }
     }
+}
+
+function hashcode(roomCode) {
+    let hash = 0;
+    for (let i = 0; i < roomCode.length; i++) {
+        const charCode = roomCode.charCodeAt(i);
+        hash += (charCode * 19762) % 26531;
+    }
+    return hash;
 }
 
 /*
@@ -160,7 +165,12 @@ class Player {
         });
 
         this.socket.on("make-move", (moveType, moveData, color) => {
+           console.log(`make-move: type: ${moveType}, data: ${moveData}, color: ${color}`)
            this.room.makeMove(this.socket, moveType, moveData, color); 
+        });
+
+        this.socket.on("init-ai", (cards) => {
+            ai_socket.emit('init-ai', this.room.roomCode, this.room.seed, cards);
         });
 
         this.socket.on("leave-room", () => {

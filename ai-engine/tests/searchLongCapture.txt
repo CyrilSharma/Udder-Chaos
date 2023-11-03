@@ -1,0 +1,16 @@
+INIT
+game_id: 0
+hand_size: 2
+round_length: 5
+ncards: 18 
+map: 6
+seed: 13
+turn: 2
+END
+GET
+verbosity: 2
+timeout: 1000
+answer_card = 1
+answer_color = 0
+game_id: 0
+END

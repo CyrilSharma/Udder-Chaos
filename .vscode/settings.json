@@ -99,6 +99,8 @@
         "utility": "cpp",
         "shared_mutex": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "*.inc": "cpp",
+        "*.ipp": "cpp"
     }
 }

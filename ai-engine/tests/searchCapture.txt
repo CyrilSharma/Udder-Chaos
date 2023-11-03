@@ -1,0 +1,24 @@
+INIT
+game_id: 0
+hand_size: 3
+round_length: 5
+ncards: 18 
+map: 4
+seed: 2
+END
+MOVE
+game_id: 0
+move: 1
+END
+MOVE
+game_id: 0
+move: 0
+END
+GET
+verbosity: 2
+timeout: 1000
+max_it: 500
+game_id: 0
+answer_card: 1
+answer_color: 0
+END
