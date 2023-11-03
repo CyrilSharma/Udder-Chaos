@@ -26,7 +26,7 @@ END
 3 3 3
 0 0 0
 GET
-verbosity: 2
+verbosity: 1
 timeout: 1000
 answer_card: 1
 answer_color: 0

@@ -36,7 +36,7 @@ struct Scorer {
             case def: return _score(game);
             
             // debug scorers
-            case playerPcCt: return count_players(game); 
+            case playerPcCt: return -count_players(game); 
             case enemyPcCt: return count_enemies(game); 
             case turn: return game.turn; 
             case constant: return 0; 
@@ -55,7 +55,6 @@ struct Scorer {
         int ppct = count_players(game), epct = count_enemies(game);
         int ppscore = ppwt * ppct;
         int epscore = epwt * epct;
-        // cerr << "SCORE IS: " << ppscore + epscore << endl;
         
         return ppscore + epscore;
     }

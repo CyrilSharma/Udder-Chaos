@@ -50,8 +50,8 @@ struct Search {
         // Score, first move, game state
         auto cmp = [] (auto a, auto b) { return a.first.first < b.first.first; };
         priority_queue<
-          pair<pair<uint32_t, pair<int, int>>, Game>,
-          vector<pair<pair<uint32_t, pair<int, int>>, Game>>,
+          pair<pair<int, pair<int, int>>, Game>,
+          vector<pair<pair<int, pair<int, int>>, Game>>,
           decltype(cmp)
         > states(cmp), next_states(cmp);
 
@@ -67,52 +67,70 @@ struct Search {
             assert(!states.empty()); 
             auto [state_metadata, state] = states.top(); states.pop();
             auto [prev_eval, first_move] = state_metadata;
+ 
+            if (verbosity > 3) {
+                cerr << "Now processing: " << state << endl;
+            }
+
+            // Evaluate this state
+            int state_eval;
             
-            // Assume that each player is more likely to play better moves, so search accordingly
-            // Insert negative evals when player turns to search best moves for the players first
-            int state_eval = state.is_enemy_turn() ? INT_MIN : INT_MAX;
-            for (uint32_t choice = 0; choice < game.hand_size; ++choice) {
-                if (state.is_enemy_turn()) {
-                    for (uint32_t color = 0; color < 4; ++color) {
+            // Evaluated before, just return old evaluation
+            if (evals.find(state) != evals.end()) {
+                if (verbosity > 2) cerr << "Reusing saved state" << endl;
+                state_eval = evals.at(state);
+            }
+            // Evaluate new state
+            else {
+                // Assume that each player is more likely to play better moves, so search accordingly
+                // Insert negative evals when player turns to search best moves for the players first
+                state_eval = state.is_enemy_turn() ? INT_MIN : INT_MAX;
+                for (uint32_t choice = 0; choice < game.hand_size; ++choice) {
+                    if (state.is_enemy_turn()) {
+                        for (uint32_t color = 0; color < 4; ++color) {
+                            auto tmp_state = state;
+                            tmp_state.enemy_move(choice, color);
+                            if (verbosity > 3) cerr << "Made move: (" << choice << ", " << color << "): " << tmp_state << endl;
+                            int tmp_eval = scorer.score(tmp_state);
+
+                            // Prune poor branches, can be improved in future
+                            if (tmp_eval < state_eval) {
+                                if (verbosity > 1) {
+                                    cerr << "Pruned state (enemy): state_eval = " << state_eval << ", tmp_eval = " << tmp_eval << endl;
+                                }
+                                continue;
+                            }
+
+                            // Pruned branches, so tmp_eval >= state_eval
+                            state_eval = tmp_eval;
+                            auto tmp_first_move = first_move;
+                            if (first_move.first == -1) tmp_first_move = make_pair(choice, color);
+                            next_states.push({{tmp_eval, tmp_first_move}, tmp_state});
+                        }
+                    }
+                    else {
                         auto tmp_state = state;
-                        tmp_state.enemy_move(choice, color);
-                        // cerr << "SEARCH: " << tmp_state << endl;
+                        tmp_state.player_move(choice);
                         int tmp_eval = scorer.score(tmp_state);
 
                         // Prune poor branches, can be improved in future
-                        if (tmp_eval < state_eval) {
-                            if (verbosity > 1) {
-                                cerr << "Pruned state (enemy): state_eval = " << state_eval << ", tmp_eval = " << tmp_eval << endl;
-                            }
+                        if (tmp_eval > state_eval) {
+                            if (verbosity > 1) cerr << "Pruned state (player): state_eval = " << state_eval << ", tmp_eval = " << tmp_eval << endl;
                             continue;
                         }
 
-                        // Pruned branches, so tmp_eval >= state_eval
+                        // Lower branches are pruned
                         state_eval = tmp_eval;
-                        auto tmp_first_move = first_move;
-                        if (first_move.first == -1) tmp_first_move = make_pair(choice, color);
-                        next_states.push({{tmp_eval, tmp_first_move}, tmp_state});
+
+                        // When calling search it should never be the player's turn at the start
+                        assert (first_move.first != -1);
+
+                        next_states.push({{tmp_eval, first_move}, tmp_state});
                     }
                 }
-                else {
-                    auto tmp_state = state;
-                    tmp_state.player_move(choice);
-                    int tmp_eval = scorer.score(tmp_state);
 
-                    // Prune poor branches, can be improved in future
-                    if (tmp_eval > state_eval) {
-                        if (verbosity > 1) cerr << "Pruned state (player): state_eval = " << state_eval << ", tmp_eval = " << tmp_eval << endl;
-                        continue;
-                    }
-
-                    // Lower branches are pruned
-                    state_eval = tmp_eval;
-
-                    // When calling search it should never be the player's turn at the start
-                    assert (first_move.first != -1);
-
-                    next_states.push({{tmp_eval, first_move}, tmp_state});
-                }
+                // Save evaluation 
+                evals[state] = state_eval;
             }
 
             if (state_eval > best_eval && state_metadata.second.first != -1) {
@@ -125,8 +143,6 @@ struct Search {
                 }
             }
 
-            // Save evaluation for now, don't really do anything with them yet.
-            evals[state] = state_eval;
 
             // Once run out of this layer move to next layer
             if (states.empty()) {
@@ -139,8 +155,11 @@ struct Search {
         } 
 
         if (verbosity > 0) {
-            cerr << "Total iterations: " << iteration << endl;
-            cerr << "Turns ahead reached: " << turns << endl;
+            cerr << "Best move found: (" << best_move.first << ", " << best_move.second << ")" << endl;
+            cerr << "Move evaluation: " << best_eval << endl;
+            cerr << "Searched " << iteration << " iterations in " << curTime() - start << "ms";
+            if (iteration == max_it) cerr << " (max iterations reached)";
+            cerr << endl << "Turns ahead reached: " << turns << endl;
         }
 
         game.enemy_move(best_move.first, best_move.second);

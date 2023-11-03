@@ -67,7 +67,14 @@ struct Game {
 
   // Comparator for map and things? Idk
   bool operator<(const Game& o) const {
-    return turn < o.turn;
+    if (turn != o.turn) return turn < o.turn;
+    for (int i = 0; i < 4; i++) if (player_scores[i] != o.player_scores[i]) return player_scores[i] < o.player_scores[i];
+    for (int i = 0; i < 4; i++) if (players[i] != o.players[i]) return players[i] < o.players[i];
+    for (int i = 0; i < 4; i++) if (enemies[i] != o.enemies[i]) return enemies[i] < o.enemies[i];
+    for (int i = 0; i < 4; i++) if (enemies[i] != o.enemies[i]) return enemies[i] < o.enemies[i];
+    if (cards != o.cards) return cards < o.cards;
+    for (int i = 0; i < 6; i++) if (cow_respawn[i] != o.cow_respawn[i]) return cow_respawn[i] < o.cow_respawn[i];
+    return cows < o.cows;
   }
 
   /*--- Struct Members ---*/

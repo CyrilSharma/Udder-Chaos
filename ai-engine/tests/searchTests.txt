@@ -5,7 +5,7 @@ round_length: 5
 ncards: 18 
 map: 3
 seed: 2
-scorer: 0
+scorer: 1
 END
 2 3 0
 1 0 0
@@ -34,7 +34,7 @@ game_id: 2
 move: 0
 END
 GET
-verbosity: 2
+verbosity: 1
 timeout: 2000
 max_it: 5000
 game_id: 2

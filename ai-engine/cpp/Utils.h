@@ -172,7 +172,7 @@ vector<Card> load_cards(int ncards) {
   vector<Card> cards(ncards);
   for (int i = 0; i < ncards; i++) {
     int d1, d2, d3; cin >> d1 >> d2 >> d3;
-    cerr << d1 << " " << d2 << " " << d3 << endl;
+    // cerr << d1 << " " << d2 << " " << d3 << endl;
     vector<Direction> moves {
       directions[d1],
       directions[d2],

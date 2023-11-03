@@ -154,10 +154,26 @@ Step | Directions | Expected Output
 4 | Attempt to move pieces through obstacles, off the grid, and through each other | The pieces don't make any illegal moves
 
 ## User Story 5
-Automated
+Start on Visual Studio Code
+
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Show the AI engine communicating with clients | It communicates
+2 | See above | It parses and makes moves correctly
+3 | Make some moves | The states match
+4 | Make an AI move | The move returns in under 3 seconds
+5 | Run search test cases searchCapture1, searchCapture2, searchLongCapture | Passes all tests 
 
 ## User Story 6
-Automated
+Start on Visual Studio Code
+
+Step | Directions | Expected Output
+--- | --- | ---
+1 | run searchTests | Note layers are turns, searched in order
+2 | See above | Note that evaluations are displayed for good moves
+3 | run searchPrune1, searchPrune2 | Note that it prunes things
+4 | run searchIterative if asked | Note that you can see things
+5 | 
 
 ## User Story 7
 Automated

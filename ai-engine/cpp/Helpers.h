@@ -25,6 +25,9 @@ struct Card {
   bool operator!=(const Card& other) const {
     return moves != other.moves;
   }
+  bool operator<(const Card& other) const {
+    return moves < other.moves;
+  }
 };
 
 ostream& operator<<(ostream& os, const Card& card) {
