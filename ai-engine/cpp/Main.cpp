@@ -134,9 +134,12 @@ struct Handler {
     auto game_id = params["game_id"];
     auto mv = stoi(params["move"]);
     if (searches.count(game_id)) {
+      auto id = searches.at(game_id).game.queue.get(mv);
+      auto card = searches.at(game_id).game.cards[id];
       searches.at(game_id).makePlayerMove(mv);
       cerr << searches.at(game_id).game << endl;
-      cerr << "Played: " << mv << endl;
+      cerr << "Played: " << "Card-Pos: " << mv
+           << ", " << card << endl;
       cout << "SUCCESS" << endl;
     } else {
       cout << "Game ID not found" << endl;

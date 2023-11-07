@@ -1,5 +1,5 @@
 import { Button, FancyButton } from '@pixi/ui';
-import { Container, Graphics } from 'pixi.js';
+import { Container, Graphics, Sprite, ObservablePoint } from 'pixi.js';
 import { Text } from 'pixi.js';
 
 export class BuyButton extends Container {
@@ -7,64 +7,69 @@ export class BuyButton extends Container {
     private button: FancyButton;
     private posx: number;
     private posy: number;
-    private AR: number;
-    private size: number;
     public dragging: boolean = false;
+    private ufo: Sprite;
 
-    constructor(text: string, posx: number, posy: number, color: number, AR: number, size: number, bevel: number) {
+    constructor(posx: number, posy: number) {
+
         super();
         
         this.posx = posx;
         this.posy = posy;
-        this.size = size;
-        this.AR = AR;
 
         this.button = new FancyButton({
             defaultView: (new Button(
                 new Graphics()
-                        .beginFill(color)
-                        .drawRoundedRect(0, 0, AR * 100, 100, bevel)
+                    .beginFill(0x5f5f5f)
+                    .drawCircle(40, 40, 40)
             )).view,
             pressedView: (new Button(
                 new Graphics()
-                        .beginFill(color + 0x001a4d)
-                        .drawRoundedRect(0, 0, AR * 100, 100, bevel)
+                        .beginFill(0xffcc66 + 0x001a4d)
+                        .drawCircle(40, 40, 40)
             )).view,
             anchor: 0.5,
-            text: new Text(text, {
+            text: new Text("Buy", {
                 fontFamily: 'Concert One',
                 align: 'center',
-                fontSize: 60,
+                fontSize: 16,
             })
         });
+
+        this.ufo = Sprite.from('../../images/black_ufo.png');
+        this.ufo.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
+        this.ufo.y = 25;
+        this.ufo.scale.x = 0.1;
+        this.ufo.scale.y = 0.1;
 
         this.button.on('pointerdown', this.onDragStart, this);
         this.button.on('pointerup', this.onDragEnd, this);
         this.button.on('pointerupoutside', this.onDragEnd, this);
 
         this.addChild(this.button);
+        this.addChild(this.ufo);
+
     }
 
     public getButton() {
         return this.button;
     }
 
+    public updateButton(num: number) {
+        if (num != 0) {
+            this.button.defaultView = new Graphics()
+                .beginFill(0xffcc66)
+                .drawCircle(40, 40, 40)
+        } else {
+            this.button.defaultView = new Graphics()
+                .beginFill(0x5f5f5f)
+                .drawCircle(40, 40, 40)
+        }
+    }
+
     public resize(width: number, height: number) {
-        
-        // width and height are parent dims
-
-        //this.button.view.width = height * this.size * this.AR;
-        this.button.view.height = height * this.size;
-
         // try and resize relative to parent
         this.button.view.width = this.button.parent.getLocalBounds().width;
-
-        // Stop overlap for multi buttons
-        if (this.button.view.width > width * this.size * 2) {
-            this.button.view.width = width * this.size * 2;
-            this.button.view.height = this.button.view.width / this.AR;
-        }
-
         this.button.view.x = width * this.posx;
         this.button.view.y = height * this.posy;
     }

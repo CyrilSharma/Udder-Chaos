@@ -119,7 +119,7 @@ class Server {
             switch (moveType) {
                 case MoveType.PlayCard:
                     gameScreen.playCard(moveData["index"], color);
-                    //console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
+                    console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
                     break;
                 case MoveType.RotateCard:
                     gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
@@ -158,6 +158,7 @@ class Server {
         console.log(`Sending rotate-card with index: ${cardIndex}`);
         this.socket.emit("make-move", MoveType.RotateCard, {"index": cardIndex, "rotation": rotation}, color);
     }
+
 
     public async updatePlayerName(name: string) {
         this.socket.emit("update-name", name);

@@ -1,4 +1,5 @@
-import { Container, Sprite } from 'pixi.js';
+import { Container, Sprite, Graphics } from 'pixi.js';
+import { Button, FancyButton } from '@pixi/ui';
 import { Piece } from './Piece';
 import { Game } from './Game';
 import {
@@ -55,6 +56,8 @@ export class Board extends Container {
     public pastureRegen: Position[][] = [];
     /** Enemy tiles to spawn enemies each round */
     public enemyRegen: Position[][] = [];
+    /** Array holding respawn counter objects */
+    public respawnCounter: FancyButton[] = [];
 
     // We pass the game to allow for callbacks...
     constructor(game: Game) {
@@ -75,6 +78,29 @@ export class Board extends Container {
         }
         for (let i = 0; i < 4; i++) {
             this.enemyRegen.push([])
+        }
+
+        for (let tile = 0; tile < 256; tile++) {
+            this.respawnCounter[tile] = new FancyButton({
+                defaultView: (new Button(
+                    new Graphics()
+                            .beginFill(0xffffff)
+                            .drawCircle(20, 20, 20)
+                )).view,
+                anchor: 0.5,
+                text: ""
+            });
+            this.respawnCounter[tile].alpha = 0;
+            this.respawnCounter[tile].on('mouseover', () => {
+                this.respawnCounter[tile].alpha = 1;
+                if (this.getPieceByPosition({row: Math.floor(tile/16), column: tile % 16})?.type == TeamEnum.Player) {
+                    this.respawnCounter[tile].alpha = 0;
+                } // 8 10 11 14 15
+            });
+            this.respawnCounter[tile].on('mouseout', () => {
+                this.respawnCounter[tile].alpha = 0;
+            });            
+            this.addChild(this.respawnCounter[tile]);
         }
     }
 
@@ -103,6 +129,7 @@ export class Board extends Container {
     // Takes a board update, and performs corresponding updates and rerenders at the end.
     public async updateGame(update: BoardUpdate) {
         // Loop through steps in update
+        this.game.animating = true;
         for (let i = 0; i < update.length; i++) {
             for (let j = 0; j < update[i].length; j++) {
                 switch (update[i][j].action) {
@@ -116,9 +143,10 @@ export class Board extends Container {
             }
             if (update[i].length > 0) {
                 // Sleep for animation time
-                await new Promise(r => setTimeout(r, 200))
+                await new Promise(r => setTimeout(r, 500))
             }
         }
+        this.game.animating = false;
     }
 
     // TODO: Learn how to animate things.
@@ -126,23 +154,53 @@ export class Board extends Container {
         let piece = action.piece;
         let dest = action.move;
         this.setPieceLocation(piece, dest);
+        console.log(piece.type)
     }
 
     public obstructed_move(action: PieceAction) {
         // Do an animation toward the destination but fail.
+        let piece = action.piece;
+        let dest = action.move;
+        
+        let xShift = dest.column - piece.column;
+        let yShift = dest.row - piece.row;
+
+        const viewPosition = this.getViewPosition(dest);
+        // Actually display pieces at the right location
+        action.piece.animateBounce(piece.x + xShift * this.tileSize / 4, piece.y + yShift * this.tileSize / 4);
     }
 
     // Enemy killing a player piece
-    public kill_action(action: PieceAction) {
+    public async kill_action(action: PieceAction) {
         let piece = action.piece;
         let dest = action.move;
 
         const target = this.getPieceByPosition(dest)!;
+        await target.animateDestroy();
         this.removePiece(target);
 
         // Remove a piece from this player
         if (getTeam(target.type) == TeamEnum.Player) {
             this.playerPieces[target.type] -= 1;
+            switch (target.type) {
+                case 0:
+                    break;
+                case 1:
+                    this.game.player1.setUnits(this.playerPieces[target.type]);
+                    break;
+                case 2:
+                    this.game.player2.setUnits(this.playerPieces[target.type]);
+                    break;
+                case 3:
+                    this.game.player3.setUnits(this.playerPieces[target.type]);
+                    break;
+                case 4:
+                    this.game.player4.setUnits(this.playerPieces[target.type]);
+                    break;
+                default:
+                    //this.game.playerAI.setUnits(this.playerPieces[4]);
+                    break;
+            }
 
             // If this player has no more pieces end the game
             if (this.playerPieces[target.type] == 0) {
@@ -153,11 +211,12 @@ export class Board extends Container {
 
     // Player killing a cow piece
     // TODO: change cow to be not a piece...
-    public abduct_action(action: PieceAction) {
+    public async abduct_action(action: PieceAction) {
         let piece = action.piece;
         let dest = action.move;
 
         const target = this.getPieceByPosition(dest, TeamEnum.Cow)!;
+        await target.animateAbducted(this.tileSize);
         this.removePiece(target);
         piece.addScore();
 
@@ -194,19 +253,7 @@ export class Board extends Container {
             }
             // console.log(config.starts[piecetype]);
             for (const position of config.starts[piecetype]) {
-                // Random generate tiles that are occupied by a piece to not be impassible or destinations
-                if (grid[position.row][position.column] == TileEnum.Impassible) {
-                    // console.log("Piece spawning on top of a tile...");
-                    let rand = Math.floor(random() * 2);
-                    if (rand == 0) grid[position.row][position.column] = TileEnum.Plain;
-                    else grid[position.row][position.column] = TileEnum.Pasture;
-                    // console.log(`Fixed ${[position.row, position.column]} to ${grid[position.row][position.column]}`);
-                }
                 this.createPiece(position, piecetype);
-
-                if (getTeam(piecetype) == TeamEnum.Player) {
-                    this.playerPieces[piecetype] += 1;
-                }
             }
         }
         
@@ -227,7 +274,7 @@ export class Board extends Container {
                 }
             }
         }
-        console.log(`player pieces: ${this.playerPieces}`)
+        //console.log(`player pieces: ${this.playerPieces}`)
     }
 
     // Creating and rendering individual tile
@@ -263,6 +310,31 @@ export class Board extends Container {
         this.setPieceLocation(piece, position);
         this.pieces.push(piece);
         this.piecesContainer.addChild(piece);
+        console.log(this.playerPieces[pieceType]);
+
+        if (PieceEnum.Player_Red <= pieceType && pieceType <= PieceEnum.Player_Purple) {
+            this.playerPieces[pieceType] += 1;
+
+            switch (pieceType) {
+                case 0:
+                    break;
+                case 1:
+                    this.game.player1.setUnits(this.playerPieces[pieceType]);
+                    break;
+                case 2:
+                    this.game.player2.setUnits(this.playerPieces[pieceType]);
+                    break;
+                case 3:
+                    this.game.player3.setUnits(this.playerPieces[pieceType]);
+                    break;
+                case 4:
+                    this.game.player4.setUnits(this.playerPieces[pieceType]);
+                    break;
+                default:
+                    //this.game.playerAI.setUnits(this.playerPieces[4]);
+                    break;
+            }
+        }
     }
 
     /**  Moves piece */
@@ -271,8 +343,7 @@ export class Board extends Container {
         piece.row = position.row;
         piece.column = position.column;
         // Actually display pieces at the right location
-        piece.x = viewPosition.x - 8 * this.tileSize / 4;
-        piece.y = viewPosition.y - 8 * this.tileSize / 4;
+        piece.animateMove(viewPosition.x - 8 * this.tileSize / 4, viewPosition.y - 8 * this.tileSize / 4)
     }
 
     /**  Return visual piece location on the board */
@@ -319,16 +390,57 @@ export class Board extends Container {
         // Loop through pasture tiles that need new cows
         this.pastureRegen[turnCount % COW_REGEN_RATE].forEach((tilePosition) => {
             this.createPiece(tilePosition, PieceEnum.Cow);
+            let tile = tilePosition.row * 16 + tilePosition.column;
+            this.respawnCounter[tile].text = "";
         });
         this.pastureRegen[turnCount % COW_REGEN_RATE] = [];
+
+        // Update spawn numbers
+        for (let i = 0; i < COW_REGEN_RATE; i++) {
+            //console.log(`(turnCount + i) % COW_REGEN_RATE = ${(turnCount + i) % COW_REGEN_RATE}`);
+            this.pastureRegen[(turnCount + i) % COW_REGEN_RATE].forEach((tilePosition) => {
+                //console.log(`Tile Position is : ${tilePosition.row}, ${tilePosition.column}`);
+                //console.log(`^^^ respawns in ${(COW_REGEN_RATE - turnCount) % COW_REGEN_RATE} days`);
+                let days = ((turnCount + i) % COW_REGEN_RATE) - turnCount % 12;
+                //let days = (COW_REGEN_RATE - i) % COW_REGEN_RATE
+                if (days < 0) {
+                    days += 12;
+                }
+                let view = this.getViewPosition(tilePosition);
+                let tile = tilePosition.row * 16 + tilePosition.column;
+                //console.log(`Tile num: ${tile}`);
+                this.respawnCounter[tile].text = days;
+                this.respawnCounter[tile].x = view.x + this.tileSize * 0.5;
+                this.respawnCounter[tile].y = view.y + this.tileSize * 0.5;         
+            });
+        }
     }
 
     public spawnEnemies() {
         for (let i = 0; i < 4; i++) {
             this.enemyRegen[i].forEach((tilePosition) => {
-                this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
+                if (this.getPieceByPosition(tilePosition) == null) {
+                    this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
+                }
             });
         }
+    }
+
+    public resize(bounds: Array<number>, left: number, right: number, bottom: number) {
+        // Top, bottom, left, right
+        // this.width = (bounds[3] - bounds[2]);
+        // this.height = (bounds[1] - bounds[0]);
+
+        if (bottom < right - left) {
+            this.height = bottom;
+            this.width = bottom;
+        } else {
+            this.width = right - left;
+            this.height = right - left;
+        }
+
+        this.x = this.width * -0.5;
+        this.y = this.height * -0.5;
     }
 
     public purchaseUFO(position: Position, color: number) {
@@ -340,5 +452,6 @@ export class Board extends Container {
         } else {
             console.log("You can't purchase a UFO!")
         }
+
     }
 }

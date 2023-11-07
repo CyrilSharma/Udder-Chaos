@@ -2,26 +2,25 @@ import { Container, Graphics } from 'pixi.js';
 import { Game } from '../game/Game';
 import { createRandomGrid, PieceEnum, GameConfig, loadMap, getTeam, TeamEnum, random, Position } from '../game/Utils';
 import { MAPS } from "../maps/Maps"
+import { Background } from '../ui_components/Background';
 
 export class GameScreen extends Container {
-    public readonly background: Graphics;
-    public readonly gameContainer: Container;
+    public readonly background: Background;
     public readonly game: Game;
     constructor() {
         super();
-        this.background = new Graphics()
-            .beginFill(0x303030)
-            ;
+       
+        this.background = new Background();
         this.addChild(this.background);
+
         this.game = new Game();
-        this.gameContainer = new Container();
-        this.addChild(this.gameContainer);
-        this.gameContainer.addChild(this.game);
-        this.addChild(this.gameContainer);
+        this.addChild(this.game);
+        
     }
 
     public prepare() {
         // Temporary workaround until we can load maps.
+
         const config: GameConfig = {
             grid: loadMap(Math.floor(random()*MAPS.length)),
             starts: [
@@ -82,12 +81,7 @@ export class GameScreen extends Container {
     }
 
     public resize(width: number, height: number) {
-        console.log("width: " + width);
-        const centerx = width / 2;
-        const centery = height / 2;
-        this.game.x = centerx - this.game.board.getWidth() / 2;
-        this.background.drawRect(0, 0, width, height);
-        this.game.board.winScreen.resize(this.game.board.getWidth(), this.game.board.getHeight());
-        this.game.board.loseScreen.resize(this.game.board.getWidth(), this.game.board.getHeight());
+        this.background.resize(width, height);
+        this.game.resize(width, height);        
     }
 }

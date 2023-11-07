@@ -4,6 +4,7 @@ import { Button, FancyButton } from '@pixi/ui';
 import { PlayerGameInfo } from '../ui_components/PlayerGameInfo';
 import { PlayerColorIcon } from '../ui_components/PlayerColorIcon';
 import { DayCounter } from '../ui_components/DayCounter';
+import { GamePanel } from '../ui_components/GamePanel';
 
 export class TestingScreen extends Container {
 
@@ -16,6 +17,7 @@ export class TestingScreen extends Container {
     private scoreDisplay: FancyButton;
     private playerIcon: PlayerColorIcon;
     private dayCounter: DayCounter;
+    private gamePanel: GamePanel;
 
     constructor() {
         /** Default Stuff */
@@ -56,6 +58,9 @@ export class TestingScreen extends Container {
         this.leftCol.addChild(this.playerIcon);
         this.addChild(this.leftCol);
 
+        this.gamePanel = new GamePanel(0.88, 0.5, 0.2, 0.95, 200, 950, 0xffffff);
+        this.addChild(this.gamePanel);
+
     }
 
     public resize(width: number, height: number) {
@@ -70,6 +75,7 @@ export class TestingScreen extends Container {
         this.playerIcon.y = 90;
         this.dayCounter.y = 100;
         this.dayCounter.x = 400;
+        this.gamePanel.resize(width, height);
     }
 
 }

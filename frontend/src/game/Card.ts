@@ -52,6 +52,7 @@ export class Card extends Container {
         this.graphics.on('pointerdown', this.onDragStart);
         this.graphics.on('pointerup', this.onDragEnd);
         this.graphics.on('pointerupoutside', this.onDragEnd);
+
     }
 
     /** Draw the appropriate arrows for each direction on the card */
@@ -105,9 +106,9 @@ export class Card extends Container {
 
     /** Card behavior when clicked (when played) */
     private tapCard() {
-        console.log("tap!")
         // Make sure it is out turn
         if (this.queue.game.ourTurn() && this.queue.checkCardInHand(this, this.queue.game.playerColor)) {
+
             // Play card both locally and on the server
             this.unscale();
             // Server play card must come before queue play card because queue playcard reindexes it :D
@@ -120,9 +121,7 @@ export class Card extends Container {
     }
 
     private onPointerEnter = (e: FederatedPointerEvent) => {
-        //console.log("Hover over card " + this.index);
         this.queue.bringCardToTop(this);
-        console.log(this.dirs);
         this.upscale();
     };
 
@@ -134,6 +133,7 @@ export class Card extends Container {
 
     private onDragStart = (e: FederatedPointerEvent) => {
         if (this.queue.game.ourTurn() && this.queue.checkCardInHand(this, this.queue.game.playerColor)) {
+
             this.dragStartPos = this.toLocal(e.global) as Point;
             this.graphics.on('pointermove', this.onDragMove);
 
@@ -155,13 +155,13 @@ export class Card extends Container {
 
     private onDragEnd = (e: FederatedPointerEvent) => {
         if (this.dragStartPos != null) {
+
             this.graphics.off('pointermove', this.onDragMove);
             this.dragStartPos = null;
             let trueAngle = mod(this.graphics.angle, 360);
 
             if (this.cardRotation * 90 - ALLOWED_POS_OFFSET <= trueAngle && trueAngle <= this.cardRotation * 90 + ALLOWED_POS_OFFSET) {
                 let endTime = Date.now();
-                console.log("no ratation");
                 if (endTime - this.dragStartTime < ALLOWED_TIME_OFFSET) {
                     this.tapCard();
                 }
@@ -169,6 +169,7 @@ export class Card extends Container {
             }
 
             let rotation = Math.floor((trueAngle + 45) / 90);
+
             server.rotateCard(this.index, rotation, this.queue.game.playerColor);
             this.rotateCard(rotation - this.cardRotation);
             this.queue.game.updateTurn();

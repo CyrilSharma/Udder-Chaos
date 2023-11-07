@@ -189,10 +189,10 @@ Start on the game screen
 
 Step | Directions | Expected Output
 --- | --- | ---
-1 | View the board | There is a distinct score tile sprite
-2 | See above | There is a score counter on the screen
-3 | Gain score on a piece and hover over it, then move over the score tile | The piece will gain score, and then have it be set to 0 after landing on the score tile
-4 | See above | The score counter should increase by the piece's score
+1 | View the board | There is a distinct safe zone tile sprite where the UFOs spawn
+2 | See above | There is a score counter on the game screen
+3 | Adbuct a cow with a UFO, then move to safe zone tile. | The UFO will decrease to 0 score.
+4 | See above | The score counter will increase by the UFO's score.
 
 ## User Story 9
 Start on the main menu screen
@@ -200,21 +200,24 @@ Start on the main menu screen
 Step | Directions | Expected Output
 --- | --- | ---
 1 | Resize the window | The buttons are moved and do not overlap with each other within reason
-2 | Join and start a game | There is a turn counter viewable on the game screen which is clearly interpretable
-3 | See above | There is a color display which clearly shows what color the player is
-4 | See above | There is a turn display which clearly shows who's turn it is
-5 | See above | There is a piece count on the game screen  which clearly displays how pieces this player has
-6 | See above | There is a clear divider between player hand, enemy hand, and card queue
+2 | Join and start a game | One of the player icons on the left side of the screen glows to indicate their turn.
+3 | Move the current player | The glow will update to the next player's turn.
+4 | Be in game | There is a color display in the bottom left which clearly shows what color the player is
+5 | Look at different player screens | For each player screen, they have a different color display that accurately represents their color
+6 | Be in game | There is a piece count on each player icon which clearly displays how pieces this player has
+7 | Purchase a UFO | The piece count is updated to reflect the new UFO
+8 | Destroy a UFO | The piece count is updated to reflect the removed UFO
+9 | Be in game | There is a clear divider between player hand, enemy hand, and card queue
 
 ## User Story 10
 Start on the game screen
 
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Fail to meet a sacrifice requirement | The game ends with a loss screen and the end game UI appears
+1 | Complete a round of the game without having 3 cows | The game ends with a loss screen and the end game UI appears
 2 | Lose all of a player's pieces | The game ends with a loss screen and the end game UI appears
 3 | Collect enough cows to meet the win requirement | The game ends with a win screen and the end game UI appears
-4 | See above | Note that a separate win and loss screen exists, and that you can exit
+4 | See above | Note that a separate win and loss screen exists with an exit button
 5 | Click the exit button | The client is returned to the main screen and removed from the room
 
 ## User Story 11
@@ -225,7 +228,7 @@ Step | Directions | Expected Output
 1 | Move a unit through an unobstructed tile | There is a sliding animation for the unit
 2 | Move a unit into an obstructed tile | There is an obstruction animation for the unit
 3 | Have an enemy kill a player | There is a destruction animation for the enemy and the player
-4 | Capture a cow with a unit | There is an abduction animation for the player and the cow 
+4 | Capture a cow with a unit | There is an abduction animation for the cow 
 
 ## User Story 14
 Create a new game
@@ -247,6 +250,7 @@ Step | Directions | Expected Output
 --- | --- | ---
 1 | Abduct a cow and play a few turns | A counter appears on the tile when the cow is abducted and counts down
 2 | Play until the counter reaches 0 | A cow respawns on the tile where the counter reaches 0
-3 | Have each player play a turn (to day end) | The day counter increases
-4 | See above | The days left counter decreases
-5 | Play until the days left counter reaches 0 | A sacrifice is made, reducing abducted cows by a set amount, and spawning in new jets. The days left counter resets back to its inital value
+3 | Have each player play a turn (to day end) | The day counter increases by 1
+4 | Play until the day counter fills up | A sacrifice is made, reducing abducted cows by 3
+5 | See above | Jets are spawned at the center of the board if those tiles are empty
+6 | See above | The day counter will be reset.

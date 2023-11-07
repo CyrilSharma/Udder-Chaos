@@ -122,7 +122,7 @@ export class LogicHandler {
         }
 
         // If moving onto a destination tile, add score action.
-        if (this.game.board.getTileAtPosition(dest) == TileEnum.Destination) {
+        if (this.game.board.getTileAtPosition(dest) == TileEnum.Destination && piece.score > 0) {
             post_actions.push({ action: ActionType.Score_Action, piece: piece, move: dest });
         }
 

@@ -38,10 +38,11 @@ export class CardQueue extends Container {
         for (let i = 0; i < this.ncards; i++) {
             let config = {
                 color: ColorEnum.RED,
-                dirs: Array.from(CARD_PRESETS[i % CARD_PRESETS.length]), // Evenly generate a number of each card, for now literally just make it move twice
+                dirs: Array.from(CARD_PRESETS[i % CARD_PRESETS.length]),
                 size: 50,
                 rotation: Math.floor(random() * 4),
             };
+            //console.log(config);
             let card = new Card(this, config, i);
             this.cardContainer.addChild(card);
             this.queue.push(card);
@@ -164,36 +165,46 @@ export class CardQueue extends Container {
 
     /** Redraw all cards */
     public placeCards() {
-        let count = 0;
-        let index = 0;
-        const board_width = this.game.board.getWidth();
-        const interval = board_width / (this.ncards + 2);
-        
-        // Draw player hand
+
+        // Draw Player Hand
+        let pos = -1;
         for (const card of this.player_hand) {
-            ///card.index = index++;
-            card.x = interval * (count++);
+            card.x = this.game.bottomPanel.x + pos * this.game.bottomPanel.width * 0.4;
+            card.y = this.game.bottomPanel.y;
             this.cardContainer.addChild(card);
+            pos++;
         }
-        
-        // Visual space between hand and queue
-        count++;
 
         // Draw card queue
-        for (const card of this.queue) {
-            ///card.index = index++;
-            card.x = interval * (count++);
-            this.cardContainer.addChild(card);
+        // pos = 0;
+        // for (const card of this.queue) {
+        //     if (pos == this.queue.length - 1) {
+        //         pos++;
+        //     }
+        //     card.y = this.game.rightPanel.y + this.game.rightPanel.height * 0.2 - pos * card.height * 0.7;
+        //     card.x = this.game.rightPanel.x;
+        //     this.cardContainer.addChild(card);
+        //     pos++;
+        // }
+
+        pos = this.queue.length;
+        for (let i = this.queue.length - 1; i >= 0; i--) {
+            if (i == 0) {
+                pos--;
+            }
+            this.queue[i].y = this.game.rightPanel.y - this.game.rightPanel.height * 0.29 + (pos) * this.queue[i].height * 0.7;
+            this.queue[i].x = this.game.rightPanel.x;
+            this.cardContainer.addChild(this.queue[i]);
+            pos--;
         }
 
-        // Space
-        count++;
-        
         // Draw enemy hand
+        pos = -1;
         for (const card of this.enemy_hand) {
-            ///card.index = index++;
-            card.x = interval * (count++);
+            card.x = this.game.rightPanel.x + pos * this.game.rightPanel.width * 0.2;
+            card.y = this.game.bottomPanel.y;
             this.cardContainer.addChild(card);
+            pos++;
         }
     }
 }
