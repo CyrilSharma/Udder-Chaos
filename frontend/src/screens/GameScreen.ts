@@ -1,10 +1,11 @@
 import { Container, Graphics } from 'pixi.js';
 import { Game } from '../game/Game';
-import { createRandomGrid, PieceEnum, GameConfig, loadMap, getTeam, TeamEnum, random, Position } from '../game/Utils';
+import { GameConfig, loadMap, random, Position, PlayerInfo } from '../game/Utils';
 import { MAPS } from "../maps/Maps"
 import { Background } from '../ui_components/Background';
 
 export class GameScreen extends Container {
+    public SCREEN_ID = 'game';
     public readonly background: Background;
     public readonly game: Game;
     constructor() {

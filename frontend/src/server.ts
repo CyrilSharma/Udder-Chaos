@@ -13,7 +13,6 @@ const MoveType = {
 }
 
 class Server {
-    public color!: number;
     socket;
 
     constructor() {
@@ -79,8 +78,6 @@ class Server {
 
             let color = 1;
 
-            console.log(playerList);
-
             playerList.forEach((player: PlayerInfo) => {
                 if (player.id == this.socket.id) {
                     color += player.color;
@@ -91,7 +88,7 @@ class Server {
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
-            this.color = color;
+            gameScreen.game.setPlayers(playerList);
 
             let cards = []
             let arrays = [

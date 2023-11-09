@@ -1,10 +1,11 @@
 import { Container, Sprite, ObservablePoint, Text } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum, DAYS_PER_ROUND } from './Utils';
+import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum, DAYS_PER_ROUND, PlayerInfo } from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
 import { GameState } from './GameState';
+import { Player } from './Player';
 import { GamePanel } from '../ui_components/GamePanel';
 import { PlayerColorIcon } from '../ui_components/PlayerColorIcon';
 import { PlayerGameInfo } from '../ui_components/PlayerGameInfo';
@@ -37,7 +38,8 @@ export class Game extends Container {
     private playerColorIcon!: PlayerColorIcon;
     private dayCounter: DayCounter;
     private scoreCounter: ScoreCounter;
-    public player1: PlayerGameInfo;
+    public players: Player[] = [];
+    public player1: PlayerGameInfo;         // This is not great, need to change this @Ethan
     public player2: PlayerGameInfo;
     public player3: PlayerGameInfo;
     public player4: PlayerGameInfo;
@@ -112,6 +114,12 @@ export class Game extends Container {
         this.playerColorIcon = new PlayerColorIcon(color - 1);
         this.leftPanel.addChild(this.playerColorIcon);
         this.playerColorIcon.changeColor(color - 1);
+    }
+
+    public setPlayers(playerList: PlayerInfo[]) {
+        playerList.forEach((player) => {
+            this.players.push(new Player(player))
+        });
     }
 
     public updateTurn() {

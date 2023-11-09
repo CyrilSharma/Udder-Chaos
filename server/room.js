@@ -15,6 +15,8 @@ const COLOR = {
 
 const MAX_PLAYERS = 4;
 
+const HAND_SIZE = 3;
+
 /*
  * Room class tracks all players within a room/game and related game information.
  * Contains functions for adding players to the room and starting the game.
@@ -27,6 +29,7 @@ export class Room {
         this.moveList = [];
         this.turn = 0;
         this.seed = 0;
+        this.inGame = false;
         this.setSeed(roomCode);
     }
 
@@ -104,6 +107,7 @@ export class Room {
                 }
             }
             this.io.to(this.roomCode).emit('start-game', this.seed, this.getPlayerInfo());
+            this.inGame = true;
         }
         else {
             host.emit("start-game-error", "Not enough players to start the game!");
@@ -113,8 +117,14 @@ export class Room {
     // Emit move to all players
     makeMove(socket, moveType, moveData, color) {
         this.moveList.push((moveType, moveData, color));
+
+        // If player is offline, can broadcast to whole room
+        if (socket == null) {
+            socket = this.io;
+        }
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
         socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveData["index"], color);
+        
         if (moveType < 2) { this.turn += 1; }
         if (this.turn % 3 == 2) {
             console.log("Query the AI move");
@@ -193,12 +203,26 @@ class Player {
         this.socket.emit("receive-message", "joined the room");
     }
 
+    makeRandomMove() {
+        //Play a random card from the player's hand. Can be used when player takes too long, or when a player is disconnected
+        this.room.makeMove(this.socket, 0, {"index": Math.floor(Math.random() * HAND_SIZE)}, this.color + 1);
+    }
+
     disconnectPlayer() {
         console.log(this.name + " has disconnected.");
-        if (this.host) {
-            this.socket.to(this.room.roomCode).emit("kick-player");
+
+        if (this.room.inGame) {
+            // If the game is in progress, become empty player
+            this.socket.removeAllListeners();
+            this.socket = null;
+        } else {
+            // If in the lobby, then leave
+            if (this.host) {
+                this.socket.to(this.room.roomCode).emit("kick-player");
+            }
+            this.room.removePlayer(this);
+            this.socket.removeAllListeners();
         }
-        this.room.removePlayer(this);
-        this.socket.removeAllListeners();
+        
     }
 }

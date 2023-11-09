@@ -7,7 +7,7 @@ import { ButtonBox } from "../ui_components/ButtonBox";
 import { MenuButton } from "../ui_components/MenuButton";
 
 export class SettingsScreen extends Container {
-
+    public SCREEN_ID = 'settings';
     private background: Background;
     private container: ButtonBox;
     private backButton: FancyButton;

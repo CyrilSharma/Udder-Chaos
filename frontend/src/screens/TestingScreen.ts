@@ -7,7 +7,7 @@ import { DayCounter } from '../ui_components/DayCounter';
 import { GamePanel } from '../ui_components/GamePanel';
 
 export class TestingScreen extends Container {
-
+    public SCREEN_ID = 'testing';
     private background: Background;
     private leftCol: Container;
     private player1: PlayerGameInfo;
