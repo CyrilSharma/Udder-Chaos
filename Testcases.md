@@ -116,18 +116,22 @@ Step | Directions | Expected Output
 1 | Hover over a UFO unit | An popup will show the points/cows contained in the UFO
 2 | Move a UFO onto a cow tile (via debug or cards) | The cow will disappear from the tile
 3 | Hover over the UFO unit | The popup will show +1 point
-
 # Sprint 2
 ## User Story 1
 Start on game screen
 
 Step | Directions | Expected Output
 --- | --- | ---
-1 | View the board | There are 4 distinct colors for enemies
-2 | See above | Cows spawn on pastures
+1 | Start a game | Upon viewing the board there are 4 planes of different colors
+2 | See step 1 | Upon viewing the board, the cows are spawned on distinct tiles
 
 ## User Story 2
-Not sure what the test cases are here. CYRIL TODO
+Step | Directions | Expected Output
+--- | --- | ---
+1 | enter “udder-chaos.org” into a web browser | Note the UI
+2 | open a locally hosted version of the game | Note that the UI is identical to the web version
+3 | open the web version (4 times if needed) and start a game | Note that all clients are brought into the game (thus functionally the same as local version and connected automatically to socket server)
+4 | start a web game and make a few moves | Note the AI makes moves (same as local version)
 
 ## User Story 3
 Start on the main menu screen
@@ -154,13 +158,35 @@ Step | Directions | Expected Output
 4 | Attempt to move pieces through obstacles, off the grid, and through each other | The pieces don't make any illegal moves
 
 ## User Story 5
-Automated
+Start on Visual Studio Code
+
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Show the AI engine communicating with clients | It communicates
+2 | See above | It parses and makes moves correctly
+3 | Make some moves | The states match
+4 | Make an AI move | The move returns in under 3 seconds
+5 | Run search test cases searchCapture1, searchCapture2, searchLongCapture | Passes all tests 
 
 ## User Story 6
-Automated
+Start on Visual Studio Code
+
+Step | Directions | Expected Output
+--- | --- | ---
+1 | run searchTests | Note layers are turns, searched in order
+2 | See above | Note that evaluations are displayed for good moves
+3 | run searchPrune1, searchPrune2 | Note that it prunes things
+4 | run searchIterative if asked | Note that you can see things
+5 | run searchTests and scroll up | Note that a different heuristic can be passed in, show source if needed
 
 ## User Story 7
-Automated
+Start on Visual Studio Code
+
+Step | Directions | Expected Output
+--- | --- | ---
+1 | run searchPrune2 | Note that evals are reused
+2 | run searchIterative | Note that eval scores are in reverse order
+3 | See above | Note custom heuristic
 
 ## User Story 8
 Start on the game screen
