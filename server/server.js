@@ -26,6 +26,7 @@ if (mode != 'development') {
 
 // Handles connections.
 var mode = process.env.NODE_ENV;
+console.log(mode);
 const server_port = (mode == 'development') ? 3000 : 5000;
 server.listen(server_port, () => {
     console.log('listening on ' + server_port);
