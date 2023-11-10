@@ -187,7 +187,6 @@ struct Game {
     return turn % 3 == 2;
   }
 
-
   /*
    * choice is expected to be the numerical
    * index IN YOUR HAND of the card you wish to play.

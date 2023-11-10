@@ -131,33 +131,37 @@ export class Board extends Container {
         // Loop through steps in update
         this.game.animating = true;
         for (let i = 0; i < update.length; i++) {
+            const promises = [];
             for (let j = 0; j < update[i].length; j++) {
                 switch (update[i][j].action) {
-                    case ActionType.Normal_Move: { this.normal_move(update[i][j]); break; }
-                    case ActionType.Obstruction_Move: { this.obstructed_move(update[i][j]); break; }
-                    case ActionType.Kill_Action: { this.kill_action(update[i][j]); break; }
-                    case ActionType.Abduct_Action: { this.abduct_action(update[i][j]); break; }
-                    case ActionType.Score_Action: { this.score_action(update[i][j]); break; }
-                    default: { throw Error("Illegal move in updateGame"); break; }
+                    case ActionType.Normal_Move:      { promises.push(this.normal_move(update[i][j]));       break; }
+                    case ActionType.Obstruction_Move: { promises.push(this.obstructed_move(update[i][j]));   break; }
+                    case ActionType.Kill_Action:      { promises.push(this.kill_action(update[i][j]));       break; }
+                    case ActionType.Abduct_Action:    { promises.push(this.abduct_action(update[i][j]));     break; }
+
+                    // Maybe we should have an animation here...
+                    case ActionType.Score_Action:     { this.score_action(update[i][j]);            break; }
+                    default:                          { throw Error("Illegal move in updateGame");         }
                 }
             }
             if (update[i].length > 0) {
                 // Sleep for animation time
-                await new Promise(r => setTimeout(r, 500))
+                await Promise.all(promises);
+                // await new Promise(r => setTimeout(r, 250))
             }
         }
         this.game.animating = false;
     }
 
     // TODO: Learn how to animate things.
-    public normal_move(action: PieceAction) {
+    public async normal_move(action: PieceAction) {
         let piece = action.piece;
         let dest = action.move;
-        this.setPieceLocation(piece, dest);
+        await this.setPieceLocation(piece, dest);
         console.log(piece.type)
     }
 
-    public obstructed_move(action: PieceAction) {
+    public async obstructed_move(action: PieceAction) {
         // Do an animation toward the destination but fail.
         let piece = action.piece;
         let dest = action.move;
@@ -167,7 +171,10 @@ export class Board extends Container {
 
         const viewPosition = this.getViewPosition(dest);
         // Actually display pieces at the right location
-        action.piece.animateBounce(piece.x + xShift * this.tileSize / 4, piece.y + yShift * this.tileSize / 4);
+        await action.piece.animateBounce(
+            piece.x + xShift * this.tileSize / 4,
+            piece.y + yShift * this.tileSize / 4
+        );
     }
 
     // Enemy killing a player piece
@@ -338,12 +345,15 @@ export class Board extends Container {
     }
 
     /**  Moves piece */
-    public setPieceLocation(piece: Piece, position: Position) {
+    public async setPieceLocation(piece: Piece, position: Position) {
         const viewPosition = this.getViewPosition(position);
         piece.row = position.row;
         piece.column = position.column;
         // Actually display pieces at the right location
-        piece.animateMove(viewPosition.x - 8 * this.tileSize / 4, viewPosition.y - 8 * this.tileSize / 4)
+        await piece.animateMove(
+            viewPosition.x - 8 * this.tileSize / 4,
+            viewPosition.y - 8 * this.tileSize / 4
+        );
     }
 
     /**  Return visual piece location on the board */

@@ -93,7 +93,7 @@ export class Piece extends Container {
 
     /** Animation to come soon... */
     public async animateMove(newX: number, newY: number) {
-        gsap.to(this, {
+        await gsap.to(this, {
             pixi: { x: newX, y: newY },
             duration: 0.5,
             ease: "power.out"
@@ -103,12 +103,12 @@ export class Piece extends Container {
     public async animateBounce(newX: number, newY: number) {
         let oldX = this.x;
         let oldY = this.y;
-        gsap.to(this, {
+        await gsap.to(this, {
             pixi: { x: newX, y: newY },
             duration: 0.1,
             ease: "power1.in"
         });
-        gsap.to(this, {
+        await gsap.to(this, {
             pixi: { x: oldX, y: oldY },
             duration: 0.4,
             delay: 0.1,

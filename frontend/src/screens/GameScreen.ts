@@ -19,8 +19,7 @@ export class GameScreen extends Container {
     }
 
     public prepare() {
-        // Temporary workaround until we can load maps.
-
+        // Get rid of this!!!
         const config: GameConfig = {
             grid: loadMap(Math.floor(random()*MAPS.length)),
             starts: [
@@ -39,30 +38,10 @@ export class GameScreen extends Container {
         this.game.setup(config);
     }
 
-    // Move function only used for debug purposes right now (arrow key calls from main)
-    // Deprecated debug movement
-    // public move(dir: number) {
-    //     let dx = [1, 0, -1, 0];
-    //     let dy = [0, -1, 0, 1];
-    //     let normal_moves: PieceMove[] = [];
-    //     this.game.board.pieces.forEach((piece) => {
-    //         if (piece.type != PieceEnum.Enemy_Red) return;
-    //         let cur = { row: piece.row, column: piece.column };
-    //         let dest = { row: piece.row + dy[dir], column: piece.column + dx[dir] };
-    //         normal_moves.push({ from: cur, to: dest });
-    //     });
-
-    //     this.game.board.updateGame({
-    //         normal_moves,
-    //         kill_moves: [],
-    //         score_moves: [],
-    //     });
-    // }
-
-    public playCard(cardIndex: number, color: number) {
+    public async playCard(cardIndex: number, color: number) {
         console.log("screen Playing card: " + cardIndex);
         let card = this.game.cards.findCardInHand(cardIndex, color);
-        this.game.cards.playCard(card, color);
+        await this.game.cards.playCard(card, color);
         this.game.updateTurn();
     }
 

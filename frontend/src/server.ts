@@ -108,17 +108,18 @@ class Server {
                     cards.push(dirs)
                 }
             }
+
             if (playerList[0].id == this.socket.id) {
                 this.socket.emit("init-ai", cards);
             }
         });
 
-        this.socket.on("share-move", (moveType, moveData, color) => {
+        this.socket.on("share-move", async (moveType, moveData, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
             
             switch (moveType) {
                 case MoveType.PlayCard:
-                    gameScreen.playCard(moveData["index"], color);
+                    await gameScreen.playCard(moveData["index"], color);
                     console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
                     break;
                 case MoveType.RotateCard:

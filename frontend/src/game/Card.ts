@@ -105,15 +105,15 @@ export class Card extends Container {
     }    
 
     /** Card behavior when clicked (when played) */
-    private tapCard() {
+    private async tapCard() {
         // Make sure it is out turn
         if (this.queue.game.ourTurn() && this.queue.checkCardInHand(this, this.queue.game.playerColor)) {
 
             // Play card both locally and on the server
             this.unscale();
             // Server play card must come before queue play card because queue playcard reindexes it :D
-            server.playCard(this.index, this.queue.game.playerColor);
-            this.queue.playCard(this, this.queue.game.playerColor);
+            await server.playCard(this.index, this.queue.game.playerColor);
+            await this.queue.playCard(this, this.queue.game.playerColor);
             this.queue.game.updateTurn();
         } else {
             console.log("Not your turn!!");
@@ -153,7 +153,7 @@ export class Card extends Container {
         //console.log(`end drag: ${e.offsetX} ${e.offsetY}`)
     }
 
-    private onDragEnd = (e: FederatedPointerEvent) => {
+    private onDragEnd = async (e: FederatedPointerEvent) => {
         if (this.dragStartPos != null) {
 
             this.graphics.off('pointermove', this.onDragMove);
@@ -163,7 +163,7 @@ export class Card extends Container {
             if (this.cardRotation * 90 - ALLOWED_POS_OFFSET <= trueAngle && trueAngle <= this.cardRotation * 90 + ALLOWED_POS_OFFSET) {
                 let endTime = Date.now();
                 if (endTime - this.dragStartTime < ALLOWED_TIME_OFFSET) {
-                    this.tapCard();
+                    await this.tapCard();
                 }
                 return;
             }

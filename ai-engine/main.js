@@ -8,15 +8,16 @@ const MoveType = {
     PurchaseUFO: 2,
 }
 
-
 const ai = spawn('cpp/Main');
 ai.stdin.setEncoding('utf-8');
 ai.stderr.on('data', (data) => {
     process.stdout.write(data);
 })
 
+exited = false;
 ai.on('exit', (code) => {
     console.log(`AI Exited: ${code}!`);
+    exited = true;
 });
 
 // https://stackoverflow.com/questions/43638105/how-to-get-synchronous-readline-or-simulate-it-using-async-in-nodejs
@@ -34,6 +35,11 @@ const url =
     'http://udder-chaos.org:5000';
 
 const socket = io(url)
+
+socket.on("connect", () => {
+    console.log(`You connected with id: ${socket.id}`)
+    socket.emit("init-connection", false);
+});
 
 socket.on("init-ai", async (room_code, seed, cards) => {
     console.log("AI Initialized!");
@@ -54,11 +60,6 @@ socket.on("init-ai", async (room_code, seed, cards) => {
     console.log("Sent commands to AI...");
     const output = (await it.next()).value;
     console.log(`Output: ${output}`)
-});
-
-socket.on("connect", () => {
-    console.log(`You connected with id: ${socket.id}`)
-    socket.emit("init-connection", false);
 });
 
 socket.on("query-move", async (room_code) => {
