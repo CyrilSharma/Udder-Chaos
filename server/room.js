@@ -128,6 +128,7 @@ export class Room {
 
     // Emit move to all players
     makeMove(socket, moveType, moveData, color) {
+        console.log("moving now")
         this.moveList.push((moveType, moveData, color));
 
         // If emmiter is offline, can broadcast to whole room
@@ -144,9 +145,11 @@ export class Room {
             ai_socket.emit("query-move", this.roomCode);
         } else {
             // If next player is offline, play automatic move
-            this.players.forEach((player) => {
+            this.players.forEach(async (player) => {
                 if (player.socket == null && player.color == curColor) {
-                    console.log("Player is offline: " + player.color);
+                    await new Promise(r => setTimeout(r, 2000));
+                    player.makeRandomMove();
+                    return;
                 }
             });
         }
@@ -238,6 +241,11 @@ class Player {
 
             if (!this.room.checkOnlinePlayers()) {
                 removeRoom(this.room.roomCode);
+                return;
+            }
+
+            if (PLAYER_ORDER[this.room.moveList.length % PLAYER_ORDER.length] == this.color) {
+                this.makeRandomMove();
             }
         } else {
             // If in the lobby, then leave
