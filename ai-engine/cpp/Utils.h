@@ -110,7 +110,7 @@ vector<Card> random_cards(int ndirs, int ncards) {
 
 
 /*
- * initialized the seed.
+ * initialize the seed.
  */
 
 mt19937 rng;

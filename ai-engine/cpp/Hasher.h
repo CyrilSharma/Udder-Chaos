@@ -1,4 +1,5 @@
 #pragma once
+#include "Utils.h"
 #include "Game.h"
 #include <random>
 #include <vector>
@@ -11,8 +12,6 @@
 // And it doesn't generate only the legal ones
 struct Hasher {
     const int MAX_TURN = 1000, MAX_SCORE = 100;
-    int seed = 236478; // intelligently chosen seed (extremely important (do not touch (real)))
-    std::mt19937_64 rng(seed);
     std::vector<uint64_t> pieceArr[8], turnArr, scoreArr, playerScoreArr[4];
     std::vector<std::vector<uint64_t>> cardArr; 
 
@@ -21,7 +20,8 @@ struct Hasher {
         // Piece hashes
         for (int pieceType = 0; pieceType < 8; pieceType++) {
             for (int sq = 0; sq < g.area(); sq++) {
-                pieceArr[pieceType].push_back(rng());
+                uint64_t rv = rng();
+                pieceArr[pieceType].push_back(rv);
             }
         }
         
@@ -46,8 +46,8 @@ struct Hasher {
         assert(g.cards.size());
         uint64_t maxCardID = g.cards[0].getMaxID();
         cardArr.resize(maxCardID);
-        for (int cardType = 0; cardType < maxCardID; cardType++) {
-            for (int pos = 0; pos < g.ncards; pos++) {
+        for (uint64_t cardType = 0; cardType < maxCardID; cardType++) {
+            for (uint64_t pos = 0; pos < g.ncards; pos++) {
                 cardArr[cardType].push_back(rng());
             }
         }

@@ -81,6 +81,11 @@ ostream& operator<<(ostream& os, const Piece& p) {
   return os;
 }
 
+struct Move {
+  int card;
+  int color;
+};
+
 struct GameConfig {
   vector<vector<int>> board;
   vector<Piece> pieces;

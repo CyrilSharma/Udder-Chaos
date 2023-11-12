@@ -6,6 +6,8 @@
 #include "Utils.h"
 #include "Helpers.h"
 #include "Game.h"
+#include "Hasher.h"
+#include "MoveOrderer.h"
 #include "Score.h"
 
 using dynamic_bitset = boost::dynamic_bitset<>;
@@ -25,13 +27,19 @@ struct Search {
     Scorer scorer;
     // Zobrist hasher (unused as of right now)
     Hasher hasher;
+    // Move orderer
+    MoveOrderer moveOrderer;
     // Timeout in ms
     uint64_t timeout;
     // Max depth to search
     int max_depth;
     // Best moves found during a particular search
     int newBestMove = 0, newBestEval = 0;
-    Search(GameConfig gc, int sc=0, uint64_t to=1000, int md=inf) : game(gc), scorer(sc), timeout(to), max_depth(md) {}
+    // Beginning time, updated each time search is called
+    uint64_t begin_time;
+    Search(GameConfig gc, int sc=0, uint64_t to=1000, int md=inf) : game(gc), scorer(sc), timeout(to), max_depth(md), hasher(game) {
+        
+    }
 
     // Update internal state of search
     void makePlayerMove(int move) {
@@ -180,11 +188,11 @@ struct Search {
     }
 
     // brand new search function that will work in the _future_ !
-    // structure from https://github.com/SebLague/Chess-Coding-Adventure/blob/Chess-V1-Unity
+    // structure from https://github.com/SebLague/Chess-Coding-Adventure/blob/Chess-V2-Unity
     // orz Sebastian Lague
     // set timeout and max_depth before running, defaults to timeout = 1000 and max_depth = inf
     int beginSearch(int dbgVerbosity = 0) {
-        uint64_t begin_time = curTime();
+        begin_time = curTime();
 
         int bestMove = -1, bestEval = -1;
         
@@ -195,6 +203,7 @@ struct Search {
             // do alphabeta stuff here
             alphaBeta(0, curDepth, -inf, inf);
 
+            bestMove = newBestMove, bestEval = newBestEval;
             curDepth++;
         }
 
@@ -203,7 +212,22 @@ struct Search {
     }
 
     // Alpha-beta pruning negamax search
+    // Except there's no pruning right now because the heuristic is bad
     int alphaBeta(int depth, int stopDepth, int alpha, int beta) {
-        
+        // Timeout
+        if (curTime() > begin_time + timeout) { return 0; } 
+
+        // Reached search depth limit, return static evaluation
+        // We don't do quiescence search for now because this game 
+        // doesn't really have "capture-backs" like chess
+        // So it's hard to really measure 
+        // In the future we might for instance check if any of the next 2
+        // Player moves can take an enemy piece
+        if (depth == stopDepth) { return scorer.score(game); }
+
+        // Perform recursive search
+
+
+        return -1;
     }
 };
