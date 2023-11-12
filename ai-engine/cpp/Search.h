@@ -17,12 +17,21 @@ using dynamic_bitset = boost::dynamic_bitset<>;
  * TODO?
  */
 
+const int inf = 1e9;
 struct Search {
+    // Stored gamestate
     Game game;
+    // Heuristic scorer
     Scorer scorer;
+    // Zobrist hasher (unused as of right now)
+    Hasher hasher;
+    // Timeout in ms
     uint64_t timeout;
+    // Max depth to search
     int max_depth;
-    Search(GameConfig gc, int sc=0, uint64_t to=1000, int md=1e9) : game(gc), scorer(sc), timeout(to), max_depth(md) {}
+    // Best moves found during a particular search
+    int newBestMove = 0, newBestEval = 0;
+    Search(GameConfig gc, int sc=0, uint64_t to=1000, int md=inf) : game(gc), scorer(sc), timeout(to), max_depth(md) {}
 
     // Update internal state of search
     void makePlayerMove(int move) {
@@ -177,9 +186,24 @@ struct Search {
     int beginSearch(int dbgVerbosity = 0) {
         uint64_t begin_time = curTime();
 
-        int bestMove = 0, bestEval = 0, newBestMove = 0, newBestEval = 0;
+        int bestMove = -1, bestEval = -1;
+        
+        int curDepth = 1;
+        while (curDepth < max_depth) {
+            if (curTime() > begin_time + timeout) break;
 
+            // do alphabeta stuff here
+            alphaBeta(0, curDepth, -inf, inf);
+
+            curDepth++;
+        }
+
+        assert(bestMove != -1);
+        return bestMove;
     }
 
-
+    // Alpha-beta pruning negamax search
+    int alphaBeta(int depth, int stopDepth, int alpha, int beta) {
+        
+    }
 };

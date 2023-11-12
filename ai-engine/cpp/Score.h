@@ -33,7 +33,7 @@ struct Scorer {
     int score(Game &game) {
         switch(typ) {
             // default score
-            case def: return _score(game);
+            case def: return staticEval(game);
             
             // debug scorers
             case playerPcCt: return -count_players(game); 
@@ -45,7 +45,7 @@ struct Scorer {
         exit(1);
     }
 
-    int _score(Game &game) {
+    int staticEval(Game &game) {
         // future heuristic ideas
         // Piece positions
         // Player piece count
