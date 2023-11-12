@@ -185,6 +185,7 @@ vector<Card> load_cards(int ncards) {
 
 
 /*--- Timing ---*/
+// Returns current time in milliseconds
 // From https://stackoverflow.com/questions/19555121/how-to-get-current-timestamp-in-milliseconds-since-1970-just-the-way-java-gets
 uint64_t curTime() {
   using namespace std::chrono;

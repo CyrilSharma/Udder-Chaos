@@ -28,6 +28,24 @@ struct Card {
   bool operator<(const Card& other) const {
     return moves < other.moves;
   }
+  
+  // Get 'hash' of card, based on the moves it does
+  // assumes cards have less than 32 moves in them, and that all cards have the same length.
+  // oh and also that directions are just 0-3
+  uint64_t getID() {
+    uint64_t val = 0, pow = 1;
+    for (auto move : moves) {
+      val += move * pow;
+      pow *= 4;
+    }
+    return val;
+  }
+
+  // Helper for hashing to know max possible id of a card
+  // Assumes cards have less than 32 moves again
+  uint64_t getMaxID() {
+    return 1ULL << (2 * moves.size());
+  }
 };
 
 ostream& operator<<(ostream& os, const Card& card) {

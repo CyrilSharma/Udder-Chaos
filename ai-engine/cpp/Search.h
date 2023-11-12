@@ -20,9 +20,9 @@ using dynamic_bitset = boost::dynamic_bitset<>;
 struct Search {
     Game game;
     Scorer scorer;
-    Search(GameConfig gc, int sc=0) : game(gc), scorer(sc) {}
-
-    map<Game, int> evals;
+    uint64_t timeout;
+    int max_depth;
+    Search(GameConfig gc, int sc=0, uint64_t to=1000, int md=1e9) : game(gc), scorer(sc), timeout(to), max_depth(md) {}
 
     // Update internal state of search
     void makePlayerMove(int move) {
@@ -34,8 +34,12 @@ struct Search {
         game.enemy_move(move, color);
     }
 
+    //***********************
+    //     OLD, INCORRECT    
+    //***********************
     // Timeout passed in for now, might be a const or smt later
     // verbosity: Debug print level. 1 is some basic prints, 2 is more in depth
+    map<Game, int> evals;
     pair<int, int> getMove(uint64_t timeout = 1000, int verbosity = 0, int max_it = 1e9) {
         if (verbosity > 0) cerr << game << endl;
         if (verbosity > 0) cerr << "Initiating search with timeout = " << timeout << " and max_iterations = " << max_it << endl;
@@ -165,4 +169,17 @@ struct Search {
         game.enemy_move(best_move.first, best_move.second);
         return best_move;
     }
+
+    // brand new search function that will work in the _future_ !
+    // structure from https://github.com/SebLague/Chess-Coding-Adventure/blob/Chess-V1-Unity
+    // orz Sebastian Lague
+    // set timeout and max_depth before running, defaults to timeout = 1000 and max_depth = inf
+    int beginSearch(int dbgVerbosity = 0) {
+        uint64_t begin_time = curTime();
+
+        int bestMove = 0, bestEval = 0, newBestMove = 0, newBestEval = 0;
+
+    }
+
+
 };
