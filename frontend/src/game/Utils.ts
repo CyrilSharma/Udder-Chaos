@@ -181,6 +181,29 @@ export type GameSettings = {
     // add more when we have settings.
 };
 
+// ---- Moves ---- //
+
+export const MoveType = {
+    PlayCard: 0,
+    RotateCard: 1,
+    PurchaseUFO: 2,
+}
+
+export type PlayerMove = {
+    moveType: number,
+    moveData: PlayData | RotateData | Position,
+    color: number
+}
+
+export type PlayData = {
+    index: number
+}
+
+export type RotateData = {
+    index: number,
+    rotation: number
+}
+
 //-----Map Functions-----//
 export function loadMap(seed: number) {
     const grid: Grid = parseCSVGrid(MAPS[seed]);

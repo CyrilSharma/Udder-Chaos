@@ -13,6 +13,7 @@ import { BuyButton } from '../ui_components/BuyButton';
 import { ScoreCounter } from '../ui_components/ScoreCount';
 import { SizedButton } from '../ui_components/SizedButton';
 import server from "../server";
+import { MoveQueue } from './MoveQueue';
 
 // This seems a little redundant right now,
 // But it will house the cards as well,
@@ -31,6 +32,7 @@ export class Game extends Container {
     public totalScore: number = 0;
     private timer: number = TIMER_LENGTH;
     private timerInterval: NodeJS.Timeout;
+    private moveQueue: MoveQueue;
     public leftPanel: GamePanel;
     public rightPanel: GamePanel;
     public boardPanel: GamePanel;
@@ -55,7 +57,8 @@ export class Game extends Container {
         this.board = new Board(this);
         this.cards = new CardQueue(this);
         this.buyButton = new BuyButton(0, 0);
-        this.initTimer();
+        this.timerInterval = this.initTimer();
+        this.moveQueue = new MoveQueue(this);
 
         this.leftPanel = new GamePanel(0.1125, 0.5, 0.22, 1, 200, 1000, 0xffffff);
         this.rightPanel = new GamePanel(0.8875, 0.5, 0.22, 1, 200, 1000, 0x5f5f5f);
@@ -191,8 +194,8 @@ export class Game extends Container {
     }
 
     public ourTurn() {
-        //return !this.gameOver && !this.animating; // debug always allow current player to move
-        return !this.gameOver && !this.animating &&
+        return !this.gameOver && !this.animating; // debug always allow current player to move
+        //return !this.gameOver && !this.animating &&
             this.playerColor == 1 && this.turn == 1 || 
             this.playerColor == 2 && this.turn == 2 || 
             this.playerColor == 3 && this.turn == 4 ||
@@ -201,7 +204,7 @@ export class Game extends Container {
 
     public initTimer() {
         let self = this;
-        this.timerInterval = setInterval(function() {self.updateTimer()}, 1000);
+        return setInterval(function() {self.updateTimer()}, 1000);
     }
 
     public updateTimer() {
