@@ -1,10 +1,11 @@
 import { Container, Graphics } from 'pixi.js';
 import { Game } from '../game/Game';
-import { createRandomGrid, PieceEnum, GameConfig, loadMap, getTeam, TeamEnum, random, Position } from '../game/Utils';
+import { GameConfig, loadMap, random, Position, PlayerInfo } from '../game/Utils';
 import { MAPS } from "../maps/Maps"
 import { Background } from '../ui_components/Background';
 
 export class GameScreen extends Container {
+    public SCREEN_ID = 'game';
     public readonly background: Background;
     public readonly game: Game;
     constructor() {
@@ -59,21 +60,22 @@ export class GameScreen extends Container {
     //     });
     // }
 
-    public playCard(cardIndex: number, color: number) {
+    public async playCard(cardIndex: number, color: number) {
         console.log("screen Playing card: " + cardIndex);
         let card = this.game.cards.findCardInHand(cardIndex, color);
-        this.game.cards.playCard(card, color);
+        await this.game.cards.playCard(card, color);
         this.game.updateTurn();
     }
 
-    public rotateCard(cardIndex: number, rotation: number, color: number) {
+    public async rotateCard(cardIndex: number, rotation: number, color: number) {
         let card = this.game.cards.findCardInHand(cardIndex, color);
-        card.rotateCard(rotation - card.cardRotation);
+        await card.rotateCard(rotation - card.cardRotation);
         this.game.updateTurn();
     }
 
-    public purchaseUFO(position: Position, color: number) {
-        this.game.board.purchaseUFO(position, color);
+    public async purchaseUFO(position: Position, color: number) {
+        await this.game.board.purchaseUFO(position, color);
+        this.game.updateTurn();
     }
 
     public setPlayerColor(color: number) {

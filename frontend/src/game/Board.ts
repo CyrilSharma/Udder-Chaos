@@ -149,12 +149,10 @@ export class Board extends Container {
         this.game.animating = false;
     }
 
-    // TODO: Learn how to animate things.
     public normal_move(action: PieceAction) {
         let piece = action.piece;
         let dest = action.move;
         this.setPieceLocation(piece, dest);
-        console.log(piece.type)
     }
 
     public obstructed_move(action: PieceAction) {
@@ -292,6 +290,7 @@ export class Board extends Container {
             if (this.game.buyButton.dragging && this.game.ourTurn()) {
                 server.purchaseUFO(position, this.game.playerColor);
                 this.purchaseUFO(position, this.game.playerColor);
+                this.game.updateTurn();
             }
         });
 
@@ -310,7 +309,6 @@ export class Board extends Container {
         this.setPieceLocation(piece, position);
         this.pieces.push(piece);
         this.piecesContainer.addChild(piece);
-        console.log(this.playerPieces[pieceType]);
 
         if (PieceEnum.Player_Red <= pieceType && pieceType <= PieceEnum.Player_Purple) {
             this.playerPieces[pieceType] += 1;
@@ -380,9 +378,7 @@ export class Board extends Container {
     /** Get the tile at a position on the board */
     public getTileAtPosition(position: Position) {
         // handle out of bounds
-        // console.log("query at: ", position);
         if (position.row < 0 || position.row >= this.rows || position.column < 0 || position.column >= this.columns) return TileEnum.Impassible;
-        // console.log(this.grid[position.row][position.column]);
         return this.grid[position.row][position.column];
     }
 

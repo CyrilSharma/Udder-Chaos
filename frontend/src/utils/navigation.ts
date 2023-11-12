@@ -3,6 +3,7 @@ import { app } from '../main';
 
 /** Interface for app screens */
 interface AppScreen extends Container {
+    readonly SCREEN_ID: string;
     /** Show the screen */
     show?(): Promise<void>;
     /** Prepare screen, before showing */
@@ -16,9 +17,10 @@ interface AppScreen extends Container {
 }
 
 interface AppScreenConstructor {
-    new (): AppScreen;
+    
     /** List of assets bundles required by the screen */
     assetBundles?: string[];
+    new (): AppScreen;
 }
 
 class Navigation {
@@ -116,7 +118,10 @@ class Navigation {
         }
     }
 
-
+    /** Get current screen id */
+    public getScreenId() {
+        return this.currentScreen?.SCREEN_ID;
+    }
 
 }
 
