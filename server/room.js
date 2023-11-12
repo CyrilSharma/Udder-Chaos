@@ -13,7 +13,11 @@ const COLOR = {
     UNSET: 4  
 }
 
-const MAX_PLAYERS = 4;
+// 4 represents AI, all 0-3 are player colors
+const PLAYER_ORDER = [0,1,4]
+//const PLAYER_ORDER = [0,1,4,2,3,4]
+
+const MAX_PLAYERS = 2;
 
 const HAND_SIZE = 3;
 
@@ -27,7 +31,6 @@ export class Room {
         this.roomCode = roomCode;
         this.players = [];
         this.moveList = [];
-        this.turn = 0;
         this.seed = 0;
         this.inGame = false;
         this.setSeed(roomCode);
@@ -118,17 +121,25 @@ export class Room {
     makeMove(socket, moveType, moveData, color) {
         this.moveList.push((moveType, moveData, color));
 
-        // If player is offline, can broadcast to whole room
+        // If emmiter is offline, can broadcast to whole room
         if (socket == null) {
             socket = this.io;
         }
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
         socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveData["index"], color);
         
-        if (moveType < 2) { this.turn += 1; }
-        if (this.turn % 3 == 2) {
+        let curColor = PLAYER_ORDER[this.moveList.length % PLAYER_ORDER.length];
+        if (curColor == 4) {
+            // If next player is AI
             console.log("Query the AI move");
             ai_socket.emit("query-move", this.roomCode);
+        } else {
+            // If next player is offline, play automatic move
+            this.players.forEach((player) => {
+                if (player.socket == null && player.color == curColor) {
+                    console.log("Player is offline: " + player.color);
+                }
+            });
         }
     }
 }
