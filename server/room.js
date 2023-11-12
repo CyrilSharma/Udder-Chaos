@@ -68,6 +68,15 @@ export class Room {
         }
     }
 
+    checkOnlinePlayers() {
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i].socket != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     updatePlayer(player) {
         player.socket.to(this.roomCode).emit("update-player-info", player.getPlayerInfo());
     }
@@ -226,6 +235,10 @@ class Player {
             // If the game is in progress, become empty player
             this.socket.removeAllListeners();
             this.socket = null;
+
+            if (!this.room.checkOnlinePlayers()) {
+                removeRoom(this.room.roomCode);
+            }
         } else {
             // If in the lobby, then leave
             if (this.host) {
