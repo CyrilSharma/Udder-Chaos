@@ -84,6 +84,7 @@ ostream& operator<<(ostream& os, const Piece& p) {
 struct Move {
   int card;
   int color;
+  Move(int card, int color) : card(card), color(color) {}
 };
 
 struct GameConfig {

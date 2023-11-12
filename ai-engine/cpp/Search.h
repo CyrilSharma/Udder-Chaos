@@ -34,10 +34,11 @@ struct Search {
     // Max depth to search
     int max_depth;
     // Best moves found during a particular search
-    int newBestMove = 0, newBestEval = 0;
+    Move newBestMove = 0;
+    int newBestEval = 0;
     // Beginning time, updated each time search is called
     uint64_t begin_time;
-    Search(GameConfig gc, int sc=0, uint64_t to=1000, int md=inf) : game(gc), scorer(sc), timeout(to), max_depth(md), hasher(game) {
+    Search(GameConfig gc, int sc=0, uint64_t to=1000, int md=inf) : game(gc), scorer(sc), hasher(game), timeout(to), max_depth(md) {
         
     }
 
@@ -189,33 +190,35 @@ struct Search {
 
     // brand new search function that will work in the _future_ !
     // structure from https://github.com/SebLague/Chess-Coding-Adventure/blob/Chess-V2-Unity
-    // orz Sebastian Lague
     // set timeout and max_depth before running, defaults to timeout = 1000 and max_depth = inf
-    int beginSearch(int dbgVerbosity = 0) {
+    Move beginSearch(int dbgVerbosity = 0) {
         begin_time = curTime();
 
-        int bestMove = -1, bestEval = -1;
+        // might need a nullmove member in the future
+        Move bestMove = Move(-1, -1);
+        int bestEval = -1;
         
         int curDepth = 1;
         while (curDepth < max_depth) {
             if (curTime() > begin_time + timeout) break;
 
             // do alphabeta stuff here
-            alphaBeta(0, curDepth, -inf, inf);
+            alphaBeta(game, 0, curDepth, -inf, inf);
 
             bestMove = newBestMove, bestEval = newBestEval;
             curDepth++;
         }
 
-        assert(bestMove != -1);
         return bestMove;
     }
 
     // Alpha-beta pruning negamax search
     // Except there's no pruning right now because the heuristic is bad
-    int alphaBeta(int depth, int stopDepth, int alpha, int beta) {
+    int alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta) {
         // Timeout
         if (curTime() > begin_time + timeout) { return 0; } 
+
+        // We'll check if the game is over later, idk where yet
 
         // Reached search depth limit, return static evaluation
         // We don't do quiescence search for now because this game 
@@ -225,8 +228,53 @@ struct Search {
         // Player moves can take an enemy piece
         if (depth == stopDepth) { return scorer.score(game); }
 
-        // Perform recursive search
+        // We perform recursive search.
+        // To begin, we generate moves
+        std::vector<Move> moves;
+        for (int card = 0; card < (int) game.hand_size; ++card) {
+            // Enemy can move any color
+            if (game.is_enemy_turn()) {
+                for (int color = 0; color < 4; ++color) {
+                    // Make sure enemy actually has this color
+                    if (game.enemies[color].count())
+                        moves.push_back(Move(card, color+4));
+                }
+            } 
+            // Player can only move current color
+            else {
+                // I'm going to go ahead and assume player_id stores the player's whose turn it is to move color
+                moves.push_back(Move(card, game.player_id));
+            }
+        }
 
+        // Order the moves.
+        moveOrderer.order(game, moves);
+
+        // Recursively search each of them, updating alpha as needed
+        for (Move move : moves) {
+            // Can only copy game for now, no undo :(
+            Game tmp = game;
+            tmp.make_move(move);
+            int eval = -alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha);
+
+            // beta prune.
+            // beta is the best we could do in an earlier branch, so opponent will never play this move
+            if (eval >= beta) {
+                // Fail-high
+                return beta;
+            }
+
+            // new best move
+            if (eval > alpha) {
+                alpha = eval;
+
+                // Update first move to be made if this search is the root
+                if (depth == 0) {
+                    newBestMove = move;
+                    newBestEval = eval;
+                }
+            }
+        }
 
         return -1;
     }

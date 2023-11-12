@@ -179,12 +179,23 @@ struct Game {
     }
     if (all_dead) return -1;
     return 0;
-    // Need to implement score tiles...
+    // TODO Need to implement score tiles...
   } /* is_jover() */
 
   // Temp player turn check
   bool is_enemy_turn() const {
     return turn % 3 == 2;
+  }
+
+  // Return color is enemy (0 indexed)
+  bool color_is_enemy(int color) {
+    return color >= 4;
+  }
+
+  // general move making function
+  void make_move(Move move) {
+    if (color_is_enemy(move.color)) enemy_move(move.card, move.color - 4);
+    else player_move(move.card);
   }
 
   /*
@@ -209,6 +220,7 @@ struct Game {
    * index of the card you wish to play.
    * we do not check if the card is in your hand.
    * 
+   * choice is the card choice...
    * color is which color you want to move with this action.
    */
 
