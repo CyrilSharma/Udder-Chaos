@@ -239,11 +239,13 @@ class Player {
             this.socket.removeAllListeners();
             this.socket = null;
 
+            // If all other players are disconnected, destroy room
             if (!this.room.checkOnlinePlayers()) {
                 removeRoom(this.room.roomCode);
                 return;
             }
 
+            // If it's the current player's turn, make a random move
             if (PLAYER_ORDER[this.room.moveList.length % PLAYER_ORDER.length] == this.color) {
                 this.makeRandomMove();
             }
