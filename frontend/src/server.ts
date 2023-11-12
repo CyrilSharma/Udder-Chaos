@@ -136,6 +136,14 @@ class Server {
     public async joinRoom(roomCode: string) {
         this.socket.emit("join-room", roomCode.toUpperCase());
     }
+    
+    public async updatePlayerName(name: string) {
+        this.socket.emit("update-name", name);
+    }
+
+    public async updatePlayerColor(color: number) {
+        this.socket.emit("update-color", color);
+    }
 
     public async startGame(seed: string) {
         console.log(seed);
@@ -156,17 +164,12 @@ class Server {
         this.socket.emit("make-move", MoveType.RotateCard, {"index": cardIndex, "rotation": rotation}, color);
     }
 
-
-    public async updatePlayerName(name: string) {
-        this.socket.emit("update-name", name);
-    }
-
-    public async updatePlayerColor(color: number) {
-        this.socket.emit("update-color", color);
-    }
-
     public async purchaseUFO(position: Position, color: number) {
         this.socket.emit("make-move", MoveType.PurchaseUFO, position, color)
+    }
+
+    public async outOfTime() {
+        this.socket.emit("out-of-time");
     }
 
     public async leaveRoom() {

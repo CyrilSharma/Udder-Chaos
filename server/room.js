@@ -202,6 +202,10 @@ class Player {
            this.room.makeMove(this.socket, moveType, moveData, color); 
         });
 
+        this.socket.on("out-of-time", () => {
+            this.makeRandomMove();
+        })
+
         this.socket.on("init-ai", (cards) => {
             ai_socket.emit('init-ai', this.room.roomCode, this.room.seed, cards);
         });
@@ -228,7 +232,7 @@ class Player {
 
     makeRandomMove() {
         //Play a random card from the player's hand. Can be used when player takes too long, or when a player is disconnected
-        this.room.makeMove(this.socket, 0, {"index": Math.floor(Math.random() * HAND_SIZE)}, this.color + 1);
+        this.room.makeMove(null, 0, {"index": Math.floor(Math.random() * HAND_SIZE)}, this.color + 1);
     }
 
     disconnectPlayer() {
