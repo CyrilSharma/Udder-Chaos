@@ -290,6 +290,7 @@ export class Board extends Container {
             if (this.game.buyButton.dragging && this.game.ourTurn()) {
                 server.purchaseUFO(position, this.game.playerColor);
                 this.purchaseUFO(position, this.game.playerColor);
+                this.game.updateTurn();
             }
         });
 

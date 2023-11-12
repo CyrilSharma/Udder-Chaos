@@ -55,8 +55,7 @@ export class Game extends Container {
         this.board = new Board(this);
         this.cards = new CardQueue(this);
         this.buyButton = new BuyButton(0, 0);
-        let self = this;
-        this.timerInterval = setInterval(function() {self.updateTimer()}, 1000);
+        this.initTimer();
 
         this.leftPanel = new GamePanel(0.1125, 0.5, 0.22, 1, 200, 1000, 0xffffff);
         this.rightPanel = new GamePanel(0.8875, 0.5, 0.22, 1, 200, 1000, 0x5f5f5f);
@@ -200,12 +199,19 @@ export class Game extends Container {
             this.playerColor == 4 && this.turn == 5;
     }
 
+    public initTimer() {
+        let self = this;
+        this.timerInterval = setInterval(function() {self.updateTimer()}, 1000);
+    }
+
     public updateTimer() {
-        this.timer -= 1;
-        //Update the timer here
-        console.log("current time: " + this.timer);
-        if (this.timer <= 0 && this.ourTurn()) {
-            server.outOfTime();
+        if (!this.animating) {
+            this.timer -= 1;
+            //Update the timer here
+            console.log("current time: " + this.timer);
+            if (this.timer <= 0 && this.ourTurn()) {
+                server.outOfTime();
+            }
         }
     }
 
