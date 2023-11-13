@@ -32,7 +32,7 @@ export class Game extends Container {
     public totalScore: number = 0;
     private timer: number = TIMER_LENGTH;
     private timerInterval: NodeJS.Timeout;
-    private moveQueue: MoveQueue;
+    public moveQueue: MoveQueue;
     public leftPanel: GamePanel;
     public rightPanel: GamePanel;
     public boardPanel: GamePanel;

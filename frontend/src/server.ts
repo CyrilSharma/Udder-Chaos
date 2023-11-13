@@ -106,8 +106,21 @@ class Server {
 
         this.socket.on("share-move", (moveType, moveData, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
-            
-            
+
+            gameScreen.game.moveQueue.enqueue({"moveType": moveType, "moveData": moveData, color: color});
+            // switch (moveType) {
+            //     case MoveType.PlayCard:
+            //         gameScreen.playCard(moveData["index"], color);
+            //         console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
+            //         break;
+            //     case MoveType.RotateCard:
+            //         gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
+            //         //console.log(`Server rotating card: ${moveData["index"]} ${moveData["rotation"]}, color: ${color}`);
+            //         break;
+            //     case MoveType.PurchaseUFO:
+            //         gameScreen.purchaseUFO(moveData, color);
+            //         break;
+            // }
         });
     }
 
