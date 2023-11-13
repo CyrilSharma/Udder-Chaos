@@ -182,7 +182,7 @@ struct Game {
   int is_jover() {
     bool all_dead = true;
     for (int i = 0; i < 4; i++) {
-      if (players[i].count()) continue;
+      if (!players[i].count()) continue;
       all_dead = false;
       break;
     }

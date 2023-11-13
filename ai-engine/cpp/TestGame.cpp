@@ -437,6 +437,39 @@ TEST_CASE("Test Scoring") {
 }
 
 /*
+ * Test Game Jover.
+ * Ensure Pieces can actually score.
+ * 
+ */
+
+TEST_CASE("Test Game JOVER") {
+  const int width = 16, height = 16;
+  vector<vector<int>> board(height, vector<int>(width, 0));
+  board[0][0] = TileType::SCORE;
+  board[7][0] = TileType::COW;
+  board[8][0] = TileType::IMPASSIBLE;
+
+  vector<Piece> pieces1 = { };
+
+  const int ndirs = 3;
+  const int ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
+  auto config1 = GameConfig(board, pieces1, cards);
+
+  auto game1 = Game(config1);
+  CHECK(game1.is_jover() == -1);
+
+  vector<Piece> pieces2 = {
+    Piece(0, 0, 1), Piece(0, 1, 2),
+    Piece(1, 0 , 3), Piece(1, 1, 4)
+  };
+  auto config2 = GameConfig(board, pieces2, cards);
+  auto game2 = Game(config2);
+  game2.total_score = 1e9;
+  CHECK(game2.is_jover() == 1);
+}
+
+/*
  * Ensure the card queue works as intended
  */
 
