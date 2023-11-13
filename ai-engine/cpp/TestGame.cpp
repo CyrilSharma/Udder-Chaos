@@ -438,19 +438,14 @@ TEST_CASE("Test Scoring") {
 
 /*
  * Test Game Jover.
- * Ensure Pieces can actually score.
- * 
+ * Ensure Game Actually can end.
  */
 
 TEST_CASE("Test Game JOVER") {
   const int width = 16, height = 16;
   vector<vector<int>> board(height, vector<int>(width, 0));
-  board[0][0] = TileType::SCORE;
-  board[7][0] = TileType::COW;
-  board[8][0] = TileType::IMPASSIBLE;
 
   vector<Piece> pieces1 = { };
-
   const int ndirs = 3;
   const int ncards = 16;
   auto cards = random_cards(ndirs, ncards);

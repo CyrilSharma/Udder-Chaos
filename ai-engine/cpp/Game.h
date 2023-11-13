@@ -180,13 +180,9 @@ struct Game {
    */
 
   int is_jover() {
-    bool all_dead = true;
     for (int i = 0; i < 4; i++) {
-      if (!players[i].count()) continue;
-      all_dead = false;
-      break;
+      if (!players[i].count()) return -1;
     }
-    if (all_dead) return -1;
     if (total_score >= cows_to_win) return 1;
     return 0;
   } /* is_jover() */
