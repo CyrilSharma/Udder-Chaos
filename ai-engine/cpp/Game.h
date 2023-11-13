@@ -83,11 +83,16 @@ struct Game {
   uint64_t ncards;
   uint64_t hand_size;
   uint64_t round_length;
+
+  // Hardcode for now...
+  uint64_t cows_to_win = 10;
   array<dynamic_bitset, 4> edge_masks;
 
   int64_t turn = 0;
   int64_t round = 0;
+  int64_t total_score = 0;
   int64_t player_id = 0;
+
   CardQueue queue;
   vector<Card> cards;
   array<dynamic_bitset, 6> cow_respawn;
@@ -99,6 +104,7 @@ struct Game {
   dynamic_bitset all_enemies;
   dynamic_bitset all_players;
   dynamic_bitset wall_mask;
+  dynamic_bitset score_tiles;
 
   /*--- Game Logic -----*/
 
@@ -122,7 +128,8 @@ struct Game {
     cows(dynamic_bitset(area(), 0)),
     all_enemies(dynamic_bitset(area(), 0)),
     all_players(dynamic_bitset(area(), 0)),
-    wall_mask(dynamic_bitset(area(), 0)) {
+    wall_mask(dynamic_bitset(area(), 0)),
+    score_tiles(dynamic_bitset(area(), 0)) {
     
     for (uint32_t i = 0; i < 4; i++) {
       players[i] = dynamic_bitset(area(), 0);
@@ -159,6 +166,8 @@ struct Game {
           impassible |= m;
         } else if (tile == TileType::COW) {
           cows |= m;
+        } else if (tile == TileType::SCORE) {
+          score_tiles |= m;
         }
       }
     }
@@ -178,8 +187,8 @@ struct Game {
       break;
     }
     if (all_dead) return -1;
+    if (total_score >= cows_to_win) return 1;
     return 0;
-    // TODO Need to implement score tiles...
   } /* is_jover() */
 
   // Temp player turn check
@@ -213,6 +222,7 @@ struct Game {
   int count_pieces() {
     return count_players() + count_enemies() + cows.count();
   }
+
   /*
    * choice is expected to be the numerical
    * index IN YOUR HAND of the card you wish to play.
@@ -229,6 +239,16 @@ struct Game {
     player_id = (player_id + 1) & 0b11;
     turn += 1;
   } /* player_move() */
+
+  /*
+   * x and y coordinate of where you
+   * want your ufo to be.
+   */
+
+  void player_buy(int x, int y) {
+    dynamic_bitset msk(area(), 1); 
+    players[player_id] |= (msk << (width * y + x));
+  } /* player_buy() */
 
   /*
    * choice is expected to be the numerical
@@ -351,6 +371,9 @@ struct Game {
     auto prev = cows;
     cows &= cow_less;
 
+    total_score += (score_tiles & score_mask);
+    score_mask &= ~(score_tiles);
+
     players[player_id] = player_mask;
     player_scores[player_id] = score_mask;
     cow_respawn[turn % round_length] = prev & ~cows;
@@ -373,33 +396,13 @@ struct Game {
           out[i][j] = TileType::IMPASSIBLE;
         } else if ((cows & mask).any()) {
           out[i][j] = TileType::COW;
+        } else if  ((score_tiles & mask).any()) {
+          out[i][j] = TileType::SCORE;
         }
       }
     }
     return out;
   } /* viewBoard() */
-
-  /*
-   * Pretty string for debug printing
-   * mostly just copy of viewBoard
-   */
-
-  vector<vector<char>> boardString() {
-    // Empty space default to '.'
-    vector<vector<char>> out(height, vector<char>(width, '.'));
-    for (uint32_t i = 0; i < height; i++) {
-      for (uint32_t j = 0; j < width; j++) {
-        auto mask = dynamic_bitset(area(), 1);
-        mask <<= (width * i + j);
-        if ((impassible & mask).any()) {
-          out[i][j] = '#'; //impassible
-        } else if ((cows & mask).any()) {
-          out[i][j] = 'O'; // cow?
-        }
-      }
-    }
-    return out;
-  } /* boardString() */
 
   /*
    * Puts the pieces in a convenient state.
