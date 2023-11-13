@@ -34,7 +34,7 @@ struct Search {
     // Max depth to search
     int max_depth;
     // Best moves found during a particular search
-    Move newBestMove = 0;
+    Move newBestMove = Move(0, 0);
     int newBestEval = 0;
     // Beginning time, updated each time search is called
     uint64_t begin_time;
@@ -202,7 +202,7 @@ struct Search {
         while (curDepth < max_depth) {
             if (curTime() > begin_time + timeout) break;
 
-            // do alphabeta stuff here
+            // Recursive tree search to curDepth
             alphaBeta(game, 0, curDepth, -inf, inf);
 
             bestMove = newBestMove, bestEval = newBestEval;
@@ -218,7 +218,7 @@ struct Search {
         // Timeout
         if (curTime() > begin_time + timeout) { return 0; } 
 
-        // We'll check if the game is over later, idk where yet
+        // We'll check if the game is over later, idk how to do it yet
 
         // Reached search depth limit, return static evaluation
         // We don't do quiescence search for now because this game 
@@ -276,6 +276,6 @@ struct Search {
             }
         }
 
-        return -1;
+        return alpha;
     }
 };

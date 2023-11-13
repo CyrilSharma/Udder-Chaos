@@ -198,6 +198,21 @@ struct Game {
     else player_move(move.card);
   }
 
+  int count_players() {
+    int ppct = 0;
+    for (int i = 0; i < 4; i++) ppct += players[i].count();
+    return ppct;
+  }
+
+  int count_enemies() {
+    int epct = 0;
+    for (int i = 0; i < 4; i++) epct += enemies[i].count();
+    return epct;
+  }
+
+  int count_pieces() {
+    return count_players() + count_enemies() + cows.count();
+  }
   /*
    * choice is expected to be the numerical
    * index IN YOUR HAND of the card you wish to play.
