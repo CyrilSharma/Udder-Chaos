@@ -399,6 +399,44 @@ TEST_CASE("Test Enemy Movement / Logic") {
 }
 
 /*
+ * Test Scoring.
+ * Ensure Pieces can actually score.
+ * 
+ */
+
+TEST_CASE("Test Scoring") {
+  const int width = 16, height = 16;
+  vector<vector<int>> board(height, vector<int>(width, 0));
+  board[0][0] = TileType::SCORE;
+  board[7][0] = TileType::COW;
+  board[8][0] = TileType::IMPASSIBLE;
+
+  vector<Piece> player_pieces = { Piece(1, 0, 1) };
+
+  const int ndirs = 3;
+  const int ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
+  auto config_p = GameConfig(board, player_pieces, cards);
+  auto game = Game(config_p);
+  cout << game << endl;
+
+  auto game_p = Game(config_p);
+  for (int i = 0; i < 10; i++) {
+    game.play_player_movement(Direction::UP);
+    cout << player_pieces[0] << endl;
+    cout << game << endl;
+  }
+
+  CHECK(game.player_scores[0].count() == 1);
+  CHECK(game.total_score == 0);
+  for (int i = 0; i < 10; i++) {
+    game.play_player_movement(Direction::DOWN);
+  }
+
+  CHECK(game.total_score == 1);
+}
+
+/*
  * Ensure the card queue works as intended
  */
 

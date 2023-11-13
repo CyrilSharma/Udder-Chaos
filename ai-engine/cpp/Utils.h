@@ -123,11 +123,6 @@ void init_seed(uint64_t seed) {
  */
 
 tuple<vector<vector<int>>, vector<Piece>> load_setup(int idx = 0) {
-  int count = 0;
-  for (const auto &_ : fs::directory_iterator("Maps")) {
-    (void) _;
-    count += 1;
-  }
   uniform_real_distribution<double> dist { 0.0, 1.0 };
 
   // I am using this for test cases in the search <3

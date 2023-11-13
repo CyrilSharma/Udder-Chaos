@@ -88,10 +88,10 @@ struct Game {
   uint64_t cows_to_win = 10;
   array<dynamic_bitset, 4> edge_masks;
 
-  int64_t turn = 0;
-  int64_t round = 0;
-  int64_t total_score = 0;
-  int64_t player_id = 0;
+  uint64_t turn = 0;
+  uint64_t round = 0;
+  uint64_t total_score = 0;
+  uint64_t player_id = 0;
 
   CardQueue queue;
   vector<Card> cards;
@@ -324,7 +324,7 @@ struct Game {
     uint64_t shift[4] = { 1, width, 1, width };
 
     all_players.reset();
-    for (int i = player_id + 1; i != player_id; i = (i + 1) & 0b11) {
+    for (uint64_t i = player_id + 1; i != player_id; i = (i + 1) & 0b11) {
       all_players |= players[i];
     }
 
@@ -371,7 +371,7 @@ struct Game {
     auto prev = cows;
     cows &= cow_less;
 
-    total_score += (score_tiles & score_mask);
+    total_score += (score_tiles & score_mask).count();
     score_mask &= ~(score_tiles);
 
     players[player_id] = player_mask;
@@ -452,7 +452,7 @@ ostream& operator<<(ostream& os, Game& game) {
   auto board = game.viewBoard();
   for (uint64_t i = 0; i < game.height; i++) {
     for (uint64_t j = 0; j < game.width; j++) {
-      if (board[i][j] == 0) {
+      if (board[i][j] == TileType::PLAIN) {
         os << Color::Modifier(Color::BG_GREEN);
         os << ' ';
       } else if (board[i][j] == TileType::COW) {
@@ -461,6 +461,10 @@ ostream& operator<<(ostream& os, Game& game) {
       }
       else if (board[i][j] == TileType::IMPASSIBLE) {
         os << Color::Modifier(Color::BG_BLACK);
+        os << ' ';
+      }
+      else if (board[i][j] == TileType::SCORE) {
+        os << Color::Modifier(Color::BG_PURPLE);
         os << ' ';
       }
       os << Color::Modifier(Color::BG_DEFAULT);
