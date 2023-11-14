@@ -94,7 +94,7 @@ function createRoom() {
     let roomCode = generateRoomCode();
     let room = new Room(io, roomCode);
     rooms[roomCode] = room;
-    room.addNewPlayer(this, true);
+    room.addNewPlayer(this, null, true);
     if (ai_socket != null) {
         ai_socket.join(roomCode);
     }
@@ -105,7 +105,7 @@ function createRoom() {
  * Join an existing room by room code. If it doesn't exist, return an error to socket caller
  * Inits the player object within the room
  */
-function joinRoom(roomCode) {
+function joinRoom(roomCode, savedID) {
     // Find room by room code
     let room = rooms[roomCode]
     if (room == null) {
@@ -113,7 +113,8 @@ function joinRoom(roomCode) {
         this.emit("join-error", "Couldn't find room with code " + roomCode);
         return;
     }
-    room.addNewPlayer(this);
+    console.log(savedID);
+    room.addNewPlayer(this, savedID);
 }
 
 /*
