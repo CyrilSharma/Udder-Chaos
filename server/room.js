@@ -147,7 +147,7 @@ export class Room {
             // If next player is offline, play automatic move
             this.players.forEach(async (player) => {
                 if (player.socket == null && player.color == curColor) {
-                    await new Promise(r => setTimeout(r, 2000));
+                    await new Promise(r => setTimeout(r, 500));
                     player.makeRandomMove();
                     return;
                 }

@@ -1,6 +1,6 @@
 import { Container, FederatedPointerEvent, Graphics, Sprite, Point } from 'pixi.js';
 import "@pixi/math-extras";
-import { Direction, Color, DirectionEnum, angleBetween, mod } from './Utils';
+import { Direction, Color, DirectionEnum, angleBetween, mod, MoveType } from './Utils';
 import { CardQueue } from './CardQueue';
 import server from "../server";
 
@@ -113,8 +113,7 @@ export class Card extends Container {
             this.unscale();
             // Server play card must come before queue play card because queue playcard reindexes it :D
             server.playCard(this.index, this.queue.game.playerColor);
-            this.queue.playCard(this, this.queue.game.playerColor);
-            this.queue.game.updateTurn();
+            this.queue.game.moveQueue.enqueue({"moveType": MoveType.PlayCard, "moveData": {"index": this.index}, "color": this.queue.game.playerColor})
         } else {
             console.log("Not your turn!!");
         }
@@ -171,8 +170,7 @@ export class Card extends Container {
             let rotation = Math.floor((trueAngle + 45) / 90);
 
             server.rotateCard(this.index, rotation, this.queue.game.playerColor);
-            this.rotateCard(rotation - this.cardRotation);
-            this.queue.game.updateTurn();
+            this.queue.game.moveQueue.enqueue({"moveType": MoveType.RotateCard, "moveData": {"index": this.index, "rotation": rotation}, "color": this.queue.game.playerColor});
         }
         //console.log(`end drag: ${e.offsetX} ${e.offsetY}`)
     }

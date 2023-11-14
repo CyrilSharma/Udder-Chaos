@@ -108,6 +108,7 @@ class Server {
             let gameScreen = navigation.currentScreen as GameScreen;
 
             gameScreen.game.moveQueue.enqueue({"moveType": moveType, "moveData": moveData, color: color});
+            console.log("Share move: " + color);
             // switch (moveType) {
             //     case MoveType.PlayCard:
             //         gameScreen.playCard(moveData["index"], color);

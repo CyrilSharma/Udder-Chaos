@@ -31,6 +31,7 @@ export class MoveQueue {
                 }
             }
             this.game.updateTurn();
+            this.dequeue();
         }
     }
 

@@ -19,6 +19,7 @@ import {
     TeamEnum,
     ActionType,
     random,
+    MoveType,
     COW_REGEN_RATE,
 } from './Utils';
 import { EndGameScreen } from '../ui_components/EndGameScreen';
@@ -289,8 +290,7 @@ export class Board extends Container {
         tile.on('pointerup', () => {
             if (this.game.buyButton.dragging && this.game.ourTurn()) {
                 server.purchaseUFO(position, this.game.playerColor);
-                this.purchaseUFO(position, this.game.playerColor);
-                this.game.updateTurn();
+                this.game.moveQueue.enqueue({"moveType": MoveType.PlayCard, "moveData": position, "color": this.game.playerColor})
             }
         });
 
