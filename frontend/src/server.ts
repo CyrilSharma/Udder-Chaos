@@ -3,14 +3,8 @@ import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
-import { Player, initSeed, Position, PlayerInfo } from "./game/Utils"
+import { Player, initSeed, Position, PlayerInfo, MoveType } from "./game/Utils"
 import { JoinGameScreen } from "./screens/JoinGameScreen";
-
-const MoveType = {
-    PlayCard: 0,
-    RotateCard: 1,
-    PurchaseUFO: 2,
-}
 
 class Server {
     socket;
@@ -112,20 +106,22 @@ class Server {
 
         this.socket.on("share-move", (moveType, moveData, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
-            
-            switch (moveType) {
-                case MoveType.PlayCard:
-                    gameScreen.playCard(moveData["index"], color);
-                    console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
-                    break;
-                case MoveType.RotateCard:
-                    gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
-                    //console.log(`Server rotating card: ${moveData["index"]} ${moveData["rotation"]}, color: ${color}`);
-                    break;
-                case MoveType.PurchaseUFO:
-                    gameScreen.purchaseUFO(moveData, color);
-                    break;
-            }
+
+            gameScreen.game.moveQueue.enqueue({"moveType": moveType, "moveData": moveData, color: color});
+            console.log("Share move: " + color);
+            // switch (moveType) {
+            //     case MoveType.PlayCard:
+            //         gameScreen.playCard(moveData["index"], color);
+            //         console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
+            //         break;
+            //     case MoveType.RotateCard:
+            //         gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
+            //         //console.log(`Server rotating card: ${moveData["index"]} ${moveData["rotation"]}, color: ${color}`);
+            //         break;
+            //     case MoveType.PurchaseUFO:
+            //         gameScreen.purchaseUFO(moveData, color);
+            //         break;
+            // }
         });
     }
 

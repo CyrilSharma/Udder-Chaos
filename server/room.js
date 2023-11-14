@@ -14,10 +14,10 @@ const COLOR = {
 }
 
 // 4 represents AI, all 0-3 are player colors
-//const PLAYER_ORDER = [0,1,4]
-const PLAYER_ORDER = [0,1,4,2,3,4]
+const PLAYER_ORDER = [0,1,4]
+//const PLAYER_ORDER = [0,1,4,2,3,4]
 
-const MAX_PLAYERS = 4;
+const MAX_PLAYERS = 2;
 
 const HAND_SIZE = 3;
 
@@ -147,7 +147,7 @@ export class Room {
             // If next player is offline, play automatic move
             this.players.forEach(async (player) => {
                 if (player.socket == null && player.color == curColor) {
-                    await new Promise(r => setTimeout(r, 2000));
+                    await new Promise(r => setTimeout(r, 500));
                     player.makeRandomMove();
                     return;
                 }
