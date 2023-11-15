@@ -134,5 +134,6 @@ function generateRoomCode() {
 }
 
 export function removeRoom(roomCode) {
+    console.log("Deleting room: " + roomCode)
     delete rooms[roomCode];
 }

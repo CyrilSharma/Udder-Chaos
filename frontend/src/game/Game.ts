@@ -31,7 +31,6 @@ export class Game extends Container {
     public totalDayCount: number = 0;
     public totalScore: number = 0;
     private timer: number = TIMER_LENGTH;
-    private timerInterval: NodeJS.Timeout;
     public moveQueue: MoveQueue;
     public leftPanel: GamePanel;
     public rightPanel: GamePanel;
@@ -57,7 +56,7 @@ export class Game extends Container {
         this.board = new Board(this);
         this.cards = new CardQueue(this);
         this.buyButton = new BuyButton(0, 0);
-        this.timerInterval = this.initTimer();
+        this.initTimer();
         this.moveQueue = new MoveQueue(this);
 
         this.leftPanel = new GamePanel(0.1125, 0.5, 0.22, 1, 200, 1000, 0xffffff);

@@ -26,7 +26,6 @@ class Server {
         });
 
         this.socket.on("load-room", async (roomCode, playerList: PlayerInfo[]) => {
-            console.log("hi");
             console.log(playerList);
             console.log(this.socket.id);
 
@@ -36,7 +35,6 @@ class Server {
             createGameScreen.addGameCode(roomCode);
             createGameScreen.getLobbyList().setCurrentPlayer(playerList.length - 1);
             playerList.forEach((player) => {
-                console.log("here");
                 createGameScreen.getLobbyList().addPlayer(player);
             });
         });

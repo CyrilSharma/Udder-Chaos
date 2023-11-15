@@ -61,6 +61,7 @@ export class Room {
             }
             
             if (player == null) {
+                socket.emit("join-error", "This game is in progress!");
                 return;
             }
             console.log("Reconnect!" + player);
@@ -259,6 +260,8 @@ class Player {
         this.socket = socket;
         this.id = socket.id;
         this.socket.join(this.room.roomCode);
+
+        this.initSocket();
     }
 
     disconnectPlayer() {
@@ -287,6 +290,5 @@ class Player {
             this.room.removePlayer(this);
             this.socket.removeAllListeners();
         }
-        
     }
 }
