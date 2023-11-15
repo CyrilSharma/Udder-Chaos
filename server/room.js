@@ -14,10 +14,10 @@ const COLOR = {
 }
 
 // 4 represents AI, all 0-3 are player colors
-const PLAYER_ORDER = [0,1,4]
-//const PLAYER_ORDER = [0,1,4,2,3,4]
+//const PLAYER_ORDER = [0,1,4]
+const PLAYER_ORDER = [0,1,4,2,3,4]
 
-const MAX_PLAYERS = 2;
+const MAX_PLAYERS = 4;
 
 const HAND_SIZE = 3;
 
@@ -232,8 +232,9 @@ class Player {
         });
 
         this.socket.on("leave-room", () => {
+            let tempSocket = this.socket;
             this.disconnectPlayer();
-            initPlayer(true, this.socket);
+            initPlayer(true, tempSocket);
         });
 
         this.socket.on("disconnect", () => {

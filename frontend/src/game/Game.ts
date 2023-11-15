@@ -31,6 +31,7 @@ export class Game extends Container {
     public totalDayCount: number = 0;
     public totalScore: number = 0;
     private timer: number = TIMER_LENGTH;
+    private timerInterval: NodeJS.Timeout;
     public moveQueue: MoveQueue;
     public leftPanel: GamePanel;
     public rightPanel: GamePanel;
@@ -56,7 +57,7 @@ export class Game extends Container {
         this.board = new Board(this);
         this.cards = new CardQueue(this);
         this.buyButton = new BuyButton(0, 0);
-        this.initTimer();
+        this.timerInterval = this.initTimer();
         this.moveQueue = new MoveQueue(this);
 
         this.leftPanel = new GamePanel(0.1125, 0.5, 0.22, 1, 200, 1000, 0xffffff);
@@ -190,11 +191,12 @@ export class Game extends Container {
 
         this.board.endGame(success, message);
         this.gameOver = true;
+        clearInterval(this.timerInterval);
     }
 
     public ourTurn() {
-        return !this.gameOver && !this.animating; // debug always allow current player to move
-        //return !this.gameOver && !this.animating &&
+        //return !this.gameOver && !this.animating; // debug always allow current player to move
+        return !this.gameOver && !this.animating &&
             this.playerColor == 1 && this.turn == 1 || 
             this.playerColor == 2 && this.turn == 2 || 
             this.playerColor == 3 && this.turn == 4 ||
