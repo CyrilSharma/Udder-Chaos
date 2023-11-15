@@ -149,7 +149,7 @@ export class Room {
     // Emit move to all players
     makeMove(socket, moveType, moveData, color) {
         console.log("moving now")
-        this.moveList.push({"moveType": moveType, "moveData": moveData, "color": color});
+        this.moveList.push({"moveType": moveType, "moveData": moveData, "color": color, "animated": false});
 
         // If emmiter is offline, can broadcast to whole room
         if (socket == null) {

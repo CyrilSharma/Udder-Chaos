@@ -105,7 +105,7 @@ class Server {
         this.socket.on("share-move", (moveType, moveData, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
 
-            gameScreen.game.moveQueue.enqueue({"moveType": moveType, "moveData": moveData, color: color});
+            gameScreen.game.moveQueue.enqueue({"moveType": moveType, "moveData": moveData, "color": color, "animated": true});
             console.log("Share move: " + color);
         });
 

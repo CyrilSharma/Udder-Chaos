@@ -60,23 +60,23 @@ export class GameScreen extends Container {
     //     });
     // }
 
-    public async playCard(cardIndex: number, color: number) {
-        console.log("screen Playing card: " + cardIndex);
-        let card = this.game.cards.findCardInHand(cardIndex, color);
-        await this.game.cards.playCard(card, color);
-        this.game.updateTurn();
-    }
+    // public async playCard(cardIndex: number, color: number) {
+    //     console.log("screen Playing card: " + cardIndex);
+    //     let card = this.game.cards.findCardInHand(cardIndex, color);
+    //     await this.game.cards.playCard(card, color);
+    //     this.game.updateTurn();
+    // }
 
-    public async rotateCard(cardIndex: number, rotation: number, color: number) {
-        let card = this.game.cards.findCardInHand(cardIndex, color);
-        await card.rotateCard(rotation - card.cardRotation);
-        this.game.updateTurn();
-    }
+    // public async rotateCard(cardIndex: number, rotation: number, color: number) {
+    //     let card = this.game.cards.findCardInHand(cardIndex, color);
+    //     await card.rotateCard(rotation - card.cardRotation);
+    //     this.game.updateTurn();
+    // }
 
-    public async purchaseUFO(position: Position, color: number) {
-        await this.game.board.purchaseUFO(position, color);
-        this.game.updateTurn();
-    }
+    // public async purchaseUFO(position: Position, color: number) {
+    //     await this.game.board.purchaseUFO(position, color);
+    //     this.game.updateTurn();
+    // }
 
     public setPlayerColor(color: number) {
         this.game.setPlayerColor(color);

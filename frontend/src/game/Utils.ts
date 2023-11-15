@@ -192,7 +192,8 @@ export const MoveType = {
 export type PlayerMove = {
     moveType: number,
     moveData: PlayData | RotateData | Position,
-    color: number
+    color: number,
+    animated: boolean
 }
 
 export type PlayData = {
