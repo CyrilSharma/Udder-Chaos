@@ -10,7 +10,8 @@ import {
     TeamEnum,
     getTeam,
     shuffle,
-    random
+    random,
+    CARD_DECK_SIZE
 } from './Utils';
 import { CARD_PRESETS } from '../maps/Cards'
 
@@ -23,7 +24,7 @@ export class CardQueue extends Container {
     public cardContainer: Container;
     public logicHandler: LogicHandler;
     public cardSize = 100;
-    public ncards = 15;
+    public ncards = CARD_DECK_SIZE;
     public hand_size: number = 3;
 
     constructor(game: Game) {

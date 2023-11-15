@@ -5,6 +5,7 @@ import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { Player, initSeed, Position, PlayerInfo, MoveType } from "./game/Utils"
 import { JoinGameScreen } from "./screens/JoinGameScreen";
+import { gameSettings } from "./game/GameSettings";
 
 class Server {
     socket;
@@ -77,6 +78,8 @@ class Server {
             });
 
             await navigation.showScreen(GameScreen);
+
+            //TODO: gameSettings.save("settings");
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);

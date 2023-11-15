@@ -5,13 +5,27 @@ import { Point } from 'pixi.js';
 import '@pixi/math-extras';
 
 // Constants
-export const COW_REGEN_RATE = 12; // Respawn after 3 days
-export const COW_SACRIFICE = 3; 
+// export const SCORE_GOAL = 30;
+// export const DAYS_PER_ROUND = 7;
 
-export const SCORE_GOAL = 10;
-export const DAYS_PER_ROUND = 7;
+// export const COW_REGEN_RATE = DAYS_PER_ROUND * 3;
+// export const COW_SACRIFICE = 5;
 
-export const TIMER_LENGTH = 10;
+// export const CARD_DECK_SIZE = 15;
+
+// export const TIMER_LENGTH = 10;
+
+// ---- Game Settings ---- //
+export const defaultGameSettings = {
+    score_goal: 30,
+    days_per_round: 5,
+    cow_regen_rate: 15,
+    cow_sacrifice: 5,
+    card_deck_size: 15,
+    timer_length: 30
+}
+
+export type gameSettingsData = typeof defaultGameSettings;
 
 //-----Menu-----//
 export type PlayerInfo = {
