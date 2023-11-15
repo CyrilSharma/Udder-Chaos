@@ -113,7 +113,7 @@ export class Card extends Container {
             this.unscale();
             // Server play card must come before queue play card because queue playcard reindexes it :D
             server.playCard(this.index, this.queue.game.playerColor);
-            this.queue.game.moveQueue.enqueue({"moveType": MoveType.PlayCard, "moveData": {"index": this.index}, "color": this.queue.game.playerColor})
+            this.queue.game.moveQueue.enqueue({"moveType": MoveType.PlayCard, "moveData": {"index": this.index}, "color": this.queue.game.playerColor, "animated": true})
         } else {
             console.log("Not your turn!!");
         }
@@ -170,7 +170,7 @@ export class Card extends Container {
             let rotation = Math.floor((trueAngle + 45) / 90);
 
             server.rotateCard(this.index, rotation, this.queue.game.playerColor);
-            this.queue.game.moveQueue.enqueue({"moveType": MoveType.RotateCard, "moveData": {"index": this.index, "rotation": rotation}, "color": this.queue.game.playerColor});
+            this.queue.game.moveQueue.enqueue({"moveType": MoveType.RotateCard, "moveData": {"index": this.index, "rotation": rotation}, "color": this.queue.game.playerColor, "animated": true});
         }
         //console.log(`end drag: ${e.offsetX} ${e.offsetY}`)
     }

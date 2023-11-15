@@ -16,7 +16,7 @@ export class MoveQueue {
                 case MoveType.PlayCard: {
                     let moveData = playerMove.moveData as PlayData;
                     let card = this.game.cards.findCardInHand(moveData["index"], playerMove.color);
-                    await this.game.cards.playCard(card, playerMove.color);
+                    await this.game.cards.playCard(card, playerMove.color, playerMove.animated);
                     break;
                 }
                 case MoveType.RotateCard: {

@@ -26,7 +26,6 @@ class Server {
         });
 
         this.socket.on("load-room", async (roomCode, playerList: PlayerInfo[]) => {
-            console.log("hi");
             console.log(playerList);
             console.log(this.socket.id);
 
@@ -36,7 +35,6 @@ class Server {
             createGameScreen.addGameCode(roomCode);
             createGameScreen.getLobbyList().setCurrentPlayer(playerList.length - 1);
             playerList.forEach((player) => {
-                console.log("here");
                 createGameScreen.getLobbyList().addPlayer(player);
             });
         });
@@ -107,21 +105,16 @@ class Server {
         this.socket.on("share-move", (moveType, moveData, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
 
-            gameScreen.game.moveQueue.enqueue({"moveType": moveType, "moveData": moveData, color: color});
+            gameScreen.game.moveQueue.enqueue({"moveType": moveType, "moveData": moveData, "color": color, "animated": true});
             console.log("Share move: " + color);
-            // switch (moveType) {
-            //     case MoveType.PlayCard:
-            //         gameScreen.playCard(moveData["index"], color);
-            //         console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
-            //         break;
-            //     case MoveType.RotateCard:
-            //         gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
-            //         //console.log(`Server rotating card: ${moveData["index"]} ${moveData["rotation"]}, color: ${color}`);
-            //         break;
-            //     case MoveType.PurchaseUFO:
-            //         gameScreen.purchaseUFO(moveData, color);
-            //         break;
-            // }
+        });
+
+        this.socket.on("share-move-list", (moveList) => {
+            let gameScreen = navigation.currentScreen as GameScreen;
+            
+            for (let i = 0; i < moveList.length; i++) {
+                gameScreen.game.moveQueue.enqueue(moveList[i]);
+            }
         });
     }
 
@@ -130,7 +123,7 @@ class Server {
     }
 
     public async joinRoom(roomCode: string) {
-        this.socket.emit("join-room", roomCode.toUpperCase());
+        this.socket.emit("join-room", roomCode.toUpperCase(), localStorage.getItem("saved-id"));
     }
     
     public async updatePlayerName(name: string) {
@@ -148,6 +141,7 @@ class Server {
         }
         console.log(seed);
         this.socket.emit("start-game", seed);
+        localStorage.setItem("saved-id", this.socket.id)
     }
 
     public async playCard(cardIndex: number, color: number) {

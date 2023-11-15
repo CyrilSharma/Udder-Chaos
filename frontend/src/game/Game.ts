@@ -191,11 +191,12 @@ export class Game extends Container {
 
         this.board.endGame(success, message);
         this.gameOver = true;
+        clearInterval(this.timerInterval);
     }
 
     public ourTurn() {
-        return !this.gameOver && !this.animating; // debug always allow current player to move
-        //return !this.gameOver && !this.animating &&
+        //return !this.gameOver && !this.animating; // debug always allow current player to move
+        return !this.gameOver && !this.animating &&
             this.playerColor == 1 && this.turn == 1 || 
             this.playerColor == 2 && this.turn == 2 || 
             this.playerColor == 3 && this.turn == 4 ||
