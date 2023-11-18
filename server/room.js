@@ -156,7 +156,7 @@ export class Room {
             socket = this.io;
         }
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
-        socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveData["index"], color);
+        socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveType, moveData, color);
         
         let curColor = PLAYER_ORDER[this.moveList.length % PLAYER_ORDER.length];
         if (curColor == 4) {

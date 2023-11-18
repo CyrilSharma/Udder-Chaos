@@ -7,8 +7,7 @@ using namespace std;
 enum Request {
   INIT,
   GET,
-  MOVE,
-  BUY
+  MOVE
 };
 
 // Communicates with a node.js server via stdin and stdout.
@@ -23,10 +22,9 @@ struct Handler {
   Request get_request() {
     string request;
     if (!(cin >> request)) exit(0);
-    if (request == "INIT")  return Request::INIT;
-    if (request == "GET")   return Request::GET;
-    if (request == "MOVE")  return Request::MOVE;
-    if (request == "BUY")   return Request::BUY;
+    if (request == "INIT") return Request::INIT;
+    if (request == "GET")  return Request::GET;
+    if (request == "MOVE") return Request::MOVE;
     cout << "FAILURE: Invalid Request" << endl;
     exit(1);
   } /* get_request() */
@@ -39,10 +37,9 @@ struct Handler {
     for (int ct = 1; ; ct++) {
       Request r = get_request();
       switch (r) {
-        case INIT:   init();  break;
-        case GET:    get();   break;
-        case MOVE:   move();  break;
-        case BUY:    buy();   break;
+        case INIT: init();  break;
+        case GET:  get();   break;
+        case MOVE: move();  break;
       }
     }
   } /* run() */
@@ -60,10 +57,10 @@ struct Handler {
     string param, value, line;
     while (getline(cin, line)) {
       if (line == "END") break;
+      // I miss c-style io :(
       stringstream ss(line);
       getline(ss, param, ':');
-      getline(ss, value, '\n');
-      // how is there not just a tolower function...
+      ss >> value;
       std::transform(param.begin(), param.end(), param.begin(),
         [](char c){ return tolower(c); }
       );
@@ -113,10 +110,10 @@ struct Handler {
     auto params = load_params();
     auto game_id = params["game_id"];
     if (searches.count(game_id)) {
-      auto res = searches.at(game_id).getMove(stoll(params["timeout"]));
+      auto res = searches.at(game_id).beginSearch();
+      searches.at(game_id).makeAIMove(res.card, res.color - 4);
       cerr << searches.at(game_id).game << endl;
-      // Frontend expects color to be >= 5 if it's an enemy.
-      cout << res.first << "\n" << (res.second + 5) << endl;
+      cout << res.card << "\n" << (res.color + 1) << endl;
       cout << "SUCCESS" << endl;
     } else {
       cerr << "Invalid Game ID!" << endl;
@@ -132,30 +129,35 @@ struct Handler {
   void move() {
     auto params = load_params();
     auto game_id = params["game_id"];
-    auto mv = stoi(params["move"]);
+    auto mv = params["movetype"];
+    cerr << "MoveType: " << mv << endl;
     if (searches.count(game_id)) {
-      auto id = searches.at(game_id).game.queue.get(mv);
-      auto card = searches.at(game_id).game.cards[id];
-      searches.at(game_id).makePlayerMove(mv);
+      if (mv == "PlayCard") {
+        auto idx = stoi(params["index"]);
+        searches.at(game_id).makePlayerMove(idx);
+      } else if (mv == "RotateCard") {
+        auto idx = stoi(params["index"]);
+        auto rotation = stoi(params["rotation"]);
+        searches.at(game_id).rotatePlayerCard(
+          idx, rotation
+        );
+      } else if (mv == "PurchaseUFO") {
+        auto row = stoi(params["row"]);
+        auto column = stoi(params["column"]);
+        searches.at(game_id).purchaseUFO(
+          row, column
+        );
+      } else {
+        cout << "Unknown Move Type!" << endl;
+        exit(1);
+      }
       cerr << searches.at(game_id).game << endl;
-      cerr << "Played: " << "Card-Pos: " << mv
-           << ", " << card << endl;
       cout << "SUCCESS" << endl;
     } else {
       cout << "Game ID not found" << endl;
       exit(1);
     }
   } /* move() */
-
-  /*
-   * sir this is a Wendys
-   */
-
-  void buy() {
-    auto params = load_params();
-    (void) params;
-    // we don't have a function for this yet.
-  } /* buy() */
 };
 
 int main() {

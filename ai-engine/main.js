@@ -74,12 +74,29 @@ socket.on("query-move", async (room_code) => {
     socket.emit("make-move", room_code, MoveType.PlayCard, {"index": move}, color);
 });
 
-socket.on("share-move-ai", async (game_id, idx, color) => {
+socket.on("share-move-ai", async (game_id, moveType, moveData, color) => {
     console.log("share-move-ai");
-    console.log(`game_id: ${game_id}, idx: ${idx}`);
+    console.log(`game_id: ${game_id}`);
+    console.log(`moveType: ${moveType}`);
     ai.stdin.write('MOVE\n');
     ai.stdin.write(`game_id: ${game_id}\n`);
-    ai.stdin.write(`move: ${idx}\n`);
+    if (moveType == MoveType.PlayCard) {
+        ai.stdin.write(`moveType: PlayCard\n`);
+        ai.stdin.write(`index: ${moveData["index"]}\n`);
+        console.log(`index: ${moveData["index"]}`)
+    } else if (moveType == MoveType.RotateCard) {
+        ai.stdin.write(`moveType: RotateCard\n`);
+        ai.stdin.write(`index: ${moveData["index"]}\n`);
+        ai.stdin.write(`rotation: ${moveData["rotation"]}\n`);
+        console.log(`index: ${moveData["index"]}`)
+        console.log(`rotation: ${moveData["rotation"]}`)
+    } else if (moveType == MoveType.PurchaseUFO) {
+        ai.stdin.write(`moveType: PurchaseUFO\n`);
+        ai.stdin.write(`row: ${moveData["row"]}\n`);
+        ai.stdin.write(`column: ${moveData["column"]}\n`);
+        console.log(`row: ${moveData["row"]}`)
+        console.log(`column: ${moveData["column"]}`)
+    }
     ai.stdin.write(`END\n`);
     const status = (await it.next()).value;
     console.log(`Status: ${status}`);

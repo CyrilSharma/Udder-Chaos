@@ -237,6 +237,26 @@ struct Game {
   } /* player_move() */
 
   /*
+   * rotates the specified card in the player hand
+   * by the specified amount.
+   */
+
+  void player_rotate_card(int choice, int rotation) {
+    int index = queue.choose(choice);
+    auto moves = cards[index].moves;
+    vector<Direction> dirs = {
+      Direction::RIGHT, Direction::UP,
+      Direction::LEFT, Direction::DOWN
+    };
+    for (Direction &move: moves) {
+      // Need to validate with frontend.
+      move = dirs[(4 + move - rotation) & 0b11];
+    }
+    player_id = (player_id + 1) & 0b11;
+    turn += 1;
+  } /* rotate_card() */
+
+  /*
    * x and y coordinate of where you
    * want your ufo to be.
    */
