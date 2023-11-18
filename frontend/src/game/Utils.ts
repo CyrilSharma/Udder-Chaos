@@ -11,6 +11,8 @@ export const COW_SACRIFICE = 3;
 export const SCORE_GOAL = 10;
 export const DAYS_PER_ROUND = 7;
 
+export const TIMER_LENGTH = 10;
+
 //-----Menu-----//
 export type PlayerInfo = {
     id: string,
@@ -178,6 +180,30 @@ export type GameSettings = {
     seed: number
     // add more when we have settings.
 };
+
+// ---- Moves ---- //
+
+export const MoveType = {
+    PlayCard: 0,
+    RotateCard: 1,
+    PurchaseUFO: 2,
+}
+
+export type PlayerMove = {
+    moveType: number,
+    moveData: PlayData | RotateData | Position,
+    color: number,
+    animated: boolean
+}
+
+export type PlayData = {
+    index: number
+}
+
+export type RotateData = {
+    index: number,
+    rotation: number
+}
 
 //-----Map Functions-----//
 export function loadMap(seed: number) {

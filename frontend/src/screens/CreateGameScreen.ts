@@ -11,7 +11,7 @@ import { BackButton } from '../ui_components/BackButton';
 
 /** Screen shows upon opening the website */
 export class CreateGameScreen extends Container {
-
+    public SCREEN_ID = 'create';
     private background: Background;
     private menuContainer: MenuContainer;
     private lobbyLabel: SizedButton;

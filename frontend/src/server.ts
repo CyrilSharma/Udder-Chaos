@@ -3,17 +3,10 @@ import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
-import { Player, initSeed, Position, PlayerInfo } from "./game/Utils"
+import { Player, initSeed, Position, PlayerInfo, MoveType } from "./game/Utils"
 import { JoinGameScreen } from "./screens/JoinGameScreen";
 
-const MoveType = {
-    PlayCard: 0,
-    RotateCard: 1,
-    PurchaseUFO: 2,
-}
-
 class Server {
-    public color!: number;
     socket;
 
     constructor() {
@@ -33,7 +26,6 @@ class Server {
         });
 
         this.socket.on("load-room", async (roomCode, playerList: PlayerInfo[]) => {
-            console.log("hi");
             console.log(playerList);
             console.log(this.socket.id);
 
@@ -43,7 +35,6 @@ class Server {
             createGameScreen.addGameCode(roomCode);
             createGameScreen.getLobbyList().setCurrentPlayer(playerList.length - 1);
             playerList.forEach((player) => {
-                console.log("here");
                 createGameScreen.getLobbyList().addPlayer(player);
             });
         });
@@ -79,8 +70,6 @@ class Server {
 
             let color = 1;
 
-            console.log(playerList);
-
             playerList.forEach((player: PlayerInfo) => {
                 if (player.id == this.socket.id) {
                     color += player.color;
@@ -91,7 +80,7 @@ class Server {
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
-            this.color = color;
+            gameScreen.game.setPlayers(playerList);
 
             let cards = []
             let arrays = [
@@ -116,19 +105,16 @@ class Server {
 
         this.socket.on("share-move", async (moveType, moveData, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
+
+            gameScreen.game.moveQueue.enqueue({"moveType": moveType, "moveData": moveData, "color": color, "animated": true});
+            console.log("Share move: " + color);
+        });
+
+        this.socket.on("share-move-list", (moveList) => {
+            let gameScreen = navigation.currentScreen as GameScreen;
             
-            switch (moveType) {
-                case MoveType.PlayCard:
-                    await gameScreen.playCard(moveData["index"], color);
-                    console.log(`Server playing card: ${moveData["index"]}, color: ${color}`);
-                    break;
-                case MoveType.RotateCard:
-                    gameScreen.rotateCard(moveData["index"], moveData["rotation"], color);
-                    //console.log(`Server rotating card: ${moveData["index"]} ${moveData["rotation"]}, color: ${color}`);
-                    break;
-                case MoveType.PurchaseUFO:
-                    gameScreen.purchaseUFO(moveData, color);
-                    break;
+            for (let i = 0; i < moveList.length; i++) {
+                gameScreen.game.moveQueue.enqueue(moveList[i]);
             }
         });
     }
@@ -138,7 +124,15 @@ class Server {
     }
 
     public async joinRoom(roomCode: string) {
-        this.socket.emit("join-room", roomCode.toUpperCase());
+        this.socket.emit("join-room", roomCode.toUpperCase(), localStorage.getItem("saved-id"));
+    }
+    
+    public async updatePlayerName(name: string) {
+        this.socket.emit("update-name", name);
+    }
+
+    public async updatePlayerColor(color: number) {
+        this.socket.emit("update-color", color);
     }
 
     public async startGame(seed: string) {
@@ -148,6 +142,7 @@ class Server {
         }
         console.log(seed);
         this.socket.emit("start-game", seed);
+        localStorage.setItem("saved-id", this.socket.id)
     }
 
     public async playCard(cardIndex: number, color: number) {
@@ -160,17 +155,12 @@ class Server {
         this.socket.emit("make-move", MoveType.RotateCard, {"index": cardIndex, "rotation": rotation}, color);
     }
 
-
-    public async updatePlayerName(name: string) {
-        this.socket.emit("update-name", name);
-    }
-
-    public async updatePlayerColor(color: number) {
-        this.socket.emit("update-color", color);
-    }
-
     public async purchaseUFO(position: Position, color: number) {
         this.socket.emit("make-move", MoveType.PurchaseUFO, position, color)
+    }
+
+    public async outOfTime() {
+        this.socket.emit("out-of-time");
     }
 
     public async leaveRoom() {

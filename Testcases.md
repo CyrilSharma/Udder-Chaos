@@ -116,18 +116,22 @@ Step | Directions | Expected Output
 1 | Hover over a UFO unit | An popup will show the points/cows contained in the UFO
 2 | Move a UFO onto a cow tile (via debug or cards) | The cow will disappear from the tile
 3 | Hover over the UFO unit | The popup will show +1 point
-
 # Sprint 2
 ## User Story 1
 Start on game screen
 
 Step | Directions | Expected Output
 --- | --- | ---
-1 | View the board | There are 4 distinct colors for enemies
-2 | See above | Cows spawn on pastures
+1 | Start a game | Upon viewing the board there are 4 planes of different colors
+2 | See step 1 | Upon viewing the board, the cows are spawned on distinct tiles
 
 ## User Story 2
-Not sure what the test cases are here. CYRIL TODO
+Step | Directions | Expected Output
+--- | --- | ---
+1 | enter “udder-chaos.org” into a web browser | Note the UI
+2 | open a locally hosted version of the game | Note that the UI is identical to the web version
+3 | open the web version (4 times if needed) and start a game | Note that all clients are brought into the game (thus functionally the same as local version and connected automatically to socket server)
+4 | start a web game and make a few moves | Note the AI makes moves (same as local version)
 
 ## User Story 3
 Start on the main menu screen

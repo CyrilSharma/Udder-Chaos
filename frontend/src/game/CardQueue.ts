@@ -85,7 +85,7 @@ export class CardQueue extends Container {
     }
 
     /** Called when a card in the cardqueue is clicked */
-    public async playCard(input: Card, color: number) {
+    public async playCard(input: Card, color: number, animated: boolean) {
         // Get correct team
         var hand;
         if (getTeam(color) == TeamEnum.Player) {
@@ -101,7 +101,7 @@ export class CardQueue extends Container {
             if (card != input) continue;
             
             // Use logic handler to process movement logic
-            await this.logicHandler.playCard(card, color);
+            await this.logicHandler.playCard(card, color, animated);
 
             // Remove card from hand and add to queue
             this.queue.push(card);

@@ -91,51 +91,61 @@ export class Piece extends Container {
         // console.log("I'm on the screen!");
     }
 
-    /** Animation to come soon... */
-    public async animateMove(newX: number, newY: number) {
-        await gsap.to(this, {
-            pixi: { x: newX, y: newY },
-            duration: 0.5,
-            ease: "power.out"
-        });
+    public async animateMove(newX: number, newY: number, animated: boolean) {
+        if (animated) {
+            gsap.to(this, {
+                pixi: { x: newX, y: newY },
+                duration: 0.5,
+                ease: "power.out"
+            });
+        } else {
+            this.x = newX;
+            this.y = newY;
+        }
     }
 
-    public async animateBounce(newX: number, newY: number) {
-        let oldX = this.x;
-        let oldY = this.y;
-        await gsap.to(this, {
-            pixi: { x: newX, y: newY },
-            duration: 0.1,
-            ease: "power1.in"
-        });
-        await gsap.to(this, {
-            pixi: { x: oldX, y: oldY },
-            duration: 0.4,
-            delay: 0.1,
-            ease: "back.out"
-        });
+    public async animateBounce(newX: number, newY: number, animated: boolean) {
+        if (animated) {
+            let oldX = this.x;
+            let oldY = this.y;
+            gsap.to(this, {
+                pixi: { x: newX, y: newY },
+                duration: 0.1,
+                ease: "power1.in"
+            });
+            gsap.to(this, {
+                pixi: { x: oldX, y: oldY },
+                duration: 0.4,
+                delay: 0.1,
+                ease: "back.out"
+            });
+        }
     }
 
-    public async animateAbducted(tileSize: number) {
-        let newY = this.y - (tileSize / 3);
-        gsap.to(this, {
-            pixi: { y: newY },
-            duration: 0.3,
-            ease: "linear"
-        });
-        await gsap.to(this.image, {
-            pixi: { scale: 0, rotation: 360 },
-            duration: 0.3,
-            ease: "linear"
-        });   
+    public async animateAbducted(tileSize: number, animated: boolean) {
+        if (animated) {
+            let newY = this.y - (tileSize / 3);
+            gsap.to(this, {
+                pixi: { y: newY },
+                duration: 0.3,
+                ease: "linear"
+            });
+            await gsap.to(this.image, {
+                pixi: { scale: 0, rotation: 360 },
+                duration: 0.3,
+                ease: "linear"
+            });
+        }
     }
     
-    public async animateDestroy() {
-        await gsap.to(this.image, {
-            pixi: { scale: 0},
-            duration: 0.5,
-            ease: "elastic.in"
-        })
+    public async animateDestroy(animated: boolean) {
+        if (animated) {
+            await gsap.to(this.image, {
+                pixi: { scale: 0},
+                duration: 0.5,
+                ease: "elastic.in"
+            })
+        }
     }
 
     public async addScore(amt: number = 1) {

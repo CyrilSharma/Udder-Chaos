@@ -1,10 +1,10 @@
 import { Container, Sprite, ObservablePoint, Text } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum, DAYS_PER_ROUND } from './Utils';
+import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum, DAYS_PER_ROUND, PlayerInfo, TIMER_LENGTH } from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
-import { GameState } from './GameState';
+import { Player } from './Player';
 import { GamePanel } from '../ui_components/GamePanel';
 import { PlayerColorIcon } from '../ui_components/PlayerColorIcon';
 import { PlayerGameInfo } from '../ui_components/PlayerGameInfo';
@@ -12,7 +12,8 @@ import { DayCounter } from '../ui_components/DayCounter';
 import { BuyButton } from '../ui_components/BuyButton';
 import { ScoreCounter } from '../ui_components/ScoreCount';
 import { SizedButton } from '../ui_components/SizedButton';
-
+import server from "../server";
+import { MoveQueue } from './MoveQueue';
 
 // This seems a little redundant right now,
 // But it will house the cards as well,
@@ -21,7 +22,6 @@ import { SizedButton } from '../ui_components/SizedButton';
 export class Game extends Container {
     public board: Board;
     public cards: CardQueue;
-    public gameState: GameState;
     public config!: GameConfig;
     public playerColor!: number;
     public updateList: GameUpdate[] = [];
@@ -30,6 +30,9 @@ export class Game extends Container {
     public dayCycle: number = 0;
     public totalDayCount: number = 0;
     public totalScore: number = 0;
+    private timer: number = TIMER_LENGTH;
+    private timerInterval: NodeJS.Timeout;
+    public moveQueue: MoveQueue;
     public leftPanel: GamePanel;
     public rightPanel: GamePanel;
     public boardPanel: GamePanel;
@@ -37,7 +40,8 @@ export class Game extends Container {
     private playerColorIcon!: PlayerColorIcon;
     private dayCounter: DayCounter;
     private scoreCounter: ScoreCounter;
-    public player1: PlayerGameInfo;
+    public players: Player[] = [];
+    public player1: PlayerGameInfo;         // This is not great, need to change this @Ethan
     public player2: PlayerGameInfo;
     public player3: PlayerGameInfo;
     public player4: PlayerGameInfo;
@@ -52,9 +56,9 @@ export class Game extends Container {
 
         this.board = new Board(this);
         this.cards = new CardQueue(this);
-        this.gameState = new GameState(this);
-        this.gameState.alpha = 0;
         this.buyButton = new BuyButton(0, 0);
+        this.timerInterval = this.initTimer();
+        this.moveQueue = new MoveQueue(this);
 
         this.leftPanel = new GamePanel(0.1125, 0.5, 0.22, 1, 200, 1000, 0xffffff);
         this.rightPanel = new GamePanel(0.8875, 0.5, 0.22, 1, 200, 1000, 0x5f5f5f);
@@ -87,8 +91,6 @@ export class Game extends Container {
         this.rightPanel.addChild(this.upNext);
         this.rightPanel.addChild(this.playerAI);
 
-
-        this.addChild(this.gameState);
         this.addChild(this.leftPanel);
         this.addChild(this.rightPanel);
         this.addChild(this.boardPanel);
@@ -101,17 +103,19 @@ export class Game extends Container {
         this.config = config;
         this.board.setup(config);
         this.cards.setup();
-        //this.cards.y = this.board.getHeight();
-        this.gameState.setup();
-        //this.gameState.y = this.cards.y + this.cards.height;
     }
 
     public setPlayerColor(color: number) {
         this.playerColor = color;
-        this.gameState.updateColor(color);
         this.playerColorIcon = new PlayerColorIcon(color - 1);
         this.leftPanel.addChild(this.playerColorIcon);
         this.playerColorIcon.changeColor(color - 1);
+    }
+
+    public setPlayers(playerList: PlayerInfo[]) {
+        playerList.forEach((player) => {
+            this.players.push(new Player(player))
+        });
     }
 
     public updateTurn() {
@@ -129,7 +133,6 @@ export class Game extends Container {
                 this.startNewRound();
             }
             this.totalDayCount++;
-            this.gameState.updateDay(this.totalDayCount);
         }
         switch (this.turn) {
             case 1:
@@ -157,8 +160,8 @@ export class Game extends Container {
                 this.playerAI.addShadow();
                 break;
         }
-        this.gameState.updateTurn(this.turn);
         this.turnCount += 1;
+        this.timer = TIMER_LENGTH;
         this.board.spawnCows(this.turnCount);
     }
 
@@ -174,8 +177,8 @@ export class Game extends Container {
             this.scorePoints(-COW_SACRIFICE);
         }
         else {
-            this.scorePoints(-this.totalScore)
-            console.log("Failed to sacrifice enough cows!")
+            this.scorePoints(-this.totalScore);
+            console.log("Failed to sacrifice enough cows!");
             this.endGame(false, "You failed to sacrifice enough cows to Homeworld.");
         }
     }
@@ -188,6 +191,7 @@ export class Game extends Container {
 
         this.board.endGame(success, message);
         this.gameOver = true;
+        clearInterval(this.timerInterval);
     }
 
     public ourTurn() {
@@ -199,9 +203,24 @@ export class Game extends Container {
             this.playerColor == 4 && this.turn == 5;
     }
 
+    public initTimer() {
+        let self = this;
+        return setInterval(function() {self.updateTimer()}, 1000);
+    }
+
+    public updateTimer() {
+        if (!this.animating) {
+            this.timer -= 1;
+            //Update the timer here
+            console.log("current time: " + this.timer);
+            if (this.timer <= 0 && this.ourTurn()) {
+                server.outOfTime();
+            }
+        }
+    }
+
     public scorePoints(points: number) {
         this.totalScore += points;
-        this.gameState.updateScore(this.totalScore);
         if (this.totalScore >= SCORE_GOAL) {
             this.endGame(true, "You saved Homeworld with enough cows!")
         }

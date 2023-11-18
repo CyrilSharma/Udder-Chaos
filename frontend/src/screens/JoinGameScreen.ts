@@ -11,7 +11,7 @@ import { SizedButton } from "../ui_components/SizedButton";
 import { SeedBox } from "../ui_components/SeedBox";
 import { BackButton } from "../ui_components/BackButton";
 export class JoinGameScreen extends Container {
-
+    public SCREEN_ID = 'join';
     private background: Background;
     private errorPopup: FancyButton;
 
