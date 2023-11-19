@@ -1,10 +1,11 @@
 # Compiler and compiler flags
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -Wextra -fsanitize=address -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
+CXXFLAGS = -std=c++20 -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
 
 # Source file and executable name
 INCLUDES = -I./boost_1_83_0
 DEPS = Game.h Utils.h Helpers.h CardQueue.h Search.h Score.h Hasher.h MoveOrderer.h
+SOURCES = Game.cpp Utils.cpp Helpers.cpp Search.cpp
 EXECUTABLES = Main TestGame TestSearch
 
 # Default target
@@ -16,13 +17,22 @@ debug: $(EXECUTABLES)
 build: CXXFLAGS += -O3
 build: $(EXECUTABLES)
 
-$(EXECUTABLES): %: %.o
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+$(EXECUTABLES): %: %.o $(SOURCES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
-%.o: %.cpp $(DEPS)
+main: main.o $(SOURCES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+
+testgame: TestGame.o $(SOURCES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+
+testsearch: TestSearch.o $(SOURCES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+	
+%.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Clean up object files and the executable
+# Clean up object files and the executables
 clean:
 	rm -f $(EXECUTABLES)
 	rm -f *.o

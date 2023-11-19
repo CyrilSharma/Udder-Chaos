@@ -11,12 +11,13 @@
 // Because it has to create a unique hash value for every possible card
 // And it doesn't generate only the legal ones
 struct Hasher {
+    mt19937 rng;
     const int MAX_TURN = 1000, MAX_SCORE = 100;
     std::vector<uint64_t> pieceArr[8], turnArr, scoreArr, playerScoreArr[4];
     std::vector<std::vector<uint64_t>> cardArr; 
 
     // Initialize random values for all piece/card/turn/score/location combinations
-    Hasher(Game& g) {
+    Hasher(Game& g): rng(0) {
         // Piece hashes
         for (int pieceType = 0; pieceType < 8; pieceType++) {
             for (int sq = 0; sq < g.area(); sq++) {

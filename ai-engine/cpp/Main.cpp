@@ -87,7 +87,6 @@ struct Handler {
       exit(1);
     }
 
-    init_seed(stoll(params["seed"]));
     auto [board, pieces] = load_setup();
     auto cards = load_cards(stoll(params["ncards"]));
     auto gc = GameConfig(

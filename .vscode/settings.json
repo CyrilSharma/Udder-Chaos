@@ -101,6 +101,7 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "*.inc": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "tensor": "cpp"
     }
 }
