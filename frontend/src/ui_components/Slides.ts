@@ -59,13 +59,7 @@ export class Slides extends Sprite {
         this.slides.forEach(img => {
             img.width = this.width / window.innerWidth;
             img.height = this.height / window.innerHeight;
-            console.log(img.getBounds());
         });
-
-        console.log(this.width);
-        console.log(this.slides[0].width);
-        console.log(this.slides[0]);
-
     }
 
 }

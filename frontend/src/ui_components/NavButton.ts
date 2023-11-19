@@ -7,6 +7,7 @@ export class NavButton extends FancyButton {
     private button: FancyButton;
     private percentX: number;
     private percentY: number;
+    private radius: number;
 
     public label: Text;
 
