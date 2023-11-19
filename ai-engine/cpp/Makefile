@@ -25,3 +25,4 @@ $(EXECUTABLES): %: %.o
 # Clean up object files and the executable
 clean:
 	rm -f $(EXECUTABLES)
+	rm -f *.o

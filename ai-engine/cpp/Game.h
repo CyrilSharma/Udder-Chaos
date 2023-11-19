@@ -264,6 +264,8 @@ struct Game {
   void player_buy(int x, int y) {
     dynamic_bitset msk(area(), 1); 
     players[player_id] |= (msk << (width * y + x));
+    player_id = (player_id + 1) & 0b11;
+    turn += 1;
   } /* player_buy() */
 
   /*
