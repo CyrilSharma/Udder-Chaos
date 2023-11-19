@@ -19,7 +19,7 @@ import {
     TeamEnum,
     ActionType,
     random,
-    COW_REGEN_RATE,
+    MoveType
 } from './Utils';
 import { EndGameScreen } from '../ui_components/EndGameScreen';
 import server from "../server";
@@ -73,7 +73,7 @@ export class Board extends Container {
         this.addChild(this.winScreen);
         this.addChild(this.loseScreen);
 
-        for (let i = 0; i < COW_REGEN_RATE; i++) {
+        for (let i = 0; i < this.game.gameSettings.getValue("cow_regen_rate"); i++) {
             this.pastureRegen.push([])
         }
         for (let i = 0; i < 4; i++) {
@@ -127,21 +127,21 @@ export class Board extends Container {
     }
 
     // Takes a board update, and performs corresponding updates and rerenders at the end.
-    public async updateGame(update: BoardUpdate) {
+    public async updateGame(update: BoardUpdate, animated: boolean) {
         // Loop through steps in update
         this.game.animating = true;
         for (let i = 0; i < update.length; i++) {
             for (let j = 0; j < update[i].length; j++) {
                 switch (update[i][j].action) {
-                    case ActionType.Normal_Move: { this.normal_move(update[i][j]); break; }
-                    case ActionType.Obstruction_Move: { this.obstructed_move(update[i][j]); break; }
-                    case ActionType.Kill_Action: { this.kill_action(update[i][j]); break; }
-                    case ActionType.Abduct_Action: { this.abduct_action(update[i][j]); break; }
-                    case ActionType.Score_Action: { this.score_action(update[i][j]); break; }
+                    case ActionType.Normal_Move: { this.normal_move(update[i][j], animated); break; }
+                    case ActionType.Obstruction_Move: { this.obstructed_move(update[i][j], animated); break; }
+                    case ActionType.Kill_Action: { this.kill_action(update[i][j], animated); break; }
+                    case ActionType.Abduct_Action: { this.abduct_action(update[i][j], animated); break; }
+                    case ActionType.Score_Action: { this.score_action(update[i][j], animated); break; }
                     default: { throw Error("Illegal move in updateGame"); break; }
                 }
             }
-            if (update[i].length > 0) {
+            if (update[i].length > 0 && animated) {
                 // Sleep for animation time
                 await new Promise(r => setTimeout(r, 500))
             }
@@ -149,15 +149,13 @@ export class Board extends Container {
         this.game.animating = false;
     }
 
-    // TODO: Learn how to animate things.
-    public normal_move(action: PieceAction) {
+    public normal_move(action: PieceAction, animated: boolean) {
         let piece = action.piece;
         let dest = action.move;
-        this.setPieceLocation(piece, dest);
-        console.log(piece.type)
+        this.setPieceLocation(piece, dest, animated);
     }
 
-    public obstructed_move(action: PieceAction) {
+    public obstructed_move(action: PieceAction, animated: boolean) {
         // Do an animation toward the destination but fail.
         let piece = action.piece;
         let dest = action.move;
@@ -167,16 +165,16 @@ export class Board extends Container {
 
         const viewPosition = this.getViewPosition(dest);
         // Actually display pieces at the right location
-        action.piece.animateBounce(piece.x + xShift * this.tileSize / 4, piece.y + yShift * this.tileSize / 4);
+        action.piece.animateBounce(piece.x + xShift * this.tileSize / 4, piece.y + yShift * this.tileSize / 4, animated);
     }
 
     // Enemy killing a player piece
-    public async kill_action(action: PieceAction) {
+    public async kill_action(action: PieceAction, animated: boolean) {
         let piece = action.piece;
         let dest = action.move;
 
         const target = this.getPieceByPosition(dest)!;
-        await target.animateDestroy();
+        await target.animateDestroy(animated);
         this.removePiece(target);
 
         // Remove a piece from this player
@@ -211,21 +209,21 @@ export class Board extends Container {
 
     // Player killing a cow piece
     // TODO: change cow to be not a piece...
-    public async abduct_action(action: PieceAction) {
+    public async abduct_action(action: PieceAction, animated: boolean) {
         let piece = action.piece;
         let dest = action.move;
 
         const target = this.getPieceByPosition(dest, TeamEnum.Cow)!;
-        await target.animateAbducted(this.tileSize);
+        await target.animateAbducted(this.tileSize, animated);
         this.removePiece(target);
         piece.addScore();
 
         // Add respawn to pasture
-        this.pastureRegen[this.game.turnCount % COW_REGEN_RATE].push(dest);
+        this.pastureRegen[this.game.turnCount % this.game.gameSettings.getValue("cow_regen_rate")].push(dest);
     }
 
     // Player scoring cows on destination
-    public score_action(action: PieceAction) {
+    public score_action(action: PieceAction, animated: boolean) {
         let piece = action.piece;
         let points: number = piece.removeScore();
         this.game.scorePoints(points);
@@ -291,7 +289,7 @@ export class Board extends Container {
         tile.on('pointerup', () => {
             if (this.game.buyButton.dragging && this.game.ourTurn()) {
                 server.purchaseUFO(position, this.game.playerColor);
-                this.purchaseUFO(position, this.game.playerColor);
+                this.game.moveQueue.enqueue({"moveType": MoveType.PlayCard, "moveData": position, "color": this.game.playerColor, "animated": true})
             }
         });
 
@@ -307,10 +305,9 @@ export class Board extends Container {
             type: pieceType,
             size: this.tileSize,
         });
-        this.setPieceLocation(piece, position);
+        this.setPieceLocation(piece, position, false);
         this.pieces.push(piece);
         this.piecesContainer.addChild(piece);
-        console.log(this.playerPieces[pieceType]);
 
         if (PieceEnum.Player_Red <= pieceType && pieceType <= PieceEnum.Player_Purple) {
             this.playerPieces[pieceType] += 1;
@@ -338,12 +335,13 @@ export class Board extends Container {
     }
 
     /**  Moves piece */
-    public setPieceLocation(piece: Piece, position: Position) {
+    public setPieceLocation(piece: Piece, position: Position, animated: boolean) {
         const viewPosition = this.getViewPosition(position);
         piece.row = position.row;
         piece.column = position.column;
+
         // Actually display pieces at the right location
-        piece.animateMove(viewPosition.x - 8 * this.tileSize / 4, viewPosition.y - 8 * this.tileSize / 4)
+        piece.animateMove(viewPosition.x - 8 * this.tileSize / 4, viewPosition.y - 8 * this.tileSize / 4, animated)
     }
 
     /**  Return visual piece location on the board */
@@ -380,31 +378,31 @@ export class Board extends Container {
     /** Get the tile at a position on the board */
     public getTileAtPosition(position: Position) {
         // handle out of bounds
-        // console.log("query at: ", position);
         if (position.row < 0 || position.row >= this.rows || position.column < 0 || position.column >= this.columns) return TileEnum.Impassible;
-        // console.log(this.grid[position.row][position.column]);
         return this.grid[position.row][position.column];
     }
 
     public spawnCows(turnCount: number) {
+        const spawn_rate = this.game.gameSettings.getValue("cow_regen_rate");
+
         // Loop through pasture tiles that need new cows
-        this.pastureRegen[turnCount % COW_REGEN_RATE].forEach((tilePosition) => {
+        this.pastureRegen[turnCount % spawn_rate].forEach((tilePosition) => {
             this.createPiece(tilePosition, PieceEnum.Cow);
             let tile = tilePosition.row * 16 + tilePosition.column;
             this.respawnCounter[tile].text = "";
         });
-        this.pastureRegen[turnCount % COW_REGEN_RATE] = [];
+        this.pastureRegen[turnCount % spawn_rate] = [];
 
         // Update spawn numbers
-        for (let i = 0; i < COW_REGEN_RATE; i++) {
+        for (let i = 0; i < spawn_rate; i++) {
             //console.log(`(turnCount + i) % COW_REGEN_RATE = ${(turnCount + i) % COW_REGEN_RATE}`);
-            this.pastureRegen[(turnCount + i) % COW_REGEN_RATE].forEach((tilePosition) => {
+            this.pastureRegen[(turnCount + i) % spawn_rate].forEach((tilePosition) => {
                 //console.log(`Tile Position is : ${tilePosition.row}, ${tilePosition.column}`);
                 //console.log(`^^^ respawns in ${(COW_REGEN_RATE - turnCount) % COW_REGEN_RATE} days`);
-                let days = ((turnCount + i) % COW_REGEN_RATE) - turnCount % 12;
+                let days = ((turnCount + i) % spawn_rate) - turnCount % spawn_rate;
                 //let days = (COW_REGEN_RATE - i) % COW_REGEN_RATE
                 if (days < 0) {
-                    days += 12;
+                    days += spawn_rate;
                 }
                 let view = this.getViewPosition(tilePosition);
                 let tile = tilePosition.row * 16 + tilePosition.column;

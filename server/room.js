@@ -13,7 +13,15 @@ const COLOR = {
     UNSET: 4  
 }
 
-const MAX_PLAYERS = 1;
+
+// 4 represents AI, all 0-3 are player colors
+//const PLAYER_ORDER = [0,1,4]
+const PLAYER_ORDER = [0,1,4,2,3,4]
+
+const MAX_PLAYERS = 4;
+
+
+const HAND_SIZE = 3;
 
 /*
  * Room class tracks all players within a room/game and related game information.
@@ -25,24 +33,43 @@ export class Room {
         this.roomCode = roomCode;
         this.players = [];
         this.moveList = [];
-        this.turn = 0;
-        this.seed = 0;
-        this.setSeed(roomCode);
+        this.gameSettings = {};
+        this.inGame = false;
     }
 
-    addNewPlayer(socket, host=false) {
-        if (this.players.length >= MAX_PLAYERS) {
-            socket.emit("join-error", "This room is full!");
-            console.log(socket.id + " couldn't join room: " + this.roomCode);
-            return;
+    addNewPlayer(socket, savedID, host=false) {
+        if (!this.inGame) {
+            // If in the lobby, add a new player if space
+            if (this.players.length >= MAX_PLAYERS) {
+                socket.emit("join-error", "This room is full!");
+                console.log(socket.id + " couldn't join room: " + this.roomCode);
+                return;
+            }
+            let player = new Player(socket, TEAM.ALIEN, this, host);
+            this.players.push(player);
+
+            player.joinRoom();
+            socket.to(this.roomCode).emit("add-player", player.getPlayerInfo());
+            console.log(socket.id + " joined the room: " + this.roomCode);
         }
-
-        let player = new Player(socket, TEAM.ALIEN, this, host);
-        this.players.push(player);
-
-        player.joinRoom();
-        socket.to(this.roomCode).emit("add-player", player.getPlayerInfo());
-        console.log(socket.id + " joined the room: " + this.roomCode);
+        else {
+            console.log(savedID)
+            let player = null;
+            for (let i = 0; i < this.players.length; i++) {
+                if (this.players[i].id === savedID) {
+                    player = this.players[i];
+                }
+            }
+            
+            if (player == null) {
+                socket.emit("join-error", "This game is in progress!");
+                return;
+            }
+            console.log("Reconnect!" + player);
+            player.reconnectPlayer(socket);
+            socket.emit('start-game', this.gameSettings, this.getPlayerInfo());
+            socket.emit('share-move-list', this.moveList);
+        }
     }
 
     removePlayer(player) {
@@ -60,6 +87,15 @@ export class Room {
         else {
             removeRoom(this.roomCode);
         }
+    }
+
+    checkOnlinePlayers() {
+        for (let i = 0; i < this.players.length; i++) {
+            if (this.players[i].socket != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     updatePlayer(player) {
@@ -83,15 +119,16 @@ export class Room {
         return ids;
     }
 
-    setSeed(seed) {
-        if (seed === "") {
-            return;
-        }
+    setSettings(gameSettings) {
+        let seed = gameSettings.seed === "" ? gameSettings.seed : this.roomCode;
         let numSeed = 0;
+
         for (let i = 0; i < seed.length; i++) {
             numSeed += seed.charCodeAt(i);
         }
-        this.seed = numSeed;
+
+        gameSettings.seed = numSeed;
+        this.gameSettings = gameSettings;
     }
 
     startGame(host) {
@@ -103,7 +140,8 @@ export class Room {
                     return;
                 }
             }
-            this.io.to(this.roomCode).emit('start-game', this.seed, this.getPlayerInfo());
+            this.io.to(this.roomCode).emit('start-game', this.gameSettings, this.getPlayerInfo());
+            this.inGame = true;
         }
         else {
             host.emit("start-game-error", "Not enough players to start the game!");
@@ -112,13 +150,30 @@ export class Room {
 
     // Emit move to all players
     makeMove(socket, moveType, moveData, color) {
-        this.moveList.push((moveType, moveData, color));
+        console.log("moving now")
+        this.moveList.push({"moveType": moveType, "moveData": moveData, "color": color, "animated": false});
+
+        // If emmiter is offline, can broadcast to whole room
+        if (socket == null) {
+            socket = this.io;
+        }
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
         socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveData["index"], color);
-        if (moveType < 2) { this.turn += 1; }
-        if (this.turn % 3 == 2) {
+        
+        let curColor = PLAYER_ORDER[this.moveList.length % PLAYER_ORDER.length];
+        if (curColor == 4) {
+            // If next player is AI
             console.log("Query the AI move");
             ai_socket.emit("query-move", this.roomCode);
+        } else {
+            // If next player is offline, play automatic move
+            this.players.forEach(async (player) => {
+                if (player.socket == null && player.color == curColor) {
+                    await new Promise(r => setTimeout(r, 500));
+                    player.makeRandomMove();
+                    return;
+                }
+            });
         }
     }
 }
@@ -144,6 +199,7 @@ class Player {
         this.color = 4;
         this.room = room;
         this.host = host;
+        this.id = socket.id;
 
         this.initSocket();
     }
@@ -159,8 +215,8 @@ class Player {
             this.room.updatePlayer(this);
         });
 
-        this.socket.on("start-game", (seed) => {
-            this.room.setSeed(seed);
+        this.socket.on("start-game", (gameSettings) => {
+            this.room.setSettings(gameSettings);
             this.room.startGame(this.socket);
         });
 
@@ -169,13 +225,18 @@ class Player {
            this.room.makeMove(this.socket, moveType, moveData, color); 
         });
 
+        this.socket.on("out-of-time", () => {
+            this.makeRandomMove();
+        })
+
         this.socket.on("init-ai", (cards) => {
-            ai_socket.emit('init-ai', this.room.roomCode, this.room.seed, cards);
+            ai_socket.emit('init-ai', this.room.roomCode, this.room.gameSettings.seed, cards);
         });
 
         this.socket.on("leave-room", () => {
+            let tempSocket = this.socket;
             this.disconnectPlayer();
-            initPlayer(true, this.socket);
+            initPlayer(true, tempSocket);
         });
 
         this.socket.on("disconnect", () => {
@@ -193,12 +254,44 @@ class Player {
         this.socket.emit("receive-message", "joined the room");
     }
 
+    makeRandomMove() {
+        //Play a random card from the player's hand. Can be used when player takes too long, or when a player is disconnected
+        this.room.makeMove(null, 0, {"index": Math.floor(Math.random() * HAND_SIZE)}, this.color + 1);
+    }
+
+    reconnectPlayer(socket) {
+        this.socket = socket;
+        this.id = socket.id;
+        this.socket.join(this.room.roomCode);
+
+        this.initSocket();
+    }
+
     disconnectPlayer() {
         console.log(this.name + " has disconnected.");
-        if (this.host) {
-            this.socket.to(this.room.roomCode).emit("kick-player");
+
+        if (this.room.inGame) {
+            // If the game is in progress, become empty player
+            this.socket.removeAllListeners();
+            this.socket = null;
+
+            // If all other players are disconnected, destroy room
+            if (!this.room.checkOnlinePlayers()) {
+                removeRoom(this.room.roomCode);
+                return;
+            }
+
+            // If it's the current player's turn, make a random move
+            if (PLAYER_ORDER[this.room.moveList.length % PLAYER_ORDER.length] == this.color) {
+                this.makeRandomMove();
+            }
+        } else {
+            // If in the lobby, then leave
+            if (this.host) {
+                this.socket.to(this.room.roomCode).emit("kick-player");
+            }
+            this.room.removePlayer(this);
+            this.socket.removeAllListeners();
         }
-        this.room.removePlayer(this);
-        this.socket.removeAllListeners();
     }
 }

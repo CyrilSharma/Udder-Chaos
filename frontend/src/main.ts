@@ -103,11 +103,6 @@ async function init() {
         } else if (e.key === 'ArrowDown') {
             console.log('Down arrow key was pressed');
             key = 3;
-        } else if (e.key === 'Tab') {
-            console.log("rotate the first card!");
-            let gameScreen = navigation.currentScreen as GameScreen;
-            server.rotateCard(0, 2, 1);
-            gameScreen.rotateCard(0, 2, 1);
         }
         if (key == -1) return;
         navigation?.move(key);

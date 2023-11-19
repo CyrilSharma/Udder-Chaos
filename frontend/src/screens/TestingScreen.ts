@@ -8,7 +8,7 @@ import { GamePanel } from '../ui_components/GamePanel';
 import { RoundedTriangle } from '../ui_components/RoundedTriangle';
 
 export class TestingScreen extends Container {
-
+    public SCREEN_ID = 'testing';
     private background: Background;
     private leftCol: Container;
     private player1: PlayerGameInfo;

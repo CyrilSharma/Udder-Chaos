@@ -13,7 +13,7 @@ export class LogicHandler {
     }
 
     /** Play a card associated with a given color */
-    public async playCard(card: Card, color: number) {
+    public async playCard(card: Card, color: number, animated: boolean) {
         for (let i = 0; i < card.dirs.length; i++) {
             let move = card.dirs[i];
             // Figure out what the card does
@@ -38,7 +38,7 @@ export class LogicHandler {
             });
 
             // Send updates to game board
-            await this.game.board.updateGame([pre_actions, moves, post_actions]);
+            await this.game.board.updateGame([pre_actions, moves, post_actions], animated);
         }
     }
 

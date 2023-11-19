@@ -10,7 +10,7 @@ import { TutorialScreen } from './TutorialScreen';
 
 /** Screen shows upon opening the website */
 export class HomeScreen extends Container {
-
+    public SCREEN_ID = 'home';
     private background: Background;
     private createGameButton: MenuButton;
     private joinGameButton: MenuButton;

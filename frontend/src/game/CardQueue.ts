@@ -23,12 +23,13 @@ export class CardQueue extends Container {
     public cardContainer: Container;
     public logicHandler: LogicHandler;
     public cardSize = 100;
-    public ncards = 15;
+    public ncards = 0;
     public hand_size: number = 3;
 
     constructor(game: Game) {
         super();
         this.game = game;
+        this.ncards = this.game.gameSettings.getValue("card_deck_size");
         this.logicHandler = new LogicHandler(game);
         this.cardContainer = new Container();
         this.addChild(this.cardContainer);
@@ -85,7 +86,7 @@ export class CardQueue extends Container {
     }
 
     /** Called when a card in the cardqueue is clicked */
-    public playCard(input: Card, color: number) {
+    public async playCard(input: Card, color: number, animated: boolean) {
         // Get correct team
         var hand;
         if (getTeam(color) == TeamEnum.Player) {
@@ -101,7 +102,7 @@ export class CardQueue extends Container {
             if (card != input) continue;
             
             // Use logic handler to process movement logic
-            this.logicHandler.playCard(card, color);
+            await this.logicHandler.playCard(card, color, animated);
 
             // Remove card from hand and add to queue
             this.queue.push(card);
