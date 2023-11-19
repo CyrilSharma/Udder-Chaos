@@ -33,7 +33,7 @@ Move Search::beginSearch(int dbgVerbosity) {
     begin_time = curTime();
 
     // might need a nullmove member in the future
-    Move bestMove = Move(-1, -1);
+    Move bestMove = Move(MoveType::NONE, -1, -1);
     int bestEval = -1;
     
     int curDepth = 1;
@@ -71,21 +71,31 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
     // We perform recursive search.
     // To begin, we generate moves
     std::vector<Move> moves;
-    for (int card = 0; card < (int) game.hand_size; ++card) {
-        // Enemy can move any color
-        if (game.is_enemy_turn()) {
+    
+    // Enemy can move any color
+    if (game.is_enemy_turn()) {
+        for (int card = 0; card < (int) game.hand_size; ++card) {
             for (int color = 0; color < 4; ++color) {
                 // Make sure enemy actually has this color
                 if (game.enemies[color].count())
-                    moves.push_back(Move(card, color+4));
+                    moves.push_back(Move(MoveType::NORMAL, card, color+4));
             }
-        } 
-        // Player can only move current color
-        else {
-            // I'm going to go ahead and assume player_id stores the player's whose turn it is to move color
-            moves.push_back(Move(card, game.player_id));
         }
+    } 
+    // Player can only move current color
+    else {
+        for (int card = 0; card < (int) game.hand_size; ++card) {
+            // I'm going to go ahead and assume player_id stores the player's whose turn it is to move color
+            moves.push_back(Move(MoveType::NORMAL, card, game.player_id));
+            
+            // Player rotate card
+            moves.push_back(Move(MoveType::ROTATE, card));
+        }
+        // TODO generate spawn tile locations 
+        for (int x : {1, 2}) for (int y : {1, 2})
+            moves.push_back(Move(MoveType::BUY, x, y));
     }
+
 
     // Order the moves.
     moveOrderer.order(game, moves);
@@ -101,7 +111,6 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
         cerr << "Eval: " << " " << eval << endl;
 
         // beta prune.
-        
         // beta is the best we could do in an earlier branch, so opponent will never play this move
         if (eval >= beta) {
             // Fail-high

@@ -63,9 +63,9 @@ ostream& operator<<(ostream& os, const Piece& p) {
   return os;
 }
 
-
-Move::Move(int card, int color):
-  card(card), color(color) {}
+// ok so ideally Move is a generic class which is implemented by different move types but
+Move::Move(MoveType type, int arg1, int arg2):
+  type(type), card(arg1), color(arg2), x(arg1), y(arg2), angle(arg2) {}
 
 GameConfig::GameConfig(
   vector<vector<int>> board,

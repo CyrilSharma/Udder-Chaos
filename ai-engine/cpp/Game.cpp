@@ -153,8 +153,18 @@ bool Game::color_is_enemy(int color) {
 
 // general move making function
 void Game::make_move(Move move) {
-  if (color_is_enemy(move.color)) enemy_move(move.card, move.color - 4);
-  else player_move(move.card);
+  assert(move.type != MoveType::NONE);
+  if (move.type == MoveType::NORMAL) {
+    if (color_is_enemy(move.color)) enemy_move(move.card, move.color - 4);
+    else player_move(move.card);
+  }
+  // Assumed move is player move
+  else if (move.type == MoveType::ROTATE) {
+    player_rotate_card(move.card, move.angle);
+  }
+  else if (move.type == MoveType::BUY) {
+    player_buy(move.x, move.y);
+  }
 }
 
 int Game::count_players() {

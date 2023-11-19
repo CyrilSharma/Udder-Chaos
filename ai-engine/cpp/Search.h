@@ -23,7 +23,7 @@ struct Search {
     // Max depth to search
     int max_depth;
     // Best moves found during a particular search
-    Move newBestMove = Move(0, 0);
+    Move newBestMove = Move(MoveType::NONE, 0, 0);
     int newBestEval = 0;
     // Flag for entire layer searched
     bool searchCompleted = false;

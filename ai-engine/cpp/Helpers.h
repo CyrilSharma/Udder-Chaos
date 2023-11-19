@@ -18,6 +18,13 @@ enum TileType {
   SCORE = 3
 };
 
+enum MoveType {
+  NONE = -1,
+  NORMAL = 0,
+  ROTATE = 1,
+  BUY = 2
+};
+
 struct Card {
   std::vector<Direction> moves;
   bool operator==(const Card& other) const;
@@ -37,10 +44,11 @@ struct Piece {
 };
 ostream& operator<<(ostream& os, const Piece& p);
 
+
 struct Move {
-  int card;
-  int color;
-  Move(int card, int color);
+  MoveType type;
+  int card, color, x, y, angle;
+  Move(MoveType type, int arg1=-1, int arg2=-1);
 };
 
 struct GameConfig {
