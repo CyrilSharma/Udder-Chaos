@@ -5,9 +5,8 @@ CXXFLAGS = -std=c++20 -Wall -Wextra -fsanitize=address -fsanitize=address -fsani
 # Source file and executable name
 INCLUDES = -I./boost_1_83_0
 DEPS = Game.h Utils.h Helpers.h CardQueue.h Search.h Score.h Hasher.h MoveOrderer.h
-# EXECUTABLES = TestSearch
-EXECUTABLES = Main TestGame
-# EXECUTABLES = TestGame
+EXECUTABLES = Main TestGame TestSearch
+
 # Default target
 all: debug
 
@@ -17,9 +16,12 @@ debug: $(EXECUTABLES)
 build: CXXFLAGS += -O3
 build: $(EXECUTABLES)
 
-$(EXECUTABLES): %: %.cpp $(DEPS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
+$(EXECUTABLES): %: %.o
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $< -o $@
+
+%.o: %.cpp $(DEPS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Clean up object files and the executable
 clean:
-	rm -f $(EXECUTABLE)
+	rm -f $(EXECUTABLES)
