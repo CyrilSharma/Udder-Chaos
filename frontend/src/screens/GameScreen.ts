@@ -16,8 +16,9 @@ export class GameScreen extends Container {
 
         this.game = new Game();
         this.addChild(this.game);
-        
     }
+
+    
 
     public prepare() {
         // Temporary workaround until we can load maps.

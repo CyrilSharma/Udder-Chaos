@@ -1,6 +1,6 @@
 import { Container, Sprite, ObservablePoint, Text } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum, DAYS_PER_ROUND, PlayerInfo, TIMER_LENGTH } from './Utils';
+import { ColorEnum, GameConfig, PieceEnum, PlayerInfo} from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
@@ -13,6 +13,7 @@ import { BuyButton } from '../ui_components/BuyButton';
 import { ScoreCounter } from '../ui_components/ScoreCount';
 import { SizedButton } from '../ui_components/SizedButton';
 import server from "../server";
+import { GameSettings, gameSettings } from "./GameSettings";
 import { MoveQueue } from './MoveQueue';
 
 // This seems a little redundant right now,
@@ -30,8 +31,9 @@ export class Game extends Container {
     public dayCycle: number = 0;
     public totalDayCount: number = 0;
     public totalScore: number = 0;
-    private timer: number = TIMER_LENGTH;
+    private timer: number = 0;
     private timerInterval: NodeJS.Timeout;
+    public gameSettings: GameSettings = gameSettings;
     public moveQueue: MoveQueue;
     public leftPanel: GamePanel;
     public rightPanel: GamePanel;
@@ -57,6 +59,7 @@ export class Game extends Container {
         this.board = new Board(this);
         this.cards = new CardQueue(this);
         this.buyButton = new BuyButton(0, 0);
+        this.timer = this.gameSettings.getValue("timer_length");
         this.timerInterval = this.initTimer();
         this.moveQueue = new MoveQueue(this);
 
@@ -77,7 +80,7 @@ export class Game extends Container {
         this.playerAI.changeText("AI")
         this.dayCounter = new DayCounter();
         this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
-        this.scoreCounter = new ScoreCounter(0, 0, 0.5, 0.5, "0 of 30", this.leftPanel.width, this.leftPanel.height, 40, 0xffffff);
+        this.scoreCounter = new ScoreCounter(0, 0, 0.5, 0.5, `0 of ${this.gameSettings.getValue('score_goal')}`, this.leftPanel.width, this.leftPanel.height, 40, 0xffffff);
 
         this.boardPanel.addChild(this.board);
         this.leftPanel.addChild(this.player1);
@@ -128,8 +131,8 @@ export class Game extends Container {
             this.turn -= 6;
             this.dayCycle++;
             this.dayCounter.cycleDay(this.dayCounter);
-            if (this.dayCycle >= DAYS_PER_ROUND) {
-                this.dayCycle -= DAYS_PER_ROUND;
+            if (this.dayCycle >= this.gameSettings.getValue("days_per_round")) {
+                this.dayCycle -= this.gameSettings.getValue("days_per_round");
                 this.startNewRound();
             }
             this.totalDayCount++;
@@ -161,7 +164,7 @@ export class Game extends Container {
                 break;
         }
         this.turnCount += 1;
-        this.timer = TIMER_LENGTH;
+        this.timer = this.gameSettings.getValue("timer_length");
         this.board.spawnCows(this.turnCount);
     }
 
@@ -173,8 +176,8 @@ export class Game extends Container {
     }
 
     public cowSacrifice() {
-        if (this.totalScore >= COW_SACRIFICE) {
-            this.scorePoints(-COW_SACRIFICE);
+        if (this.totalScore >= this.gameSettings.getValue("cow_sacrifice")) {
+            this.scorePoints(-this.gameSettings.getValue("cow_sacrifice"));
         }
         else {
             this.scorePoints(-this.totalScore);
@@ -221,7 +224,7 @@ export class Game extends Container {
 
     public scorePoints(points: number) {
         this.totalScore += points;
-        if (this.totalScore >= SCORE_GOAL) {
+        if (this.totalScore >= this.gameSettings.getValue("score_goal")) {
             this.endGame(true, "You saved Homeworld with enough cows!")
         }
         this.scoreCounter.updateScore(this.totalScore.toString() + " ");

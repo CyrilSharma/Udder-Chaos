@@ -3,8 +3,9 @@ import { navigation } from './utils/navigation';
 import { CreateGameScreen } from './screens/CreateGameScreen';
 import { GameScreen } from "./screens/GameScreen";
 import { HomeScreen } from "./screens/HomeScreen";
-import { Player, initSeed, Position, PlayerInfo, MoveType } from "./game/Utils"
+import { Player, initSeed, Position, PlayerInfo, MoveType, gameSettingsData } from "./game/Utils"
 import { JoinGameScreen } from "./screens/JoinGameScreen";
+import { gameSettings } from "./game/GameSettings";
 
 class Server {
     socket;
@@ -65,8 +66,8 @@ class Server {
             console.log(error);
         });
 
-        this.socket.on("start-game", async (seed: number, playerList: PlayerInfo[]) => {
-            initSeed(seed);
+        this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[]) => {
+            initSeed(settingsData.seed);
 
             let color = 1;
 
@@ -77,6 +78,8 @@ class Server {
             });
 
             await navigation.showScreen(GameScreen);
+
+            gameSettings.save(settingsData);
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
@@ -134,13 +137,8 @@ class Server {
         this.socket.emit("update-color", color);
     }
 
-    public async startGame(seed: string) {
-        console.log(seed);
-        if (seed === "Seed") {
-            seed = "";
-        }
-        console.log(seed);
-        this.socket.emit("start-game", seed);
+    public async startGame() {
+        this.socket.emit("start-game", gameSettings.load());
         localStorage.setItem("saved-id", this.socket.id)
     }
 
