@@ -6,6 +6,7 @@ import server from "../server";
 import { JoinGameScreen } from './JoinGameScreen';
 import { MenuButton } from '../ui_components/MenuButton';
 import { TestingScreen } from './TestingScreen';
+import { TutorialScreen } from './TutorialScreen';
 
 /** Screen shows upon opening the website */
 export class HomeScreen extends Container {
@@ -14,6 +15,7 @@ export class HomeScreen extends Container {
     private createGameButton: MenuButton;
     private joinGameButton: MenuButton;
     private settingsButton: MenuButton;
+    private tutorialButton: MenuButton;
     private logo: Sprite;
 
     constructor() {
@@ -29,26 +31,35 @@ export class HomeScreen extends Container {
         this.addChild(this.logo);
 
         // Create Game
-        this.createGameButton = new MenuButton("Create Game", 0.2, 0.6, 0xF4C418, 4, 0.15, 30);
+        this.createGameButton = new MenuButton("Create Game", 0.18, 0.6, 0xF4C418, 4, 0.15, 30);
         this.createGameButton.getButton().onPress.connect(() => {
             server.createRoom();
         });
         this.addChild(this.createGameButton.getButton());
 
         // Join Game
-        this.joinGameButton = new MenuButton("Join Game", 0.8, 0.6, 0xF4C418, 4, 0.15, 30);
+        this.joinGameButton = new MenuButton("Join Game", 0.82, 0.6, 0xF4C418, 4, 0.15, 30);
         this.joinGameButton.getButton().onPress.connect(() => {
             navigation.showScreen(JoinGameScreen);
         });
         this.addChild(this.joinGameButton.getButton());
 
         // Settings
-        this.settingsButton = new MenuButton("Settings", 0.5, 0.8, 0xF4C418, 4, 0.15, 30);
+        this.settingsButton = new MenuButton("Settings", 0.58, 0.8, 0xF4C418, 4, 0.075, 30);
         this.settingsButton.getButton().onPress.connect(() => {
             navigation.showScreen(TestingScreen);
             //navigation.showScreen(SettingsScreen);
         });
         this.addChild(this.settingsButton.getButton());
+
+        // Tutorial
+        this.tutorialButton = new MenuButton("Tutorial", 0.42, 0.8, 0xF4C418, 4, 0.075, 30);
+        this.tutorialButton.getButton().onPress.connect(() => {
+            navigation.showScreen(TutorialScreen);
+            //navigation.showScreen(TestingScreen);
+        });
+        this.addChild(this.tutorialButton.getButton());
+
     }
 
     public async show() {
@@ -67,6 +78,7 @@ export class HomeScreen extends Container {
         this.joinGameButton.resize(width, height);
         this.settingsButton.resize(width, height);
         this.background.resize(width, height);
+        this.tutorialButton.resize(width, height);
     }
 
 }
