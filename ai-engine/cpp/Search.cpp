@@ -106,6 +106,7 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
         Game tmp = game;
         tmp.make_move(move);
         int eval = -alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha);
+        // tmp.undo_move(move);
 
         cerr << "Move: " << move.card << " " << move.color << endl;
         cerr << "Eval: " << " " << eval << endl;
