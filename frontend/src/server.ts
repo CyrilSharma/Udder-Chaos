@@ -79,8 +79,7 @@ class Server {
 
             await navigation.showScreen(GameScreen);
 
-            //TODO: gameSettings.save("settings");
-            //gameSettings.save(settingsData);
+            gameSettings.save(settingsData);
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
@@ -138,13 +137,8 @@ class Server {
         this.socket.emit("update-color", color);
     }
 
-    public async startGame(seed: string) {
-        console.log(seed);
-        if (seed === "Seed") {
-            seed = "";
-        }
-        console.log(seed);
-        this.socket.emit("start-game", seed);
+    public async startGame() {
+        this.socket.emit("start-game", gameSettings.load());
         localStorage.setItem("saved-id", this.socket.id)
     }
 
