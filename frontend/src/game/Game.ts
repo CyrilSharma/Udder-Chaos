@@ -198,7 +198,7 @@ export class Game extends Container {
     }
 
     public ourTurn() {
-        return !this.gameOver && !this.animating; // debug always allow current player to move
+        //return !this.gameOver && !this.animating; // debug always allow current player to move
         return !this.gameOver && !this.animating &&
             this.playerColor == 1 && this.turn == 1 || 
             this.playerColor == 2 && this.turn == 2 || 
