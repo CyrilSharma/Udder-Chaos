@@ -36,8 +36,10 @@ struct Search {
     // Best moves found during a particular search
     Move newBestMove = Move(0, 0);
     int newBestEval = 0;
+    // Flag for entire layer searched
+    bool searchCompleted = false;
     // Beginning time, updated each time search is called
-    uint64_t begin_time;
+    uint64_t beginTime;
 
     Search(GameConfig gc, int sc=0, uint64_t to=1000, int md=inf):
       game(gc), scorer(sc), hasher(game),
@@ -66,7 +68,7 @@ struct Search {
     // structure from https://github.com/SebLague/Chess-Coding-Adventure/blob/Chess-V2-Unity
     // set timeout and max_depth before running, defaults to timeout = 1000 and max_depth = inf
     Move beginSearch(int dbgVerbosity = 0) {
-        begin_time = curTime();
+        beginTime = curTime();
 
         // might need a nullmove member in the future
         Move bestMove = Move(-1, -1);
@@ -74,13 +76,17 @@ struct Search {
         
         int curDepth = 1;
         while (curDepth < max_depth) {
-            if (curTime() > begin_time + timeout) break;
+            if (curTime() > beginTime + timeout) break;
 
             // Recursive tree search to curDepth
+            searchCompleted = false;
             alphaBeta(game, 0, curDepth, -inf, inf);
 
-            bestMove = newBestMove, bestEval = newBestEval;
-            curDepth++;
+            // Don't use partially searched results for now, since no move history heuristic is used
+            if (searchCompleted) {
+                bestMove = newBestMove, bestEval = newBestEval;
+                curDepth++;
+            }
         }
 
         return bestMove;
@@ -90,7 +96,7 @@ struct Search {
     // Except there's no pruning right now because the heuristic is bad
     int alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta) {
         // Timeout
-        if (curTime() > begin_time + timeout) { return 0; } 
+        if (curTime() > beginTime + timeout) { return 0; } 
 
         // We'll check if the game is over later, idk how to do it yet
 
@@ -150,6 +156,10 @@ struct Search {
             }
         }
 
+        // Mark that search was completed
+        if (depth == 0) {
+            searchCompleted = true;
+        }
         return alpha;
     }
 };
