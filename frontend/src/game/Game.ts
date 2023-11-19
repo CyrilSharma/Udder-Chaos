@@ -78,6 +78,9 @@ export class Game extends Container {
         this.player3 = new PlayerGameInfo(2);
         this.player4 = new PlayerGameInfo(3);
         this.playerAI = new PlayerGameInfo(-1);
+
+        this.player1.toggleTimer(true);
+
         this.playerAI.changeText("AI")
         this.dayCounter = new DayCounter(7);
         this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
@@ -146,27 +149,39 @@ export class Game extends Container {
         switch (this.turn) {
             case 1:
                 this.playerAI.removeShadow();
+                this.playerAI.toggleTimer(false);
                 this.player1.addShadow();
+                this.player1.toggleTimer(true);
                 break;
             case 2:
                 this.player1.removeShadow();
+                this.player1.toggleTimer(false);
                 this.player2.addShadow();
+                this.player2.toggleTimer(true);
                 break;
             case 3:
                 this.player2.removeShadow();
+                this.player2.toggleTimer(false);
                 this.playerAI.addShadow();
+                this.playerAI.toggleTimer(true);
                 break;
             case 4:
                 this.playerAI.removeShadow();
+                this.playerAI.toggleTimer(false);
                 this.player3.addShadow();
+                this.player3.toggleTimer(true);
                 break;
             case 5:
                 this.player3.removeShadow();
+                this.player3.toggleTimer(false);
                 this.player4.addShadow();
+                this.player4.toggleTimer(true);
                 break;
             case 6:
                 this.player4.removeShadow();
+                this.player4.toggleTimer(false);
                 this.playerAI.addShadow();
+                this.playerAI.toggleTimer(true);
                 break;
         }
         this.turnCount += 1;
@@ -225,7 +240,16 @@ export class Game extends Container {
             if (this.timer <= 0 && this.ourTurn()) {
                 server.outOfTime();
             }
+            this.updatePlayerInfoTimers();
         }
+    }
+
+    public updatePlayerInfoTimers() {
+        this.player1.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.player2.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.player3.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.player4.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.playerAI.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
     }
 
     public scorePoints(points: number) {
@@ -267,7 +291,7 @@ export class Game extends Container {
         this.buyButton.y = this.scoreCounter.y + 70;
         this.cards.y = 0;
         this.cards.x = 0;
-        this.upNext.y = -310//this.rightPanel.y - (this.rightPanel.getBox()[1] - this.rightPanel.getBox()[0]) + this.upNext.height * 0.5;
+        this.upNext.y = -310;
         this.codeDisplay.y = 200;
 
         this.cards.placeCards();
