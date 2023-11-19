@@ -1,20 +1,17 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-#include <bits/stdc++.h>
-#include <dirent.h>
-#include <sys/types.h>
+#include <vector>
+#include <string>
 
 #include "CardQueue.h"
-#include "Game.h"
 #include "Utils.h"
 #include "Search.h"
 
 using namespace std;
 
 /*
- * Ensure creation function faithfully transcribes
- * The board, players, and cards.
+ * Ensure the AI can find at least some easy kill-moves.
  */
 
 TEST_CASE("Testing Good Moves") {
@@ -63,14 +60,18 @@ TEST_CASE("Testing Good Moves") {
     }
 
 
-    Search search(GameConfig(board, pieces, cards));
+    Search search(
+      GameConfig(board, pieces, cards),
+      0, 1
+    );
+    search.game.turn += 1;
     cerr << search.game << "\n";
 
     Move move = search.beginSearch();
 
     int answer_idx; answer >> answer_idx;
     int answer_color; answer >> answer_color;
-    CHECK(((answer_idx == move.card) && 
-          (answer_color == move.color)));
+    CHECK(answer_idx == move.card);
+    CHECK(answer_color == move.color);
   }
 }
