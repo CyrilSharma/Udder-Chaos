@@ -94,9 +94,12 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
         Game tmp = game;
         tmp.make_move(move);
         int eval = -alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha);
-        cerr << eval << endl;
+
+        cerr << "Move: " << move.card << " " << move.color << endl;
+        cerr << "Eval: " << " " << eval << endl;
 
         // beta prune.
+        
         // beta is the best we could do in an earlier branch, so opponent will never play this move
         if (eval >= beta) {
             // Fail-high

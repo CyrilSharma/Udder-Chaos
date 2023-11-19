@@ -20,6 +20,15 @@ build: $(EXECUTABLES)
 $(EXECUTABLES): %: %.o $(SOURCES:.cpp=.o)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
+main: main.o $(SOURCES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+
+testgame: TestGame.o $(SOURCES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+
+testsearch: TestSearch.o $(SOURCES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+	
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
