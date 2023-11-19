@@ -17,6 +17,7 @@ import '@pixi/math-extras';
 
 // ---- Game Settings ---- //
 export const defaultGameSettings = {
+    seed: 0,
     score_goal: 30,
     days_per_round: 5,
     cow_regen_rate: 15,
@@ -188,12 +189,6 @@ export type PieceAction = {action: number; piece: Piece; move: Position};
 
 // We categorize the moves to allow for unique animations.
 export type BoardUpdate = PieceAction[][];
-
-// Information needed for setting up the game.
-export type GameSettings = {
-    seed: number
-    // add more when we have settings.
-};
 
 // ---- Moves ---- //
 
