@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 using namespace std;
 
 // Don't mess with the values here.
@@ -19,72 +20,27 @@ enum TileType {
 
 struct Card {
   std::vector<Direction> moves;
-  bool operator==(const Card& other) const {
-    return moves == other.moves;
-  }
-  bool operator!=(const Card& other) const {
-    return moves != other.moves;
-  }
-  bool operator<(const Card& other) const {
-    return moves < other.moves;
-  }
-  
-  // Get 'hash' of card, based on the moves it does
-  // assumes cards have less than 32 moves in them, and that all cards have the same length.
-  // oh and also that directions are just 0-3
-  uint64_t getID() {
-    uint64_t val = 0, pow = 1;
-    for (auto move : moves) {
-      val += move * pow;
-      pow *= 4;
-    }
-    return val;
-  }
-
-  // Helper for hashing to know max possible id of a card
-  // Assumes cards have less than 32 moves again
-  uint64_t getMaxID() {
-    return 1ULL << (2 * moves.size());
-  }
+  bool operator==(const Card& other) const;
+  bool operator!=(const Card& other) const;
+  bool operator<(const Card& other) const;
+  uint64_t getID();
+  uint64_t getMaxID();
 };
-
-ostream& operator<<(ostream& os, const Card& card) {
-  os << "Card: ";
-  for (auto move: card.moves) {
-    switch (move) {
-      // Reverse down and up for consistency with clientside o.o
-      case RIGHT: { os << 'R'; break; }
-      case UP:    { os << 'D'; break; }
-      case LEFT:  { os << 'L'; break; }
-      case DOWN:  { os << 'U'; break; }
-    }
-  }
-  return os;
-}
+ostream& operator<<(ostream& os, const Card& card);
 
 struct Piece {
   int i, j, tp, score;
-  Piece(): i(0), j(0), tp(0), score(0) {}
-  Piece(int i, int j, int tp, int score = 0) :
-    i(i), j(j), tp(tp), score(score) {}
-  bool operator==(const Piece& other) const {
-    return i == other.i && j == other.j
-      && tp == other.tp && score == other.score;
-  }
-  bool operator!=(const Piece& other) const {
-    return !(*this == other);
-  }
+  Piece();
+  Piece(int i, int j, int tp, int score = 0);
+  bool operator==(const Piece& other) const;
+  bool operator!=(const Piece& other) const;
 };
-ostream& operator<<(ostream& os, const Piece& p) {
-  os << "Piece: ( " << p.i << ", " << p.j << ", "
-    << p.tp << ", " << p.score << " )\n";
-  return os;
-}
+ostream& operator<<(ostream& os, const Piece& p);
 
 struct Move {
   int card;
   int color;
-  Move(int card, int color) : card(card), color(color) {}
+  Move(int card, int color);
 };
 
 struct GameConfig {
@@ -99,7 +55,5 @@ struct GameConfig {
     vector<Card> cards,
     int hand_size = 3,
     int round_length = 6
-  ): board(board), pieces(pieces),
-     cards(cards), hand_size(hand_size),
-     round_length(round_length) {}
+  );
 };
