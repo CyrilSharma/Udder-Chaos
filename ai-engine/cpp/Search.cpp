@@ -43,8 +43,10 @@ Move Search::beginSearch(int dbgVerbosity) {
         // Recursive tree search to curDepth
         alphaBeta(game, 0, curDepth, -inf, inf);
 
-        bestMove = newBestMove, bestEval = newBestEval;
-        curDepth++;
+        if (searchCompleted) {
+            bestMove = newBestMove, bestEval = newBestEval;
+            curDepth++;
+        }
     }
 
     return bestMove;
@@ -118,5 +120,8 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
         }
     }
 
+    if (depth == 0) {
+        searchCompleted = true;
+    }
     return alpha;
 }
