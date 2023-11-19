@@ -13,11 +13,13 @@ const COLOR = {
     UNSET: 4  
 }
 
+
 // 4 represents AI, all 0-3 are player colors
 //const PLAYER_ORDER = [0,1,4]
 const PLAYER_ORDER = [0,1,4,2,3,4]
 
 const MAX_PLAYERS = 4;
+
 
 const HAND_SIZE = 3;
 

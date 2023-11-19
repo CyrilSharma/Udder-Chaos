@@ -5,6 +5,7 @@ import { PlayerGameInfo } from '../ui_components/PlayerGameInfo';
 import { PlayerColorIcon } from '../ui_components/PlayerColorIcon';
 import { DayCounter } from '../ui_components/DayCounter';
 import { GamePanel } from '../ui_components/GamePanel';
+import { RoundedTriangle } from '../ui_components/RoundedTriangle';
 
 export class TestingScreen extends Container {
     public SCREEN_ID = 'testing';
@@ -18,6 +19,7 @@ export class TestingScreen extends Container {
     private playerIcon: PlayerColorIcon;
     private dayCounter: DayCounter;
     private gamePanel: GamePanel;
+    private rT: RoundedTriangle;
 
     constructor() {
         /** Default Stuff */
@@ -44,7 +46,7 @@ export class TestingScreen extends Container {
 
         this.playerIcon = new PlayerColorIcon(0xFF0000);
 
-        this.dayCounter = new DayCounter();
+        this.dayCounter = new DayCounter(5);
         this.dayCounter.scale.x = 0.5;
         this.dayCounter.scale.y = 0.5;
         this.dayCounter.onPress.connect(() => this.dayCounter.cycleDay(this.dayCounter));
@@ -58,8 +60,14 @@ export class TestingScreen extends Container {
         this.leftCol.addChild(this.playerIcon);
         this.addChild(this.leftCol);
 
+        this.rT = new RoundedTriangle(7);
+        this.rT.angle = 25.714;
+        this.addChild(this.rT);
+        this.rT.visible = false;
+
         this.gamePanel = new GamePanel(0.88, 0.5, 0.2, 0.95, 200, 950, 0xffffff);
         this.addChild(this.gamePanel);
+        //this.dayCounter.visible = false;
 
     }
 
@@ -75,6 +83,8 @@ export class TestingScreen extends Container {
         this.playerIcon.y = 90;
         this.dayCounter.y = 100;
         this.dayCounter.x = 400;
+        this.rT.x = width / 2;
+        this.rT.y = height / 2;
         this.gamePanel.resize(width, height);
     }
 

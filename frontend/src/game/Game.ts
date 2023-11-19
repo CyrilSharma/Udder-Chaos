@@ -52,6 +52,7 @@ export class Game extends Container {
     public gameOver: boolean = false;
     public animating: boolean = false;
     public upNext: SizedButton;
+    public codeDisplay: SizedButton;
 
     constructor() {
         super();
@@ -63,8 +64,8 @@ export class Game extends Container {
         this.timerInterval = this.initTimer();
         this.moveQueue = new MoveQueue(this);
 
-        this.leftPanel = new GamePanel(0.1125, 0.5, 0.22, 1, 200, 1000, 0xffffff);
-        this.rightPanel = new GamePanel(0.8875, 0.5, 0.22, 1, 200, 1000, 0x5f5f5f);
+        this.leftPanel = new GamePanel(0.11275, 0.5, 0.2, 1, 200, 1000, 0xffffff);
+        this.rightPanel = new GamePanel(0.88725, 0.5, 0.2, 1, 200, 1000, 0x5f5f5f);
         this.boardPanel = new GamePanel(0.5, 0.4, 0.56, 0.6, 500, 500, 0xcc0000);
         this.bottomPanel = new GamePanel(0.5, 0.925, 0.3, 0.15, 500, 150, 0xabcdef);
         this.boardPanel.gamePanel.alpha = 0;
@@ -78,9 +79,14 @@ export class Game extends Container {
         this.player4 = new PlayerGameInfo(3);
         this.playerAI = new PlayerGameInfo(-1);
         this.playerAI.changeText("AI")
-        this.dayCounter = new DayCounter();
+        this.dayCounter = new DayCounter(7);
         this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
+
         this.scoreCounter = new ScoreCounter(0, 0, 0.5, 0.5, `0 of ${this.gameSettings.getValue('score_goal')}`, this.leftPanel.width, this.leftPanel.height, 40, 0xffffff);
+        this.codeDisplay = new SizedButton(0, 0, 0.92, 0.04, "Code:\nABCD", this.rightPanel.width, this.rightPanel.height, 15, 0xffcc66);
+        this.codeDisplay.changeText("Code:\nCODE");
+        this.rightPanel.addChild(this.codeDisplay);
+
 
         this.boardPanel.addChild(this.board);
         this.leftPanel.addChild(this.player1);
@@ -246,7 +252,7 @@ export class Game extends Container {
         this.player2.y = 100;
         this.player3.y = 150;
         this.player4.y = 200;
-        this.playerAI.y = 200;
+        this.playerAI.y = 250;
         this.player1.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.player2.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.player3.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
@@ -261,7 +267,8 @@ export class Game extends Container {
         this.buyButton.y = this.scoreCounter.y + 70;
         this.cards.y = 0;
         this.cards.x = 0;
-        this.upNext.y = this.rightPanel.y - (this.rightPanel.getBox()[1] - this.rightPanel.getBox()[0]) + this.upNext.height * 0.5;
+        this.upNext.y = -310//this.rightPanel.y - (this.rightPanel.getBox()[1] - this.rightPanel.getBox()[0]) + this.upNext.height * 0.5;
+        this.codeDisplay.y = 200;
 
         this.cards.placeCards();
 
