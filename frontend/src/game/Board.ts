@@ -19,8 +19,7 @@ import {
     TeamEnum,
     ActionType,
     random,
-    MoveType,
-    COW_REGEN_RATE,
+    MoveType
 } from './Utils';
 import { EndGameScreen } from '../ui_components/EndGameScreen';
 import server from "../server";
@@ -74,7 +73,7 @@ export class Board extends Container {
         this.addChild(this.winScreen);
         this.addChild(this.loseScreen);
 
-        for (let i = 0; i < COW_REGEN_RATE; i++) {
+        for (let i = 0; i < this.game.gameSettings.getValue("cow_regen_rate"); i++) {
             this.pastureRegen.push([])
         }
         for (let i = 0; i < 4; i++) {
@@ -223,7 +222,7 @@ export class Board extends Container {
         piece.addScore();
 
         // Add respawn to pasture
-        this.pastureRegen[this.game.turnCount % COW_REGEN_RATE].push(dest);
+        this.pastureRegen[this.game.turnCount % this.game.gameSettings.getValue("cow_regen_rate")].push(dest);
     }
 
     // Player scoring cows on destination
@@ -387,24 +386,26 @@ export class Board extends Container {
     }
 
     public spawnCows(turnCount: number) {
+        const spawn_rate = this.game.gameSettings.getValue("cow_regen_rate");
+
         // Loop through pasture tiles that need new cows
-        this.pastureRegen[turnCount % COW_REGEN_RATE].forEach((tilePosition) => {
+        this.pastureRegen[turnCount % spawn_rate].forEach((tilePosition) => {
             this.createPiece(tilePosition, PieceEnum.Cow);
             let tile = tilePosition.row * 16 + tilePosition.column;
             this.respawnCounter[tile].text = "";
         });
-        this.pastureRegen[turnCount % COW_REGEN_RATE] = [];
+        this.pastureRegen[turnCount % spawn_rate] = [];
 
         // Update spawn numbers
-        for (let i = 0; i < COW_REGEN_RATE; i++) {
+        for (let i = 0; i < spawn_rate; i++) {
             //console.log(`(turnCount + i) % COW_REGEN_RATE = ${(turnCount + i) % COW_REGEN_RATE}`);
-            this.pastureRegen[(turnCount + i) % COW_REGEN_RATE].forEach((tilePosition) => {
+            this.pastureRegen[(turnCount + i) % spawn_rate].forEach((tilePosition) => {
                 //console.log(`Tile Position is : ${tilePosition.row}, ${tilePosition.column}`);
                 //console.log(`^^^ respawns in ${(COW_REGEN_RATE - turnCount) % COW_REGEN_RATE} days`);
-                let days = ((turnCount + i) % COW_REGEN_RATE) - turnCount % 12;
+                let days = ((turnCount + i) % spawn_rate) - turnCount % spawn_rate;
                 //let days = (COW_REGEN_RATE - i) % COW_REGEN_RATE
                 if (days < 0) {
-                    days += 12;
+                    days += spawn_rate;
                 }
                 let view = this.getViewPosition(tilePosition);
                 let tile = tilePosition.row * 16 + tilePosition.column;

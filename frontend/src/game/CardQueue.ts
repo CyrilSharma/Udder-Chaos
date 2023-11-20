@@ -23,12 +23,13 @@ export class CardQueue extends Container {
     public cardContainer: Container;
     public logicHandler: LogicHandler;
     public cardSize = 100;
-    public ncards = 15;
+    public ncards = 0;
     public hand_size: number = 3;
 
     constructor(game: Game) {
         super();
         this.game = game;
+        this.ncards = this.game.gameSettings.getValue("card_deck_size");
         this.logicHandler = new LogicHandler(game);
         this.cardContainer = new Container();
         this.addChild(this.cardContainer);

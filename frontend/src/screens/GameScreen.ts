@@ -16,8 +16,9 @@ export class GameScreen extends Container {
 
         this.game = new Game();
         this.addChild(this.game);
-        
     }
+
+    
 
     public prepare() {
         // Get rid of this!!!

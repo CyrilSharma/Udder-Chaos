@@ -13,11 +13,13 @@ const COLOR = {
     UNSET: 4  
 }
 
+
 // 4 represents AI, all 0-3 are player colors
 //const PLAYER_ORDER = [0,1,4]
 const PLAYER_ORDER = [0,1,4,2,3,4]
 
 const MAX_PLAYERS = 4;
+
 
 const HAND_SIZE = 3;
 
@@ -31,9 +33,8 @@ export class Room {
         this.roomCode = roomCode;
         this.players = [];
         this.moveList = [];
-        this.seed = 0;
+        this.gameSettings = {};
         this.inGame = false;
-        this.setSeed(roomCode);
     }
 
     addNewPlayer(socket, savedID, host=false) {
@@ -66,7 +67,7 @@ export class Room {
             }
             console.log("Reconnect!" + player);
             player.reconnectPlayer(socket);
-            socket.emit('start-game', this.seed, this.getPlayerInfo());
+            socket.emit('start-game', this.gameSettings, this.getPlayerInfo());
             socket.emit('share-move-list', this.moveList);
         }
     }
@@ -118,15 +119,16 @@ export class Room {
         return ids;
     }
 
-    setSeed(seed) {
-        if (seed === "") {
-            return;
-        }
+    setSettings(gameSettings) {
+        let seed = gameSettings.seed === "" ? gameSettings.seed : this.roomCode;
         let numSeed = 0;
+
         for (let i = 0; i < seed.length; i++) {
             numSeed += seed.charCodeAt(i);
         }
-        this.seed = numSeed;
+
+        gameSettings.seed = numSeed;
+        this.gameSettings = gameSettings;
     }
 
     startGame(host) {
@@ -138,7 +140,7 @@ export class Room {
                     return;
                 }
             }
-            this.io.to(this.roomCode).emit('start-game', this.seed, this.getPlayerInfo());
+            this.io.to(this.roomCode).emit('start-game', this.gameSettings, this.getPlayerInfo());
             this.inGame = true;
         }
         else {
@@ -213,8 +215,8 @@ class Player {
             this.room.updatePlayer(this);
         });
 
-        this.socket.on("start-game", (seed) => {
-            this.room.setSeed(seed);
+        this.socket.on("start-game", (gameSettings) => {
+            this.room.setSettings(gameSettings);
             this.room.startGame(this.socket);
         });
 
@@ -228,7 +230,7 @@ class Player {
         })
 
         this.socket.on("init-ai", (cards) => {
-            ai_socket.emit('init-ai', this.room.roomCode, this.room.seed, cards);
+            ai_socket.emit('init-ai', this.room.roomCode, this.room.gameSettings.seed, cards);
         });
 
         this.socket.on("leave-room", () => {

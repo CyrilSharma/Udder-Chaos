@@ -1,6 +1,6 @@
 import { Container, Sprite, ObservablePoint, Text } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig, COW_REGEN_RATE, COW_SACRIFICE, SCORE_GOAL, PieceEnum, DAYS_PER_ROUND, PlayerInfo, TIMER_LENGTH } from './Utils';
+import { ColorEnum, GameConfig, PieceEnum, PlayerInfo} from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
@@ -13,6 +13,7 @@ import { BuyButton } from '../ui_components/BuyButton';
 import { ScoreCounter } from '../ui_components/ScoreCount';
 import { SizedButton } from '../ui_components/SizedButton';
 import server from "../server";
+import { GameSettings, gameSettings } from "./GameSettings";
 import { MoveQueue } from './MoveQueue';
 
 // This seems a little redundant right now,
@@ -30,8 +31,9 @@ export class Game extends Container {
     public dayCycle: number = 0;
     public totalDayCount: number = 0;
     public totalScore: number = 0;
-    private timer: number = TIMER_LENGTH;
+    private timer: number = 0;
     private timerInterval: NodeJS.Timeout;
+    public gameSettings: GameSettings = gameSettings;
     public moveQueue: MoveQueue;
     public leftPanel: GamePanel;
     public rightPanel: GamePanel;
@@ -50,6 +52,7 @@ export class Game extends Container {
     public gameOver: boolean = false;
     public animating: boolean = false;
     public upNext: SizedButton;
+    public codeDisplay: SizedButton;
 
     constructor() {
         super();
@@ -57,11 +60,12 @@ export class Game extends Container {
         this.board = new Board(this);
         this.cards = new CardQueue(this);
         this.buyButton = new BuyButton(0, 0);
+        this.timer = this.gameSettings.getValue("timer_length");
         this.timerInterval = this.initTimer();
         this.moveQueue = new MoveQueue(this);
 
-        this.leftPanel = new GamePanel(0.1125, 0.5, 0.22, 1, 200, 1000, 0xffffff);
-        this.rightPanel = new GamePanel(0.8875, 0.5, 0.22, 1, 200, 1000, 0x5f5f5f);
+        this.leftPanel = new GamePanel(0.11275, 0.5, 0.2, 1, 200, 1000, 0xffffff);
+        this.rightPanel = new GamePanel(0.88725, 0.5, 0.2, 1, 200, 1000, 0x5f5f5f);
         this.boardPanel = new GamePanel(0.5, 0.4, 0.56, 0.6, 500, 500, 0xcc0000);
         this.bottomPanel = new GamePanel(0.5, 0.925, 0.3, 0.15, 500, 150, 0xabcdef);
         this.boardPanel.gamePanel.alpha = 0;
@@ -75,9 +79,14 @@ export class Game extends Container {
         this.player4 = new PlayerGameInfo(3);
         this.playerAI = new PlayerGameInfo(-1);
         this.playerAI.changeText("AI")
-        this.dayCounter = new DayCounter();
+        this.dayCounter = new DayCounter(7);
         this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
-        this.scoreCounter = new ScoreCounter(0, 0, 0.5, 0.5, "0 of 30", this.leftPanel.width, this.leftPanel.height, 40, 0xffffff);
+
+        this.scoreCounter = new ScoreCounter(0, 0, 0.5, 0.5, `0 of ${this.gameSettings.getValue('score_goal')}`, this.leftPanel.width, this.leftPanel.height, 40, 0xffffff);
+        this.codeDisplay = new SizedButton(0, 0, 0.92, 0.04, "Code:\nABCD", this.rightPanel.width, this.rightPanel.height, 15, 0xffcc66);
+        this.codeDisplay.changeText("Code:\nCODE");
+        this.rightPanel.addChild(this.codeDisplay);
+
 
         this.boardPanel.addChild(this.board);
         this.leftPanel.addChild(this.player1);
@@ -128,8 +137,8 @@ export class Game extends Container {
             this.turn -= 6;
             this.dayCycle++;
             this.dayCounter.cycleDay(this.dayCounter);
-            if (this.dayCycle >= DAYS_PER_ROUND) {
-                this.dayCycle -= DAYS_PER_ROUND;
+            if (this.dayCycle >= this.gameSettings.getValue("days_per_round")) {
+                this.dayCycle -= this.gameSettings.getValue("days_per_round");
                 this.startNewRound();
             }
             this.totalDayCount++;
@@ -161,7 +170,7 @@ export class Game extends Container {
                 break;
         }
         this.turnCount += 1;
-        this.timer = TIMER_LENGTH;
+        this.timer = this.gameSettings.getValue("timer_length");
         this.board.spawnCows(this.turnCount);
     }
 
@@ -173,8 +182,8 @@ export class Game extends Container {
     }
 
     public cowSacrifice() {
-        if (this.totalScore >= COW_SACRIFICE) {
-            this.scorePoints(-COW_SACRIFICE);
+        if (this.totalScore >= this.gameSettings.getValue("cow_sacrifice")) {
+            this.scorePoints(-this.gameSettings.getValue("cow_sacrifice"));
         }
         else {
             this.scorePoints(-this.totalScore);
@@ -221,7 +230,7 @@ export class Game extends Container {
 
     public scorePoints(points: number) {
         this.totalScore += points;
-        if (this.totalScore >= SCORE_GOAL) {
+        if (this.totalScore >= this.gameSettings.getValue("score_goal")) {
             this.endGame(true, "You saved Homeworld with enough cows!")
         }
         this.scoreCounter.updateScore(this.totalScore.toString() + " ");
@@ -243,7 +252,7 @@ export class Game extends Container {
         this.player2.y = 100;
         this.player3.y = 150;
         this.player4.y = 200;
-        this.playerAI.y = 200;
+        this.playerAI.y = 250;
         this.player1.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.player2.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.player3.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
@@ -258,7 +267,8 @@ export class Game extends Container {
         this.buyButton.y = this.scoreCounter.y + 70;
         this.cards.y = 0;
         this.cards.x = 0;
-        this.upNext.y = this.rightPanel.y - (this.rightPanel.getBox()[1] - this.rightPanel.getBox()[0]) + this.upNext.height * 0.5;
+        this.upNext.y = -310//this.rightPanel.y - (this.rightPanel.getBox()[1] - this.rightPanel.getBox()[0]) + this.upNext.height * 0.5;
+        this.codeDisplay.y = 200;
 
         this.cards.placeCards();
 
