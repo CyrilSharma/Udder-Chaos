@@ -5,28 +5,27 @@ CXXFLAGS = -std=c++20 -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno
 # Source file and executable name
 INCLUDES = -I./boost_1_83_0
 DEPS = Game.h Utils.h Helpers.h CardQueue.h Search.h Score.h Hasher.h MoveOrderer.h
-SOURCES = Game.cpp Utils.cpp Helpers.cpp Search.cpp
-EXECUTABLES = Main TestGame TestSearch
+SOURCES = Game.cpp Utils.cpp Helpers.cpp Search.cpp Score.cpp
 
 # Default target
 all: debug
 
 debug: CXXFLAGS += -g
-debug: $(EXECUTABLES)
+debug: Main TestGame TestSearch
 
 build: CXXFLAGS += -O3
-build: $(EXECUTABLES)
+build: Main TestGame TestSearch
 
 $(EXECUTABLES): %: %.o $(SOURCES:.cpp=.o)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
-main: main.o $(SOURCES:.cpp=.o)
+Main: Main.o $(SOURCES:.cpp=.o)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
-testgame: TestGame.o $(SOURCES:.cpp=.o)
+TestGame: TestGame.o $(SOURCES:.cpp=.o)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
-testsearch: TestSearch.o $(SOURCES:.cpp=.o)
+TestSearch: TestSearch.o $(SOURCES:.cpp=.o)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 	
 %.o: %.cpp

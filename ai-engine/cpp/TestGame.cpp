@@ -467,7 +467,7 @@ TEST_CASE("Test Game JOVER") {
  * Ensure the card queue works as intended
  */
 
-TEST_CASE("Test Cards") {
+TEST_CASE("Test CardQueue") {
   const int reserve = 6;
   const int nelements = 16;
   const int nbits_per = 64 - __builtin_clzll(nelements - 1);
@@ -493,3 +493,30 @@ TEST_CASE("Test Cards") {
     }
   }
 }
+
+TEST_CASE("Test Rotate") {
+    const int width = 16, height = 16;
+    const int ndirs = 3, ncards = 16;
+    const int npieces = 10;
+    vector<vector<int>> board = random_board(width, height);
+    vector<Piece> pieces = random_pieces(npieces, width, height);
+    auto cards = random_cards(ndirs, ncards);
+    auto config_p = GameConfig(board, pieces, cards);
+    auto game = Game(config_p);
+
+    for (int rot = 0; rot < 4; rot++) {
+      for (int i = 0; i < ncards; i++) {
+        int idx = game.queue.get(i);
+        vector<Direction> dirs = game.cards[idx].moves;
+        vector<Direction> directions = {
+          Direction::RIGHT, Direction::UP,
+          Direction::LEFT, Direction::DOWN,
+        };
+        game.player_rotate_card(i, rot);
+        for (size_t j = 0; j < game.cards[0].moves.size(); j++) {
+          Direction ans = directions[(4 + dirs[j] - rot) & 0b11];
+          CHECK(ans == game.cards[idx].moves[j]);
+        }
+      }
+    }
+  }

@@ -1,4 +1,3 @@
-#pragma once
 #include "Search.h"
 
 #define debug(x) std::cerr << #x << ": " << x << std::endl
@@ -36,6 +35,7 @@ Move Search::beginSearch(int dbg) {
     Move bestMove = Move(MoveType::NONE, -1, -1);
     int bestEval = -1;
     
+
     int curDepth = 1;
     while (curDepth <= max_depth) {
         if (curTime() > begin_time + timeout) break;
@@ -43,7 +43,7 @@ Move Search::beginSearch(int dbg) {
         if (dbg) cerr << "Initiating search of depth " << curDepth << endl;
 
         // Recursive tree search to curDepth
-        alphaBeta(game, 0, curDepth, -inf, inf);
+        alphaBeta(game, 0, curDepth, -inf, inf, dbg);
 
         // only use new move if search completed
         if (searchCompleted) {
@@ -64,9 +64,12 @@ const int spawnPos[4][4][2] = {{{0, 0}, {0, 1}, {1, 0}, {1, 1}}, {{0, 14}, {0, 1
                                 {{14, 0}, {14, 1}, {15, 0}, {15, 1}}, {{14, 14}, {14, 15}, {15, 14}, {15, 15}}};
 // Alpha-beta pruning negamax search
 // Except there's no pruning right now because the heuristic is bad
-int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta) {
+int Search::alphaBeta(Game& game, int depth, int stopDepth,
+                      int alpha, int beta, int dbgVerbosity) {
     // Timeout
-    if (curTime() > begin_time + timeout) { return 0; } 
+    if (curTime() > begin_time + timeout) {
+      return scorer.score(game);
+    } 
 
     // We'll check if the game is over later, idk how to do it yet
 
@@ -76,7 +79,9 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
     // So it's hard to really measure 
     // In the future we might for instance check if any of the next 2
     // Player moves can take an enemy piece
-    if (depth == stopDepth) { return scorer.score(game); }
+    if (depth == stopDepth) {
+      return scorer.score(game);
+    }
 
     // We perform recursive search.
     // To begin, we generate moves
@@ -117,21 +122,12 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
         // Can only copy game for now, no undo :(
         Game tmp = game; 
         tmp.make_move(move);
-        // Get evaluation with modified negamax due to wonky turn rules
-        int eval;
-        if (tmp.is_enemy_turn() != game.is_enemy_turn()) 
-            eval = -alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha);
-        else
-            eval = alphaBeta(tmp, depth+1, stopDepth, alpha, beta);
-        // tmp.undo_move(move);
+        int eval = -alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha);
 
-        // Flip eval score if next search was with opposite team
-
-        // cerr << "Depth: " << depth << endl;
-        if (depth == 0) {
-            cerr << "Move: " << typeOfMove(move.type) << ", " << move.card << " " << move.color << endl;
-            cerr << "Eval: " << eval << endl;
-            // cerr << tmp << endl;
+        if (dbgVerbosity > 3) {
+          cerr << tmp << "\n";
+          cerr << "Move: " << move.card << " " << move.color << "\n";
+          cerr << "Eval: " << " " << eval << "\n";
         }
 
         // beta prune.

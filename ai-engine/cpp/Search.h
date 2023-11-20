@@ -36,5 +36,8 @@ struct Search {
     void purchaseUFO(int row, int column);
     void makeAIMove(int move, int color);
     Move beginSearch(int dbgVerbosity = 0);
-    int alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta);
+    int alphaBeta(
+      Game& game, int depth, int stopDepth,
+      int alpha, int beta, int dbgVerbosity = 0
+    );
 };

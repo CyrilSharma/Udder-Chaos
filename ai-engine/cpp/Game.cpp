@@ -207,12 +207,11 @@ void Game::player_move(int choice) {
 
 void Game::player_rotate_card(int choice, int rotation) {
   int index = queue.choose(choice);
-  auto moves = cards[index].moves;
   vector<Direction> dirs = {
     Direction::RIGHT, Direction::UP,
     Direction::LEFT, Direction::DOWN
   };
-  for (Direction &move: moves) {
+  for (Direction &move: cards[index].moves) {
     // Need to validate with frontend.
     move = dirs[(4 + move - rotation) & 0b11];
   }
