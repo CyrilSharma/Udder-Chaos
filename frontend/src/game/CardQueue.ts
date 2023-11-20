@@ -13,6 +13,16 @@ import {
     random
 } from './Utils';
 import { CARD_PRESETS } from '../maps/Cards'
+import * as PIXI from "pixi.js";
+import { gsap } from "gsap";
+import { PixiPlugin } from "gsap/PixiPlugin";
+
+// register the plugin
+gsap.registerPlugin(PixiPlugin);
+
+// give the plugin a reference to the PIXI object
+PixiPlugin.registerPIXI(PIXI);
+
 
 /** Stores all the cards in the game, handles card playing with a logic handler */
 export class CardQueue extends Container {
@@ -170,31 +180,33 @@ export class CardQueue extends Container {
         // Draw Player Hand
         let pos = -1;
         for (const card of this.player_hand) {
-            card.x = this.game.bottomPanel.x + pos * this.game.bottomPanel.width * 0.4;
-            card.y = this.game.bottomPanel.y;
+            const newX = this.game.bottomPanel.x + pos * this.game.bottomPanel.width * 0.4;
+            const newY = this.game.bottomPanel.y;
+
+            gsap.to(card, {
+                pixi: {x: newX, y: newY},
+                duration: 0.8,
+                ease: "back.out"
+            })
+            
             this.cardContainer.addChild(card);
             pos++;
         }
-
-        // Draw card queue
-        // pos = 0;
-        // for (const card of this.queue) {
-        //     if (pos == this.queue.length - 1) {
-        //         pos++;
-        //     }
-        //     card.y = this.game.rightPanel.y + this.game.rightPanel.height * 0.2 - pos * card.height * 0.7;
-        //     card.x = this.game.rightPanel.x;
-        //     this.cardContainer.addChild(card);
-        //     pos++;
-        // }
 
         pos = this.queue.length;
         for (let i = this.queue.length - 1; i >= 0; i--) {
             if (i == 0) {
                 pos--;
             }
-            this.queue[i].y = this.game.rightPanel.y - this.game.rightPanel.height * 0.29 + (pos) * this.queue[i].height * 0.7;
-            this.queue[i].x = this.game.rightPanel.x;
+            const newX = this.game.rightPanel.x;
+            const newY = this.game.rightPanel.y - this.game.rightPanel.height * 0.29 + (pos) * this.queue[i].height * 0.7;
+            
+            gsap.to(this.queue[i], {
+                pixi: {x: newX, y: newY},
+                duration: 0.8,
+                ease: "back.out"
+            })
+
             this.cardContainer.addChild(this.queue[i]);
             pos--;
         }
@@ -202,8 +214,15 @@ export class CardQueue extends Container {
         // Draw enemy hand
         pos = -1;
         for (const card of this.enemy_hand) {
-            card.x = this.game.rightPanel.x + pos * this.game.rightPanel.width * 0.2;
-            card.y = this.game.bottomPanel.y;
+            const newX = this.game.rightPanel.x + pos * this.game.rightPanel.width * 0.2;
+            const newY = this.game.bottomPanel.y;-
+
+            gsap.to(card, {
+                pixi: {x: newX, y: newY},
+                duration: 0.8,
+                ease: "back.out"
+            })
+
             this.cardContainer.addChild(card);
             pos++;
         }
