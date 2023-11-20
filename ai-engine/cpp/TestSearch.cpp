@@ -65,7 +65,10 @@ TEST_CASE("Testing Good Moves") {
       GameConfig(board, pieces, cards),
       scorer_type, timeout, max_depth
     );
-    search.game.turn += 2;
+    
+    search.game.turn = 2;
+    search.game.player_id = 2;
+
     cerr << search.game << "\n";
 
     Move move = search.beginSearch(1);
