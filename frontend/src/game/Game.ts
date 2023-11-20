@@ -1,6 +1,6 @@
 import { Container, Sprite, ObservablePoint, Text } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig, PieceEnum, PlayerInfo} from './Utils';
+import { ColorEnum, GameConfig, PieceEnum, PlayerInfo, defaultGameSettings } from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
@@ -125,8 +125,24 @@ export class Game extends Container {
     }
 
     public setPlayers(playerList: PlayerInfo[]) {
+        let count = 0;
         playerList.forEach((player) => {
-            this.players.push(new Player(player))
+            this.players.push(new Player(player));
+            switch (count) {
+                case 0:
+                    this.player1.changeText(player.name);
+                    break;
+                case 1:
+                    this.player2.changeText(player.name);
+                    break;
+                case 2:
+                    this.player3.changeText(player.name);
+                    break;
+                case 3:
+                    this.player4.changeText(player.name);
+                    break;
+            }
+            count++;
         });
     }
 
@@ -245,11 +261,11 @@ export class Game extends Container {
     }
 
     public updatePlayerInfoTimers() {
-        this.player1.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
-        this.player2.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
-        this.player3.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
-        this.player4.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
-        this.playerAI.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.player1.updateTimer(this.timer, defaultGameSettings.timer_length);
+        this.player2.updateTimer(this.timer, defaultGameSettings.timer_length);
+        this.player3.updateTimer(this.timer, defaultGameSettings.timer_length);
+        this.player4.updateTimer(this.timer, defaultGameSettings.timer_length);
+        this.playerAI.updateTimer(this.timer, defaultGameSettings.timer_length);
     }
 
     public scorePoints(points: number) {
