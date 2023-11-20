@@ -99,8 +99,8 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
             moves.push_back(Move(MoveType::NORMAL, card, game.player_id));
             
             // Player rotate card
-            for (int angle = 1; angle <= 3; ++angle)
-                moves.push_back(Move(MoveType::ROTATE, card, angle));
+            // for (int angle = 1; angle <= 3; ++angle)
+                // moves.push_back(Move(MoveType::ROTATE, card, angle));
         }
 
         if (game.total_score > 0)
@@ -117,23 +117,27 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
         // Can only copy game for now, no undo :(
         Game tmp = game; 
         tmp.make_move(move);
-        int eval = alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha);
+        // Get evaluation with modified negamax due to wonky turn rules
+        int eval;
+        if (tmp.is_enemy_turn() != game.is_enemy_turn()) 
+            eval = -alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha);
+        else
+            eval = alphaBeta(tmp, depth+1, stopDepth, alpha, beta);
         // tmp.undo_move(move);
 
         // Flip eval score if next search was with opposite team
-        if (tmp.is_enemy_turn() != game.is_enemy_turn()) eval *= -1;
 
-        cerr << "Depth: " << depth << endl;
-        // if (depth == 0) {
+        // cerr << "Depth: " << depth << endl;
+        if (depth == 0) {
             cerr << "Move: " << typeOfMove(move.type) << ", " << move.card << " " << move.color << endl;
             cerr << "Eval: " << eval << endl;
-            cerr << tmp << endl;
-        // }
+            // cerr << tmp << endl;
+        }
 
         // beta prune.
         // beta is the best we could do in an earlier branch, so opponent will never play this move
         if (eval >= beta) {
-            cerr << "Beta prune - eval=" << eval << ", beta=" << beta << endl;
+            // cerr << "Beta prune - eval=" << eval << ", beta=" << beta << endl;
             // Fail-high
             return beta;
         }
