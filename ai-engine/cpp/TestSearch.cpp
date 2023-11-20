@@ -59,19 +59,20 @@ TEST_CASE("Testing Good Moves") {
       cards[i] = Card { dirs };
     }
 
-
+    int scorer_type, timeout, max_depth; 
+    input >> scorer_type >> timeout >> max_depth;
     Search search(
       GameConfig(board, pieces, cards),
-      0, 1
+      scorer_type, timeout, max_depth
     );
-    search.game.turn += 1;
+    search.game.turn += 2;
     cerr << search.game << "\n";
 
-    Move move = search.beginSearch();
+    Move move = search.beginSearch(1);
 
     int answer_idx; answer >> answer_idx;
     int answer_color; answer >> answer_color;
     CHECK(answer_idx == move.card);
-    CHECK(answer_color == move.color);
+    CHECK(answer_color == move.color + 1);
   }
 }

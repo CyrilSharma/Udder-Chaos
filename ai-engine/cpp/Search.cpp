@@ -29,7 +29,7 @@ void Search::makeAIMove(int move, int color) {
 // brand new search function that will work in the _future_ !
 // structure from https://github.com/SebLague/Chess-Coding-Adventure/blob/Chess-V2-Unity
 // set timeout and max_depth before running, defaults to timeout = 1000 and max_depth = inf
-Move Search::beginSearch(int dbgVerbosity) {
+Move Search::beginSearch(int dbg) {
     begin_time = curTime();
 
     // might need a nullmove member in the future
@@ -37,22 +37,29 @@ Move Search::beginSearch(int dbgVerbosity) {
     int bestEval = -1;
     
     int curDepth = 1;
-    while (curDepth < max_depth) {
+    while (curDepth <= max_depth) {
         if (curTime() > begin_time + timeout) break;
+        
+        if (dbg) cerr << "Initiating search of depth " << curDepth << endl;
 
         // Recursive tree search to curDepth
         alphaBeta(game, 0, curDepth, -inf, inf);
 
+        // only use new move if search completed
         if (searchCompleted) {
             bestMove = newBestMove, bestEval = newBestEval;
-            curDepth++;
         }
+        curDepth++;
     }
 
+    if (dbg) {
+        cerr << "Reached depth: " << curDepth-1 << endl;
+        cerr << "Time Elapsed (ms): " << curTime() - begin_time << endl;
+    }
     return bestMove;
 }
 
-// I'm just going to assume the spawn locations are fixed because i don't want to generate them right now
+// I'm just going to assume the spawn locations are fixed because I don't want to generate them right now
 const int spawnPos[4][4][2] = {{{0, 0}, {0, 1}, {1, 0}, {1, 1}}, {{0, 14}, {0, 15}, {1, 14}, {1, 15}}, 
                                 {{14, 0}, {14, 1}, {15, 0}, {15, 1}}, {{14, 14}, {14, 15}, {15, 14}, {15, 15}}};
 // Alpha-beta pruning negamax search
@@ -92,31 +99,41 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
             moves.push_back(Move(MoveType::NORMAL, card, game.player_id));
             
             // Player rotate card
-            moves.push_back(Move(MoveType::ROTATE, card));
+            for (int angle = 1; angle <= 3; ++angle)
+                moves.push_back(Move(MoveType::ROTATE, card, angle));
         }
 
-        for (auto xy : spawnPos[game.player_id])
-            moves.push_back(Move(MoveType::BUY, xy[0], xy[1]));
+        if (game.total_score > 0)
+            for (auto xy : spawnPos[game.player_id])
+                moves.push_back(Move(MoveType::BUY, xy[0], xy[1]));
     }
 
 
     // Order the moves.
     moveOrderer.order(game, moves);
-
+ 
     // Recursively search each of them, updating alpha as needed
     for (Move move : moves) {
         // Can only copy game for now, no undo :(
-        Game tmp = game;
+        Game tmp = game; 
         tmp.make_move(move);
-        int eval = -alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha);
+        int eval = alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha);
         // tmp.undo_move(move);
 
-        cerr << "Move: " << move.card << " " << move.color << endl;
-        cerr << "Eval: " << " " << eval << endl;
+        // Flip eval score if next search was with opposite team
+        if (tmp.is_enemy_turn() != game.is_enemy_turn()) eval *= -1;
+
+        cerr << "Depth: " << depth << endl;
+        // if (depth == 0) {
+            cerr << "Move: " << typeOfMove(move.type) << ", " << move.card << " " << move.color << endl;
+            cerr << "Eval: " << eval << endl;
+            cerr << tmp << endl;
+        // }
 
         // beta prune.
         // beta is the best we could do in an earlier branch, so opponent will never play this move
         if (eval >= beta) {
+            cerr << "Beta prune - eval=" << eval << ", beta=" << beta << endl;
             // Fail-high
             return beta;
         }
@@ -132,6 +149,8 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
             }
         }
     }
+
+    if (curTime() > begin_time + timeout) return 0;
 
     if (depth == 0) {
         searchCompleted = true;

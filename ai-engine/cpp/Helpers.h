@@ -51,6 +51,8 @@ struct Move {
   Move(MoveType type, int arg1=-1, int arg2=-1);
 };
 
+string typeOfMove(MoveType t);
+
 struct GameConfig {
   vector<vector<int>> board;
   vector<Piece> pieces;

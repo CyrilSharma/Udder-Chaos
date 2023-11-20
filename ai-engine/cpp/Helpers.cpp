@@ -67,6 +67,19 @@ ostream& operator<<(ostream& os, const Piece& p) {
 Move::Move(MoveType type, int arg1, int arg2):
   type(type), card(arg1), color(arg2), x(arg1), y(arg2), angle(arg2) {}
 
+string typeOfMove(MoveType t) {
+  switch(t) {
+    case NONE:
+      return "No move";
+    case NORMAL:
+      return "Normal";
+    case ROTATE:
+      return "Rotate";
+    case BUY:
+      return "Buy";
+  }
+}
+
 GameConfig::GameConfig(
   vector<vector<int>> board,
   vector<Piece> pieces,

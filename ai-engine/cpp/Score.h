@@ -55,7 +55,11 @@ struct Scorer {
         int ppct = count_players(game), epct = count_enemies(game);
         int ppscore = ppwt * ppct;
         int epscore = epwt * epct;
-        
-        return ppscore + epscore;
+
+        int scoreSum = ppscore + epscore;
+
+        if (!game.is_enemy_turn()) scoreSum *= -1;
+
+        return scoreSum;
     }
 };

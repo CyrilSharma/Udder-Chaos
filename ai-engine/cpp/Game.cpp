@@ -216,6 +216,7 @@ void Game::player_rotate_card(int choice, int rotation) {
     // Need to validate with frontend.
     move = dirs[(4 + move - rotation) & 0b11];
   }
+
   player_id = (player_id + 1) & 0b11;
   turn += 1;
 } /* rotate_card() */
@@ -223,6 +224,8 @@ void Game::player_rotate_card(int choice, int rotation) {
 /*
   * x and y coordinate of where you
   * want your ufo to be.
+  * 
+  * DOES NOT CHECK THAT YOU CAN ACTUALLY DO IT
   */
 
 void Game::player_buy(int x, int y) {
