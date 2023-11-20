@@ -52,6 +52,9 @@ Move Search::beginSearch(int dbgVerbosity) {
     return bestMove;
 }
 
+// I'm just going to assume the spawn locations are fixed because i don't want to generate them right now
+const int spawnPos[4][4][2] = {{{0, 0}, {0, 1}, {1, 0}, {1, 1}}, {{0, 14}, {0, 15}, {1, 14}, {1, 15}}, 
+                                {{14, 0}, {14, 1}, {15, 0}, {15, 1}}, {{14, 14}, {14, 15}, {15, 14}, {15, 15}}};
 // Alpha-beta pruning negamax search
 // Except there's no pruning right now because the heuristic is bad
 int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta) {
@@ -91,9 +94,9 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth, int alpha, int beta)
             // Player rotate card
             moves.push_back(Move(MoveType::ROTATE, card));
         }
-        // TODO generate spawn tile locations 
-        for (int x : {1, 2}) for (int y : {1, 2})
-            moves.push_back(Move(MoveType::BUY, x, y));
+
+        for (auto xy : spawnPos[game.player_id])
+            moves.push_back(Move(MoveType::BUY, xy[0], xy[1]));
     }
 
 
