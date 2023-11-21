@@ -10,10 +10,10 @@ SOURCES = Game.cpp Utils.cpp Helpers.cpp Search.cpp Score.cpp
 # Default target
 all: debug
 
-debug: Main TestGame TestSearch
+debug: Main TestGame TestSearch TestGamePerf
 
 build: CXXFLAGS += -O3
-build: Main TestGame TestSearch
+build: Main TestGame TestSearch TestGamePerf
 
 $(EXECUTABLES): %: %.o $(SOURCES:.cpp=.o)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
@@ -25,6 +25,9 @@ TestGame: TestGame.o $(SOURCES:.cpp=.o)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
 TestSearch: TestSearch.o $(SOURCES:.cpp=.o)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+
+TestGamePerf: TestGamePerf.o $(SOURCES:.cpp=.o)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 	
 %.o: %.cpp
