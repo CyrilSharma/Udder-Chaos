@@ -209,13 +209,13 @@ void Game::player_buy(int x, int y) {
 } /* player_buy() */
 
 /*
-  * choice is expected to be the numerical
-  * index of the card you wish to play.
-  * we do not check if the card is in your hand.
-  * 
-  * choice is the card choice...
-  * color is which color you want to move with this action.
-  */
+ * choice is expected to be the numerical
+ * index of the card you wish to play.
+ * we do not check if the card is in your hand.
+ * 
+ * choice is the card choice...
+ * color is which color you want to move with this action.
+ */
 
 void Game::enemy_move(int choice, int color) {
   cows |= cow_respawn[turn % round_length];
@@ -266,10 +266,8 @@ void Game::purge(int choice, int p) {
 
 void Game::play_movement(Direction d, int choice, int p) {
   auto &unit = (p) ? player : enemy;
-  auto index = [&](int i) {
-    return unit.ys[choice][i] * width
-      + unit.xs[choice][i];
-  };
+  #define INDEX(i) (unit.ys[choice][i] * width + unit.xs[choice][i])
+  // #define LOOP(i, sz) (for (int #i = 0; #i < sz; i++))
 
   auto &units = (p) ? players : enemies;
   auto &all_units = (p) ? all_players : all_enemies;
@@ -283,7 +281,7 @@ void Game::play_movement(Direction d, int choice, int p) {
 
   int collision = 0;
   vector<uint8_t> occupied(area());
-  int sz = (int) unit.deads[choice].size();
+  const int sz = (int) unit.deads[choice].size();
   int8_t shift[4] = { 1, 1, -1, -1 };
   uint8_t bounds[4] = {
       static_cast<uint8_t>(width - 1),
@@ -295,17 +293,17 @@ void Game::play_movement(Direction d, int choice, int p) {
   for (int i = 0; i < sz; i++) {
     int oob = (pos[i] == bounds[d]);
     pos[i] += (shift[d] * !oob);
-    int idx = index(i);
+    int idx = INDEX(i);
     occupied[idx] += 1;
     collision |= (occupied[idx] >= 2);
   }
 
   dynamic_bitset blocked = all_units | impassible;
   for (int i = 0; i < sz; i++) {
-    int idx = index(i);
+    int idx = INDEX(i);
     occupied[idx] -= 1;
     pos[i] -= (shift[d] * blocked[idx]);
-    idx = index(i);
+    idx = INDEX(i);
     occupied[idx] += 1;
     collision |= (occupied[idx] >= 2);
   }
@@ -314,10 +312,10 @@ void Game::play_movement(Direction d, int choice, int p) {
   while (collision) {
     collision = 0;
     for (int i = 0; i < sz; i++) {
-      int idx = index(i);
+      int idx = INDEX(i);
       pos[i] -= (shift[d] * (occupied[idx] >= 2));
       occupied[idx] -= 1;
-      idx = index(i);
+      idx = INDEX(i);
       occupied[idx] += 1;
       collision |= (occupied[idx] >= 2);
     }
@@ -375,6 +373,9 @@ void Game::play_player_movement(Direction d) {
   };
 
   // Build Player Mask, update scores.
+  // This is SUS because it lets pieces move over each other.
+  // This can cause the scores to change in weird ways,
+  // So I'll have to fix this at some point.
   dynamic_bitset m(area(), 1);
   dynamic_bitset player_mask(area(), 0);
   for (size_t i = 0; i < player.deads[player_id].size(); i++) {

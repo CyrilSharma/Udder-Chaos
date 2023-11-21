@@ -22,5 +22,8 @@ int Scorer::evaluator(Game &game) {
     int epct = game.count_enemies();
     int ppscore = ppwt * ppct;
     int epscore = epwt * epct;
-    return ppscore + epscore;
+    int score_sum = ppscore + epscore;
+    // Causes TestSearch to fail??!
+    // if (!game.is_enemy_turn()) score_sum *= -1;
+    return score_sum;
 } /* evaluator() */
