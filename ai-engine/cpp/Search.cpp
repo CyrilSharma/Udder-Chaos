@@ -28,14 +28,20 @@ void Search::makeAIMove(int move, int color) {
 // brand new search function that will work in the _future_ !
 // structure from https://github.com/SebLague/Chess-Coding-Adventure/blob/Chess-V2-Unity
 // set timeout and max_depth before running, defaults to timeout = 1000 and max_depth = inf
-Move Search::beginSearch(int dbg) {
+Move Search::beginSearch(int dbg, bool fixedDepth) {
+    // Fixed depth search for debugging
+    if (fixedDepth) {
+      cerr << "Doing fixed depth search of depth " << max_depth << endl;
+      alphaBeta(game, 0, max_depth, -inf, inf, dbg);
+      return newBestMove;
+    }
+    
     begin_time = curTime();
 
     // might need a nullmove member in the future
     Move bestMove = Move(MoveType::NONE, -1, -1);
     int bestEval = -1;
     
-
     int curDepth = 1;
     while (curDepth <= max_depth) {
         if (curTime() > begin_time + timeout) break;
@@ -122,20 +128,32 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
         // Can only copy game for now, no undo :(
         Game tmp = game; 
         tmp.make_move(move);
-        int eval = -alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha);
+        // Get evaluation with modified negamax due to wonky turn rules
+        int eval;
+        // flip eval if next search was with opposite team
+        if (tmp.is_enemy_turn() != game.is_enemy_turn()) 
+            eval = -alphaBeta(tmp, depth+1, stopDepth, -beta, -alpha, dbgVerbosity);
+        else
+            eval = alphaBeta(tmp, depth+1, stopDepth, alpha, beta, dbgVerbosity);
+        // tmp.undo_move(move);
 
-        if (dbgVerbosity > 3) {
-          cerr << tmp << "\n";
-          cerr << "Move: " << move.card << " " << move.color << "\n";
-          cerr << "Eval: " << " " << eval << "\n";
+        // if (dbgVerbosity > 3) {
+        if (depth == 0) {
+          cerr << "--------EVAL---------" << endl;
+          // cerr << tmp << "\n";
+          // cerr << "GameIsEnemyTurn: " << game.is_enemy_turn() << endl;
+          // cerr << "Depth: " << depth << endl;
+          cerr << "Move: " << typeOfMove(move.type) << " " << move.card << " " << move.color << endl;
+          cerr << "Eval: " << " " << eval << endl;
+          // if (eval > 0) cerr << tmp << endl;
         }
 
         // beta prune.
         // beta is the best we could do in an earlier branch, so opponent will never play this move
         if (eval >= beta) {
             // cerr << "Beta prune - eval=" << eval << ", beta=" << beta << endl;
-            // Fail-high
-            return beta;
+            // Fail-low
+            return eval;
         }
 
         // new best move

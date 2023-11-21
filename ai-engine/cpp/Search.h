@@ -35,7 +35,7 @@ struct Search {
     void rotatePlayerCard(int index, int rotation);
     void purchaseUFO(int row, int column);
     void makeAIMove(int move, int color);
-    Move beginSearch(int dbgVerbosity = 0);
+    Move beginSearch(int dbgVerbosity = 0, bool fixedDepth = false);
     int alphaBeta(
       Game& game, int depth, int stopDepth,
       int alpha, int beta, int dbgVerbosity = 0

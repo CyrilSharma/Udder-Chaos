@@ -22,5 +22,8 @@ int Scorer::evaluator(Game &game) {
     int epct = game.count_enemies();
     int ppscore = ppwt * ppct;
     int epscore = epwt * epct;
+    int scoreSum = ppscore + epscore;
+    if (!game.is_enemy_turn()) scoreSum *= -1;
+    return scoreSum;
     return ppscore + epscore;
 } /* evaluator() */
