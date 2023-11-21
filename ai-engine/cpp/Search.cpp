@@ -28,10 +28,18 @@ void Search::makeAIMove(int move, int color) {
 // brand new search function that will work in the _future_ !
 // structure from https://github.com/SebLague/Chess-Coding-Adventure/blob/Chess-V2-Unity
 // set timeout and max_depth before running, defaults to timeout = 1000 and max_depth = inf
+//
+// dbg is debug print verbosity
+// 0 - no prints
+// 1 - a few prints (unimpl.)
+// 2 - printing depth 0 evals and best move chains
+// 3 - all previous and every move eval
+// 4 - all previous and every game state (unimpl.)
+
 Move Search::beginSearch(int dbg, bool fixedDepth) {
     // Fixed depth search for debugging
     if (fixedDepth) {
-      cerr << "Doing fixed depth search of depth " << max_depth << endl;
+      if (dbg) cerr << "Doing fixed depth search of depth " << max_depth << endl;
       alphaBeta(game, 0, max_depth, -inf, inf, dbg);
       return newBestMove;
     }
@@ -46,10 +54,14 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
     while (curDepth <= max_depth) {
         if (curTime() > begin_time + timeout) break;
         
-        if (dbg > 3) cerr << "Initiating search of depth " << curDepth << endl;
+        if (dbg >= 2) cerr << "Initiating search of depth " << curDepth << endl;
 
         // Recursive tree search to curDepth
         alphaBeta(game, 0, curDepth, -inf, inf, dbg);
+
+        if (dbg >= 2) {
+          // for (int i =)
+        }
 
         // only use new move if search completed
         if (searchCompleted) {
@@ -137,7 +149,9 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
             eval = alphaBeta(tmp, depth+1, stopDepth, alpha, beta, dbgVerbosity);
         // tmp.undo_move(move);
 
-        if (dbgVerbosity > 3) {
+        if (dbgVerbosity >= 2)
+
+        if (dbgVerbosity >= 3) {
         // if (depth == 0) {
           cerr << "--------EVAL---------" << endl;
           // cerr << tmp << "\n";
