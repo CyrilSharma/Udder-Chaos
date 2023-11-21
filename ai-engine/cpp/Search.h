@@ -29,8 +29,8 @@ struct Search {
     bool searchCompleted = false;
     // Beginning time, updated each time search is called
     uint64_t begin_time;
-    // Move lists for debugging
-    vector<Move> cur_seq, best_seq;
+    // Move lists for debugging (unused)
+    // vector<Move> cur_seq, best_seq;
 
     Search(GameConfig gc, uint64_t to=1000, int md=inf, Scorer sc=Scorer());
     void makePlayerMove(int move);

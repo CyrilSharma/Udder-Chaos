@@ -3,26 +3,29 @@
 #define debug(x) std::cerr << #x << ": " << x << std::endl
 
 Search::Search(GameConfig gc, uint64_t to, int md, Scorer sc):
-  game(gc), scorer(sc), hasher(game),
-  timeout(to), max_depth(md) {}
+    game(gc), scorer(sc), hasher(game),
+    timeout(to), max_depth(md) {
+        // cur_seq.resize(max_depth);
+        // best_seq.resize(max_depth);
+    }
 
 // In the future making moves may also update the internal state of the search.
 // Hence, we make wrapper methods.
 
 void Search::makePlayerMove(int move) {
-  game.player_move(move);
+    game.player_move(move);
 }
 
 void Search::rotatePlayerCard(int index, int rotation) {
-  game.player_rotate_card(index, rotation);
+    game.player_rotate_card(index, rotation);
 }
 
 void Search::purchaseUFO(int row, int column) {
-  game.player_buy(column, row);
+    game.player_buy(column, row);
 }
 
 void Search::makeAIMove(int move, int color) {
-  game.enemy_move(move, color);
+    game.enemy_move(move, color);
 }
 
 // brand new search function that will work in the _future_ !
@@ -39,9 +42,9 @@ void Search::makeAIMove(int move, int color) {
 Move Search::beginSearch(int dbg, bool fixedDepth) {
     // Fixed depth search for debugging
     if (fixedDepth) {
-      if (dbg) cerr << "Doing fixed depth search of depth " << max_depth << endl;
-      alphaBeta(game, 0, max_depth, -inf, inf, dbg);
-      return newBestMove;
+        if (dbg) cerr << "Doing fixed depth search of depth " << max_depth << endl;
+        alphaBeta(game, 0, max_depth, -inf, inf, dbg);
+        return newBestMove;
     }
     
     begin_time = curTime();
@@ -59,9 +62,14 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
         // Recursive tree search to curDepth
         alphaBeta(game, 0, curDepth, -inf, inf, dbg);
 
-        if (dbg >= 2) {
-          // for (int i =)
-        }
+        // Print best move sequence for debug (no good way to do this right now, so leaving it out for now)
+        // if (dbg >= 2) {
+        //     for (int i = 0; i < curDepth; ++i) {
+        //         auto move = best_seq[i];
+        //         cerr << "Move " << i+1 << ": " << typeOfMove(move.type) <<
+        //              " " << move.card << " " << move.color << endl;
+        //     }
+        // }
 
         // only use new move if search completed
         if (searchCompleted) {
@@ -86,7 +94,7 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
                       int alpha, int beta, int dbgVerbosity) {
     // Timeout
     if (curTime() > begin_time + timeout) {
-      return scorer.score(game);
+        return scorer.score(game);
     } 
 
     // We'll check if the game is over later, idk how to do it yet
@@ -122,8 +130,8 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
             moves.push_back(Move(MoveType::NORMAL, card, game.player_id));
             
             // Player rotate card
-            // for (int angle = 1; angle <= 3; ++angle)
-                // moves.push_back(Move(MoveType::ROTATE, card, angle));
+            for (int angle = 1; angle <= 3; ++angle)
+              moves.push_back(Move(MoveType::ROTATE, card, angle));
         }
 
         if (game.total_score > 0)
@@ -153,13 +161,13 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
 
         if (dbgVerbosity >= 3) {
         // if (depth == 0) {
-          cerr << "--------EVAL---------" << endl;
-          // cerr << tmp << "\n";
-          // cerr << "GameIsEnemyTurn: " << game.is_enemy_turn() << endl;
-          // cerr << "Depth: " << depth << endl;
-          cerr << "Move: " << typeOfMove(move.type) << " " << move.card << " " << move.color << endl;
-          cerr << "Eval: " << " " << eval << endl;
-          // if (eval > 0) cerr << tmp << endl;
+            cerr << "--------EVAL---------" << endl;
+            // cerr << tmp << "\n";
+            // cerr << "GameIsEnemyTurn: " << game.is_enemy_turn() << endl;
+            // cerr << "Depth: " << depth << endl;
+            cerr << "Move: " << typeOfMove(move.type) << " " << move.card << " " << move.color << endl;
+            cerr << "Eval: " << " " << eval << endl;
+            // if (eval > 0) cerr << tmp << endl;
         }
 
         // beta prune.
