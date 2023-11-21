@@ -75,8 +75,8 @@ TEST_CASE("Testing Good Moves") {
     cerr << search.game << "\n";
 
     // Fixed depth search for debug, i cba to put it into file
-    bool doFixedDepthSearch = true;
-    Move move = search.beginSearch(4, doFixedDepthSearch);
+    bool doFixedDepthSearch = false;
+    Move move = search.beginSearch(1, doFixedDepthSearch);
     search.makeAIMove(move.card, move.color - 4);
     cerr << search.game << "\n";
 

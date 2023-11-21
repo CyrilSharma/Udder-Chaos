@@ -46,7 +46,7 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
     while (curDepth <= max_depth) {
         if (curTime() > begin_time + timeout) break;
         
-        if (dbg) cerr << "Initiating search of depth " << curDepth << endl;
+        if (dbg > 3) cerr << "Initiating search of depth " << curDepth << endl;
 
         // Recursive tree search to curDepth
         alphaBeta(game, 0, curDepth, -inf, inf, dbg);
@@ -137,8 +137,8 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
             eval = alphaBeta(tmp, depth+1, stopDepth, alpha, beta, dbgVerbosity);
         // tmp.undo_move(move);
 
-        // if (dbgVerbosity > 3) {
-        if (depth == 0) {
+        if (dbgVerbosity > 3) {
+        // if (depth == 0) {
           cerr << "--------EVAL---------" << endl;
           // cerr << tmp << "\n";
           // cerr << "GameIsEnemyTurn: " << game.is_enemy_turn() << endl;
