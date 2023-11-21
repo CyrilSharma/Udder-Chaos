@@ -171,6 +171,7 @@ export class Game extends Container {
         }
         this.turnCount += 1;
         this.timer = this.gameSettings.getValue("timer_length");
+        console.log("TIMER IS " + this.timer);
         this.board.spawnCows(this.turnCount);
     }
 

@@ -17,7 +17,7 @@
 0 0 0
 2 1 2
 0 0 0
-0 300 4
+300 4
 
 You kill things regardless of the card,
 But going Left Up Left kills the most.

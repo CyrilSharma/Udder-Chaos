@@ -1,6 +1,6 @@
 # Compiler and compiler flags
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
+CXXFLAGS = -std=c++20 -g -Wall -Wextra -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
 
 # Source file and executable name
 INCLUDES = -I./boost_1_83_0
@@ -10,7 +10,6 @@ SOURCES = Game.cpp Utils.cpp Helpers.cpp Search.cpp Score.cpp
 # Default target
 all: debug
 
-debug: CXXFLAGS += -g
 debug: Main TestGame TestSearch
 
 build: CXXFLAGS += -O3

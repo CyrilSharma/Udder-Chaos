@@ -163,6 +163,7 @@ TEST_CASE("Testing Player Movement") {
     }
     config = { checkers, pieces, cards };
     auto g2 = Game(config);
+    cout << g2 << endl;
     for (int i = 0; i < 12; i++) {
       auto dir = dirs[rand() % 4];
       g2.play_player_movement(dir);
@@ -180,6 +181,9 @@ TEST_CASE("Testing Player Movement") {
     }
     config = { board, pieces, cards };
     auto g3 = Game(config);
+    cout << g3 << endl;
+    printv(pieces);
+    printv(g3.viewPieces());
     for (int d = 0; d < 4; d++) {
       for (int i = 0; i < 25; i++) {
         g3.play_player_movement(dirs[d]);
@@ -270,7 +274,7 @@ TEST_CASE("Test Cow Capturing") {
       if (board[ni][nj] == TileType::COW) {
         // sus way to say the cow is gone now.
         board[ni][nj] = 0;
-        pieces[i].score |= 1;
+        pieces[i].score += 1;
       }
     }
   };
@@ -325,6 +329,8 @@ TEST_CASE("Test Unit Killing") {
 
   auto config = GameConfig(board, pieces, cards);
   auto game = Game(config);
+
+  cerr << game << endl;
   Direction dirs[4] = {
     Direction::RIGHT, Direction::UP,
     Direction::LEFT, Direction::DOWN,
@@ -333,10 +339,10 @@ TEST_CASE("Test Unit Killing") {
   for (int i = 0; i < 4; i++) {
     game.play_player_movement(dirs[i]);
     game.play_player_movement(dirs[(i + 2) & 0b11]);
-    REQUIRE(game.viewPieces().size() == 4 - i);
+    CHECK(game.viewPieces().size() == 4 - i);
   }
 
-  REQUIRE(game.viewPieces()[0].tp == 1);
+  CHECK(game.viewPieces()[0].tp == 1);
 }
 
 /*
@@ -426,7 +432,7 @@ TEST_CASE("Test Scoring") {
     cout << game << endl;
   }
 
-  CHECK(game.player_scores[0].count() == 1);
+  CHECK(game.viewPieces()[0].score == 1);
   CHECK(game.total_score == 0);
   for (int i = 0; i < 10; i++) {
     game.play_player_movement(Direction::DOWN);

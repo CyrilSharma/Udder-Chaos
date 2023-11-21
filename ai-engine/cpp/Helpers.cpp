@@ -87,5 +87,5 @@ GameConfig::GameConfig(
   int hand_size,
   int round_length
 ): board(board), pieces(pieces),
-    cards(cards), hand_size(hand_size),
-    round_length(round_length) {}
+   cards(cards), hand_size(hand_size),
+   round_length(round_length) {}

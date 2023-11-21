@@ -10,8 +10,8 @@ using dynamic_bitset = boost::dynamic_bitset<>;
 using namespace std;
 
 struct Game {
-  uint64_t width;
-  uint64_t height;
+  uint8_t width;
+  uint8_t height;
   uint64_t ncards;
   uint64_t hand_size;
   uint64_t round_length;
@@ -29,22 +29,26 @@ struct Game {
   vector<Card> cards;
   array<dynamic_bitset, 6> cow_respawn;
   array<dynamic_bitset, 4> players;
-  array<dynamic_bitset, 4> player_scores;
   array<dynamic_bitset, 4> enemies;
   dynamic_bitset impassible;
   dynamic_bitset cows;
   dynamic_bitset all_enemies;
   dynamic_bitset all_players;
-  dynamic_bitset wall_mask;
   dynamic_bitset score_tiles;
+
+
+  // Why didn't I put the array outside....
+  struct SOA {
+    array<vector<uint8_t>, 4> xs;
+    array<vector<uint8_t>, 4> ys;
+    array<vector<uint8_t>, 4> ss;
+    array<vector<uint8_t>, 4> deads;  
+  };
+  SOA player, enemy;
 
   Game(GameConfig config);
   int64_t area();
   int64_t ncard_bits();
-  const dynamic_bitset right_edge_mask();
-  const dynamic_bitset up_edge_mask();
-  const dynamic_bitset left_edge_mask();
-  const dynamic_bitset down_edge_mask();
   int is_jover();
   bool is_enemy_turn() const;
   bool color_is_enemy(int color);
@@ -56,6 +60,8 @@ struct Game {
   void player_rotate_card(int choice, int rotation);
   void player_buy(int x, int y);
   void enemy_move(int choice, int color);
+  void purge(int choice, int p);
+  void play_movement(Direction d, int choice, int p);
   void play_enemy_movement(Direction d, int choice);
   void play_player_movement(Direction d);
   vector<vector<int>> viewBoard();

@@ -68,7 +68,8 @@ async function init() {
 
     // Trigger the first resize
     resize();
-
+    
+    localStorage.clear();
     await navigation.showScreen(HomeScreen);
 
     // Show initial loading screen

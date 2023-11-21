@@ -102,6 +102,8 @@
         "thread": "cpp",
         "*.inc": "cpp",
         "*.ipp": "cpp",
-        "tensor": "cpp"
+        "tensor": "cpp",
+        "slist": "cpp",
+        "format": "cpp"
     }
 }

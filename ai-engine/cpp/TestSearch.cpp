@@ -18,8 +18,8 @@ TEST_CASE("Testing Good Moves") {
   std::string input_dir = "Tests/Input/";
   std::string ans_dir = "Tests/Output/";
   for (const auto& entry : fs::directory_iterator(input_dir)) {
-    string inputfile = "Tests/Input/" + entry.path().filename().string();;
-    string answerfile = "Tests/Output/" + entry.path().filename().string();;
+    string inputfile = "Tests/Input/" + entry.path().filename().string();
+    string answerfile = "Tests/Output/" + entry.path().filename().string();
     ifstream input(inputfile, ifstream::in);
     ifstream answer(answerfile, ifstream::in);
     REQUIRE(input.good());
@@ -27,6 +27,7 @@ TEST_CASE("Testing Good Moves") {
       cerr << "Missing Answer File. Skipping.\n";
       continue;
     }
+
 
     int w, h, np, nc, nd;
     input >> w >> h >> np >> nc >> nd;
@@ -59,19 +60,23 @@ TEST_CASE("Testing Good Moves") {
       cards[i] = Card { dirs };
     }
 
-    int scorer_type, timeout, max_depth; 
-    input >> scorer_type >> timeout >> max_depth;
+    int timeout, max_depth;
+    input >> timeout >> max_depth;
     Search search(
       GameConfig(board, pieces, cards),
-      scorer_type, timeout, max_depth
+      timeout, max_depth
     );
     
     search.game.turn = 2;
     search.game.player_id = 2;
 
+    cerr << "\n\n" << entry.path().filename().string() << endl;
+    cerr << "-----------------------\n\n";
     cerr << search.game << "\n";
 
     Move move = search.beginSearch(1);
+    search.makeAIMove(move.card, move.color - 4);
+    cerr << search.game << "\n";
 
     int answer_idx; answer >> answer_idx;
     int answer_color; answer >> answer_color;

@@ -1,6 +1,9 @@
 #include "Game.h"
-#include "Utils.h"
 
+#include <assert.h>
+#include <bitset>
+
+#include "Utils.h"
 
 /*--- Utility Functions -----*/
 int64_t Game::area() {
@@ -11,47 +14,9 @@ int64_t Game::ncard_bits() {
   return 64 -__builtin_clzll(ncards - 1);
 }
 
-// Sprint 3 OPT; Remove edge masks and simply use walls for everything.
-const dynamic_bitset Game::right_edge_mask() {
-  dynamic_bitset res(area(), 0b0);
-  for (uint32_t i = 0; i < height; i++) {
-    dynamic_bitset m(area(), 1);
-    m <<= (i * width + (width - 1));
-    res |= m;
-  }
-  return res;
-}
-
-const dynamic_bitset Game::up_edge_mask() {
-  dynamic_bitset m(area(), 0);
-  dynamic_bitset row(area(), (0b1 << width) - 1);
-  m |= row << (width * (height - 1));
-  return m;
-}
-
-const dynamic_bitset Game::left_edge_mask() {
-  dynamic_bitset res(area(), 0);
-  for (uint32_t i = 0; i < height; i++) {
-    dynamic_bitset m(area(), 1);
-    m <<= (i * width);
-    res |= m;
-  }
-  return res;
-}
-
-const dynamic_bitset Game::down_edge_mask() {
-  dynamic_bitset m(area(), 0);
-  for (uint32_t i = 0; i < width; i++) {
-    dynamic_bitset b(area(), 1);
-    m |= b << i;
-  }
-  return m;
-}
-
 // Comparator for map and things? Idk
 bool Game::operator<(const Game& o) const {
   if (turn != o.turn) return turn < o.turn;
-  for (int i = 0; i < 4; i++) if (player_scores[i] != o.player_scores[i]) return player_scores[i] < o.player_scores[i];
   for (int i = 0; i < 4; i++) if (players[i] != o.players[i]) return players[i] < o.players[i];
   for (int i = 0; i < 4; i++) if (enemies[i] != o.enemies[i]) return enemies[i] < o.enemies[i];
   for (int i = 0; i < 4; i++) if (enemies[i] != o.enemies[i]) return enemies[i] < o.enemies[i];
@@ -73,21 +38,15 @@ Game::Game(GameConfig config):
   ncards(config.cards.size()),
   hand_size(config.hand_size),
   round_length(config.round_length),
-  edge_masks({
-    right_edge_mask(), up_edge_mask(),
-    left_edge_mask(), down_edge_mask()
-  }),
   queue(CardQueue(ncards, ncard_bits(), 2 * hand_size)),
   impassible(dynamic_bitset(area(), 0)),
   cows(dynamic_bitset(area(), 0)),
   all_enemies(dynamic_bitset(area(), 0)),
   all_players(dynamic_bitset(area(), 0)),
-  wall_mask(dynamic_bitset(area(), 0)),
   score_tiles(dynamic_bitset(area(), 0)) {
   
   for (uint32_t i = 0; i < 4; i++) {
     players[i] = dynamic_bitset(area(), 0);
-    player_scores[i] = dynamic_bitset(area(), 0);
     enemies[i] = dynamic_bitset(area(), 0);
   }
   for (uint32_t i = 0; i < round_length; i++) {
@@ -104,9 +63,20 @@ Game::Game(GameConfig config):
     dynamic_bitset msk(area(), 1);
     msk <<= p.i * width + p.j;
     if (p.tp < 5) {
-      players[p.tp - 1] |= msk;
+      int idx = p.tp - 1;
+      players[idx] |= msk;
+      player.xs[idx].push_back(p.j);
+      player.ys[idx].push_back(p.i);
+      player.ss[idx].push_back(p.score);
+      player.deads[idx].push_back(0);
     } else {
-      enemies[(p.tp - 1) & 0b11] |= msk;
+      int idx = (p.tp - 1) & 0b11;
+      enemies[idx] |= msk;
+      enemy.xs[idx].push_back(p.j);
+      enemy.ys[idx].push_back(p.i);
+      // Pointless but requires some changes to avoid.
+      enemy.ss[idx].push_back(p.score);
+      enemy.deads[idx].push_back(0);
     }
   }
 
@@ -129,9 +99,9 @@ Game::Game(GameConfig config):
 } /* Game() */
 
 /*
-  * returns the winner of the game.
-  * -1 if AI, 1 if player, 0 if nobody has won yet.
-  */
+ * returns the winner of the game.
+ * -1 if AI, 1 if player, 0 if nobody has won yet.
+ */
 
 int Game::is_jover() {
   for (int i = 0; i < 4; i++) {
@@ -201,9 +171,9 @@ void Game::player_move(int choice) {
 } /* player_move() */
 
 /*
-  * rotates the specified card in the player hand
-  * by the specified amount.
-  */
+ * rotates the specified card in the player hand
+ * by the specified amount.
+ */
 
 void Game::player_rotate_card(int choice, int rotation) {
   int index = queue.choose(choice);
@@ -221,15 +191,19 @@ void Game::player_rotate_card(int choice, int rotation) {
 } /* rotate_card() */
 
 /*
-  * x and y coordinate of where you
-  * want your ufo to be.
-  * 
-  * DOES NOT CHECK THAT YOU CAN ACTUALLY DO IT
-  */
+ * x and y coordinate of where you
+ * want your ufo to be.
+ * 
+ * DOES NOT CHECK THAT YOU CAN ACTUALLY DO IT
+ */
 
 void Game::player_buy(int x, int y) {
   dynamic_bitset msk(area(), 1); 
   players[player_id] |= (msk << (width * y + x));
+  player.xs[player_id].push_back(x);
+  player.ys[player_id].push_back(y);
+  player.ss[player_id].push_back(0);
+  player.deads[player_id].push_back(0);
   player_id = (player_id + 1) & 0b11;
   turn += 1;
 } /* player_buy() */
@@ -254,113 +228,167 @@ void Game::enemy_move(int choice, int color) {
 } /* enemy_move() */
 
 /*
-* Moves the current piece in the desired direction.
-* applying all necessary side-effects. 
-*/
+ * removes all dead units
+ * from the entry (choice) in s
+ */
 
-void Game::play_enemy_movement(Direction d, int choice) {
-  auto enemy_mask = enemies[choice];
-  uint64_t shift[4] = { 1, width, 1, width };
+void Game::purge(int choice, int p) {
+  auto &s = p ? player : enemy;
+  vector<int> idxs;
+  idxs.reserve(s.deads[choice].size());
+  for (size_t i = 0; i < s.deads[choice].size(); i++) {
+    if (s.deads[choice][i]) continue;
+    idxs.push_back(i);
+  }
+  for (size_t i = 0; i < idxs.size(); i++) {
+    s.xs[choice][i] = s.xs[choice][idxs[i]];
+    s.ys[choice][i] = s.ys[choice][idxs[i]];
+    s.ss[choice][i] = s.ss[choice][idxs[i]];
+    s.deads[choice][i] = s.deads[choice][idxs[i]];
+  }
+  s.xs[choice].resize(idxs.size());
+  s.ys[choice].resize(idxs.size());
+  s.ss[choice].resize(idxs.size());
+  s.deads[choice].resize(idxs.size());
+} /* purge() */
 
-  all_enemies.reset();
+
+/* 
+ * The overall structure is as follows.
+ * Presort the vector to figure out if anything has died.
+ * Purge all dead entries from the vectors.
+ * Move everything, acknoledging boundaries but ignoring collisions.
+ * Move things backwards to correct for hitting other players.
+ * While there's collisions between players that just moved, move things backwards.
+ * The code is written using structs of arrays and if-statements to allow for auto-vectorization.
+ * With uint8_t are our base type, most cpus can process 16 ints in parallel.
+ */
+
+void Game::play_movement(Direction d, int choice, int p) {
+  auto &unit = (p) ? player : enemy;
+  auto index = [&](int i) {
+    return unit.ys[choice][i] * width
+      + unit.xs[choice][i];
+  };
+
+  auto &units = (p) ? players : enemies;
+  auto &all_units = (p) ? all_players : all_enemies;
+  auto &pos = (d == Direction::UP || d == Direction::DOWN) ?
+    unit.ys[choice] : unit.xs[choice];
+
+  all_units.reset();
   for (int i = choice + 1; i != choice; i = (i + 1) & 0b11) {
-    all_enemies |= enemies[i];
+    all_units |= units[i];
   }
 
-  // Wall_mask contains all pieces aligned with a wall.
-  wall_mask.reset();
-  auto cur_mask = impassible | (edge_masks[d] & enemy_mask) | all_enemies;
-
-  while (cur_mask.any()) {
-    // Move backwards, and check if there's player units there.
-    int b = (d + 2) % 4;
-    cur_mask = (b < 2) ? (cur_mask << shift[b]) : (cur_mask >> shift[b]);
-    // If there isn't a unit at this square / went off the grid, remove from mask.
-    cur_mask &= enemy_mask & ~edge_masks[d];
-    wall_mask |= cur_mask;
-  }
-
-  // Shift once in the desired direction, keep all blocked pieces where they are.
-  auto moved = (d < 2) ? (~wall_mask & enemy_mask) << shift[d] :
-    (~wall_mask & enemy_mask) >> shift[d];
-
-  enemy_mask =
-    (moved & ~edge_masks[(d + 2) % 4] & ~impassible) |
-    (enemy_mask & wall_mask) |
-    (enemy_mask & edge_masks[d]);
-
-  // Kill players the enemy hits.
-  for (int i = 0; i < 4; i++) {
-    players[i] &= ~enemy_mask;
-  }
-
-  enemies[choice] = enemy_mask;
-} /* play_enemy_movement() */
-
-/*
-  * Moves the current piece in the desired direction.
-  * applying all necessary side-effects. 
-  */
-
-void Game::play_player_movement(Direction d) {
-  auto player_mask = players[player_id];
-  auto score_mask = player_scores[player_id];
-  uint64_t shift[4] = { 1, width, 1, width };
-
-  all_players.reset();
-  for (uint64_t i = player_id + 1; i != player_id; i = (i + 1) & 0b11) {
-    all_players |= players[i];
-  }
-
-  // Wall_mask contains all pieces aligned with a wall.
-  wall_mask.reset();
-  auto cur_mask = impassible | (edge_masks[d] & player_mask) | all_players;
-  while (cur_mask.any()) {
-    // Move backwards, and check if there's player units there.
-    int b = (d + 2) % 4;
-    cur_mask = (b < 2) ? (cur_mask << shift[b]) : (cur_mask >> shift[b]);
-    // If there isn't a unit at this square / went off the grid, remove from mask.
-    cur_mask &= player_mask & ~edge_masks[d];
-    wall_mask |= cur_mask;
-  }
-
-  // Move pieces in the desired direction.
-  auto moved = (d < 2) ? (~wall_mask & player_mask) << shift[d] :
-    (~wall_mask & player_mask) >> shift[d];
+  int collision = 0;
+  vector<uint8_t> occupied(area());
+  int sz = (int) unit.deads[choice].size();
+  int8_t shift[4] = { 1, 1, -1, -1 };
+  uint8_t bounds[4] = {
+      static_cast<uint8_t>(width - 1),
+      static_cast<uint8_t>(height - 1),
+      0, 0
+  };  
   
-  // If we shifted into a wall or off the edge, delete the shifted bit.
-  // Place anything that hit a wall back where it was.
-  // Place anything that hit an edge back where it was.
-  player_mask =
-    (moved & ~edge_masks[(d + 2) % 4] & ~impassible) |
-    (player_mask & wall_mask) |
-    (player_mask & edge_masks[d]);
+  // Shift everything, keeping in mind bounds.
+  for (int i = 0; i < sz; i++) {
+    int oob = (pos[i] == bounds[d]);
+    pos[i] += (shift[d] * !oob);
+    int idx = index(i);
+    occupied[idx] += 1;
+    collision |= (occupied[idx] >= 2);
+  }
 
-  // Move the score mask identically to the player mask.
-  moved = (d < 2) ? (~wall_mask & score_mask) << shift[d] :
-    (~wall_mask & score_mask) >> shift[d];
-  score_mask =
-    (moved & ~edge_masks[(d + 2) % 4] & ~impassible) |
-    (score_mask & wall_mask) |
-    (score_mask & edge_masks[d]);
+  dynamic_bitset blocked = all_units | impassible;
+  for (int i = 0; i < sz; i++) {
+    int idx = index(i);
+    occupied[idx] -= 1;
+    pos[i] -= (shift[d] * blocked[idx]);
+    idx = index(i);
+    occupied[idx] += 1;
+    collision |= (occupied[idx] >= 2);
+  }
+
+  // This is slow, but often won't even be called.
+  while (collision) {
+    collision = 0;
+    for (int i = 0; i < sz; i++) {
+      int idx = index(i);
+      pos[i] -= (shift[d] * (occupied[idx] >= 2));
+      occupied[idx] -= 1;
+      idx = index(i);
+      occupied[idx] += 1;
+      collision |= (occupied[idx] >= 2);
+    }
+  }
 
   // Kill enemies the player hits.
-  for (int i = 0; i < 4; i++) {
-    enemies[i] &= ~player_mask;
+  auto &opponent = (p) ? enemy : player;
+  auto &opp_mask = (p) ? enemies : players;
+  for (int color = 0; color < 4; color++) {
+    int killed = 0;
+    for (size_t i = 0; i < opponent.deads[color].size(); i++) {
+      int idx = opponent.ys[color][i] * width
+        + opponent.xs[color][i];
+      killed |= occupied[idx];
+      opponent.deads[color][i] |= occupied[idx];
+      // We could do this via anding the masks instead...
+      opp_mask[color][idx] &= !occupied[idx];
+    }
+    if (killed) purge(color, !p);
+  }
+} /* play_movement() */
+
+
+/*
+ * play_enemy_movement
+ */
+
+void Game::play_enemy_movement(Direction d, int choice) {
+  play_movement(d, choice, 0);
+  auto index = [&](int i) {
+    return enemy.ys[choice][i] * width
+      + enemy.xs[choice][i];
+  };
+
+  // Build Enemy Mask
+  dynamic_bitset m(area(), 1);
+  dynamic_bitset mask(area(), 0);
+  for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
+    int idx = index(i);
+    mask |= (m << idx);
+  }
+  enemies[choice] = mask;
+} /* play_enemy_movement() */
+
+
+/* 
+ * play_player_movement
+ */
+
+void Game::play_player_movement(Direction d) {
+  play_movement(d, player_id, 1);
+  auto index = [&](int i) {
+    return player.ys[player_id][i] * width
+      + player.xs[player_id][i];
+  };
+
+  // Build Player Mask, update scores.
+  dynamic_bitset m(area(), 1);
+  dynamic_bitset player_mask(area(), 0);
+  for (size_t i = 0; i < player.deads[player_id].size(); i++) {
+    int idx = index(i);
+    player.ss[player_id][i] += cows[idx];
+    int delta = player.ss[player_id][i] * score_tiles[idx];
+    player.ss[player_id][i] -= delta;
+    total_score += delta;
+    player_mask |= (m << idx);
   }
 
-  // Every player that doesn't have a cow
-  auto cow_less = ~(player_mask & ~score_mask);
-  score_mask |= (player_mask & cows);
-  auto prev = cows;
-  cows &= cow_less;
-
-  total_score += (score_tiles & score_mask).count();
-  score_mask &= ~(score_tiles);
-
+  cows &= ~player_mask;
+  cow_respawn[turn % round_length] &= cows & player_mask;
   players[player_id] = player_mask;
-  player_scores[player_id] = score_mask;
-  cow_respawn[turn % round_length] = prev & ~cows;
 } /* play_player_movement() */
 
 /*------ Debug + Testing ----------*/
@@ -389,29 +417,31 @@ vector<vector<int>> Game::viewBoard() {
 } /* viewBoard() */
 
 /*
-  * Puts the pieces in a convenient state.
-  */
+ * Puts the pieces in a convenient state.
+ 
+ */
 
 vector<Piece> Game::viewPieces() {
   vector<Piece> out;
-  for (uint32_t i = 0; i < height; i++) {
-    for (uint32_t j = 0; j < width; j++) {
-      for (int k = 0; k < 4; k++) {
-        auto msk = dynamic_bitset(area(), 1);
-        msk <<= (width * i + j);
-        if ((players[k] & msk).any()) {
-          out.push_back(Piece(
-            i, j, k + 1,
-            (player_scores[k] & msk).any()
-          ));
-          break;
-        } else if ((enemies[k] & msk).any()) {
-          out.push_back(Piece(i, j, k + 5));
-          break;
-        }
-      }
+  for (int color = 0; color < 4; color++) {
+    for (size_t i = 0; i < player.deads[color].size(); i++) {
+      out.push_back(Piece(
+        player.ys[color][i], player.xs[color][i],
+        color + 1, player.ss[color][i]
+      ));
+    }
+    for (size_t i = 0; i < enemy.deads[color].size(); i++) {
+      out.push_back(Piece(
+        enemy.ys[color][i], enemy.xs[color][i],
+        color + 5, 0
+      ));
     }
   }
+  sort(out.begin(), out.end(), [](Piece &a, Piece &b) {
+    if (a.i != b.i) return a.i < b.i;
+    if (a.j != b.j) return a.j < b.j;
+    return a.tp < b.tp;
+  });
   return out;
 } /* viewPieces() */
 
@@ -491,12 +521,17 @@ ostream& operator<<(ostream& os, Game& game) {
   }
 
   os << Color::Modifier(Color::BG_DEFAULT);
-  
   auto cards = game.viewCards();
   for (size_t i = 0; i < cards.size(); i++) {
-    if (i < game.hand_size)      os << Color::Modifier(Color::FG_BLUE) << "Player <= " << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
-    else if (i < 2*game.hand_size) os << Color::Modifier(Color::FG_RED)  << "Enemy  <= " << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
-    else             os << "Queue  <= " << cards[i] << '\n';
+    if (i < game.hand_size) {
+      os << Color::Modifier(Color::FG_BLUE) << "Player <= " << cards[i]
+         << Color::Modifier(Color::FG_DEFAULT) << '\n';
+    } else if (i < 2*game.hand_size) {
+      os << Color::Modifier(Color::FG_RED) << "Enemy  <= "
+         << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
+    } else {
+      os << "Queue  <= " << cards[i] << '\n';
+    }
   }
   os << "turn: " << game.turn << '\n';
   os << "hand size: " << game.hand_size << '\n';

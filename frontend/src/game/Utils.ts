@@ -23,7 +23,7 @@ export const defaultGameSettings = {
     cow_regen_rate: 15,
     cow_sacrifice: 5,
     card_deck_size: 15,
-    timer_length: 30
+    timer_length: 1
 }
 
 export type gameSettingsData = typeof defaultGameSettings;

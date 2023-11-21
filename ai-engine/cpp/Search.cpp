@@ -2,7 +2,7 @@
 
 #define debug(x) std::cerr << #x << ": " << x << std::endl
 
-Search::Search(GameConfig gc, int sc, uint64_t to, int md):
+Search::Search(GameConfig gc, uint64_t to, int md, Scorer sc):
   game(gc), scorer(sc), hasher(game),
   timeout(to), max_depth(md) {}
 

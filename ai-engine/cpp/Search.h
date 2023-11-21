@@ -30,7 +30,7 @@ struct Search {
     // Beginning time, updated each time search is called
     uint64_t begin_time;
 
-    Search(GameConfig gc, int sc=0, uint64_t to=1000, int md=inf);
+    Search(GameConfig gc, uint64_t to=1000, int md=inf, Scorer sc=Scorer());
     void makePlayerMove(int move);
     void rotatePlayerCard(int index, int rotation);
     void purchaseUFO(int row, int column);
