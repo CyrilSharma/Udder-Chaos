@@ -135,7 +135,8 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
             for (int angle = 1; angle <= 3; ++angle)
               moves.push_back(Move(MoveType::ROTATE, card, angle));
         }
-
+        
+        // Player buy moves are just hardcoded
         if (game.total_score > 0)
             for (auto xy : spawnPos[game.player_id])
                 moves.push_back(Move(MoveType::BUY, xy[0], xy[1]));
@@ -200,6 +201,9 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
 
 /* todo list
 # INCLUDE SCORING AND WINNING IN SEARCH
+improve move ordering heuristic
+    if a move increases player banked score search it first
+    rotations and buying are...
 improve move evaluation heuristic
     if a side wins it's +- inf and shortcircuit
     otherwise
@@ -210,7 +214,6 @@ improve move evaluation heuristic
     player score from win target - 10 * piece value * banked score / (target score squared * (target score - banked score))
         Function that is 0 at 0 score and ~infinite at target score 
         https://www.desmos.com/calculator/g33apvmq8c
-improve move ordering heuristic
 probably not quiescence searching because our game is a bit complex
 order the previous best move first such that we can use partial results
 look into transposition table possible usages
