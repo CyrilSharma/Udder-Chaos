@@ -87,9 +87,9 @@ class Server {
 
             let cards = []
             let arrays = [
-                gameScreen.game.cards.player_hand,
-                gameScreen.game.cards.enemy_hand,
                 gameScreen.game.cards.queue,
+                gameScreen.game.cards.player_hand,
+                gameScreen.game.cards.enemy_hand
             ]
             for (let array of arrays) {
                 for (let card of array) {

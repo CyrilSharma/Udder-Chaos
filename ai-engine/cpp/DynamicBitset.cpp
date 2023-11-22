@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-#define NBLOCKS ((size + sizeof(int64_t) - 1) / sizeof(int64_t))
+#define NBLOCKS ((size + 64ULL - 1ULL) / 64ULL)
 
 dynamic_bitset::dynamic_bitset() {}
 
@@ -24,21 +24,28 @@ dynamic_bitset::~dynamic_bitset() {
   if (blocks) delete[] blocks;
 }
 
+bool dynamic_bitset::any() const {
+  for (uint32_t i = 0; i < NBLOCKS; i++) {
+    if (blocks[i]) return true;
+  }
+  return false;
+}
+
 int dynamic_bitset::count() const {
   int sum = 0;
   for (uint32_t i = 0; i < NBLOCKS; i++) {
-    sum += __builtin_popcount(blocks[i]);
+    sum += __builtin_popcountll(blocks[i]);
   }
   return sum;
 }
 
 bool dynamic_bitset::get(int32_t index) const {
-  return (blocks[index / sizeof(int64_t)] >> (index % sizeof(int64_t))) & 1;
+  return (blocks[index / 64] >> (index % 64)) & 1;
 }
 
 void dynamic_bitset::set(int32_t index, bool b) {
-  blocks[index / sizeof(int64_t)] &= ~(1 << (index % sizeof(int64_t)));
-  blocks[index / sizeof(int64_t)] |= (b << (index % sizeof(int64_t)));
+  blocks[index / 64] &= ~(1LL << (index % 64));
+  blocks[index / 64] |= ((1LL * b) << (index % 64));
 }
 
 void dynamic_bitset::reset() {
@@ -80,7 +87,7 @@ dynamic_bitset& dynamic_bitset::operator^=(const dynamic_bitset& other) {
 
 /** Allocating Methods (these don't affect the internal state of bitset) **/
 bool dynamic_bitset::operator[](int32_t index) const {
-  return (blocks[index / sizeof(int64_t)] >> (index % sizeof(int64_t))) & 1;
+  return (blocks[index / 64] >> (index % 64)) & 1;
 }
 
 dynamic_bitset dynamic_bitset::operator&(const dynamic_bitset& other) const {

@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <bits/stdc++.h>
-#include "CardQueue.h"
 #include "Game.h"
 #include "Utils.h"
 

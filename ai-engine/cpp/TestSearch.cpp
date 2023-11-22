@@ -4,7 +4,6 @@
 #include <vector>
 #include <string>
 
-#include "CardQueue.h"
 #include "Utils.h"
 #include "Search.h"
 

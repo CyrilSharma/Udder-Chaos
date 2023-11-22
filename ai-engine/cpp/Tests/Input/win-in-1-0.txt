@@ -10,9 +10,9 @@
 0 0 0
 0 0 0
 0 0 0
+0 0 0
 3 3 3
 2 3 2
-0 0 0
 300 4
 
 Instantaneous win if you play the right card.

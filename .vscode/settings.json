@@ -107,6 +107,7 @@
         "format": "cpp",
         "span": "cpp",
         "ranges": "cpp",
-        "stacktrace": "cpp"
+        "stacktrace": "cpp",
+        "rope": "cpp"
     }
 }

@@ -44,11 +44,11 @@ struct Hasher {
         }
 
         // Card hashes
-        assert(g.cards.size());
-        uint64_t maxCardID = g.cards[0].getMaxID();
+        assert(g.cm.cards.size());
+        uint64_t maxCardID = g.cm.cards[0].getMaxID();
         cardArr.resize(maxCardID);
         for (uint64_t cardType = 0; cardType < maxCardID; cardType++) {
-            for (uint64_t pos = 0; pos < g.ncards; pos++) {
+            for (uint64_t pos = 0; pos < g.cm.cards.size(); pos++) {
                 cardArr[cardType].push_back(rng());
             }
         }

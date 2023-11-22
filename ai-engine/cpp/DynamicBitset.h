@@ -9,6 +9,7 @@ struct dynamic_bitset {
   ~dynamic_bitset();
 
   int count() const;
+  bool any() const;
   bool get(int32_t index) const;
   void set(int32_t index, bool b);
   void reset();

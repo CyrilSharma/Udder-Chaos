@@ -6,16 +6,10 @@
 #include "DynamicBitset.h"
 #include "Utils.h"
 
-/*--- Utility Functions -----*/
 int64_t Game::area() {
   return (width * height);
 }
 
-int64_t Game::ncard_bits() {
-  return 64 -__builtin_clzll(ncards - 1);
-}
-
-// Comparator for map and things? Idk
 bool Game::operator<(const Game& o) const {
   return id < o.id;
 }
@@ -23,18 +17,16 @@ bool Game::operator<(const Game& o) const {
 /*--- Game Logic -----*/
 
 /*
-  * Parses a GameConfig into a more efficient, internal
-  * representation.
-  */
+ * Parses a GameConfig into a more efficient, internal
+ * representation.
+ */
 
 Game::Game(GameConfig config):
   id(config.id),
   width(config.board[0].size()),
   height(config.board.size()),
-  ncards(config.cards.size()),
-  hand_size(config.hand_size),
   round_length(config.round_length),
-  queue(CardQueue(ncards, ncard_bits(), 2 * hand_size)),
+  cm(config.cards, config.hand_size),
   impassible(area(), 0),
   cows(area(), 0),
   all_enemies(area(), 0),
@@ -42,7 +34,6 @@ Game::Game(GameConfig config):
   score_tiles(area(), 0) {
   
   for (uint32_t i = 0; i < 4; i++) {
-    cerr << "-------\n";
     players[i] = dynamic_bitset(area(), 0);
     enemies[i] = dynamic_bitset(area(), 0);
     pattacked[i] = 0;
@@ -50,12 +41,6 @@ Game::Game(GameConfig config):
   }
   for (uint32_t i = 0; i < round_length; i++) {
     cow_respawn[i] = dynamic_bitset(area(), 0);
-  }
-
-  cards.resize(ncards);
-  for (uint64_t i = 0; i < ncards; i++) {
-    cards[i] = config.cards[i];
-    queue.set(i, i);
   }
 
   for (auto p: config.pieces) {
@@ -153,6 +138,7 @@ bool Game::color_is_enemy(int color) {
 // general move making function
 void Game::make_move(Move move) {
   assert(move.type != MoveType::NONE);
+  cows |= cow_respawn[turn % round_length];
   if (move.type == MoveType::NORMAL) {
     if (color_is_enemy(move.color)) enemy_move(move.card, move.color - 4);
     else player_move(move.card);
@@ -168,13 +154,15 @@ void Game::make_move(Move move) {
 
 int Game::count_players() {
   int ppct = 0;
-  for (int i = 0; i < 4; i++) ppct += players[i].count();
+  for (int i = 0; i < 4; i++)
+    ppct += player.deads[i].size();
   return ppct;
 }
 
 int Game::count_enemies() {
   int epct = 0;
-  for (int i = 0; i < 4; i++) epct += enemies[i].count();
+  for (int i = 0; i < 4; i++)
+    epct += enemy.deads[i].size();
   return epct;
 }
 
@@ -183,15 +171,13 @@ int Game::count_pieces() {
 }
 
 /*
-  * choice is expected to be the numerical
-  * index IN YOUR HAND of the card you wish to play.
-  * we do not check if the card is in your hand.
-  */
+ * choice is expected to be the numerical
+ * index IN YOUR HAND of the card you wish to play.
+ * we do not check if the card is in your hand.
+ */
 
 void Game::player_move(int choice) {
-  cows |= cow_respawn[turn % round_length];
-  int index = queue.choose(choice);
-  auto moves = cards[index].moves;
+  auto moves = cm.pchoose(choice).moves;
   for (Direction move: moves) {
     play_player_movement(move);
   }
@@ -205,16 +191,7 @@ void Game::player_move(int choice) {
  */
 
 void Game::player_rotate_card(int choice, int rotation) {
-  int index = queue.choose(choice);
-  vector<Direction> dirs = {
-    Direction::RIGHT, Direction::UP,
-    Direction::LEFT, Direction::DOWN
-  };
-  for (Direction &move: cards[index].moves) {
-    // Need to validate with frontend.
-    move = dirs[(4 + move - rotation) & 0b11];
-  }
-
+  cm.rotate(choice, rotation);
   player_id = (player_id + 1) & 0b11;
   turn += 1;
 } /* rotate_card() */
@@ -248,9 +225,7 @@ void Game::player_buy(int x, int y) {
  */
 
 void Game::enemy_move(int choice, int color) {
-  cows |= cow_respawn[turn % round_length];
-  int index = queue.choose(choice + hand_size);
-  auto moves = cards[index].moves;
+  auto moves = cm.echoose(choice).moves;
   for (Direction move: moves) {
     play_enemy_movement(move, color);
   }
@@ -331,7 +306,7 @@ void Game::play_movement(Direction d, int choice, int p) {
   }
 
   // If I don't do this Clang doesn't believe blockptr is unique.
-  uint32_t NBLOCKS = (all_units.size + 1 + sizeof(int64_t)) / (sizeof(int64_t));
+  uint32_t NBLOCKS = (all_units.size + 64 - 1) / (64);
   int64_t* blockptr = new int64_t[NBLOCKS];
   for (uint32_t i = 0; i < NBLOCKS; i++) {
     blockptr[i] = all_units.blocks[i] | impassible.blocks[i];
@@ -340,7 +315,7 @@ void Game::play_movement(Direction d, int choice, int p) {
   #pragma clang loop vectorize(enable)
   for (int i = 0; i < sz; i++) {
     int idx = INDEX(i);
-    int b = blockptr[idx / sizeof(int64_t)] >> (idx % sizeof(int64_t)) & 1;
+    int b = blockptr[idx / 64] >> (idx % 64) & 1;
     pos[i] -= (shift[d] * b);
   }
   delete[] blockptr;
@@ -383,7 +358,7 @@ void Game::play_enemy_movement(Direction d, int choice) {
   };
 
   // Build Enemy Mask
-  dynamic_bitset mask(area(), 0);
+  dynamic_bitset mask(area());
   for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
     int idx = index(i);
     mask.set(idx, 1);
@@ -429,14 +404,15 @@ void Game::play_player_movement(Direction d) {
   }
 
   for (int color = 0; color < 4; color++) {
-    if ((mask & enemies[color]).count() == 0) continue;
+    auto inter = (mask & enemies[color]);
+    if (inter.count() == 0) continue;
     for (size_t i = 0; i < enemy.deads[color].size(); i++) {
       int idx = enemy.ys[color][i] * width
         + enemy.xs[color][i];
       int b = mask[idx];
       enemy.deads[color][i] |= b;
     }
-    enemies[color] &= ~mask;
+    enemies[color] ^= inter;
     purge(color, 0);
   }
 
@@ -500,16 +476,11 @@ vector<Piece> Game::viewPieces() {
 } /* viewPieces() */
 
 /*
-  * Puts the Cards in a convenient state.
-  */
+ * Puts the Cards in a convenient state.
+ */
 
 vector<Card> Game::viewCards() {
-  vector<Card> out(ncards);
-  for (uint64_t i = 0; i < ncards; i++) {
-    auto idx = queue.get(i);
-    out[i] = cards[idx];
-  }
-  return out;
+  return cm.cards;
 } /* viewCards() */
 
 // Print
@@ -575,26 +546,19 @@ ostream& operator<<(ostream& os, Game& game) {
   }
 
   os << Color::Modifier(Color::BG_DEFAULT);
-  auto cards = game.viewCards();
-  for (size_t i = 0; i < cards.size(); i++) {
-    if (i < game.hand_size) {
-      os << Color::Modifier(Color::FG_BLUE) << "Player <= " << cards[i]
-         << Color::Modifier(Color::FG_DEFAULT) << '\n';
-    } else if (i < 2*game.hand_size) {
-      os << Color::Modifier(Color::FG_RED) << "Enemy  <= "
-         << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
-    } else {
-      os << "Queue  <= " << cards[i] << '\n';
-    }
-  }
+  int qsize = (game.cm.cards.size() - 2 * game.cm.handsize);
+  for (int i = 0; i < qsize; i++)
+    os << "Queue  <= " << game.cm.queue[i] << '\n';
+  for (int i = 0; i < game.cm.handsize; i++)
+    os << Color::Modifier(Color::FG_BLUE) << "Player <= " << game.cm.phand[i]
+       << Color::Modifier(Color::FG_DEFAULT) << '\n';
+  for (int i = 0; i < game.cm.handsize; i++)
+    os << Color::Modifier(Color::FG_RED) << "Enemy  <= " << game.cm.ehand[i]
+       << Color::Modifier(Color::FG_DEFAULT) << '\n';
+
   os << "turn: " << game.turn << '\n';
-  os << "hand size: " << game.hand_size << '\n';
-  int ppct = 0, epct = 0;
-  for (int i = 0; i < 4; i++) {
-    ppct += game.players[i].count();
-    epct += game.enemies[i].count();
-  }
-  os << "player pieces: " << ppct << '\n';
-  os << "enemy pieces: " << epct << '\n';
+  os << "hand size: " << game.cm.handsize << '\n';
+  os << "player pieces: " << game.count_players() << '\n';
+  os << "enemy pieces: " << game.count_enemies() << '\n';
   return os;
 }

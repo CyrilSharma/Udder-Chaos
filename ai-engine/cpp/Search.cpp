@@ -118,7 +118,7 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
     
     // Enemy can move any color
     if (game.is_enemy_turn()) {
-        for (int card = 0; card < (int) game.hand_size; ++card) {
+        for (int card = 0; card < (int) game.cm.handsize; ++card) {
             for (int color = 0; color < 4; ++color) {
                 // Make sure enemy actually has this color
                 if (game.enemies[color].count())
@@ -128,7 +128,7 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
     } 
     // Player can only move current color
     else {
-        for (int card = 0; card < (int) game.hand_size; ++card) {
+        for (int card = 0; card < (int) game.cm.handsize; ++card) {
             // I'm going to go ahead and assume player_id stores the player's whose turn it is to move color
             moves.push_back(Move(MoveType::NORMAL, card, game.player_id));
             
