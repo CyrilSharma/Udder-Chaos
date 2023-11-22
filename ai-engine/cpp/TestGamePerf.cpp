@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <bits/stdc++.h>
-#include <boost/dynamic_bitset.hpp>
 #include "CardQueue.h"
 #include "Game.h"
 #include "Utils.h"
@@ -37,7 +36,7 @@ int main() {
 
   // Measure the execution time of func3
   auto start_time = std::chrono::high_resolution_clock::now();
-  for (int i = 0; i < 1e5; i++) {
+  for (int i = 0; i < 1e7; i++) {
     game.play_player_movement(dirs[rand() % 4]);
   }
   auto end_time = std::chrono::high_resolution_clock::now();

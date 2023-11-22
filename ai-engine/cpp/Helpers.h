@@ -59,11 +59,13 @@ struct GameConfig {
   vector<Card> cards;
   int hand_size;
   int round_length;
+  string id;
   GameConfig(
     vector<vector<int>> board,
     vector<Piece> pieces,
     vector<Card> cards,
     int hand_size = 3,
-    int round_length = 6
+    int round_length = 6,
+    string id = ""
   );
 };

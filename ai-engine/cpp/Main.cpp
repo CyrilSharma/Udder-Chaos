@@ -92,7 +92,8 @@ struct Handler {
     auto gc = GameConfig(
       board, pieces, cards,
       stoll(params["hand_size"]),
-      stoll(params["round_length"])
+      stoll(params["round_length"]),
+      params["game_id"]
     );
     auto game_id = params["game_id"];
     searches.insert({game_id, Search(gc)});

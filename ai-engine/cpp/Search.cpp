@@ -2,16 +2,17 @@
 
 #define debug(x) std::cerr << #x << ": " << x << std::endl
 
-Search::Search(GameConfig gc, uint64_t to, int md, Scorer sc):
+Search::Search(GameConfig gc, uint64_t to, int md):
+    game(gc), scorer(gc), hasher(game),
+    timeout(to), max_depth(md) {}
+  
+Search::Search(GameConfig gc, Scorer sc, uint64_t to, int md):
     game(gc), scorer(sc), hasher(game),
-    timeout(to), max_depth(md) {
-        // cur_seq.resize(max_depth);
-        // best_seq.resize(max_depth);
-    }
+    timeout(to), max_depth(md) {}
+
 
 // In the future making moves may also update the internal state of the search.
 // Hence, we make wrapper methods.
-
 void Search::makePlayerMove(int move) {
     game.player_move(move);
 }

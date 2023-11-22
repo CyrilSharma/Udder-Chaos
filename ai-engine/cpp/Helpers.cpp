@@ -85,7 +85,8 @@ GameConfig::GameConfig(
   vector<Piece> pieces,
   vector<Card> cards,
   int hand_size,
-  int round_length
+  int round_length,
+  string id
 ): board(board), pieces(pieces),
    cards(cards), hand_size(hand_size),
-   round_length(round_length) {}
+   round_length(round_length), id(id)  {}
