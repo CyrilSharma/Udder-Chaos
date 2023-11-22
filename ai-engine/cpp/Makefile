@@ -29,7 +29,7 @@ TestSearch: TestSearch.o $(SOURCES:.cpp=.o)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
 TestGamePerf: TestGamePerf.o $(SOURCES:.cpp=.o)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -O3 -o $@
 	
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@

@@ -141,7 +141,6 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
                 moves.push_back(Move(MoveType::BUY, xy[0], xy[1]));
     }
 
-
     // Order the moves.
     moveOrderer.order(game, moves);
  
@@ -159,7 +158,8 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
             eval = alphaBeta(tmp, depth+1, stopDepth, alpha, beta, dbgVerbosity);
         // tmp.undo_move(move);
 
-        if (dbgVerbosity >= 2)
+        // If ran out of time return from recursive function
+        if (curTime() > begin_time + timeout) return 0;
 
         // if (dbgVerbosity >= 3) {
         if (depth == 0) {
@@ -192,10 +192,27 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
         }
     }
 
-    if (curTime() > begin_time + timeout) return 0;
-
     if (depth == 0) {
         searchCompleted = true;
     }
     return alpha;
 }
+
+/* todo list
+# INCLUDE SCORING AND WINNING IN SEARCH
+improve move evaluation heuristic
+    if a side wins it's +- inf and shortcircuit
+    otherwise
+    piece count score - ~100
+    piece cow score - ~30
+    piece location from center - ~5 per tile
+    player actual score - ~50 
+    player score from win target - 10 * piece value * banked score / (target score squared * (target score - banked score))
+        Function that is 0 at 0 score and ~infinite at target score 
+        https://www.desmos.com/calculator/g33apvmq8c
+improve move ordering heuristic
+probably not quiescence searching because our game is a bit complex
+order the previous best move first such that we can use partial results
+look into transposition table possible usages
+look into search extensions (perhaps for piece capture possibilities)
+*/
