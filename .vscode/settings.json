@@ -104,6 +104,10 @@
         "*.ipp": "cpp",
         "tensor": "cpp",
         "slist": "cpp",
-        "format": "cpp"
+        "format": "cpp",
+        "span": "cpp",
+        "ranges": "cpp",
+        "stacktrace": "cpp",
+        "rope": "cpp"
     }
 }

@@ -1,33 +1,29 @@
 #pragma once
-#include <boost/dynamic_bitset.hpp>
 #include <array>
 #include <vector>
 
-#include "CardQueue.h"
+#include "CardManager.h"
+#include "DynamicBitset.h"
 #include "Helpers.h"
 
-using dynamic_bitset = boost::dynamic_bitset<>;
+
 using namespace std;
 
 struct Game {
+  string id;
   uint8_t width;
   uint8_t height;
-  uint64_t ncards;
-  uint64_t hand_size;
   uint64_t round_length;
-
-  // Hardcode for now...
-  uint64_t cows_to_win = 10;
-  array<dynamic_bitset, 4> edge_masks;
-
+  uint64_t cows_to_win = 10; // Hardcode for now...
   uint64_t turn = 0;
   uint64_t round = 0;
   uint64_t total_score = 0;
   uint64_t player_id = 0;
 
-  CardQueue queue;
-  vector<Card> cards;
+  CardManager cm;
   array<dynamic_bitset, 6> cow_respawn;
+  array<bool, 4> pattacked;
+  array<bool, 4> eattacked;
   array<dynamic_bitset, 4> players;
   array<dynamic_bitset, 4> enemies;
   dynamic_bitset impassible;
@@ -35,6 +31,9 @@ struct Game {
   dynamic_bitset all_enemies;
   dynamic_bitset all_players;
   dynamic_bitset score_tiles;
+  
+  int hmeval = 0;
+  vector<int> playerhm, enemyhm;
 
 
   // Why didn't I put the array outside....

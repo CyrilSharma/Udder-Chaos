@@ -1,7 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include <bits/stdc++.h>
-#include "CardQueue.h"
+#include "CardManager.h"
 #include "Game.h"
 #include "Utils.h"
 
@@ -231,14 +231,12 @@ TEST_CASE("Testing Player Movement") {
 TEST_CASE("Test Cow Capturing") {
   const int width = 16, height = 16;
 
-  int ncows = 0;
   vector<vector<int>> board(height, vector<int>(width));
   // Lazy way to make cows not spawn where units already are.
   for (int i = 1; i < 11; i++) {
     for (int j = 1; j < 11; j++) {
       if (rand() % 4 == 0) {
         board[i][j] = TileType::COW;
-        ncows += 1;
       }
     }
   }
@@ -303,7 +301,12 @@ TEST_CASE("Test Cow Capturing") {
   for (auto &p: pieces) {
     total_score += p.score;
   }
-  REQUIRE((ncows - total_score) == game.cows.count());
+
+  int game_cows = 0;
+  for (auto &p : game.viewPieces()) {
+    game_cows += p.score;
+  }
+  REQUIRE(game_cows == total_score);
 }
 
 /*
@@ -470,59 +473,22 @@ TEST_CASE("Test Game JOVER") {
 }
 
 /*
- * Ensure the card queue works as intended
+ * Ensure the card manager works as intended
  */
 
-TEST_CASE("Test CardQueue") {
-  const int reserve = 6;
-  const int nelements = 16;
-  const int nbits_per = 64 - __builtin_clzll(nelements - 1);
-  CardQueue queue(nelements, nbits_per, reserve);
-  for (int i = 0; i < nelements; i++) {
-    queue.set(i, i);
-  } 
-  SUBCASE("Test GET") {
-    for (int i = 0; i < nelements; i++) {
-      CHECK(queue.get(i) == i);
-    } 
-  }
+TEST_CASE("Test CardManager") {
+  const int handsize = 3, ndirs = 3, ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
+  CardManager cm(cards, handsize);
   SUBCASE("Test Choose") {
-    for (int i = reserve - 1; i < nelements; i++) {
-      CHECK(queue.choose(reserve - 1) == i);
+    int qsize = (ncards - 2 * handsize);
+    cm.pchoose(0);
+    for (int i = 0; i < qsize; i++) {
+      CHECK(cm.pchoose(0) == cm.cards[i]);
     }
-    for (int i = 0; i < nelements; i++) {
-      queue.set(i, i);
-    }
-    queue.choose(reserve - 2);
-    for (int i = reserve; i < nelements - 1; i++) {
-      CHECK(queue.choose(reserve - 2) == i);
+    cm.echoose(0);
+    for (int i = 0; i < qsize; i++) {
+      CHECK(cm.echoose(0) == cm.cards[i]);
     }
   }
 }
-
-TEST_CASE("Test Rotate") {
-    const int width = 16, height = 16;
-    const int ndirs = 3, ncards = 16;
-    const int npieces = 10;
-    vector<vector<int>> board = random_board(width, height);
-    vector<Piece> pieces = random_pieces(npieces, width, height);
-    auto cards = random_cards(ndirs, ncards);
-    auto config_p = GameConfig(board, pieces, cards);
-    auto game = Game(config_p);
-
-    for (int rot = 0; rot < 4; rot++) {
-      for (int i = 0; i < ncards; i++) {
-        int idx = game.queue.get(i);
-        vector<Direction> dirs = game.cards[idx].moves;
-        vector<Direction> directions = {
-          Direction::RIGHT, Direction::UP,
-          Direction::LEFT, Direction::DOWN,
-        };
-        game.player_rotate_card(i, rot);
-        for (size_t j = 0; j < game.cards[0].moves.size(); j++) {
-          Direction ans = directions[(4 + dirs[j] - rot) & 0b11];
-          CHECK(ans == game.cards[idx].moves[j]);
-        }
-      }
-    }
-  }

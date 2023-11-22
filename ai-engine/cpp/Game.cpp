@@ -3,75 +3,57 @@
 #include <assert.h>
 #include <bitset>
 
+#include "DynamicBitset.h"
 #include "Utils.h"
 
-/*--- Utility Functions -----*/
 int64_t Game::area() {
   return (width * height);
 }
 
-int64_t Game::ncard_bits() {
-  return 64 -__builtin_clzll(ncards - 1);
-}
-
-// Comparator for map and things? Idk
 bool Game::operator<(const Game& o) const {
-  if (turn != o.turn) return turn < o.turn;
-  for (int i = 0; i < 4; i++) if (players[i] != o.players[i]) return players[i] < o.players[i];
-  for (int i = 0; i < 4; i++) if (enemies[i] != o.enemies[i]) return enemies[i] < o.enemies[i];
-  for (int i = 0; i < 4; i++) if (enemies[i] != o.enemies[i]) return enemies[i] < o.enemies[i];
-  if (cards != o.cards) return cards < o.cards;
-  for (int i = 0; i < 6; i++) if (cow_respawn[i] != o.cow_respawn[i]) return cow_respawn[i] < o.cow_respawn[i];
-  return cows < o.cows;
+  return id < o.id;
 }
 
 /*--- Game Logic -----*/
 
 /*
-  * Parses a GameConfig into a more efficient, internal
-  * representation.
-  */
+ * Parses a GameConfig into a more efficient, internal
+ * representation.
+ */
 
 Game::Game(GameConfig config):
+  id(config.id),
   width(config.board[0].size()),
   height(config.board.size()),
-  ncards(config.cards.size()),
-  hand_size(config.hand_size),
   round_length(config.round_length),
-  queue(CardQueue(ncards, ncard_bits(), 2 * hand_size)),
-  impassible(dynamic_bitset(area(), 0)),
-  cows(dynamic_bitset(area(), 0)),
-  all_enemies(dynamic_bitset(area(), 0)),
-  all_players(dynamic_bitset(area(), 0)),
-  score_tiles(dynamic_bitset(area(), 0)) {
+  cm(config.cards, config.hand_size),
+  impassible(area(), 0),
+  cows(area(), 0),
+  all_enemies(area(), 0),
+  all_players(area(), 0),
+  score_tiles(area(), 0) {
   
   for (uint32_t i = 0; i < 4; i++) {
     players[i] = dynamic_bitset(area(), 0);
     enemies[i] = dynamic_bitset(area(), 0);
+    pattacked[i] = 0;
+    eattacked[i] = 0;
   }
   for (uint32_t i = 0; i < round_length; i++) {
     cow_respawn[i] = dynamic_bitset(area(), 0);
   }
 
-  cards.resize(ncards);
-  for (uint64_t i = 0; i < ncards; i++) {
-    cards[i] = config.cards[i];
-    queue.set(i, i);
-  }
-
   for (auto p: config.pieces) {
-    dynamic_bitset msk(area(), 1);
-    msk <<= p.i * width + p.j;
     if (p.tp < 5) {
       int idx = p.tp - 1;
-      players[idx] |= msk;
+      players[idx].set(p.i * width + p.j, 1);
       player.xs[idx].push_back(p.j);
       player.ys[idx].push_back(p.i);
       player.ss[idx].push_back(p.score);
       player.deads[idx].push_back(0);
     } else {
       int idx = (p.tp - 1) & 0b11;
-      enemies[idx] |= msk;
+      enemies[idx].set(p.i * width + p.j, 1);
       enemy.xs[idx].push_back(p.j);
       enemy.ys[idx].push_back(p.i);
       // Pointless but requires some changes to avoid.
@@ -83,19 +65,55 @@ Game::Game(GameConfig config):
   for (uint32_t i = 0; i < height; i++) {
     for (uint32_t j = 0; j < width; j++) {
       int tile = config.board[i][j];
-      auto m = dynamic_bitset(area(), 1);
-      m <<= (i * width + j);
       if (tile == TileType::PLAIN) {}
       else if (tile == TileType::IMPASSIBLE) {
-        impassible |= m;
+        impassible.set(i * width + j, 1);
       } else if (tile == TileType::COW) {
-        cows |= m;
+        cows.set(i * width + j, 1);
       } else if (tile == TileType::SCORE) {
-        score_tiles |= m;
+        score_tiles.set(i * width + j, 1);
       }
     }
   }
 
+
+  auto heatmap = [&](vector<int> &hm, int p) {
+    queue<tuple<int, int, int>> q;
+    vector<bool> visited(width * height);
+    for (size_t i = 0; i < config.pieces.size(); i++) {
+      if ((config.pieces[i].tp <= 4) != p) continue;
+      q.push({config.pieces[i].j, config.pieces[i].i, 0});
+      visited[config.pieces[i].i * width + config.pieces[i].j] = 1;
+    }
+    hm.resize(width * height);
+    int dx[4] = { 1, 0, -1, 0 };
+    int dy[4] = { 0, 1, 0, -1 };
+    while (!q.empty()) {
+      auto [x, y, d] = q.front(); q.pop();
+      hm[y * width + x] = 10 - (10 * d) / (width + height);
+      for (int i = 0; i < 4; i++) {
+        int nx = x + dx[i], ny = y + dy[i];
+        if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+        if (visited[ny * width + nx]) continue;
+        visited[ny * width + nx] = 1;
+        q.push({nx, ny, d + 1});
+      }
+    }
+  };
+
+  auto printmask = [&](vector<int> &mask) {
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        printf("%2d ", mask[i * width + j]);
+      }
+      printf("\n");
+    }
+  };
+
+  playerhm.resize(area());
+  enemyhm.resize(area());
+  heatmap(playerhm, 1);
+  heatmap(enemyhm, 0);
 } /* Game() */
 
 /*
@@ -124,6 +142,7 @@ bool Game::color_is_enemy(int color) {
 // general move making function
 void Game::make_move(Move move) {
   assert(move.type != MoveType::NONE);
+  cows |= cow_respawn[turn % round_length];
   if (move.type == MoveType::NORMAL) {
     if (color_is_enemy(move.color)) enemy_move(move.card, move.color - 4);
     else player_move(move.card);
@@ -139,13 +158,15 @@ void Game::make_move(Move move) {
 
 int Game::count_players() {
   int ppct = 0;
-  for (int i = 0; i < 4; i++) ppct += players[i].count();
+  for (int i = 0; i < 4; i++)
+    ppct += player.deads[i].size();
   return ppct;
 }
 
 int Game::count_enemies() {
   int epct = 0;
-  for (int i = 0; i < 4; i++) epct += enemies[i].count();
+  for (int i = 0; i < 4; i++)
+    epct += enemy.deads[i].size();
   return epct;
 }
 
@@ -154,15 +175,13 @@ int Game::count_pieces() {
 }
 
 /*
-  * choice is expected to be the numerical
-  * index IN YOUR HAND of the card you wish to play.
-  * we do not check if the card is in your hand.
-  */
+ * choice is expected to be the numerical
+ * index IN YOUR HAND of the card you wish to play.
+ * we do not check if the card is in your hand.
+ */
 
 void Game::player_move(int choice) {
-  cows |= cow_respawn[turn % round_length];
-  int index = queue.choose(choice);
-  auto moves = cards[index].moves;
+  auto moves = cm.pchoose(choice).moves;
   for (Direction move: moves) {
     play_player_movement(move);
   }
@@ -176,16 +195,7 @@ void Game::player_move(int choice) {
  */
 
 void Game::player_rotate_card(int choice, int rotation) {
-  int index = queue.choose(choice);
-  vector<Direction> dirs = {
-    Direction::RIGHT, Direction::UP,
-    Direction::LEFT, Direction::DOWN
-  };
-  for (Direction &move: cards[index].moves) {
-    // Need to validate with frontend.
-    move = dirs[(4 + move - rotation) & 0b11];
-  }
-
+  cm.rotate(choice, rotation);
   player_id = (player_id + 1) & 0b11;
   turn += 1;
 } /* rotate_card() */
@@ -199,7 +209,8 @@ void Game::player_rotate_card(int choice, int rotation) {
 
 void Game::player_buy(int x, int y) {
   dynamic_bitset msk(area(), 1); 
-  players[player_id] |= (msk << (width * y + x));
+  msk.set(width * y + x, 1);
+  players[player_id] |= msk;
   player.xs[player_id].push_back(x);
   player.ys[player_id].push_back(y);
   player.ss[player_id].push_back(0);
@@ -218,9 +229,7 @@ void Game::player_buy(int x, int y) {
  */
 
 void Game::enemy_move(int choice, int color) {
-  cows |= cow_respawn[turn % round_length];
-  int index = queue.choose(choice + hand_size);
-  auto moves = cards[index].moves;
+  auto moves = cm.echoose(choice).moves;
   for (Direction move: moves) {
     play_enemy_movement(move, color);
   }
@@ -266,75 +275,77 @@ void Game::purge(int choice, int p) {
 
 void Game::play_movement(Direction d, int choice, int p) {
   auto &unit = (p) ? player : enemy;
-  #define INDEX(i) (unit.ys[choice][i] * width + unit.xs[choice][i])
-  // #define LOOP(i, sz) (for (int #i = 0; #i < sz; i++))
+  uint8_t* __restrict__ _uy = unit.ys[choice].data();
+  uint8_t* __restrict__ _ux = unit.xs[choice].data(); 
+  #define INDEX(i) (_uy[i] * width + _ux[i])
 
   auto &units = (p) ? players : enemies;
   auto &all_units = (p) ? all_players : all_enemies;
-  auto &pos = (d == Direction::UP || d == Direction::DOWN) ?
-    unit.ys[choice] : unit.xs[choice];
 
   all_units.reset();
   for (int i = choice + 1; i != choice; i = (i + 1) & 0b11) {
     all_units |= units[i];
   }
 
-  int collision = 0;
   vector<uint8_t> occupied(area());
   const int sz = (int) unit.deads[choice].size();
-  int8_t shift[4] = { 1, 1, -1, -1 };
-  uint8_t bounds[4] = {
+  uint8_t* __restrict__ pos =
+    (d == Direction::UP || d == Direction::DOWN)
+    ? unit.ys[choice].data()
+    : unit.xs[choice].data();
+  uint8_t* __restrict__ occ = occupied.data();
+  const int8_t shift[4] = { 1, 1, -1, -1 };
+  const uint8_t bounds[4] = {
       static_cast<uint8_t>(width - 1),
       static_cast<uint8_t>(height - 1),
       0, 0
-  };  
+  };
+  
   
   // Shift everything, keeping in mind bounds.
+  #pragma clang loop vectorize(enable)
   for (int i = 0; i < sz; i++) {
     int oob = (pos[i] == bounds[d]);
     pos[i] += (shift[d] * !oob);
-    int idx = INDEX(i);
-    occupied[idx] += 1;
-    collision |= (occupied[idx] >= 2);
   }
 
-  dynamic_bitset blocked = all_units | impassible;
+  // If I don't do this Clang doesn't believe blockptr is unique.
+  uint32_t NBLOCKS = (all_units.size + 64 - 1) / (64);
+  int64_t* blockptr = new int64_t[NBLOCKS];
+  for (uint32_t i = 0; i < NBLOCKS; i++) {
+    blockptr[i] = all_units.blocks[i] | impassible.blocks[i];
+  }
+
+  #pragma clang loop vectorize(enable)
   for (int i = 0; i < sz; i++) {
     int idx = INDEX(i);
-    occupied[idx] -= 1;
-    pos[i] -= (shift[d] * blocked[idx]);
-    idx = INDEX(i);
-    occupied[idx] += 1;
-    collision |= (occupied[idx] >= 2);
+    int b = blockptr[idx / 64] >> (idx % 64) & 1;
+    pos[i] -= (shift[d] * b);
+  }
+  delete[] blockptr;
+
+  int collision = 0;
+  #pragma clang loop vectorize(enable)
+  for (int i = 0; i < sz; i++) {
+    int idx = INDEX(i);
+    occ[idx] += 1;
+    collision |= (occ[idx] >= 2);
   }
 
   // This is slow, but often won't even be called.
   while (collision) {
     collision = 0;
+    // This is SUS because it lets pieces move over each other
+    // This can cause the scores to change in weird ways,
+    // So I'll have to fix this at some point.
     for (int i = 0; i < sz; i++) {
       int idx = INDEX(i);
-      pos[i] -= (shift[d] * (occupied[idx] >= 2));
-      occupied[idx] -= 1;
+      pos[i] -= (shift[d] * (occ[idx] >= 2));
+      occ[idx] -= 1;
       idx = INDEX(i);
-      occupied[idx] += 1;
-      collision |= (occupied[idx] >= 2);
+      occ[idx] += 1;
+      collision |= (occ[idx] >= 2);
     }
-  }
-
-  // Kill enemies the player hits.
-  auto &opponent = (p) ? enemy : player;
-  auto &opp_mask = (p) ? enemies : players;
-  for (int color = 0; color < 4; color++) {
-    int killed = 0;
-    for (size_t i = 0; i < opponent.deads[color].size(); i++) {
-      int idx = opponent.ys[color][i] * width
-        + opponent.xs[color][i];
-      killed |= occupied[idx];
-      opponent.deads[color][i] |= occupied[idx];
-      // We could do this via anding the masks instead...
-      opp_mask[color][idx] &= !occupied[idx];
-    }
-    if (killed) purge(color, !p);
   }
 } /* play_movement() */
 
@@ -344,19 +355,40 @@ void Game::play_movement(Direction d, int choice, int p) {
  */
 
 void Game::play_enemy_movement(Direction d, int choice) {
-  play_movement(d, choice, 0);
   auto index = [&](int i) {
     return enemy.ys[choice][i] * width
       + enemy.xs[choice][i];
   };
 
+  // for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
+  //   int idx = index(i);
+  //   hmeval -= enemyhm[idx];
+  // }
+
+  play_movement(d, choice, 0);
+
   // Build Enemy Mask
-  dynamic_bitset m(area(), 1);
-  dynamic_bitset mask(area(), 0);
+  dynamic_bitset mask(area());
   for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
     int idx = index(i);
-    mask |= (m << idx);
+    mask.set(idx, 1);
+    // hmeval += enemyhm[idx];
   }
+
+  // Kill Player Masks
+  for (int color = 0; color < 4; color++) {
+    if ((mask & players[color]).count() == 0) continue;
+    for (size_t i = 0; i < player.deads[color].size(); i++) {
+      int idx = player.ys[color][i] * width
+        + player.xs[color][i];
+      int b = mask[idx];
+      player.deads[color][i] |= b;
+      // hmeval += (playerhm[idx] * b);
+    }
+    players[color] &= ~mask;
+    purge(color, 1);
+  }
+
   enemies[choice] = mask;
 } /* play_enemy_movement() */
 
@@ -366,30 +398,47 @@ void Game::play_enemy_movement(Direction d, int choice) {
  */
 
 void Game::play_player_movement(Direction d) {
-  play_movement(d, player_id, 1);
   auto index = [&](int i) {
     return player.ys[player_id][i] * width
       + player.xs[player_id][i];
   };
+  
+  // for (size_t i = 0; i < player.deads[player_id].size(); i++) {
+  //   int idx = index(i);
+  //   hmeval += playerhm[idx];
+  // }
+
+  play_movement(d, player_id, 1);
 
   // Build Player Mask, update scores.
-  // This is SUS because it lets pieces move over each other.
-  // This can cause the scores to change in weird ways,
-  // So I'll have to fix this at some point.
-  dynamic_bitset m(area(), 1);
-  dynamic_bitset player_mask(area(), 0);
+  dynamic_bitset mask(area());
   for (size_t i = 0; i < player.deads[player_id].size(); i++) {
     int idx = index(i);
     player.ss[player_id][i] += cows[idx];
     int delta = player.ss[player_id][i] * score_tiles[idx];
     player.ss[player_id][i] -= delta;
     total_score += delta;
-    player_mask |= (m << idx);
+    mask.set(idx, 1);
+    // hmeval -= playerhm[idx];
   }
 
-  cows &= ~player_mask;
-  cow_respawn[turn % round_length] &= cows & player_mask;
-  players[player_id] = player_mask;
+  for (int color = 0; color < 4; color++) {
+    auto inter = (mask & enemies[color]);
+    if (inter.count() == 0) continue;
+    for (size_t i = 0; i < enemy.deads[color].size(); i++) {
+      int idx = enemy.ys[color][i] * width
+        + enemy.xs[color][i];
+      int b = mask[idx];
+      enemy.deads[color][i] |= b;
+      // hmeval -= (enemyhm[idx] * b);
+    }
+    enemies[color] ^= inter;
+    purge(color, 0);
+  }
+
+  cows &= ~mask;
+  cow_respawn[turn % round_length] &= cows & mask;
+  players[player_id] = mask;
 } /* play_player_movement() */
 
 /*------ Debug + Testing ----------*/
@@ -403,13 +452,13 @@ vector<vector<int>> Game::viewBoard() {
   for (uint32_t i = 0; i < height; i++) {
     for (uint32_t j = 0; j < width; j++) {
       out[i][j] = TileType::PLAIN;
-      auto mask = dynamic_bitset(area(), 1);
-      mask <<= (width * i + j);
-      if ((impassible & mask).any()) {
+      auto mask = dynamic_bitset(area());
+      int idx = width * i + j;
+      if (impassible[idx]) {
         out[i][j] = TileType::IMPASSIBLE;
-      } else if ((cows & mask).any()) {
+      } else if (cows[idx]) {
         out[i][j] = TileType::COW;
-      } else if  ((score_tiles & mask).any()) {
+      } else if  (score_tiles[idx]) {
         out[i][j] = TileType::SCORE;
       }
     }
@@ -447,16 +496,11 @@ vector<Piece> Game::viewPieces() {
 } /* viewPieces() */
 
 /*
-  * Puts the Cards in a convenient state.
-  */
+ * Puts the Cards in a convenient state.
+ */
 
 vector<Card> Game::viewCards() {
-  vector<Card> out(ncards);
-  for (uint64_t i = 0; i < ncards; i++) {
-    auto idx = queue.get(i);
-    out[i] = cards[idx];
-  }
-  return out;
+  return cm.cards;
 } /* viewCards() */
 
 // Print
@@ -522,26 +566,19 @@ ostream& operator<<(ostream& os, Game& game) {
   }
 
   os << Color::Modifier(Color::BG_DEFAULT);
-  auto cards = game.viewCards();
-  for (size_t i = 0; i < cards.size(); i++) {
-    if (i < game.hand_size) {
-      os << Color::Modifier(Color::FG_BLUE) << "Player <= " << cards[i]
-         << Color::Modifier(Color::FG_DEFAULT) << '\n';
-    } else if (i < 2*game.hand_size) {
-      os << Color::Modifier(Color::FG_RED) << "Enemy  <= "
-         << cards[i] << Color::Modifier(Color::FG_DEFAULT) << '\n';
-    } else {
-      os << "Queue  <= " << cards[i] << '\n';
-    }
-  }
+  int qsize = (game.cm.cards.size() - 2 * game.cm.handsize);
+  for (int i = 0; i < qsize; i++)
+    os << "Queue  <= " << game.cm.queue[i] << '\n';
+  for (int i = 0; i < game.cm.handsize; i++)
+    os << Color::Modifier(Color::FG_BLUE) << "Player <= " << game.cm.phand[i]
+       << Color::Modifier(Color::FG_DEFAULT) << '\n';
+  for (int i = 0; i < game.cm.handsize; i++)
+    os << Color::Modifier(Color::FG_RED) << "Enemy  <= " << game.cm.ehand[i]
+       << Color::Modifier(Color::FG_DEFAULT) << '\n';
+
   os << "turn: " << game.turn << '\n';
-  os << "hand size: " << game.hand_size << '\n';
-  int ppct = 0, epct = 0;
-  for (int i = 0; i < 4; i++) {
-    ppct += game.players[i].count();
-    epct += game.enemies[i].count();
-  }
-  os << "player pieces: " << ppct << '\n';
-  os << "enemy pieces: " << epct << '\n';
+  os << "hand size: " << game.cm.handsize << '\n';
+  os << "player pieces: " << game.count_players() << '\n';
+  os << "enemy pieces: " << game.count_enemies() << '\n';
   return os;
 }

@@ -1,8 +1,13 @@
 #include "Score.h"
-Scorer::Scorer (function<int(Game &)> f) {
+
+#include <queue>
+using namespace std;
+
+Scorer::Scorer (GameConfig gc, function<int(Game &)> f) {
+  // May be useful one day.
+  (void) gc;
   if (f != nullptr) eval = f;
   else              eval = [this](Game& game) { return evaluator(game); };
-  
 }
 
 /*
@@ -15,15 +20,18 @@ int Scorer::score(Game &game) {
 
 /*
  * Our default heuristic for evaluating a game state.
+ * This should probably be changed to accept a move.
  */
 
 int Scorer::evaluator(Game &game) {
+    int e = game.is_enemy_turn();
     int ppct = game.count_players();
     int epct = game.count_enemies();
     int ppscore = ppwt * ppct;
     int epscore = epwt * epct;
     int scoreSum = ppscore + epscore;
-    if (!game.is_enemy_turn()) scoreSum *= -1;
+    int boardeval = ((2 * game.hmeval) / (10 * (ppct + epct)));
+    scoreSum += boardeval;
+    scoreSum *= (-1 + 2 * e);
     return scoreSum;
-    return ppscore + epscore;
 } /* evaluator() */

@@ -32,7 +32,8 @@ struct Search {
     // Move lists for debugging (unused)
     // vector<Move> cur_seq, best_seq;
 
-    Search(GameConfig gc, uint64_t to=1000, int md=inf, Scorer sc=Scorer());
+    Search(GameConfig gc, uint64_t to=1000, int md=inf);
+    Search(GameConfig gc, Scorer sc, uint64_t to=1000, int md=inf);
     void makePlayerMove(int move);
     void rotatePlayerCard(int index, int rotation);
     void purchaseUFO(int row, int column);

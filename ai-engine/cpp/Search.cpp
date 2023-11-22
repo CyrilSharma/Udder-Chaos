@@ -2,16 +2,17 @@
 
 #define debug(x) std::cerr << #x << ": " << x << std::endl
 
-Search::Search(GameConfig gc, uint64_t to, int md, Scorer sc):
+Search::Search(GameConfig gc, uint64_t to, int md):
+    game(gc), scorer(gc), hasher(game),
+    timeout(to), max_depth(md) {}
+  
+Search::Search(GameConfig gc, Scorer sc, uint64_t to, int md):
     game(gc), scorer(sc), hasher(game),
-    timeout(to), max_depth(md) {
-        // cur_seq.resize(max_depth);
-        // best_seq.resize(max_depth);
-    }
+    timeout(to), max_depth(md) {}
+
 
 // In the future making moves may also update the internal state of the search.
 // Hence, we make wrapper methods.
-
 void Search::makePlayerMove(int move) {
     game.player_move(move);
 }
@@ -117,7 +118,7 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
     
     // Enemy can move any color
     if (game.is_enemy_turn()) {
-        for (int card = 0; card < (int) game.hand_size; ++card) {
+        for (int card = 0; card < (int) game.cm.handsize; ++card) {
             for (int color = 0; color < 4; ++color) {
                 // Make sure enemy actually has this color
                 if (game.enemies[color].count())
@@ -127,7 +128,7 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
     } 
     // Player can only move current color
     else {
-        for (int card = 0; card < (int) game.hand_size; ++card) {
+        for (int card = 0; card < (int) game.cm.handsize; ++card) {
             // I'm going to go ahead and assume player_id stores the player's whose turn it is to move color
             moves.push_back(Move(MoveType::NORMAL, card, game.player_id));
             
