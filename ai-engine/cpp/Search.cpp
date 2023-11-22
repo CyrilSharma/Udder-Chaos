@@ -59,6 +59,8 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
         
         if (dbg >= 2) cerr << "Initiating search of depth " << curDepth << endl;
 
+        searchCompleted = false;
+
         // Recursive tree search to curDepth
         alphaBeta(game, 0, curDepth, -inf, inf, dbg);
 
@@ -74,8 +76,8 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
         // only use new move if search completed
         if (searchCompleted) {
             bestMove = newBestMove, bestEval = newBestEval;
+            curDepth++;
         }
-        curDepth++;
     }
 
     if (dbg) {
@@ -159,8 +161,8 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
 
         if (dbgVerbosity >= 2)
 
-        if (dbgVerbosity >= 3) {
-        // if (depth == 0) {
+        // if (dbgVerbosity >= 3) {
+        if (depth == 0) {
             cerr << "--------EVAL---------" << endl;
             // cerr << tmp << "\n";
             // cerr << "GameIsEnemyTurn: " << game.is_enemy_turn() << endl;
