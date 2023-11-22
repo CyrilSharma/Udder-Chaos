@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -std=c++20 -Wall -Wextra
 
 # Source file and executable name
-INCLUDES = -I./boost_1_83_0
+INCLUDES = # -I./boost_1_83_0
 DEPS = Game.h Utils.h Helpers.h CardQueue.h Search.h Score.h Hasher.h MoveOrderer.h
 SOURCES = Game.cpp Utils.cpp Helpers.cpp Search.cpp Score.cpp DynamicBitset.cpp
 

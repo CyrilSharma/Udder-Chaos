@@ -77,39 +77,43 @@ Game::Game(GameConfig config):
   }
 
 
-  // auto heatmap = [&](vector<int> &hm, int p) {
-  //   queue<tuple<int, int, int>> q;
-  //   vector<bool> visited(width * height);
-  //   for (size_t i = 0; i < gc.pieces.size(); i++) {
-  //     if ((gc.pieces[i].tp <= 4) != p) continue;
-  //     q.push({gc.pieces[i].j, gc.pieces[i].i, 0});
-  //     visited[gc.pieces[i].i * width + gc.pieces[i].j] = 1;
-  //   }
-  //   hm.resize(width * height);
-  //   int dx[4] = { 1, 0, -1, 0 };
-  //   int dy[4] = { 0, 1, 0, -1 };
-  //   while (!q.empty()) {
-  //     auto [x, y, d] = q.front(); q.pop();
-  //     hm[y * width + x] = 10 - (10 * d) / (width + height);
-  //     for (int i = 0; i < 4; i++) {
-  //       int nx = x + dx[i], ny = y + dy[i];
-  //       if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
-  //       if (visited[ny * width + nx]) continue;
-  //       visited[ny * width + nx] = 1;
-  //       q.push({nx, ny, d + 1});
-  //     }
-  //   }
-  // };
+  auto heatmap = [&](vector<int> &hm, int p) {
+    queue<tuple<int, int, int>> q;
+    vector<bool> visited(width * height);
+    for (size_t i = 0; i < config.pieces.size(); i++) {
+      if ((config.pieces[i].tp <= 4) != p) continue;
+      q.push({config.pieces[i].j, config.pieces[i].i, 0});
+      visited[config.pieces[i].i * width + config.pieces[i].j] = 1;
+    }
+    hm.resize(width * height);
+    int dx[4] = { 1, 0, -1, 0 };
+    int dy[4] = { 0, 1, 0, -1 };
+    while (!q.empty()) {
+      auto [x, y, d] = q.front(); q.pop();
+      hm[y * width + x] = 10 - (10 * d) / (width + height);
+      for (int i = 0; i < 4; i++) {
+        int nx = x + dx[i], ny = y + dy[i];
+        if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
+        if (visited[ny * width + nx]) continue;
+        visited[ny * width + nx] = 1;
+        q.push({nx, ny, d + 1});
+      }
+    }
+  };
 
-  // auto printmask = [&](vector<int> &mask) {
-  //   for (int i = 0; i < height; i++) {
-  //     for (int j = 0; j < width; j++) {
-  //       printf("%2d ", mask[i * width + j]);
-  //     }
-  //     printf("\n");
-  //   }
-  // };
+  auto printmask = [&](vector<int> &mask) {
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        printf("%2d ", mask[i * width + j]);
+      }
+      printf("\n");
+    }
+  };
 
+  playerhm.resize(area());
+  enemyhm.resize(area());
+  heatmap(playerhm, 1);
+  heatmap(enemyhm, 0);
 } /* Game() */
 
 /*
@@ -351,17 +355,24 @@ void Game::play_movement(Direction d, int choice, int p) {
  */
 
 void Game::play_enemy_movement(Direction d, int choice) {
-  play_movement(d, choice, 0);
   auto index = [&](int i) {
     return enemy.ys[choice][i] * width
       + enemy.xs[choice][i];
   };
+
+  // for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
+  //   int idx = index(i);
+  //   hmeval -= enemyhm[idx];
+  // }
+
+  play_movement(d, choice, 0);
 
   // Build Enemy Mask
   dynamic_bitset mask(area());
   for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
     int idx = index(i);
     mask.set(idx, 1);
+    // hmeval += enemyhm[idx];
   }
 
   // Kill Player Masks
@@ -372,6 +383,7 @@ void Game::play_enemy_movement(Direction d, int choice) {
         + player.xs[color][i];
       int b = mask[idx];
       player.deads[color][i] |= b;
+      // hmeval += (playerhm[idx] * b);
     }
     players[color] &= ~mask;
     purge(color, 1);
@@ -386,11 +398,17 @@ void Game::play_enemy_movement(Direction d, int choice) {
  */
 
 void Game::play_player_movement(Direction d) {
-  play_movement(d, player_id, 1);
   auto index = [&](int i) {
     return player.ys[player_id][i] * width
       + player.xs[player_id][i];
   };
+  
+  // for (size_t i = 0; i < player.deads[player_id].size(); i++) {
+  //   int idx = index(i);
+  //   hmeval += playerhm[idx];
+  // }
+
+  play_movement(d, player_id, 1);
 
   // Build Player Mask, update scores.
   dynamic_bitset mask(area());
@@ -401,6 +419,7 @@ void Game::play_player_movement(Direction d) {
     player.ss[player_id][i] -= delta;
     total_score += delta;
     mask.set(idx, 1);
+    // hmeval -= playerhm[idx];
   }
 
   for (int color = 0; color < 4; color++) {
@@ -411,6 +430,7 @@ void Game::play_player_movement(Direction d) {
         + enemy.xs[color][i];
       int b = mask[idx];
       enemy.deads[color][i] |= b;
+      // hmeval -= (enemyhm[idx] * b);
     }
     enemies[color] ^= inter;
     purge(color, 0);
