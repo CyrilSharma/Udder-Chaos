@@ -32,7 +32,7 @@ struct Game {
   dynamic_bitset all_players;
   dynamic_bitset score_tiles;
   
-  int hmeval = 0;
+  int playereval=0, enemyeval=0;
   vector<int> playerhm, enemyhm;
 
 

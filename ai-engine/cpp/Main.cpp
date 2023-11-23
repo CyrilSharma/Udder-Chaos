@@ -113,7 +113,8 @@ struct Handler {
       auto res = searches.at(game_id).beginSearch();
       searches.at(game_id).makeAIMove(res.card, res.color);
       cerr << searches.at(game_id).game << endl;
-      cout << res.card << "\n" << (res.color + 1) << endl;
+      cerr << res.card << "\n" << (res.color + 5) << endl;
+      cout << res.card << "\n" << (res.color + 5) << endl;
       cout << "SUCCESS" << endl;
     } else {
       cerr << "Invalid Game ID!" << endl;

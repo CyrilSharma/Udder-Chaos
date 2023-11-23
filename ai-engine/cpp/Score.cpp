@@ -27,10 +27,15 @@ int Scorer::evaluator(Game &game) {
     int e = game.is_enemy_turn();
     int ppct = game.count_players();
     int epct = game.count_enemies();
-    int ppscore = ppwt * ppct;
-    int epscore = epwt * epct;
+    // I dislike not knowing what the weight is
+    // Just by looking at the code
+    // int ppscore = ppwt * ppct;
+    // int epscore = epwt * epct;
+    int ppscore = -10 * ppct;
+    int epscore = 10 * epct;
     int scoreSum = ppscore + epscore;
-    int boardeval = ((2 * game.hmeval) / (10 * (ppct + epct)));
+    // Maximum value: ~10
+    int boardeval = (game.enemyeval / (epct)) - (game.playereval / (ppct));
     scoreSum += boardeval;
     scoreSum *= (-1 + 2 * e);
     return scoreSum;

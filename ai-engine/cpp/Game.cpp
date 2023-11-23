@@ -296,7 +296,7 @@ int Game::score_estimate(Move move) {
 
   // Shift everything, keeping in mind bounds.
   int score = 0;
-  for (int j = 0; j < 3; j++) {
+  for (size_t j = 0; j < moves.size(); j++) {
     Direction d = moves[j];
     uint8_t* __restrict__ pos =
       (d == Direction::UP || d == Direction::DOWN)
@@ -320,7 +320,7 @@ int Game::score_estimate(Move move) {
  * Move everything, acknoledging boundaries but ignoring collisions.
  * Move things backwards to correct for hitting other players.
  * While there's collisions between players that just moved, move things backwards.
- * The code is written using structs of arrays and if-statements to allow for auto-vectorization.
+ * The code is written using structs of arrays and no if-statements to allow for auto-vectorization.
  * With uint8_t are our base type, most cpus can process 16 ints in parallel.
  */
 
@@ -411,10 +411,10 @@ void Game::play_enemy_movement(Direction d, int choice) {
       + enemy.xs[choice][i];
   };
 
-  // for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
-  //   int idx = index(i);
-  //   hmeval -= enemyhm[idx];
-  // }
+  for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
+    int idx = index(i);
+    enemyeval -= enemyhm[idx];
+  }
 
   play_movement(d, choice, 0);
 
@@ -423,7 +423,7 @@ void Game::play_enemy_movement(Direction d, int choice) {
   for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
     int idx = index(i);
     mask.set(idx, 1);
-    // hmeval += enemyhm[idx];
+    enemyeval += enemyhm[idx];
   }
 
   // Kill Player Masks
@@ -434,7 +434,7 @@ void Game::play_enemy_movement(Direction d, int choice) {
         + player.xs[color][i];
       int b = mask[idx];
       player.deads[color][i] |= b;
-      // hmeval += (playerhm[idx] * b);
+      playereval -= (playerhm[idx] * b);
     }
     players[color] &= ~mask;
     purge(color, 1);
@@ -454,10 +454,10 @@ void Game::play_player_movement(Direction d) {
       + player.xs[player_id][i];
   };
   
-  // for (size_t i = 0; i < player.deads[player_id].size(); i++) {
-  //   int idx = index(i);
-  //   hmeval += playerhm[idx];
-  // }
+  for (size_t i = 0; i < player.deads[player_id].size(); i++) {
+    int idx = index(i);
+    playereval -= playerhm[idx];
+  }
 
   play_movement(d, player_id, 1);
 
@@ -470,7 +470,7 @@ void Game::play_player_movement(Direction d) {
     player.ss[player_id][i] -= delta;
     total_score += delta;
     mask.set(idx, 1);
-    // hmeval -= playerhm[idx];
+    playereval += playerhm[idx];
   }
 
   for (int color = 0; color < 4; color++) {
@@ -481,7 +481,7 @@ void Game::play_player_movement(Direction d) {
         + enemy.xs[color][i];
       int b = mask[idx];
       enemy.deads[color][i] |= b;
-      // hmeval -= (enemyhm[idx] * b);
+      enemyeval -= (enemyhm[idx] * b);
     }
     enemies[color] ^= inter;
     purge(color, 0);
