@@ -111,7 +111,7 @@ struct Handler {
     auto game_id = params["game_id"];
     if (searches.count(game_id)) {
       auto res = searches.at(game_id).beginSearch();
-      searches.at(game_id).makeAIMove(res.card, res.color - 4);
+      searches.at(game_id).makeAIMove(res.card, res.color);
       cerr << searches.at(game_id).game << endl;
       cout << res.card << "\n" << (res.color + 1) << endl;
       cout << "SUCCESS" << endl;

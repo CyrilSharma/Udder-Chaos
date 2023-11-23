@@ -9,16 +9,13 @@ struct MoveOrderer {
     void order(Game game, std::vector<Move> moves) {
         int num_moves = moves.size();
         vector<int> score(num_moves);
-
-        int start_count = game.count_pieces();
-
         // simulate each move and update score
         for (int i = 0; i < num_moves; i++) {
-            Game tmp = game;
-            tmp.make_move(moves[i]);
-            // Score is equal to how many pieces got removed in this turn
-            // obviously flawed heuristic but idc
-            score[i] += (start_count - tmp.count_pieces());
+            // There are 12 ROTATE moves.
+            // Most are probably useless.
+            if (moves[i].type == ROTATE) score[i] = 0;
+            else if (moves[i].type == BUY) score[i] = 1;
+            else score[i] += game.score_estimate(moves[i]);
         }
 
         // Simply insertion sort since small list

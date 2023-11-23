@@ -122,7 +122,7 @@ int Search::alphaBeta(Game& game, int depth, int stopDepth,
             for (int color = 0; color < 4; ++color) {
                 // Make sure enemy actually has this color
                 if (game.enemies[color].count())
-                    moves.push_back(Move(MoveType::NORMAL, card, color+4));
+                    moves.push_back(Move(MoveType::NORMAL, card, color));
             }
         }
     } 

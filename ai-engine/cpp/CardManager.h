@@ -36,6 +36,14 @@ struct CardManager {
     return cards[temp];
   }
 
+  Card pview(int choice) {
+    return cards[phand[choice]];
+  }
+  
+  Card eview(int choice) {
+    return cards[ehand[choice]];
+  }
+
   // Need to validate with frontend.
   void rotate(int choice, int rotation) {
     vector<Direction> dirs = {

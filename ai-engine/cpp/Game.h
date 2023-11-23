@@ -51,10 +51,11 @@ struct Game {
   int is_jover();
   bool is_enemy_turn() const;
   bool color_is_enemy(int color);
-  void make_move(Move move);
   int count_players();
   int count_enemies();
   int count_pieces();
+  void make_move(Move move);
+  int score_estimate(Move move);
   void player_move(int choice);
   void player_rotate_card(int choice, int rotation);
   void player_buy(int x, int y);

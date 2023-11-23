@@ -144,7 +144,7 @@ void Game::make_move(Move move) {
   assert(move.type != MoveType::NONE);
   cows |= cow_respawn[turn % round_length];
   if (move.type == MoveType::NORMAL) {
-    if (color_is_enemy(move.color)) enemy_move(move.card, move.color - 4);
+    if (is_enemy_turn()) enemy_move(move.card, move.color);
     else player_move(move.card);
   }
   // Assumed move is player move
@@ -260,6 +260,57 @@ void Game::purge(int choice, int p) {
   s.ss[choice].resize(idxs.size());
   s.deads[choice].resize(idxs.size());
 } /* purge() */
+
+
+/*
+ * This doesn't simulate collisions with other players.
+ */
+
+int Game::score_estimate(Move move) {
+  bool p = !is_enemy_turn();
+  // This is stupid why can't we just use normal colors.
+  auto color = (p) ? player_id : (move.color);
+  auto &unit = (p) ? player : enemy;
+  auto &opponents = (p) ? enemies : players;
+  auto &all_opponents = (p) ? all_enemies : all_players;
+  const int sz = (int) unit.deads[color].size();
+  auto moves = (p) ? cm.pview(move.card).moves
+    : cm.eview(move.card).moves;
+  const int8_t shift[4] = { 1, 1, -1, -1 };
+  const uint8_t bounds[4] = {
+      static_cast<uint8_t>(width - 1),
+      static_cast<uint8_t>(height - 1),
+      0, 0
+  };
+
+  vector<uint8_t> cy(unit.xs[color].begin(), unit.xs[color].end());
+  vector<uint8_t> cx(unit.xs[color].begin(), unit.xs[color].end());
+  uint8_t* __restrict__ _uy = cy.data();
+  uint8_t* __restrict__ _ux = cx.data();
+  #define INDEX1(i) (_uy[i] * width + _ux[i])
+
+  all_opponents.reset();
+  for (int i = 0; i < 4; i++) {
+    all_opponents |= opponents[i];
+  }
+
+  // Shift everything, keeping in mind bounds.
+  int score = 0;
+  for (int j = 0; j < 3; j++) {
+    Direction d = moves[j];
+    uint8_t* __restrict__ pos =
+      (d == Direction::UP || d == Direction::DOWN)
+      ? _uy : _ux;
+    #pragma clang loop vectorize(enable)
+    for (int i = 0; i < sz; i++) {
+      int oob = (pos[i] == bounds[d]);
+      pos[i] += (shift[d] * !oob);
+      score += all_opponents[INDEX1(i)];
+      score += p * cows[INDEX1(i)];
+    }
+  }
+  return score;
+} /* score_estimate() */
 
 
 /* 
