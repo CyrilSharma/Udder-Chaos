@@ -120,13 +120,13 @@ export class Card extends Container {
     }
 
     private onPointerEnter = (e: FederatedPointerEvent) => {
-        this.queue.bringCardToTop(this);
+        //this.queue.bringCardToTop(this);
         this.upscale();
     };
 
     private onPointerLeave = (e: FederatedPointerEvent) => {
         this.unscale();
-        this.queue.placeCards();
+        //this.queue.placeCards();
         this.onDragEnd(e);
     };
 
