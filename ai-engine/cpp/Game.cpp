@@ -413,7 +413,7 @@ void Game::play_enemy_movement(Direction d, int choice) {
 
   for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
     int idx = index(i);
-    enemyeval -= enemyhm[idx];
+    enemyeval -= playerhm[idx];
   }
 
   play_movement(d, choice, 0);
@@ -423,7 +423,7 @@ void Game::play_enemy_movement(Direction d, int choice) {
   for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
     int idx = index(i);
     mask.set(idx, 1);
-    enemyeval += enemyhm[idx];
+    enemyeval += playerhm[idx];
   }
 
   // Kill Player Masks
@@ -434,7 +434,7 @@ void Game::play_enemy_movement(Direction d, int choice) {
         + player.xs[color][i];
       int b = mask[idx];
       player.deads[color][i] |= b;
-      playereval -= (playerhm[idx] * b);
+      playereval -= (enemyhm[idx] * b);
     }
     players[color] &= ~mask;
     purge(color, 1);
@@ -456,7 +456,7 @@ void Game::play_player_movement(Direction d) {
   
   for (size_t i = 0; i < player.deads[player_id].size(); i++) {
     int idx = index(i);
-    playereval -= playerhm[idx];
+    playereval -= enemyhm[idx];
   }
 
   play_movement(d, player_id, 1);
@@ -470,7 +470,7 @@ void Game::play_player_movement(Direction d) {
     player.ss[player_id][i] -= delta;
     total_score += delta;
     mask.set(idx, 1);
-    playereval += playerhm[idx];
+    playereval += enemyhm[idx];
   }
 
   for (int color = 0; color < 4; color++) {
@@ -481,7 +481,7 @@ void Game::play_player_movement(Direction d) {
         + enemy.xs[color][i];
       int b = mask[idx];
       enemy.deads[color][i] |= b;
-      enemyeval -= (enemyhm[idx] * b);
+      enemyeval -= (playerhm[idx] * b);
     }
     enemies[color] ^= inter;
     purge(color, 0);

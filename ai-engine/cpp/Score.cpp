@@ -34,9 +34,9 @@ int Scorer::evaluator(Game &game) {
     int ppscore = -10 * ppct;
     int epscore = 10 * epct;
     int scoreSum = ppscore + epscore;
-    // Maximum value: ~10
-    int boardeval = (game.enemyeval / (epct)) - (game.playereval / (ppct));
-    scoreSum += boardeval;
+    int ebeval = (epct) ? (game.enemyeval / (epct)) : 0;
+    int pbeval = (ppct) ? (game.playereval / (ppct)) : 0;
+    scoreSum += (ebeval - pbeval);
     scoreSum *= (-1 + 2 * e);
     return scoreSum;
 } /* evaluator() */
