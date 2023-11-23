@@ -80,21 +80,34 @@ Game::Game(GameConfig config):
   auto heatmap = [&](vector<int> &hm, int p) {
     queue<tuple<int, int, int>> q;
     vector<bool> visited(width * height);
-    for (size_t i = 0; i < config.pieces.size(); i++) {
-      if ((config.pieces[i].tp <= 4) != p) continue;
-      q.push({config.pieces[i].j, config.pieces[i].i, 0});
-      visited[config.pieces[i].i * width + config.pieces[i].j] = 1;
+    if (!p) {
+      // Enemies Heatseek towards player spawns.
+      for (size_t i = 0; i < config.pieces.size(); i++) {
+        if (config.pieces[i].tp > 4) continue;
+        q.push({config.pieces[i].j, config.pieces[i].i, 0});
+        visited[config.pieces[i].i * width + config.pieces[i].j] = 1;
+      }
+    } else {
+      // Players Heatseek towards cows.
+      for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+          if (!cows[i * width + height]) continue;
+          q.push({j, i, 0});
+          visited[i * width + height] = 1;
+        }
+      }
     }
     hm.resize(width * height);
     int dx[4] = { 1, 0, -1, 0 };
     int dy[4] = { 0, 1, 0, -1 };
     while (!q.empty()) {
       auto [x, y, d] = q.front(); q.pop();
-      hm[y * width + x] = 10 - (10 * d) / (width + height);
+      hm[y * width + x] = (width + height) - d;
       for (int i = 0; i < 4; i++) {
         int nx = x + dx[i], ny = y + dy[i];
         if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
         if (visited[ny * width + nx]) continue;
+        if (impassible[ny * width + nx]) continue;
         visited[ny * width + nx] = 1;
         q.push({nx, ny, d + 1});
       }
@@ -114,6 +127,16 @@ Game::Game(GameConfig config):
   enemyhm.resize(area());
   heatmap(playerhm, 1);
   heatmap(enemyhm, 0);
+
+  // Initialize evaluations.
+  for (int c = 0; c < 4; c++) {
+    for (size_t i = 0; i < player.deads[c].size(); i++) {
+      enemyeval += playerhm[player.ys[c][i] * width + player.xs[c][i]];
+    }
+    for (size_t i = 0; i < enemy.deads[c].size(); i++) {
+      playereval += enemyhm[enemy.ys[c][i] * width + enemy.xs[c][i]];
+    }
+  }
 } /* Game() */
 
 /*
@@ -132,11 +155,6 @@ int Game::is_jover() {
 // Temp player turn check
 bool Game::is_enemy_turn() const {
   return turn % 3 == 2;
-}
-
-// Return color is enemy (0 indexed)
-bool Game::color_is_enemy(int color) {
-  return color >= 4;
 }
 
 // general move making function
@@ -413,7 +431,7 @@ void Game::play_enemy_movement(Direction d, int choice) {
 
   for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
     int idx = index(i);
-    enemyeval -= playerhm[idx];
+    enemyeval -= enemyhm[idx];
   }
 
   play_movement(d, choice, 0);
@@ -423,7 +441,7 @@ void Game::play_enemy_movement(Direction d, int choice) {
   for (size_t i = 0; i < enemy.deads[choice].size(); i++) {
     int idx = index(i);
     mask.set(idx, 1);
-    enemyeval += playerhm[idx];
+    enemyeval += enemyhm[idx];
   }
 
   // Kill Player Masks
@@ -434,7 +452,7 @@ void Game::play_enemy_movement(Direction d, int choice) {
         + player.xs[color][i];
       int b = mask[idx];
       player.deads[color][i] |= b;
-      playereval -= (enemyhm[idx] * b);
+      playereval -= (playerhm[idx] * b);
     }
     players[color] &= ~mask;
     purge(color, 1);
@@ -456,7 +474,7 @@ void Game::play_player_movement(Direction d) {
   
   for (size_t i = 0; i < player.deads[player_id].size(); i++) {
     int idx = index(i);
-    playereval -= enemyhm[idx];
+    playereval -= playerhm[idx];
   }
 
   play_movement(d, player_id, 1);
@@ -470,7 +488,7 @@ void Game::play_player_movement(Direction d) {
     player.ss[player_id][i] -= delta;
     total_score += delta;
     mask.set(idx, 1);
-    playereval += enemyhm[idx];
+    playereval += playerhm[idx];
   }
 
   for (int color = 0; color < 4; color++) {
@@ -481,7 +499,7 @@ void Game::play_player_movement(Direction d) {
         + enemy.xs[color][i];
       int b = mask[idx];
       enemy.deads[color][i] |= b;
-      enemyeval -= (playerhm[idx] * b);
+      enemyeval -= (enemyhm[idx] * b);
     }
     enemies[color] ^= inter;
     purge(color, 0);

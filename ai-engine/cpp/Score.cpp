@@ -31,9 +31,11 @@ int Scorer::evaluator(Game &game) {
     // Just by looking at the code
     // int ppscore = ppwt * ppct;
     // int epscore = epwt * epct;
-    int ppscore = -10 * ppct;
-    int epscore = 10 * epct;
+    int scale = (game.width + game.height);
+    int ppscore = -5 * ppct * scale;
+    int epscore = 5 * epct * scale;
     int scoreSum = ppscore + epscore;
+    // Each can be upto 1 unit of Scale.
     int ebeval = (epct) ? (game.enemyeval / (epct)) : 0;
     int pbeval = (ppct) ? (game.playereval / (ppct)) : 0;
     scoreSum += (ebeval - pbeval);

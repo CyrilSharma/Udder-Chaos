@@ -47,10 +47,8 @@ struct Game {
 
   Game(GameConfig config);
   int64_t area();
-  int64_t ncard_bits();
   int is_jover();
   bool is_enemy_turn() const;
-  bool color_is_enemy(int color);
   int count_players();
   int count_enemies();
   int count_pieces();

@@ -78,6 +78,8 @@ TEST_CASE("Testing Good Moves") {
     Move move = search.beginSearch(3, doFixedDepthSearch);
     search.makeAIMove(move.card, move.color);
     cerr << search.game << "\n";
+    cerr << search.game.playereval << "\n";
+    cerr << search.game.enemyeval << "\n";
 
     int answer_idx; answer >> answer_idx;
     int answer_color; answer >> answer_color;

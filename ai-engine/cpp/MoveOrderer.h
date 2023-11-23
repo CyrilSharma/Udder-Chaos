@@ -11,11 +11,10 @@ struct MoveOrderer {
         vector<int> score(num_moves);
         // simulate each move and update score
         for (int i = 0; i < num_moves; i++) {
-            // There are 12 ROTATE moves.
-            // Most are probably useless.
+            // There are 12 ROTATE moves, most are probably useless.
             if (moves[i].type == ROTATE) score[i] = 0;
             else if (moves[i].type == BUY) score[i] = 1;
-            else score[i] += game.score_estimate(moves[i]);
+            else score[i] = game.score_estimate(moves[i]);
         }
 
         // Simply insertion sort since small list
