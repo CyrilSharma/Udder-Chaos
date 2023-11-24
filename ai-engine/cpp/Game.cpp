@@ -286,7 +286,6 @@ void Game::purge(int choice, int p) {
 
 int Game::score_estimate(Move move) {
   bool p = !is_enemy_turn();
-  // This is stupid why can't we just use normal colors.
   auto color = (p) ? player_id : (move.color);
   auto &unit = (p) ? player : enemy;
   auto &opponents = (p) ? enemies : players;

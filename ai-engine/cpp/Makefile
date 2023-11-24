@@ -7,6 +7,19 @@ INCLUDES = # -I./boost_1_83_0
 DEPS = Game.h Utils.h Helpers.h CardQueue.h Search.h Score.h Hasher.h MoveOrderer.h
 SOURCES = Game.cpp Utils.cpp Helpers.cpp Search.cpp Score.cpp DynamicBitset.cpp
 
+# I'd recommend installing cilk in the same directory.
+# All the examples use this invocation.
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S), Darwin)
+ 	RUNNER += xcrun
+	CXX = /opt/opencilk/bin/clang++
+endif
+
+# Add the following printout
+$(info UNAME_S is $(UNAME_S))
+$(info RUNNER is $(RUNNER))
+$(info CXX is $(CXX))
+
 # Default target
 all: debug
 
@@ -17,25 +30,25 @@ build: CXXFLAGS += -O3
 build: Main TestGame TestSearch TestGamePerf
 
 $(EXECUTABLES): %: %.o $(SOURCES:.cpp=.o)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
 Main: Main.o $(SOURCES:.cpp=.o)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
 TestGame: TestGame.o $(SOURCES:.cpp=.o)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
 TestSearch: TestSearch.o $(SOURCES:.cpp=.o)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
 TestGamePerf: TestGamePerf.o $(SOURCES:.cpp=.o)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
 DynamicBitset: DynamicBitset.o
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 	
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Clean up object files and the executables
 clean:

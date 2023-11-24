@@ -14,6 +14,7 @@ using namespace std;
 
 TEST_CASE("Testing the Creation Function") {
   const int width = 16;
+  
   const int height = 16;
   auto board = random_board(width, height);
 
