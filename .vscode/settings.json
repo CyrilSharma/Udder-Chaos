@@ -108,6 +108,11 @@
         "span": "cpp",
         "ranges": "cpp",
         "stacktrace": "cpp",
-        "rope": "cpp"
+        "rope": "cpp",
+        "latch": "cpp",
+        "expected": "cpp",
+        "source_location": "cpp",
+        "spanstream": "cpp",
+        "syncstream": "cpp"
     }
 }

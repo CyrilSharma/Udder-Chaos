@@ -44,6 +44,10 @@ struct CardManager {
     return cards[ehand[choice]];
   }
 
+  Card qview(int choice) {
+    return cards[queue[choice]];
+  }
+
   // Need to validate with frontend.
   void rotate(int choice, int rotation) {
     vector<Direction> dirs = {

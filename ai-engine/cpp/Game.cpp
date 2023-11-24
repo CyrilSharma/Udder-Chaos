@@ -153,8 +153,9 @@ int Game::is_jover() {
 } /* is_jover() */
 
 // Temp player turn check
-bool Game::is_enemy_turn() const {
-  return turn % 3 == 2;
+bool Game::is_enemy_turn(int t) const {
+  if (t == -1) return (turn % 3) == 2;
+  return (t % 3) == 2;
 }
 
 // general move making function
@@ -636,12 +637,12 @@ ostream& operator<<(ostream& os, Game& game) {
   os << Color::Modifier(Color::BG_DEFAULT);
   int qsize = (game.cm.cards.size() - 2 * game.cm.handsize);
   for (int i = 0; i < qsize; i++)
-    os << "Queue  <= " << game.cm.queue[i] << '\n';
+    os << "Queue  <= " << game.cm.qview(i) << '\n';
   for (int i = 0; i < game.cm.handsize; i++)
-    os << Color::Modifier(Color::FG_BLUE) << "Player <= " << game.cm.phand[i]
+    os << Color::Modifier(Color::FG_BLUE) << "Player <= " << game.cm.pview(i)
        << Color::Modifier(Color::FG_DEFAULT) << '\n';
   for (int i = 0; i < game.cm.handsize; i++)
-    os << Color::Modifier(Color::FG_RED) << "Enemy  <= " << game.cm.ehand[i]
+    os << Color::Modifier(Color::FG_RED) << "Enemy  <= " << game.cm.eview(i)
        << Color::Modifier(Color::FG_DEFAULT) << '\n';
 
   os << "turn: " << game.turn << '\n';

@@ -47,8 +47,12 @@ ostream& operator<<(ostream& os, const Piece& p);
 
 struct Move {
   MoveType type;
-  int card, color, x, y, angle;
-  Move(MoveType type, int arg1=-1, int arg2=-1);
+  unsigned int card: 2;
+  unsigned int color: 2;
+  unsigned int x: 8;
+  unsigned int y: 8;
+  unsigned int angle: 2;
+  Move(MoveType type, int arg1=0, int arg2=0);
 };
 
 string typeOfMove(MoveType t);
