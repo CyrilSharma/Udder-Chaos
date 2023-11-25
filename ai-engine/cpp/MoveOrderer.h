@@ -20,7 +20,7 @@ struct MoveOrderer {
         // Simply insertion sort since small list
         for (int i = 1; i < num_moves; i++) {
             for (int j = i; j > 0; --j) {
-                if (score[j] < score[j-1]) {
+                if (score[j] > score[j-1]) {
                     std::swap(score[j], score[j-1]);
                     std::swap(moves[j], moves[j-1]);
                 }

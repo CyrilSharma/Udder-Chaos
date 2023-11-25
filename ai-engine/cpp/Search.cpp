@@ -55,30 +55,45 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
     gen_moves(moves, !game.is_enemy_turn());
     moveOrderer.order(game, moves);
     Move best_move = moves[0];
-    int best_sc = -inf;
     
     if (fixedDepth && dbg) cerr << "Doing fixed depth search of depth " << max_depth << endl;
 
+    vector<int> score(moves.size());
     int depth = (fixedDepth) ? max_depth : 1;
     for (; depth <= max_depth; depth++) {
-      if (curTime() > begin_time + timeout) break;        
+      if (curTime() > begin_time + timeout) break;
+      int best_score_d = -inf;
+      Move best_move_d = moves[0];
       if (dbg >= 2) cerr << "Initiating search of depth " << depth << endl;
       Position p = { game, -inf, inf };
-      for (auto move : moves) {
+      for (size_t i = 0; i < moves.size(); i++) {
+        auto move = moves[i];
+        p.alpha = best_score_d;
         // This works IFF it is the AIs turn.
         int sc = -alphaBeta(p, move, depth - 1);
-
-        // If search didn't complete, don't update with incorrect values
-        if (curTime() > begin_time + timeout) break;        
-        if (sc > best_sc) {
-          best_sc = sc;
-          best_move = move;
+        score[i] = sc;
+        if (sc > best_score_d) {
+          best_score_d = sc;
+          best_move_d = move;
         }
         if (dbg >= 2) {
           cerr << "--------EVAL---------" << endl;
           cerr << "Move: " << typeOfMove(move.type) << " " << move.card << " " << move.color << endl;
           cerr << "Eval: " << " " << sc << endl;
         }
+      }
+
+      
+      for (size_t i = 1; i < moves.size(); i++) {
+        for (size_t j = i; j > 0; --j) {
+          if (score[j] > score[j-1]) {
+            std::swap(score[j], score[j-1]);
+            std::swap(moves[j], moves[j-1]);
+          }
+        }
+      }
+      if (curTime() < begin_time + timeout) {
+        best_move = best_move_d;
       }
       if (dbg >= 1) cerr << "Depth " << depth << " done." << endl;
     }
