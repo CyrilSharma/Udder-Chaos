@@ -15,6 +15,10 @@ ifeq ($(UNAME_S), Darwin)
 	CXX = /opt/opencilk/bin/clang++
 	CXXFLAGS += -fopencilk
 endif
+ifeq ($(UNAME_S), Linux)
+	CXX = /opt/opencilk/bin/clang++
+	CXXFLAGS += -fopencilk
+endif
 
 # Add the following printout
 $(info UNAME_S is $(UNAME_S))

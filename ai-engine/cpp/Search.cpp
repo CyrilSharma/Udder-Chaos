@@ -83,7 +83,7 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
       if (dbg >= 1) cerr << "Depth " << depth << " done." << endl;
     }
 
-    if (dbg) {
+    if (dbg >= 1) {
         cerr << "Reached depth: " << depth - 1 << endl;
         cerr << "Time Elapsed (ms): " << curTime() - begin_time << endl;
     }
