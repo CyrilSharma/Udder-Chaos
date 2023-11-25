@@ -13,6 +13,7 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
  	RUNNER += xcrun
 	CXX = /opt/opencilk/bin/clang++
+	CXXFLAGS += -fopencilk
 endif
 
 # Add the following printout

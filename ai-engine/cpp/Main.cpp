@@ -96,7 +96,7 @@ struct Handler {
       params["game_id"]
     );
     auto game_id = params["game_id"];
-    searches.insert({game_id, Search(gc)});
+    searches.try_emplace(game_id, Search(gc));
     cerr << searches.at(game_id).game << endl;
     cout << "SUCCESS" << endl;
   } /* init() */

@@ -1,6 +1,14 @@
 #include "Search.h"
+#include <cilk/cilk.h>
 
 #define debug(x) std::cerr << #x << ": " << x << std::endl
+
+void init_int(void *view) {
+  *(int *)view = -inf;
+}
+void min_int(void *left, void *right) {
+  *(int *)left = min(*(int *)left, *(int *)right);
+}
 
 Search::Search(GameConfig gc, uint64_t to, int md):
     game(gc), scorer(gc), timeout(to), max_depth(md) {}
@@ -78,12 +86,30 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
     return best_move;
 }
 
+
+void Search::wrapper(Position &cur, Move move, int depth,
+            int &sign, int &best_score, bool &cutoff, std::mutex &mutex) {
+  int child_sc = sign * alphaBeta(cur, move, depth);
+  mutex.lock();
+  if (child_sc > best_score) {
+    best_score = child_sc;
+    if (child_sc > cur.alpha) {
+      cur.alpha = child_sc;
+      if (child_sc >= cur.beta) {
+        cutoff = true;
+      }
+    }
+  }
+  mutex.unlock();
+}
+
 /* 
  * This accepts a move now to allow the simulation of the
  * move to be done in parallel.
  */
 
 int Search::alphaBeta(Position &prev, Move move, int depth) {
+    bool cutoff = false;
     Position cur = { prev.game, prev.alpha, prev.beta };
     cur.game.make_move(move);
     if (depth <= 0) return scorer.score(cur.game);
@@ -104,19 +130,15 @@ int Search::alphaBeta(Position &prev, Move move, int depth) {
     gen_moves(moves, !game.is_enemy_turn());
     moveOrderer.order(game, moves);
 
-    for (Move move : moves) {
-      if (curTime() > begin_time + timeout) return -inf;
-      int child_sc = sign * alphaBeta(cur, move, depth - 1);
-      if (child_sc > best_score) {
-        best_score = child_sc;
-        if (child_sc > cur.alpha) {
-          cur.alpha = child_sc;
-          if (child_sc >= cur.beta) {
-            return best_score;
-          }
-        }
-      }
+    std::mutex mutex;
+    for (size_t i = 0; i < moves.size() && !cutoff; i++) {
+      cilk_spawn wrapper(
+        cur, moves[i], depth - 1,
+        sign, best_score, cutoff, mutex
+      );
+      if (i == 0) cilk_sync;
     }
+    cilk_sync;
 
     // Incomplete searches are garbage to us.
     if (curTime() > begin_time + timeout) return -inf;
