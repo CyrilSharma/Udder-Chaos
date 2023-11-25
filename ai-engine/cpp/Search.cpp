@@ -87,6 +87,12 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
 }
 
 
+/*
+ * easiest way I could think of to prune in a parallel setting.
+ * ideally we would kill the children of useless searches but I don't know how to 
+ * do that.
+ */
+
 void Search::wrapper(Position &cur, Move move, int depth,
             int &sign, int &best_score, bool &cutoff, std::mutex &mutex) {
   int child_sc = sign * alphaBeta(cur, move, depth);
