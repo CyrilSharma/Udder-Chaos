@@ -9,6 +9,11 @@
 
 using namespace std;
 
+// Fixed depth search toggle (for debug)
+bool doFixedDepthSearch = false;
+// Amount of debug prints during search
+int verbosity = 1;
+
 /*
  * Ensure the AI can find at least some easy kill-moves.
  */
@@ -73,11 +78,10 @@ TEST_CASE("Testing Good Moves") {
     cerr << "-----------------------\n\n";
     cerr << search.game << "\n";
 
-    // Fixed depth search for debug, i cba to put it into file
-    bool doFixedDepthSearch = false;
-    const Move move = search.beginSearch(3, doFixedDepthSearch);
+    // I moved the debug values to the top of the file
+    const Move move = search.beginSearch(verbosity, doFixedDepthSearch);
     search.makeAIMove(move.card, move.color);
-    cerr << move.type << " | card: " << move.card << " | color: " << move.color << endl;
+    cerr << typeOfMove(move.type) << " | card: " << move.card << " | color: " << move.color << endl;
     cerr << search.game << "\n";
 
     int answer_idx; answer >> answer_idx;

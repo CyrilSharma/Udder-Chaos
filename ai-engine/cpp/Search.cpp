@@ -59,16 +59,20 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
       for (auto move : moves) {
         // This works IFF it is the AIs turn.
         int sc = -alphaBeta(p, move, depth - 1);
+
+        // If search didn't complete, don't update with incorrect values
+        if (curTime() > begin_time + timeout) break;        
         if (sc > best_sc) {
           best_sc = sc;
           best_move = move;
         }
-        if (dbg) {
+        if (dbg >= 2) {
           cerr << "--------EVAL---------" << endl;
           cerr << "Move: " << typeOfMove(move.type) << " " << move.card << " " << move.color << endl;
           cerr << "Eval: " << " " << sc << endl;
         }
       }
+      if (dbg >= 1) cerr << "Depth " << depth << " done." << endl;
     }
 
     if (dbg) {

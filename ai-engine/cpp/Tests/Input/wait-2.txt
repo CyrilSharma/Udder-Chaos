@@ -1,0 +1,49 @@
+7 7 8 8 3
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 6 1 0
+6 0 2 0
+0 0 3 0
+6 6 4 0
+3 3 5 0
+4 5 6 0
+5 4 7 0
+5 5 8 0 
+2 2 3
+0 0 0
+0 0 0
+2 2 2
+3 3 0
+1 1 1
+2 2 2
+0 0 0
+60000 7
+
+0 = R, 1 = U, 2 = L, 3 = D
+Queue, Player, Enemy
+
+Honestly i don't know what this test case does but it's big and it takes a while to run
+P=====P
+=======
+=======
+===E===
+=====E=
+====EE=
+P=====P
+Queue  <= Card: LLD
+Queue  <= Card: RRR
+Player <= Card: RRR
+Player <= Card: LLL
+Player <= Card: DDR
+Enemy  <= Card: UUU
+Enemy  <= Card: LLL
+Enemy  <= Card: RRR
+turn: 2
+hand size: 3
+player pieces: 4
+enemy pieces: 4

@@ -113,6 +113,7 @@
         "expected": "cpp",
         "source_location": "cpp",
         "spanstream": "cpp",
-        "syncstream": "cpp"
+        "syncstream": "cpp",
+        "strstream": "cpp"
     }
 }

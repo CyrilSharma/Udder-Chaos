@@ -26,8 +26,20 @@ all: debug
 debug: CXXFLAGS += -g -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
 debug: Main TestGame TestSearch TestGamePerf
 
+# GCC profiling optimization generation
+profile: CXXFLAGS += -fprofile-generate
+profile: build
+
+# GCC profiling optimization use
+# idk how to check for file existence so just doing this for now
+useprofile: clean # clear previous obj and executable files
+useprofile: CXXFLAGS += -fprofile-use
+useprofile: build
+
+# default build
 build: CXXFLAGS += -O3
 build: Main TestGame TestSearch TestGamePerf
+
 
 $(EXECUTABLES): %: %.o $(SOURCES:.cpp=.o)
 	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@

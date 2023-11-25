@@ -77,6 +77,8 @@ string typeOfMove(MoveType t) {
       return "Rotate";
     case BUY:
       return "Buy";
+    default:
+      return "Unknown Type";
   }
 }
 

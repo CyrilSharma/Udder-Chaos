@@ -29,6 +29,7 @@ const it = rl[Symbol.asyncIterator]();
 
 // Handles connections.
 var mode = process.env.NODE_ENV;
+// console.log(`mode=${mode}`)
 const url =
     (mode == 'development') ?
     'http://localhost:3000':
