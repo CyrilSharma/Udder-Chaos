@@ -1,6 +1,8 @@
 #pragma once
-#include <vector>
 #include <chrono>
+#include <vector>
+#include <mutex>
+
 #include "Utils.h"
 #include "Helpers.h"
 #include "Game.h"
@@ -45,4 +47,8 @@ struct Search {
     void gen_moves(vector<Move> &moves, int player);
     Move beginSearch(int dbgVerbosity = 0, bool fixedDepth = false);
     int alphaBeta(Position &prev, Move move, int depth);
+    void wrapper(
+      Position &cur, Move move, int depth,
+      int &sign, int &best_score, bool &cutoff, std::mutex &mutex
+    );
 };
