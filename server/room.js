@@ -256,6 +256,7 @@ class Player {
 
     makeRandomMove() {
         //Play a random card from the player's hand. Can be used when player takes too long, or when a player is disconnected
+        console.log("Random move for " + this.color);
         this.room.makeMove(null, 0, {"index": Math.floor(Math.random() * HAND_SIZE)}, this.color + 1);
     }
 

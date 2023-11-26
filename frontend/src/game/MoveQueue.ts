@@ -12,6 +12,7 @@ export class MoveQueue {
     public async startQueue() {
         while (this.queueData.length > 0) {
             let playerMove = this.queueData[0];
+            this.game.animating = true;
             switch (playerMove.moveType) {
                 case MoveType.PlayCard: {
                     let moveData = playerMove.moveData as PlayData;
@@ -30,6 +31,7 @@ export class MoveQueue {
                     break;
                 }
             }
+            this.game.animating = false;
             this.game.updateTurn();
             this.dequeue();
         }
