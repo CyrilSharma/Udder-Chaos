@@ -270,7 +270,7 @@ export class Game extends Container {
         this.upNext.y = -310//this.rightPanel.y - (this.rightPanel.getBox()[1] - this.rightPanel.getBox()[0]) + this.upNext.height * 0.5;
         this.codeDisplay.y = 200;
 
-        this.cards.placeCards();
+        this.cards.placeCards(false);
 
         this.board.winScreen.resize(this.board.getWidth(), this.board.getHeight());
         this.board.loseScreen.resize(this.board.getWidth(), this.board.getHeight());

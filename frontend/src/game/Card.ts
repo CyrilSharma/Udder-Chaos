@@ -25,10 +25,12 @@ export class Card extends Container {
     public index: number;
     public scaled = false;
     public cardRotation: number = 0;
+    public size: number = 0;
     constructor(queue: CardQueue, options: CardOptions, index: number) {
         super();
         this.queue = queue;
         this.index = index;
+        this.size = options.size;
         this.graphics = new Graphics();
         this.graphics.beginFill(0xFFFFFF);
         this.dirs = options.dirs;
