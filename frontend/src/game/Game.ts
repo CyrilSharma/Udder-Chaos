@@ -53,7 +53,6 @@ export class Game extends Container {
     public animating: boolean = false;
     public upNext: SizedButton;
     public codeDisplay: SizedButton;
-    private bgm: HTMLAudioElement = new Audio("sounds/game-music.mp3");
 
     constructor() {
         super();
@@ -64,8 +63,6 @@ export class Game extends Container {
         this.timer = this.gameSettings.getValue("timer_length");
         this.timerInterval = this.initTimer();
         this.moveQueue = new MoveQueue(this);
-
-        this.startBGM();
 
         this.leftPanel = new GamePanel(0.11275, 0.5, 0.2, 1, 200, 1000, 0xffffff);
         this.rightPanel = new GamePanel(0.88725, 0.5, 0.2, 1, 200, 1000, 0x5f5f5f);
@@ -118,11 +115,6 @@ export class Game extends Container {
         this.config = config;
         this.board.setup(config);
         this.cards.setup();
-    }
-
-    public startBGM() {
-        this.bgm.loop = true;
-        this.bgm.play();
     }
 
     public setPlayerColor(color: number) {
