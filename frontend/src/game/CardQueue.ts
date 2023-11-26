@@ -239,14 +239,9 @@ export class CardQueue extends Container {
 
             if (animated) {
                 gsap.to(card, {
-                    pixi: {x: newX},
+                    pixi: {x: newX, y: newY},
                     duration: 0.5,
-                    ease: "power2.out"
-                })
-                gsap.to(card, {
-                    pixi: {y: newY},
-                    duration: 0.5,
-                    ease: CustomEase.create("custom", "M0,0 C0,0 0.023,-0.086 0.066,-0.132 0.106,-0.175 0.157,-0.197 0.198,-0.197 0.238,-0.197 0.25,-0.2 0.3,-0.183 0.31,-0.179 0.358,-0.145 0.382,-0.122 0.412,-0.09 0.43,-0.06 0.442,-0.036 0.456,-0.008 0.467,0.01 0.478,0.047 0.492,0.092 0.512,0.18 0.525,0.238 0.549,0.349 0.561,0.445 0.584,0.596 0.591,0.648 0.605,0.819 0.639,0.92 0.674,1.027 0.667,1.011 0.702,1.057 0.744,1.113 0.76,1.114 0.814,1.114 0.855,1.114 0.862,1.12 0.888,1.096 0.914,1.07 0.908,1.047 0.945,1.015 0.96,1 1,1 1,1 "),
+                    ease: "power2.in"
                 })
             } else {
                 card.x = newX;
@@ -270,7 +265,7 @@ export class CardQueue extends Container {
                     gsap.to(this.queue[i], {
                         pixi: {x: newX, y: newY},
                         duration: 0.5,
-                        ease: CustomEase.create("custom", "M0,0 C0,0 0.061,0.34 0.085,0.447 0.105,0.539 0.149,0.715 0.175,0.795 0.195,0.861 0.239,0.98 0.265,1.032 0.287,1.077 0.334,1.165 0.365,1.185 0.418,1.218 0.472,1.233 0.515,1.243 0.562,1.253 0.617,1.241 0.664,1.241 0.704,1.241 0.74,1.22 0.789,1.196 0.842,1.168 0.862,1.159 0.915,1.124 0.96,1.093 1,1 1,1 "),
+                        ease: "back.out"
                     })
                 }
             } else {
@@ -292,7 +287,7 @@ export class CardQueue extends Container {
                 gsap.to(card, {
                     pixi: {x: newX, y: newY},
                     duration: 0.5,
-                    ease: "back.out"
+                    ease: "power2.in"
                 })
             } else {
                 card.x = newX;
