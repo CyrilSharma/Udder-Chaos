@@ -13,6 +13,18 @@ import {
     random
 } from './Utils';
 import { CARD_PRESETS } from '../maps/Cards'
+import * as PIXI from "pixi.js";
+import { gsap } from "gsap";
+import { CustomEase } from "gsap/CustomEase";
+import { PixiPlugin } from "gsap/PixiPlugin";
+
+// register the plugin
+gsap.registerPlugin(PixiPlugin);
+gsap.registerPlugin(CustomEase);
+
+// give the plugin a reference to the PIXI object
+PixiPlugin.registerPIXI(PIXI);
+
 
 /** Stores all the cards in the game, handles card playing with a logic handler */
 export class CardQueue extends Container {
@@ -58,7 +70,7 @@ export class CardQueue extends Container {
             this.enemy_hand.push(this.queue.shift()!);
         }
 
-        this.placeCards();
+        this.placeCards(false);
         this.reindexCards();
     }
 
@@ -100,9 +112,54 @@ export class CardQueue extends Container {
         for (let i = 0; i < hand.length; i++) {
             let card = hand[i];
             if (card != input) continue;
+
+            const midX = this.game.boardPanel.x;
+            const midY = this.game.boardPanel.y;
+
+            const newX = this.game.rightPanel.x;
+            const newY = this.game.rightPanel.y - this.game.rightPanel.height * 0.29 + (this.queue.length) * this.queue[i].size * 0.7;
             
-            // Use logic handler to process movement logic
-            await this.logicHandler.playCard(card, color, animated);
+            gsap.to(card, {
+                pixi: {x: midX, y: midY, scale: 2},
+                duration: 0.25,
+                ease: "power2.out"
+            })
+            gsap.to(card, {
+                pixi: {rotation: 20},
+                duration: 0.05,
+                ease: "sine.out",
+                delay: 0.2
+            })
+            gsap.to(card, {
+                pixi: {rotation: -20},
+                duration: 0.1,
+                ease: "sine.inOut",
+                delay: 0.25
+            })
+            gsap.to(card, {
+                pixi: {rotation: 10},
+                duration: 0.1,
+                ease: "sine.inOut",
+                delay: 0.35
+            })
+            gsap.to(card, {
+                pixi: {rotation: -5},
+                duration: 0.1,
+                ease: "sine.inOut",
+                delay: 0.45
+            })
+            await gsap.to(card, {
+                pixi: {rotation: 0},
+                duration: 0.1,
+                ease: "sine.inOut",
+                delay: 0.55
+            })
+            gsap.to(card, {
+                pixi: {x: newX, y: newY, scale: 1},
+                duration: 0.5,
+                ease: "power2.in",
+                delay: 0.35
+            })
 
             // Remove card from hand and add to queue
             this.queue.push(card);
@@ -111,8 +168,12 @@ export class CardQueue extends Container {
             hand[i] = this.queue.shift()!;
             
             // Fix card hands and queue, rerender
-            this.placeCards();
+            await this.placeCards(true);
             this.reindexCards();
+            
+            // Use logic handler to process movement logic
+            await this.logicHandler.playCard(card, color, animated);
+
             return;
         }
 
@@ -165,36 +226,53 @@ export class CardQueue extends Container {
     }
 
     /** Redraw all cards */
-    public placeCards() {
-
+    public async placeCards(animated: boolean) {
+        if (animated) {
+            await new Promise(r => setTimeout(r, 350))
+        }
+        
         // Draw Player Hand
         let pos = -1;
         for (const card of this.player_hand) {
-            card.x = this.game.bottomPanel.x + pos * this.game.bottomPanel.width * 0.4;
-            card.y = this.game.bottomPanel.y;
+            const newX = this.game.bottomPanel.x + pos * this.game.bottomPanel.width * 0.4;
+            const newY = this.game.bottomPanel.y;
+
+            if (animated) {
+                gsap.to(card, {
+                    pixi: {x: newX, y: newY},
+                    duration: 0.5,
+                    ease: "power2.in"
+                })
+            } else {
+                card.x = newX;
+                card.y = newY;
+            }
+            
             this.cardContainer.addChild(card);
             pos++;
         }
-
-        // Draw card queue
-        // pos = 0;
-        // for (const card of this.queue) {
-        //     if (pos == this.queue.length - 1) {
-        //         pos++;
-        //     }
-        //     card.y = this.game.rightPanel.y + this.game.rightPanel.height * 0.2 - pos * card.height * 0.7;
-        //     card.x = this.game.rightPanel.x;
-        //     this.cardContainer.addChild(card);
-        //     pos++;
-        // }
 
         pos = this.queue.length;
         for (let i = this.queue.length - 1; i >= 0; i--) {
             if (i == 0) {
                 pos--;
             }
-            this.queue[i].y = this.game.rightPanel.y - this.game.rightPanel.height * 0.29 + (pos) * this.queue[i].height * 0.7;
-            this.queue[i].x = this.game.rightPanel.x;
+            const newX = this.game.rightPanel.x;
+            const newY = this.game.rightPanel.y - this.game.rightPanel.height * 0.29 + (pos) * this.queue[i].size * 0.7;
+            
+            if (animated) {
+                if (pos < this.queue.length) {
+                    gsap.to(this.queue[i], {
+                        pixi: {x: newX, y: newY},
+                        duration: 0.5,
+                        ease: "back.out"
+                    })
+                }
+            } else {
+                this.queue[i].x = newX;
+                this.queue[i].y = newY;
+            }
+            
             this.cardContainer.addChild(this.queue[i]);
             pos--;
         }
@@ -202,10 +280,26 @@ export class CardQueue extends Container {
         // Draw enemy hand
         pos = -1;
         for (const card of this.enemy_hand) {
-            card.x = this.game.rightPanel.x + pos * this.game.rightPanel.width * 0.2;
-            card.y = this.game.bottomPanel.y;
+            const newX = this.game.rightPanel.x + pos * this.game.rightPanel.width * 0.2;
+            const newY = this.game.bottomPanel.y;
+
+            if (animated) {
+                gsap.to(card, {
+                    pixi: {x: newX, y: newY},
+                    duration: 0.5,
+                    ease: "power2.in"
+                })
+            } else {
+                card.x = newX;
+                card.y = newY;
+            }
+
             this.cardContainer.addChild(card);
             pos++;
+        }
+
+        if (animated) {
+            await new Promise(r => setTimeout(r, 500))
         }
     }
 }

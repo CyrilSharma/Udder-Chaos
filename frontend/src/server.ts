@@ -157,6 +157,7 @@ class Server {
     }
 
     public async outOfTime() {
+        console.log("Out of time!!!")
         this.socket.emit("out-of-time");
     }
 
