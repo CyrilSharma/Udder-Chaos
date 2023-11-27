@@ -1,8 +1,9 @@
 export class SoundHandler {
     public static bgm: HTMLAudioElement = new Audio("sounds/game-music.mp3");
-    public static curfile: string = "sounds/game-music.mp3"
-    
-    public static playBGM(file?: string, volume?: number) {
+    public static curfile: string = "sounds/game-music.mp3";
+    private static volume: number = 1.0;
+
+    public static playBGM(file?: string) {
         console.log(SoundHandler.curfile);
         console.log(file);
         if (typeof file !== 'undefined' && file != SoundHandler.curfile) {
@@ -13,10 +14,8 @@ export class SoundHandler {
             
             SoundHandler.bgm = new Audio(file);
             SoundHandler.bgm.loop = true;
+            SoundHandler.bgm.volume = this.volume;
             SoundHandler.curfile = file;
-            if (typeof volume !== 'undefined') {
-                SoundHandler.bgm.volume = volume;
-            }
         }
         console.log(SoundHandler.bgm.paused);
         if (SoundHandler.bgm.paused) {
@@ -40,5 +39,9 @@ export class SoundHandler {
     public static stopBGM() {
         SoundHandler.bgm.pause();
         SoundHandler.bgm.currentTime = 0;
+    }
+
+    public static changeVolume(vol: number) {
+        SoundHandler.bgm.volume = this.volume;
     }
 }
