@@ -56,8 +56,7 @@ export class CreateGameScreen extends Container {
         this.menuContainer.addChild(this.backButton);
         this.addChild(this.menuContainer);
         
-        console.log("CREATE GMAE SCRENFWE");
-        SoundHandler.playBGM("sounds/lobby-music.mp3");
+        SoundHandler.playBGM("lobby-music.mp3");
     }
 
     public async addGameCode(code: string) {

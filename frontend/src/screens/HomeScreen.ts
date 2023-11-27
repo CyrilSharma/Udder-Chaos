@@ -62,7 +62,7 @@ export class HomeScreen extends Container {
         });
         this.addChild(this.tutorialButton.getButton());
 
-        SoundHandler.playBGM("sounds/menu-music.mp3");
+        SoundHandler.playBGM("menu-music.mp3");
     }
 
     public async show() {

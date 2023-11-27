@@ -324,7 +324,7 @@ export class Game extends Container {
     }
 
     private startBGM() {
-        SoundHandler.playBGM("sounds/game-music.mp3");
+        SoundHandler.playBGM("game-music.mp3");
     }
 
     private stopBGM() {
