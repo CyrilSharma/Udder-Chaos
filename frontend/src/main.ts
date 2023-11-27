@@ -4,6 +4,7 @@ import { HomeScreen } from './screens/HomeScreen';
 import { GameScreen } from './screens/GameScreen';
 import server from "./server";
 
+localStorage.clear();
 
 /** The PixiJS app Application instance, shared across the project */
 export const app = new PIXI.Application<HTMLCanvasElement>({

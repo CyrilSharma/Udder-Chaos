@@ -15,6 +15,7 @@ import { SizedButton } from '../ui_components/SizedButton';
 import server from "../server";
 import { GameSettings, gameSettings } from "./GameSettings";
 import { MoveQueue } from './MoveQueue';
+import { SoundHandler } from './SoundHandler';
 
 // This seems a little redundant right now,
 // But it will house the cards as well,
@@ -113,12 +114,7 @@ export class Game extends Container {
         this.addChild(this.cards);
 
     }
-
-    private startBGM() {
-        this.bgm.loop = true;
-        this.bgm.play();
-    }
-
+    
     public setup(config: GameConfig) {
         this.config = config;
         this.board.setup(config);
@@ -236,7 +232,7 @@ export class Game extends Container {
     // reset when a new game is setup rather than when the old one finishes
     public endGame(success: boolean, message: string) {
         //console.log(message);
-
+        this.stopBGM();
         this.board.endGame(success, message);
         this.gameOver = true;
         clearInterval(this.timerInterval);
@@ -261,7 +257,9 @@ export class Game extends Container {
             this.timer -= 1;
             //Update the timer here
             console.log("current time: " + this.timer);
+            // if (this.timer <= 0) {
             if (this.timer <= 0 && this.ourTurn()) {
+                console.log("out of time");
                 server.outOfTime();
             }
             this.updatePlayerInfoTimers();
@@ -323,5 +321,13 @@ export class Game extends Container {
         this.board.winScreen.resize(this.board.getWidth(), this.board.getHeight());
         this.board.loseScreen.resize(this.board.getWidth(), this.board.getHeight());
 
+    }
+
+    private startBGM() {
+        SoundHandler.playBGM("sounds/game-music.mp3");
+    }
+
+    private stopBGM() {
+        SoundHandler.stopBGM();
     }
 }
