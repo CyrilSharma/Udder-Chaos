@@ -129,7 +129,6 @@ export class Board extends Container {
     // Takes a board update, and performs corresponding updates and rerenders at the end.
     public async updateGame(update: BoardUpdate, animated: boolean) {
         // Loop through steps in update
-        this.game.animating = true;
         for (let i = 0; i < update.length; i++) {
             for (let j = 0; j < update[i].length; j++) {
                 switch (update[i][j].action) {
@@ -146,7 +145,6 @@ export class Board extends Container {
                 await new Promise(r => setTimeout(r, 500))
             }
         }
-        this.game.animating = false;
     }
 
     public normal_move(action: PieceAction, animated: boolean) {
