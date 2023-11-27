@@ -54,7 +54,6 @@ export class Game extends Container {
     public animating: boolean = false;
     public upNext: SizedButton;
     public codeDisplay: SizedButton;
-    private bgm: HTMLAudioElement = new Audio("sounds/game-music.mp3");
 
     constructor() {
         super();

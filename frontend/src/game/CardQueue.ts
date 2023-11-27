@@ -116,7 +116,7 @@ export class CardQueue extends Container {
             if (card != input) continue;
             
             // found card
-            SoundHandler.playSFX("sounds/sound-effects/card-play.ogg");
+            SoundHandler.playSFX("card-play.ogg");
 
             // animate card
             const midX = this.game.boardPanel.x;

@@ -1,21 +1,35 @@
 export class SoundHandler {
-    public static bgm: HTMLAudioElement = new Audio("sounds/game-music.mp3");
-    public static currentBgm: string = "sounds/game-music.mp3";
+    public static currentBgm: string = "game-music.mp3";
     private static bgmVolume: number = 1.0;
     private static sfxVolume: number = 1.0;
-    private static bgmPath: string = "sounds/bgm";
+    private static bgmPath: string = "sounds/bgm/";
     private static sfxPath: string = "sounds/sound-effects/";
+    private static bgm: HTMLAudioElement = new Audio(SoundHandler.bgmPath + "menu-music.mp3");
+    
+    private static allSFXFiles: string[] = ["card-play.ogg", "cow-moo.mp3", "plane-move.mp3", "ufo-abduction.ogg", "ufo-destroyed.mp3",
+                                            "ufo-laser.ogg", "ufo-move.ogg", "ufo-purchased.mp3"];
+    private static allBGMFiles: string[] = ["game-music.mp3", "lobby-music.mp3", "menu-music.mp3"];
+
+    // Load all audio files into cache
+    public static preloadAudio() {
+        for (let file in SoundHandler.allSFXFiles) {
+            let tmp = new Audio(SoundHandler.sfxPath + file);
+        }
+        for (let file in SoundHandler.allBGMFiles) {
+            let tmp = new Audio(SoundHandler.bgmPath + file);
+        }
+    }
 
     public static playBGM(file?: string) {
-        console.log(SoundHandler.currentBgm);
-        console.log(file);
+        // console.log(SoundHandler.currentBgm);
+        // console.log(file);
         if (typeof file !== 'undefined' && file != SoundHandler.currentBgm) {
             console.log("new sound");
             // stop old sound
             SoundHandler.bgm.pause();
             SoundHandler.bgm.currentTime = 0;
             
-            SoundHandler.bgm = new Audio(file);
+            SoundHandler.bgm = new Audio(SoundHandler.bgmPath + file);
             SoundHandler.bgm.loop = true;
             SoundHandler.bgm.volume = this.bgmVolume;
             SoundHandler.currentBgm = file;
@@ -51,7 +65,7 @@ export class SoundHandler {
     }
 
     public static playSFX(file: string) {
-        let tmpAudio = new Audio(file);
+        let tmpAudio = new Audio(SoundHandler.sfxPath + file);
         tmpAudio.volume = SoundHandler.sfxVolume;
         tmpAudio.play();
     }
