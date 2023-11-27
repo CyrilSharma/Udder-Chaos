@@ -54,7 +54,6 @@ export class Game extends Container {
     public animating: boolean = false;
     public upNext: SizedButton;
     public codeDisplay: SizedButton;
-    private bgm: HTMLAudioElement = new Audio("sounds/game-music.mp3");
 
     constructor() {
         super();
@@ -239,7 +238,7 @@ export class Game extends Container {
     }
 
     public ourTurn() {
-        //return !this.gameOver && !this.animating; // debug always allow current player to move
+        return !this.gameOver && !this.animating; // debug always allow current player to move
         return !this.gameOver && !this.animating &&
             this.playerColor == 1 && this.turn == 1 || 
             this.playerColor == 2 && this.turn == 2 || 
@@ -316,7 +315,7 @@ export class Game extends Container {
         this.upNext.y = -310;
         this.codeDisplay.y = 200;
 
-        this.cards.placeCards();
+        this.cards.placeCards(false);
 
         this.board.winScreen.resize(this.board.getWidth(), this.board.getHeight());
         this.board.loseScreen.resize(this.board.getWidth(), this.board.getHeight());
@@ -324,7 +323,7 @@ export class Game extends Container {
     }
 
     private startBGM() {
-        SoundHandler.playBGM("sounds/game-music.mp3");
+        SoundHandler.playBGM("game-music.mp3");
     }
 
     private stopBGM() {

@@ -15,8 +15,8 @@ const COLOR = {
 
 
 // 4 represents AI, all 0-3 are player colors
-//const PLAYER_ORDER = [0,1,4]
-const PLAYER_ORDER = [0,1,4,2,3,4]
+const PLAYER_ORDER = [0,1,4]
+//const PLAYER_ORDER = [0,1,4,2,3,4]
 
 const MAX_PLAYERS = 4;
 
@@ -256,6 +256,7 @@ class Player {
 
     makeRandomMove() {
         //Play a random card from the player's hand. Can be used when player takes too long, or when a player is disconnected
+        console.log("Random move for " + this.color);
         this.room.makeMove(null, 0, {"index": Math.floor(Math.random() * HAND_SIZE)}, this.color + 1);
     }
 
