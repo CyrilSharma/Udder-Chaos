@@ -4,17 +4,6 @@ import MersenneTwister from 'mersenne-twister';
 import { Point } from 'pixi.js';
 import '@pixi/math-extras';
 
-// Constants
-// export const SCORE_GOAL = 30;
-// export const DAYS_PER_ROUND = 7;
-
-// export const COW_REGEN_RATE = DAYS_PER_ROUND * 3;
-// export const COW_SACRIFICE = 5;
-
-// export const CARD_DECK_SIZE = 15;
-
-// export const TIMER_LENGTH = 10;
-
 // ---- Game Settings ---- //
 export const defaultGameSettings = {
     seed: 0,
@@ -40,11 +29,18 @@ export const TileEnum = {
     Plain: 0,
     Pasture: 1,
     Impassible: 2,
-    Destination: 3,
-    Red_Enemy_Spawn: 4,
-    Yellow_Enemy_Spawn: 5,
-    Blue_Enemy_Spawn: 6,
-    Purple_Enemy_Spawn: 7,
+    Red_Destination: 3,
+    Yellow_Destination: 4,
+    Blue_Destination: 5,
+    Purple_Destination: 6,
+    Red_Spawn: 7,
+    Yellow_Spawn: 8,
+    Blue_Spawn: 9,
+    Purple_Spawn: 10,
+    Red_Enemy_Spawn: 11,
+    Yellow_Enemy_Spawn: 12,
+    Blue_Enemy_Spawn: 13,
+    Purple_Enemy_Spawn: 14,
 };
 // Weighting of tiles when generating a random board
 export const TileWeights = {
@@ -181,7 +177,6 @@ export type Position = {
 // Information needed for rendering.
 export type GameConfig = {
     grid: Grid;
-    starts: Position[][];
     tileSize: number;
 };
 

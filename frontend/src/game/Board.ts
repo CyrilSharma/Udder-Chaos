@@ -247,10 +247,6 @@ export class Board extends Container {
             if (getTeam(piecetype) == TeamEnum.Player) {
                 this.playerPieces[piecetype] = 0;
             }
-            // console.log(config.starts[piecetype]);
-            for (const position of config.starts[piecetype]) {
-                this.createPiece(position, piecetype);
-            }
         }
         
         // Create all tiles, and generate cows on pastures
@@ -263,9 +259,12 @@ export class Board extends Container {
                 if (grid[r][c] == TileEnum.Pasture) {
                     if (this.getPieceByPosition(position) != null) continue;
                     this.createPiece(position, PieceEnum.Cow);
+                } else if (TileEnum.Red_Spawn <= grid[r][c] && grid[r][c] <= TileEnum.Purple_Spawn) {
+                    // If it's a UFO spawn, spawn the corresponding enemy type
+                    this.createPiece(position, grid[r][c] - TileEnum.Red_Spawn + PieceEnum.Player_Red)
                 } else if (grid[r][c] >= TileEnum.Red_Enemy_Spawn) {
                     // If it's an enemy spawner, spawn the corresponding enemy type
-                    this.createPiece(position, grid[r][c] + 1);
+                    this.createPiece(position, grid[r][c] - TileEnum.Red_Enemy_Spawn + PieceEnum.Enemy_Red);
                     this.enemyRegen[grid[r][c] - TileEnum.Red_Enemy_Spawn].push(position);
                 }
             }
@@ -439,15 +438,15 @@ export class Board extends Container {
         this.y = this.height * -0.5;
     }
 
-    public purchaseUFO(position: Position, color: number) {
-        if (this.game.totalScore > 0 && 
-            this.getTileAtPosition(position) == TileEnum.Destination && 
-            this.getPieceByPosition(position) == null) {
-                this.game.scorePoints(-1);
-                this.createPiece(position, color);
-        } else {
-            console.log("You can't purchase a UFO!")
-        }
+    // public purchaseUFO(position: Position, color: number) {
+    //     if (this.game.totalScore > 0 && 
+    //         this.getTileAtPosition(position) == TileEnum.Red_Destination && 
+    //         this.getPieceByPosition(position) == null) {
+    //             this.game.scorePoints(-1);
+    //             this.createPiece(position, color);
+    //     } else {
+    //         console.log("You can't purchase a UFO!")
+    //     }
 
-    }
+    // }
 }
