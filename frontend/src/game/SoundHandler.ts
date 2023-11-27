@@ -6,7 +6,7 @@ export class SoundHandler {
     private static sfxPath: string = "sounds/sound-effects/";
     private static bgm: HTMLAudioElement = new Audio(SoundHandler.bgmPath + "menu-music.mp3");
     
-    private static allSFXFiles: string[] = ["card-play.ogg", "cow-moo.mp3", "plane-move.mp3", "ufo-abduction.ogg", "ufo-destroyed.mp3",
+    private static allSFXFiles: string[] = ["card-play.ogg", "cow-moo.mp3", "plane-move.ogg", "ufo-abduction.ogg", "ufo-destroyed.mp3",
                                             "ufo-laser.ogg", "ufo-move.ogg", "ufo-purchased.mp3"];
     private static allBGMFiles: string[] = ["game-music.mp3", "lobby-music.mp3", "menu-music.mp3"];
 

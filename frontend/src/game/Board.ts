@@ -155,7 +155,7 @@ export class Board extends Container {
         if (getTeam(piece.type) == TeamEnum.Player) {
             SoundHandler.playSFX("ufo-move.ogg");
         } else {
-            SoundHandler.playSFX("plane-move.mp3");
+            SoundHandler.playSFX("plane-move.ogg");
         }
         this.setPieceLocation(piece, dest, animated);
     }
@@ -169,7 +169,7 @@ export class Board extends Container {
         if (getTeam(piece.type) == TeamEnum.Player) {
             SoundHandler.playSFX("ufo-move.ogg");
         } else {
-            SoundHandler.playSFX("plane-move.mp3");
+            SoundHandler.playSFX("plane-move.ogg");
         }
 
         let xShift = dest.column - piece.column;
