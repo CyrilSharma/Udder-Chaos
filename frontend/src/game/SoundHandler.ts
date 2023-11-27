@@ -6,16 +6,16 @@ export class SoundHandler {
     private static sfxPath: string = "sounds/sound-effects/";
     private static bgm: HTMLAudioElement = new Audio(SoundHandler.bgmPath + "menu-music.mp3");
     
-    private static allSFXFiles: string[] = ["card-play.ogg", "cow-moo.mp3", "plane-move.ogg", "ufo-abduction.ogg", "ufo-destroyed.mp3",
-                                            "ufo-laser.ogg", "ufo-move.ogg", "ufo-purchased.mp3"];
-    private static allBGMFiles: string[] = ["game-music.mp3", "lobby-music.mp3", "menu-music.mp3"];
+    private static allSFXFiles = ["card-play.ogg", "cow-moo.mp3", "plane-move.ogg", "ufo-abduction.ogg", "ufo-destroyed.mp3",
+                                            "ufo-laser.ogg", "ufo-move.ogg", "ufo-purchased.ogg"];
+    private static allBGMFiles = ["game-music.mp3", "lobby-music.mp3", "menu-music.mp3"];
 
     // Load all audio files into cache
     public static preloadAudio() {
-        for (let file in SoundHandler.allSFXFiles) {
+        for (let file of SoundHandler.allSFXFiles) {
             let tmp = new Audio(SoundHandler.sfxPath + file);
         }
-        for (let file in SoundHandler.allBGMFiles) {
+        for (let file of SoundHandler.allBGMFiles) {
             let tmp = new Audio(SoundHandler.bgmPath + file);
         }
     }

@@ -464,7 +464,7 @@ export class Board extends Container {
         if (this.game.totalScore > 0 && 
             this.getTileAtPosition(position) == TileEnum.Destination && 
             this.getPieceByPosition(position) == null) {
-                SoundHandler.playSFX("ufo-purchased.mp3");
+                SoundHandler.playSFX("ufo-purchased.ogg");
                 this.game.scorePoints(-1);
                 this.createPiece(position, color);
         } else {

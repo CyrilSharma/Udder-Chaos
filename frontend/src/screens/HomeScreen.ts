@@ -18,7 +18,7 @@ export class HomeScreen extends Container {
     private settingsButton: MenuButton;
     private tutorialButton: MenuButton;
     private logo: Sprite;
-    private bgm: HTMLAudioElement = new Audio("sounds/menu-music.mp3");
+    private bgm: HTMLAudioElement = new Audio("sounds/bgm/menu-music.mp3");
 
     constructor() {
         super();
