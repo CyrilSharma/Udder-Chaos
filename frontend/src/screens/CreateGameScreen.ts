@@ -8,6 +8,7 @@ import { SizedButton } from '../ui_components/SizedButton';
 import { LobbyList } from '../ui_components/LobbyList';
 import { SeedBox } from '../ui_components/SeedBox';
 import { BackButton } from '../ui_components/BackButton';
+import { CustomScreenUI } from '../ui_components/CustomScreenUI';
 
 /** Screen shows upon opening the website */
 export class CreateGameScreen extends Container {
@@ -18,8 +19,10 @@ export class CreateGameScreen extends Container {
     private codeDisplay: SizedButton;
     private startButton: SizedButton;
     private lobbyList: LobbyList;
-    private seedBox: SeedBox;
+    //private seedBox: SeedBox;
     private backButton: BackButton;
+    private customizeButton: SizedButton;
+    private customScreen: CustomScreenUI;
 
     constructor() {
         super();
@@ -36,12 +39,12 @@ export class CreateGameScreen extends Container {
 
         this.startButton = new SizedButton(0.5, 0.9, 0.3, 0.15, "Start Game", this.menuContainer.width, this.menuContainer.height, 40, 0x6060fc);
         this.startButton.onPress.connect(() => {
-            server.startGame(this.seedBox.seed.value);
+            server.startGame(/*this.seedBox.seed.value*/);
         });
         this.menuContainer.addChild(this.startButton);
 
-        this.seedBox = new SeedBox(this.menuContainer, 0.82, 0.9, 0.3, 0.15, "Seed", 6);
-        this.menuContainer.addChild(this.seedBox);
+        // this.seedBox = new SeedBox(this.menuContainer, 0.82, 0.9, 0.3, 0.15, "Seed", 6);
+        // this.menuContainer.addChild(this.seedBox);
 
         this.lobbyList = new LobbyList(0, this.menuContainer, 0.5, 0.555, 0.64, 0.5);
         this.menuContainer.addChild(this.lobbyList);
@@ -51,13 +54,27 @@ export class CreateGameScreen extends Container {
             server.leaveRoom();
             navigation.showScreen(HomeScreen);
         });
-
         this.menuContainer.addChild(this.backButton);
+
+        this.customizeButton = new SizedButton(0.82, 0.9, 0.25, 0.11, "Customize", this.menuContainer.width, this.menuContainer.height, 30, 0x50aadc);
+        this.customizeButton.onPress.connect(() => {
+            //this.menuContainer.visible = false;
+            this.customScreen.visible = true;
+        });
+        this.menuContainer.addChild(this.customizeButton);
+
         this.addChild(this.menuContainer);
+
+        this.customScreen = new CustomScreenUI();
+        this.addChild(this.customScreen);
     }
 
     public async addGameCode(code: string) {
         this.codeDisplay.changeText("Code:\n" + code);
+    }
+
+    public getSeed() {
+        return this.customScreen.getSeed();
     }
 
     public resize(width: number, height: number) {
@@ -67,8 +84,10 @@ export class CreateGameScreen extends Container {
         this.codeDisplay.resize(this.menuContainer.getBox());
         this.startButton.resize(this.menuContainer.getBox());
         this.lobbyList.resize(this.menuContainer.getBox());
-        this.seedBox.resize(this.menuContainer.getBox());
+        //this.seedBox.resize(this.menuContainer.getBox());
         this.backButton.resize(this.menuContainer.getBox());
+        this.customizeButton.resize(this.menuContainer.getBox());
+        this.customScreen.resize(width, height);
     }
 
     public getLobbyList() {
