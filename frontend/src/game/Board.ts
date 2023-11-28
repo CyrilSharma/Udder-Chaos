@@ -285,8 +285,12 @@ export class Board extends Container {
         tile.eventMode = 'static';
         tile.on('pointerup', () => {
             if (this.game.buyButton.dragging && this.game.ourTurn()) {
-                server.purchaseUFO(position, this.game.playerColor);
-                this.game.moveQueue.enqueue({"moveType": MoveType.PlayCard, "moveData": position, "color": this.game.playerColor, "animated": true})
+                if (this.game.totalScore > 0 && 
+                    this.colorAtMatchingDestination(position, this.game.playerColor) &&
+                    this.getPieceByPosition(position) == null) {
+                        server.purchaseUFO(position, this.game.playerColor);
+                        this.game.moveQueue.enqueue({"moveType": MoveType.PurchaseUFO, "moveData": position, "color": this.game.playerColor, "animated": true})
+                    }
             }
         });
 
@@ -379,6 +383,11 @@ export class Board extends Container {
         return this.grid[position.row][position.column];
     }
 
+    public colorAtMatchingDestination(position: Position, color: number) {
+        const tileOffsetToRed = this.game.board.getTileAtPosition(position) - color + PieceEnum.Player_Red;
+        return (tileOffsetToRed == TileEnum.Red_Destination || tileOffsetToRed == TileEnum.Red_Spawn)
+    }
+
     public spawnCows(turnCount: number) {
         const spawn_rate = this.game.gameSettings.getValue("cow_regen_rate");
 
@@ -438,15 +447,8 @@ export class Board extends Container {
         this.y = this.height * -0.5;
     }
 
-    // public purchaseUFO(position: Position, color: number) {
-    //     if (this.game.totalScore > 0 && 
-    //         this.getTileAtPosition(position) == TileEnum.Red_Destination && 
-    //         this.getPieceByPosition(position) == null) {
-    //             this.game.scorePoints(-1);
-    //             this.createPiece(position, color);
-    //     } else {
-    //         console.log("You can't purchase a UFO!")
-    //     }
-
-    // }
+    public purchaseUFO(position: Position, color: number) {
+        this.game.scorePoints(-1);
+        this.createPiece(position, color);
+    }
 }

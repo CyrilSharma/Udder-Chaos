@@ -215,18 +215,18 @@ export function loadMap(seed: number) {
     return grid;
 }
 
-export function createRandomGrid(rows = 16, cols = 16) {
-    const grid: Grid = [];
-    const tiles = [TileEnum.Plain, TileEnum.Pasture, TileEnum.Impassible, TileEnum.Destination];
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            let idx = Math.floor(random() * tiles.length);
-            if (!grid[r]) grid[r] = [];
-            grid[r][c] = tiles[idx];
-        }
-    }
-    return grid;
-};
+// export function createRandomGrid(rows = 16, cols = 16) {
+//     const grid: Grid = [];
+//     const tiles = [TileEnum.Plain, TileEnum.Pasture, TileEnum.Impassible, TileEnum.Destination];
+//     for (let r = 0; r < rows; r++) {
+//         for (let c = 0; c < cols; c++) {
+//             let idx = Math.floor(random() * tiles.length);
+//             if (!grid[r]) grid[r] = [];
+//             grid[r][c] = tiles[idx];
+//         }
+//     }
+//     return grid;
+// };
 
 // Create a CSV string from an input Grid
 function createCSV(grid: Grid) {

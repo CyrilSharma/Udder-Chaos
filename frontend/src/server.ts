@@ -83,7 +83,6 @@ class Server {
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
-            gameScreen.game.setPlayers(playerList);
 
             let cards = []
             let arrays = [
