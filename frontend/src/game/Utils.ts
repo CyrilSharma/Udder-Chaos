@@ -17,13 +17,14 @@ import '@pixi/math-extras';
 
 // ---- Game Settings ---- //
 export const defaultGameSettings = {
-    seed: 0,
+    seed: "",
     score_goal: 30,
     days_per_round: 5,
     cow_regen_rate: 15,
     cow_sacrifice: 5,
     card_deck_size: 15,
-    timer_length: 30
+    timer_length: 30,
+    difficulty: 3,
 }
 
 export type gameSettingsData = typeof defaultGameSettings;

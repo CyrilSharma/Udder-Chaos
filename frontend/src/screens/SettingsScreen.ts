@@ -36,10 +36,10 @@ export class SettingsScreen extends Container {
         this.settingsLabel = new SizedButton(0.5, 0.16, 0.5, 0.25, "Settings", this.menuContainer.width, this.menuContainer.height, 50, 0xffcc66);
         this.menuContainer.addChild(this.settingsLabel);
 
-        this.sfxVol = new SliderUI(0.5, 0.47, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "SFX Volume", 0, 100, 30, this.menuContainer.getBox());
+        this.sfxVol = new SliderUI(0.5, 0.47, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "SFX Volume", 0, 100, 50, 30, this.menuContainer.getBox());
         this.menuContainer.addChild(this.sfxVol);
 
-        this.musicVol = new SliderUI(0.5, 0.77, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "Music Volume", 0, 100, 30, this.menuContainer.getBox());
+        this.musicVol = new SliderUI(0.5, 0.77, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "Music Volume", 0, 100, 50, 30, this.menuContainer.getBox());
         this.menuContainer.addChild(this.musicVol);
     }
 
