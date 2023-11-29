@@ -12,10 +12,18 @@ enum Direction {
 };
 
 enum TileType {
-  PLAIN = 0,
-  COW = 1,
-  IMPASSIBLE = 2,
-  SCORE = 3
+  PLAIN, COW,
+  IMPASSIBLE, SPAWN
+};
+struct Tile {
+  TileType category;
+  unsigned int player: 1;
+  unsigned int color: 2;
+  bool operator==(const Tile& other) const;
+  bool operator!=(const Tile& other) const;
+  Tile(TileType cat, int player = 0, int color = 0);
+  static Tile from(int value);
+  Tile();
 };
 
 enum MoveType {
@@ -24,6 +32,7 @@ enum MoveType {
   ROTATE = 1,
   BUY = 2
 };
+string typeOfMove(MoveType t);
 
 struct Card {
   std::vector<Direction> moves;
@@ -35,6 +44,8 @@ struct Card {
 };
 ostream& operator<<(ostream& os, const Card& card);
 
+
+// Uses 1-indexing... for some reason
 struct Piece {
   int i, j, tp, score;
   Piece();
@@ -55,17 +66,15 @@ struct Move {
   Move(MoveType type, int arg1=0, int arg2=0);
 };
 
-string typeOfMove(MoveType t);
-
 struct GameConfig {
-  vector<vector<int>> board;
+  vector<vector<Tile>> board;
   vector<Piece> pieces;
   vector<Card> cards;
   int hand_size;
   int round_length;
   string id;
   GameConfig(
-    vector<vector<int>> board,
+    vector<vector<Tile>> board,
     vector<Piece> pieces,
     vector<Card> cards,
     int hand_size = 3,

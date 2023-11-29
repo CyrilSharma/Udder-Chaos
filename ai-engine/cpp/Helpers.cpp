@@ -1,7 +1,41 @@
 #include "Helpers.h"
 
+Tile::Tile(): category(TileType::PLAIN), player(0), color(0) {}
+Tile::Tile(TileType cat, int player, int color):
+  category(cat), player(player), color(color) {}
+Tile Tile::from(int value) {
+  using T = TileType;
+  switch (value) {
+    case 0:  return Tile(T::PLAIN);
+    case 1:  return Tile(T::COW);
+    case 2:  return Tile(T::IMPASSIBLE);
+    case 3:  return Tile(T::SPAWN, 1, 0);
+    case 4:  return Tile(T::SPAWN, 1, 1);
+    case 5:  return Tile(T::SPAWN, 1, 2);
+    case 6:  return Tile(T::SPAWN, 1, 3);
+    case 7:  return Tile(T::SPAWN, 1, 0);
+    case 8:  return Tile(T::SPAWN, 1, 1);
+    case 9:  return Tile(T::SPAWN, 1, 2);
+    case 10: return Tile(T::SPAWN, 1, 3);
+    case 11: return Tile(T::SPAWN, 0, 0);
+    case 12: return Tile(T::SPAWN, 0, 1);
+    case 13: return Tile(T::SPAWN, 0, 2);
+    case 14: return Tile(T::SPAWN, 0, 3);
+    default: 
+      cerr << "Unknown Tile, exiting\n";
+      exit(1);
+  };
+}
+bool Tile::operator==(const Tile& other) const {
+  return (category == other.category)
+         && (player == other.player)
+         && (color == other.color);
+}
+bool Tile::operator!=(const Tile& other) const {
+   return !(*this == other);
+}
 
-std::vector<Direction> moves;
+
 bool Card::operator==(const Card& other) const {
   return moves == other.moves;
 }
@@ -29,7 +63,6 @@ uint64_t Card::getID() {
 uint64_t Card::getMaxID() {
   return 1ULL << (2 * moves.size());
 }
-
 
 ostream& operator<<(ostream& os, const Card& card) {
   os << "Card: ";
@@ -63,27 +96,24 @@ ostream& operator<<(ostream& os, const Piece& p) {
   return os;
 }
 
-// ok so ideally Move is a generic class which is implemented by different move types but
+
 Move::Move(MoveType type, int arg1, int arg2):
-  type(type), card(arg1), color(arg2), x(arg1), y(arg2), angle(arg2) {}
+  type(type), card(arg1), color(arg2),
+  x(arg1), y(arg2), angle(arg2) {}
 
 string typeOfMove(MoveType t) {
   switch(t) {
-    case NONE:
-      return "No move";
-    case NORMAL:
-      return "Normal";
-    case ROTATE:
-      return "Rotate";
-    case BUY:
-      return "Buy";
-    default:
-      return "Unknown Type";
+    case NONE:   return "No move";
+    case NORMAL: return "Normal";
+    case ROTATE: return "Rotate";
+    case BUY:    return "Buy";
+    default:     return "Unknown Type";
   }
 }
 
+
 GameConfig::GameConfig(
-  vector<vector<int>> board,
+  vector<vector<Tile>> board,
   vector<Piece> pieces,
   vector<Card> cards,
   int hand_size,

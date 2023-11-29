@@ -63,7 +63,7 @@ TEST_CASE("Testing Player Movement") {
     Direction::LEFT, Direction::DOWN,
   };
   const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width));
+  vector<vector<Tile>> board(height, vector<Tile>(width));
 
   const int ndirs = 3, ncards = 16;
   auto cards = random_cards(ndirs, ncards);
@@ -155,13 +155,15 @@ TEST_CASE("Testing Player Movement") {
       pieces[i].i = ys[i];
       pieces[i].j = xs[i];
     }
-    vector<vector<int>> checkers(height, vector<int>(width));
+
+    vector<vector<Tile>> checkers(height, vector<Tile>(width));
     for (int i = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
         checkers[i][j] = (((i + j) % 2) == 0) 
           ? TileType::IMPASSIBLE : TileType::PLAIN;
       }
     }
+
     config = { checkers, pieces, cards };
     auto g2 = Game(config);
     cout << g2 << endl;
@@ -232,12 +234,12 @@ TEST_CASE("Testing Player Movement") {
 TEST_CASE("Test Cow Capturing") {
   const int width = 16, height = 16;
 
-  vector<vector<int>> board(height, vector<int>(width));
+  vector<vector<Tile>> board(height, vector<Tile>(width));
   // Lazy way to make cows not spawn where units already are.
   for (int i = 1; i < 11; i++) {
     for (int j = 1; j < 11; j++) {
       if (rand() % 4 == 0) {
-        board[i][j] = TileType::COW;
+        board[i][j].category = TileType::COW;
       }
     }
   }
@@ -272,7 +274,7 @@ TEST_CASE("Test Cow Capturing") {
       p.i = ni, p.j = nj;
       if (board[ni][nj] == TileType::COW) {
         // sus way to say the cow is gone now.
-        board[ni][nj] = 0;
+        board[ni][nj].category = TileType::PLAIN;
         pieces[i].score += 1;
       }
     }
@@ -317,7 +319,7 @@ TEST_CASE("Test Cow Capturing") {
 
 TEST_CASE("Test Unit Killing") {
   const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width));
+  vector<vector<Tile>> board(height, vector<Tile>(width));
 
   vector<Piece> pieces = {
     Piece(5, 5, 1),
@@ -357,12 +359,7 @@ TEST_CASE("Test Unit Killing") {
 
 TEST_CASE("Test Enemy Movement / Logic") {
   const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width));
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      board[i][j] = rand() % 2;
-    }
-  }
+  auto board = random_board(width, height);
 
   const int npieces = 4;
   vector<Piece> player_pieces(npieces);
@@ -415,10 +412,10 @@ TEST_CASE("Test Enemy Movement / Logic") {
 
 TEST_CASE("Test Scoring") {
   const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width, 0));
-  board[0][0] = TileType::SCORE;
-  board[7][0] = TileType::COW;
-  board[8][0] = TileType::IMPASSIBLE;
+  vector<vector<Tile>> board(height, vector<Tile>(width));
+  board[0][0] = Tile(TileType::SPAWN, 1, 1);
+  board[7][0] = Tile(TileType::COW);
+  board[8][0] = Tile(TileType::IMPASSIBLE);
 
   vector<Piece> player_pieces = { Piece(1, 0, 1) };
 
@@ -452,7 +449,7 @@ TEST_CASE("Test Scoring") {
 
 TEST_CASE("Test Game JOVER") {
   const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width, 0));
+  vector<vector<Tile>> board(height, vector<Tile>(width));
 
   vector<Piece> pieces1 = { };
   const int ndirs = 3;

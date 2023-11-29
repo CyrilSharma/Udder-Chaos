@@ -64,14 +64,20 @@ Game::Game(GameConfig config):
 
   for (uint32_t i = 0; i < height; i++) {
     for (uint32_t j = 0; j < width; j++) {
-      int tile = config.board[i][j];
-      if (tile == TileType::PLAIN) {}
-      else if (tile == TileType::IMPASSIBLE) {
-        impassible.set(i * width + j, 1);
-      } else if (tile == TileType::COW) {
-        cows.set(i * width + j, 1);
-      } else if (tile == TileType::SCORE) {
-        score_tiles.set(i * width + j, 1);
+      int idx = i * width + j;
+      auto tile = config.board[i][j];
+      if (tile.category == TileType::PLAIN) {}
+      else if (tile.category == TileType::IMPASSIBLE) {
+        impassible.set(idx, 1);
+      } else if (tile.category == TileType::COW) {
+        cows.set(idx, 1);
+      } else if ((tile.category == TileType::SPAWN)
+              && (tile.player == 1)) {
+        score_tiles.set(idx, 1);
+        player_spawns[tile.color].push_back({j, i});
+      } else if ((tile.category == TileType::SPAWN)
+              && (tile.player == 0)) {
+        enemy_spawns[tile.color].push_back({j, i});
       }
     }
   }
@@ -162,6 +168,21 @@ bool Game::is_enemy_turn(int t) const {
 void Game::make_move(Move move) {
   assert(move.type != MoveType::NONE);
   cows |= cow_respawn[turn % round_length];
+  // Each day is 2 AI moves and 4 Player Moves.
+  // After round_length days, we spawn more enemies.
+  if (turn && (turn % (6 * round_length))) {
+    for (int c = 0; c < 4; c++) {
+      for (auto [x, y]: enemy_spawns[c]) {
+        int idx = y * width + x;
+        if (enemies[c][idx]) continue;
+        enemies[c].set(y * width + x, 1);
+        enemy.xs[c].push_back(x);
+        enemy.ys[c].push_back(y);
+        enemy.ss[c].push_back(0);
+        enemy.deads[c].push_back(0);
+      }
+    }
+  }
   if (move.type == MoveType::NORMAL) {
     if (is_enemy_turn()) enemy_move(move.card, move.color);
     else player_move(move.card);
@@ -227,9 +248,7 @@ void Game::player_rotate_card(int choice, int rotation) {
  */
 
 void Game::player_buy(int x, int y) {
-  dynamic_bitset msk(area(), 1); 
-  msk.set(width * y + x, 1);
-  players[player_id] |= msk;
+  players[player_id].set(y * width + x, 1);
   player.xs[player_id].push_back(x);
   player.ys[player_id].push_back(y);
   player.ss[player_id].push_back(0);
@@ -516,20 +535,30 @@ void Game::play_player_movement(Direction d) {
   * Puts the board in a convenient state.
   */
 
-vector<vector<int>> Game::viewBoard() {
-  vector<vector<int>> out(height, vector<int>(width));
+vector<vector<Tile>> Game::viewBoard() {
+  vector<vector<Tile>> out(height, vector<Tile>(width));
   for (uint32_t i = 0; i < height; i++) {
     for (uint32_t j = 0; j < width; j++) {
-      out[i][j] = TileType::PLAIN;
-      auto mask = dynamic_bitset(area());
       int idx = width * i + j;
       if (impassible[idx]) {
-        out[i][j] = TileType::IMPASSIBLE;
+        out[i][j].category = TileType::IMPASSIBLE;
       } else if (cows[idx]) {
-        out[i][j] = TileType::COW;
-      } else if  (score_tiles[idx]) {
-        out[i][j] = TileType::SCORE;
+        out[i][j].category = TileType::COW;
+      } else {
+        out[i][j].category = TileType::PLAIN;
       }
+    }
+  }
+  for (int c = 0; c < 4; c++) {
+    for (auto [x, y]: player_spawns[c]) {
+      out[y][x].category = TileType::SPAWN;
+      out[y][x].player = 1;
+      out[y][x].color = c;
+    }
+    for (auto [x, y]: enemy_spawns[c]) {
+      out[y][x].category = TileType::SPAWN;
+      out[y][x].player = 0;
+      out[y][x].color = c;
     }
   }
   return out;
@@ -537,7 +566,6 @@ vector<vector<int>> Game::viewBoard() {
 
 /*
  * Puts the pieces in a convenient state.
- 
  */
 
 vector<Piece> Game::viewPieces() {
@@ -578,18 +606,18 @@ ostream& operator<<(ostream& os, Game& game) {
   auto board = game.viewBoard();
   for (uint64_t i = 0; i < game.height; i++) {
     for (uint64_t j = 0; j < game.width; j++) {
-      if (board[i][j] == TileType::PLAIN) {
+      if (board[i][j].category == TileType::PLAIN) {
         os << Color::Modifier(Color::BG_GREEN);
         os << ' ';
-      } else if (board[i][j] == TileType::COW) {
+      } else if (board[i][j].category == TileType::COW) {
         os << Color::Modifier(Color::BG_DEFAULT);
         os << 'C';
       }
-      else if (board[i][j] == TileType::IMPASSIBLE) {
+      else if (board[i][j].category == TileType::IMPASSIBLE) {
         os << Color::Modifier(Color::BG_BLACK);
         os << ' ';
       }
-      else if (board[i][j] == TileType::SCORE) {
+      else /** spawn tile **/{
         os << Color::Modifier(Color::BG_PURPLE);
         os << ' ';
       }

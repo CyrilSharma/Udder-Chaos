@@ -31,10 +31,11 @@ struct Game {
   dynamic_bitset all_enemies;
   dynamic_bitset all_players;
   dynamic_bitset score_tiles;
-  
-  int playereval=0, enemyeval=0;
-  vector<int> playerhm, enemyhm;
 
+  array<vector<pair<uint8_t, uint8_t>>, 4> player_spawns;
+  array<vector<pair<uint8_t, uint8_t>>, 4> enemy_spawns;
+  int playereval = 0, enemyeval = 0;
+  vector<int> playerhm, enemyhm;
 
   // Why didn't I put the array outside....
   struct SOA {
@@ -62,7 +63,7 @@ struct Game {
   void play_movement(Direction d, int choice, int p);
   void play_enemy_movement(Direction d, int choice);
   void play_player_movement(Direction d);
-  vector<vector<int>> viewBoard();
+  vector<vector<Tile>> viewBoard();
   vector<Piece> viewPieces();
   vector<Card> viewCards();
   bool operator<(const Game& o) const;

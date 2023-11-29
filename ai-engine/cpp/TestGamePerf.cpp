@@ -6,12 +6,7 @@
 
 int main() {
   const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width));
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      board[i][j] = rand() % 2;
-    }
-  }
+  auto board = random_board(width, height);
 
   const int npieces = 4;
   vector<Piece> player_pieces(npieces);

@@ -35,10 +35,11 @@ TEST_CASE("Testing Good Moves") {
 
     int w, h, np, nc, nd;
     input >> w >> h >> np >> nc >> nd;
-    vector<vector<int>> board(h, vector<int>(w));
+    vector<vector<Tile>> board(h, vector<Tile>(w));
     for (int i = 0; i < h; i++) {
       for (int j = 0; j < w; j++) {
-        input >> board[i][j];
+        int v; input >> v;
+        board[i][j] = Tile::from(v);
       }
     }
 

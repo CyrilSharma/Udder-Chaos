@@ -8,11 +8,16 @@ namespace fs = std::filesystem;
 using namespace std;
 
 /*--- Generation Utilities ------*/
-vector<vector<int>> random_board(int width, int height) {
-  vector<vector<int>> board(16, vector<int>(16));
+vector<vector<Tile>> random_board(int width, int height) {
+  vector<vector<Tile>> board(width, vector<Tile>(height));
+  TileType types[] = {
+    TileType::PLAIN,
+    TileType::IMPASSIBLE,
+    TileType::COW
+  };
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++) {
-      board[i][j] = rand() % 3;
+      board[i][j] = Tile(types[rand() % 3]);
     }
   }
   return board;
@@ -51,19 +56,18 @@ vector<Card> random_cards(int ndirs, int ncards) {
  * loads board + pieces based on the random seed.
  */
 
-tuple<vector<vector<int>>, vector<Piece>> load_setup(ifstream &file) {
-  int h, w, n; file >> h >> w >> n;
-  vector<vector<int>> board(h, vector<int>(w));
+tuple<vector<vector<Tile>>, vector<Piece>> load_setup(ifstream &file) {
+  int h, w; file >> h >> w;
+  vector<Piece> pieces;
+  vector<vector<Tile>> board(h, vector<Tile>(w));
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
-      file >> board[i][j];
+      int v; file >> v;
+      board[i][j] = Tile::from(v);
+      if (v >= 7) pieces.push_back(
+        Piece(i, j, !board[i][j].player * 4 + board[i][j].color)
+      );
     }
-  }
-
-  vector<Piece> pieces(n);
-  for (int i = 0; i < n; i++) {
-    int x, y, tp; file >> x >> y >> tp;
-    pieces[i] = (Piece(y, x, tp));
   }
 
   file.close();
@@ -71,10 +75,10 @@ tuple<vector<vector<int>>, vector<Piece>> load_setup(ifstream &file) {
 } /* load_setup() */
 
 /*
- * loads board + pieces based on the random seed.
+ * loads board + pieces based on the provided index.
  */
 
-tuple<vector<vector<int>>, vector<Piece>> load_setup(int idx) {
+tuple<vector<vector<Tile>>, vector<Piece>> load_setup(int idx) {
   ifstream file ("Maps/map" + to_string(idx) + ".txt");
   if (!file.is_open()) {
     cerr << "FAILURE: Invalid Map Index: " << idx << endl;
@@ -84,8 +88,7 @@ tuple<vector<vector<int>>, vector<Piece>> load_setup(int idx) {
 } /* load_setup() */
 
 /*
- * load_cards based on a seed
- * this method is kept in sync with the frontend.
+ * read in cards sent from the frontend.
  */
 
 vector<Card> load_cards(int ncards) {
@@ -99,7 +102,6 @@ vector<Card> load_cards(int ncards) {
   vector<Card> cards(ncards);
   for (int i = 0; i < ncards; i++) {
     int d1, d2, d3; cin >> d1 >> d2 >> d3;
-    // cerr << d1 << " " << d2 << " " << d3 << endl;
     vector<Direction> moves {
       directions[d1],
       directions[d2],
