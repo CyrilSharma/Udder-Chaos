@@ -12,6 +12,7 @@ export class SoundHandler {
 
     // Load all audio files into cache
     public static preloadAudio() {
+        console.log("Loading audio files");
         for (let file of SoundHandler.allSFXFiles) {
             let tmp = new Audio(SoundHandler.sfxPath + file);
         }

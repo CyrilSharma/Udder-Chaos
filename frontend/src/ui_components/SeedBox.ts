@@ -30,12 +30,13 @@ export class SeedBox extends FancyButton {
         this.seed = new Input({
             bg: this.background,
             maxLength: maxL,
+            // placeholder: text,
             textStyle: new TextStyle({
                 fontFamily: "Concert One",
                 fontSize: 40,
                 fill: "#000000",
                 align: "center",
-            }),
+            })
         });
         this.seed.alpha = 1;
         this.seed.onChange.connect(() => {

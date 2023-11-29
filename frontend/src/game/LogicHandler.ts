@@ -62,7 +62,9 @@ export class LogicHandler {
             // let canMove: boolean = canMoveOverAll(piece.type, this.game.board.getPiecesByPosition(dest));
             let canMove: boolean = false;
             let check: Position = cur;
-            
+            console.log("can't move over all :0");
+
+            friendlyCheck:
             do { 
                 // Get next check location
                 check = { row: check.row + dy[dir], column: check.column + dx[dir] };
@@ -73,10 +75,9 @@ export class LogicHandler {
                     break;
                 }
                 // If this is a piece, we check if it is a player piece, enemy piece, or cow
-                else if (this.game.board.getPiecesByPosition(check) != null) {
+                else if (this.game.board.getPiecesByPosition(check).length != 0) {
                     let collidePieces: Piece[] = this.game.board.getPiecesByPosition(check);
                     for (let collidePiece of collidePieces) {
-
                         // If this is a friendly piece, check the next square 
                         // (we can move onto this square as long as the next piece can move)
                         if (collidePiece.type == piece.type) {
@@ -90,7 +91,7 @@ export class LogicHandler {
                         // Otherwise, we cannot move
                         else {
                             canMove = false;
-                            break;
+                            break friendlyCheck;
                         }
 
                     }
@@ -98,8 +99,9 @@ export class LogicHandler {
                 // Nothing here, we can move
                 else {
                     canMove = true;
-                    break;
                 }
+
+                if (canMove == true) break;
             } while (this.game.board.getPiecesByPosition(check).length != 0);
             
             // If we can't move, update the destination to remain in the current position

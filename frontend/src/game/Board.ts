@@ -243,7 +243,7 @@ export class Board extends Container {
 
         const targets = this.getPiecesByPosition(dest, TeamEnum.Cow);
         if (targets.length == 0) throw new Error("No cows at abduct action destination");
-        let target = targets[1];
+        let target = targets[0];
         await target.animateAbducted(this.tileSize, animated);
         this.removePiece(target);
         piece.addScore();
