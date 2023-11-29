@@ -15,6 +15,7 @@ const io = new Server(server, {
 });
 
 // Ship frontend to clients.
+var mode = process.env.NODE_ENV;
 if (mode != 'development') {
     app.use('/assets', express.static(path.join(__dirname, 'assets')));
     app.use('/images', express.static(path.join(__dirname, 'images')));
@@ -25,7 +26,6 @@ if (mode != 'development') {
 }
 
 // Handles connections.
-var mode = process.env.NODE_ENV;
 console.log(mode);
 const server_port = (mode == 'development') ? 3000 : 5000;
 server.listen(server_port, () => {
