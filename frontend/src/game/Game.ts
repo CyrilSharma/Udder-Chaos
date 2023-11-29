@@ -15,6 +15,8 @@ import { SizedButton } from '../ui_components/SizedButton';
 import server from "../server";
 import { GameSettings, gameSettings } from "./GameSettings";
 import { MoveQueue } from './MoveQueue';
+import { PauseIcon } from '../ui_components/PauseIcon';
+import { PauseMenu } from '../ui_components/PauseMenu';
 
 // This seems a little redundant right now,
 // But it will house the cards as well,
@@ -53,6 +55,8 @@ export class Game extends Container {
     public animating: boolean = false;
     public upNext: SizedButton;
     public codeDisplay: SizedButton;
+    public pauseButton: PauseIcon;
+    public pauseMenu: PauseMenu;
 
     constructor() {
         super();
@@ -108,6 +112,16 @@ export class Game extends Container {
         this.addChild(this.boardPanel);
         this.addChild(this.bottomPanel);
         this.addChild(this.cards);
+
+        this.pauseButton = new PauseIcon();
+        this.addChild(this.pauseButton);
+
+        this.pauseMenu = new PauseMenu();
+        this.pauseButton.myHitArea.onPress.connect(() => {
+            this.pauseMenu.visible = true;
+        });
+        this.addChild(this.pauseMenu);
+        this.resize(window.innerWidth, window.innerHeight);
 
     }
 
@@ -307,8 +321,10 @@ export class Game extends Container {
         this.buyButton.y = this.scoreCounter.y + 70;
         this.cards.y = 0;
         this.cards.x = 0;
-        this.upNext.y = -310;
+        this.upNext.y = this.rightPanel.height * -0.5 + 0.5 * this.upNext.height//-310;
         this.codeDisplay.y = 200;
+        this.pauseButton.resize();
+        this.pauseMenu.resize(width, height);
 
         this.cards.placeCards();
 

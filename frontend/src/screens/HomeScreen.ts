@@ -63,6 +63,8 @@ export class HomeScreen extends Container {
         });
         this.addChild(this.settingsScreen);
 
+        this.resize(window.innerWidth, window.innerHeight);
+
     }
 
     public resize(width: number, height: number) {
