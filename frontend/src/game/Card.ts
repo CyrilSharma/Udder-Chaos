@@ -182,8 +182,10 @@ export class Card extends Container {
                 return;
             }
 
-            server.rotateCard(this.index, rotation, this.queue.game.playerColor);
-            this.queue.game.moveQueue.enqueue({"moveType": MoveType.RotateCard, "moveData": {"index": this.index, "rotation": rotation}, "color": this.queue.game.playerColor, "animated": true});
+            let rotateAmount = mod(rotation - this.cardRotation + 4, 4);
+
+            server.rotateCard(this.index, rotateAmount, this.queue.game.playerColor);
+            this.queue.game.moveQueue.enqueue({"moveType": MoveType.RotateCard, "moveData": {"index": this.index, "rotation": rotateAmount}, "color": this.queue.game.playerColor, "animated": true});
         }
     }
 
