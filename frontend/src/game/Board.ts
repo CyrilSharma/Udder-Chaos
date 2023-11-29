@@ -23,6 +23,7 @@ import {
 } from './Utils';
 import { EndGameScreen } from '../ui_components/EndGameScreen';
 import server from "../server";
+import { SoundHandler } from './SoundHandler';
 
 /**
  * Board class
@@ -129,7 +130,6 @@ export class Board extends Container {
     // Takes a board update, and performs corresponding updates and rerenders at the end.
     public async updateGame(update: BoardUpdate, animated: boolean) {
         // Loop through steps in update
-        this.game.animating = true;
         for (let i = 0; i < update.length; i++) {
             for (let j = 0; j < update[i].length; j++) {
                 switch (update[i][j].action) {
@@ -146,20 +146,32 @@ export class Board extends Container {
                 await new Promise(r => setTimeout(r, 500))
             }
         }
-        this.game.animating = false;
     }
 
     public normal_move(action: PieceAction, animated: boolean) {
+        
         let piece = action.piece;
         let dest = action.move;
+        if (getTeam(piece.type) == TeamEnum.Player) {
+            SoundHandler.playSFX("ufo-move.ogg");
+        } else {
+            SoundHandler.playSFX("plane-move.ogg");
+        }
         this.setPieceLocation(piece, dest, animated);
     }
 
     public obstructed_move(action: PieceAction, animated: boolean) {
+        
         // Do an animation toward the destination but fail.
         let piece = action.piece;
         let dest = action.move;
         
+        if (getTeam(piece.type) == TeamEnum.Player) {
+            SoundHandler.playSFX("ufo-move.ogg");
+        } else {
+            SoundHandler.playSFX("plane-move.ogg");
+        }
+
         let xShift = dest.column - piece.column;
         let yShift = dest.row - piece.row;
 
@@ -172,13 +184,14 @@ export class Board extends Container {
     public async kill_action(action: PieceAction, animated: boolean) {
         let piece = action.piece;
         let dest = action.move;
-
+        
         const target = this.getPieceByPosition(dest)!;
         await target.animateDestroy(animated);
         this.removePiece(target);
-
+        
         // Remove a piece from this player
         if (getTeam(target.type) == TeamEnum.Player) {
+            SoundHandler.playSFX("ufo-destroyed.mp3");
             this.playerPieces[target.type] -= 1;
             switch (target.type) {
                 case 0:
@@ -204,12 +217,17 @@ export class Board extends Container {
             if (this.playerPieces[target.type] == 0) {
                 this.game.endGame(false, "All of your UFOs were wiped out.");
             }
+        } else {
+            // enemy piece destroyed
+            SoundHandler.playSFX("ufo-laser.ogg");
         }
     }
 
     // Player killing a cow piece
     // TODO: change cow to be not a piece...
     public async abduct_action(action: PieceAction, animated: boolean) {
+        SoundHandler.playSFX("ufo-abduction.ogg");
+        SoundHandler.playSFX("cow-moo.mp3");
         let piece = action.piece;
         let dest = action.move;
 
@@ -249,10 +267,6 @@ export class Board extends Container {
             if (getTeam(piecetype) == TeamEnum.Player) {
                 this.playerPieces[piecetype] = 0;
             }
-            // console.log(config.starts[piecetype]);
-            for (const position of config.starts[piecetype]) {
-                this.createPiece(position, piecetype);
-            }
         }
         
         // Create all tiles, and generate cows on pastures
@@ -265,9 +279,12 @@ export class Board extends Container {
                 if (grid[r][c] == TileEnum.Pasture) {
                     if (this.getPieceByPosition(position) != null) continue;
                     this.createPiece(position, PieceEnum.Cow);
+                } else if (TileEnum.Red_Spawn <= grid[r][c] && grid[r][c] <= TileEnum.Purple_Spawn) {
+                    // If it's a UFO spawn, spawn the corresponding enemy type
+                    this.createPiece(position, grid[r][c] - TileEnum.Red_Spawn + PieceEnum.Player_Red)
                 } else if (grid[r][c] >= TileEnum.Red_Enemy_Spawn) {
                     // If it's an enemy spawner, spawn the corresponding enemy type
-                    this.createPiece(position, grid[r][c] + 1);
+                    this.createPiece(position, grid[r][c] - TileEnum.Red_Enemy_Spawn + PieceEnum.Enemy_Red);
                     this.enemyRegen[grid[r][c] - TileEnum.Red_Enemy_Spawn].push(position);
                 }
             }
@@ -288,8 +305,13 @@ export class Board extends Container {
         tile.eventMode = 'static';
         tile.on('pointerup', () => {
             if (this.game.buyButton.dragging && this.game.ourTurn()) {
-                server.purchaseUFO(position, this.game.playerColor);
-                this.game.moveQueue.enqueue({"moveType": MoveType.PlayCard, "moveData": position, "color": this.game.playerColor, "animated": true})
+                // If drag onto a tile, and able to purchase a ufo on that location
+                if (this.game.totalScore > 0 && 
+                    this.colorAtMatchingDestination(position, this.game.playerColor) &&
+                    this.getPieceByPosition(position) == null) {
+                        server.purchaseUFO(position, this.game.playerColor);
+                        this.game.moveQueue.enqueue({"moveType": MoveType.PurchaseUFO, "moveData": position, "color": this.game.playerColor, "animated": true})
+                    }
             }
         });
 
@@ -358,7 +380,8 @@ export class Board extends Container {
     public getPieceByPosition(position: Position, team: number = -1) {
         // console.log(`Getting piece at ${[position.row, position.column]}`);
         for (const piece of this.pieces) {
-            if (piece.row === position.row && piece.column === position.column && (team == -1 || team == getTeam(piece.type))) {
+            if (piece.row === position.row && piece.column === position.column && 
+                (team == -1 || team == getTeam(piece.type))) {
                 return piece;
             }
         }
@@ -380,6 +403,11 @@ export class Board extends Container {
         // handle out of bounds
         if (position.row < 0 || position.row >= this.rows || position.column < 0 || position.column >= this.columns) return TileEnum.Impassible;
         return this.grid[position.row][position.column];
+    }
+
+    public colorAtMatchingDestination(position: Position, color: number) {
+        const tileOffsetToRed = this.game.board.getTileAtPosition(position) - color + PieceEnum.Player_Red;
+        return (tileOffsetToRed == TileEnum.Red_Destination || tileOffsetToRed == TileEnum.Red_Spawn)
     }
 
     public spawnCows(turnCount: number) {
@@ -442,14 +470,9 @@ export class Board extends Container {
     }
 
     public purchaseUFO(position: Position, color: number) {
-        if (this.game.totalScore > 0 && 
-            this.getTileAtPosition(position) == TileEnum.Destination && 
-            this.getPieceByPosition(position) == null) {
-                this.game.scorePoints(-1);
-                this.createPiece(position, color);
-        } else {
-            console.log("You can't purchase a UFO!")
-        }
+        this.game.scorePoints(-1);
+        this.createPiece(position, color);
+        SoundHandler.playSFX("ufo-purchased.ogg");
 
     }
 }

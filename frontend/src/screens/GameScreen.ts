@@ -24,17 +24,6 @@ export class GameScreen extends Container {
         // Get rid of this!!!
         const config: GameConfig = {
             grid: loadMap(Math.floor(random()*MAPS.length)),
-            starts: [
-                [],
-                [{ row: 0, column: 0 }, { row: 0, column: 1 }, { row: 1, column: 0 }, { row: 1, column: 1 }],
-                [{ row: 0, column: 14 }, { row: 0, column: 15 }, { row: 1, column: 14 }, { row: 1, column: 15 }],
-                [{ row: 14, column: 0 }, { row: 14, column: 1 }, { row: 15, column: 0 }, { row: 15, column: 1 }],
-                [{ row: 14, column: 14 }, { row: 14, column: 15 }, { row: 15, column: 14 }, { row: 15, column: 15 }],
-                [],
-                [],
-                [],
-                [],
-            ],
             tileSize: 40,
         };
         this.game.setup(config);

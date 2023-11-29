@@ -10,6 +10,7 @@ export class PlayerGameInfo extends Container {
     private units: Text;
     private playerNameShad: Text;
     private color: number;
+    private timer: FancyButton;
 
     constructor(color: number) {
         super();
@@ -58,12 +59,27 @@ export class PlayerGameInfo extends Container {
             dropShadowBlur: 15,
             dropShadowColor: this.color
         }));
+
+        this.timer = new FancyButton({
+            defaultView: (new Button(
+               new Graphics()
+                   .beginFill(this.color, 0.4)
+                   .drawRoundedRect(0, 0, 400, 80, 15)
+            )).view,
+            anchor: 0
+        });
+
         this.playerName.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.playerName.x = -70;
+        // this.timer.anchor = new ObservablePoint(() => {}, null, 0, 0.5);
+        this.timer.x = this.displayArea.x - this.timer.width * 0.5;
+        this.timer.y = this.displayArea.y - this.timer.height * 0.5;
+        this.timer.visible = false;
         this.playerNameShad.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.playerNameShad.x = -60;
         this.addChild(this.playerName);
         this.addChild(this.playerNameShad);
+        this.addChild(this.timer);
         this.playerNameShad.visible = false;
 
         this.ufo = Sprite.from('../../images/black_ufo.png');
@@ -86,7 +102,18 @@ export class PlayerGameInfo extends Container {
         this.scale.x = 0.5;
         this.scale.y = 0.5;
 
+    }
 
+    public toggleTimer(state: boolean) {
+        this.timer.visible = state;
+    }
+
+    public updateTimer(time: number, max_time: number) {
+        if (time >= 0) {
+            this.timer.width = this.displayArea.width * time / max_time;
+        } else {
+            this.timer.width = 0;
+        }
     }
 
     public changeText(text: string) {
@@ -140,7 +167,6 @@ export class PlayerGameInfo extends Container {
     public resize(width: number) {
         this.width = width;
         this.height = this.width * 0.2;
-
     }
 
     public addShadow() {

@@ -51,11 +51,17 @@ class Server {
             createGameScreen.getLobbyList().addPlayer(playerInfo);
         });
 
+        this.socket.on("remove-player", (playerInfo: PlayerInfo) => {
+            console.log(playerInfo);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.getLobbyList().removePlayer(playerInfo);
+        });
+
         this.socket.on("update-player-info", (playerInfo: PlayerInfo) => {
             console.log(playerInfo);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
             createGameScreen.getLobbyList().updatePlayer(playerInfo);
-        })
+        });
 
         this.socket.on("kick-player", () => {
             this.socket.emit("leave-room");
@@ -83,7 +89,6 @@ class Server {
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
-            gameScreen.game.setPlayers(playerList);
 
             let cards = []
             let arrays = [
@@ -158,6 +163,7 @@ class Server {
     }
 
     public async outOfTime() {
+        console.log("Out of time!!!")
         this.socket.emit("out-of-time");
     }
 

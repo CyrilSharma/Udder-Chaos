@@ -256,6 +256,7 @@ class Player {
 
     makeRandomMove() {
         //Play a random card from the player's hand. Can be used when player takes too long, or when a player is disconnected
+        console.log("Random move for " + this.color);
         this.room.makeMove(null, 0, {"index": Math.floor(Math.random() * HAND_SIZE)}, this.color + 1);
     }
 
@@ -290,6 +291,7 @@ class Player {
             if (this.host) {
                 this.socket.to(this.room.roomCode).emit("kick-player");
             }
+            this.socket.to(this.room.roomCode).emit("remove-player", this.getPlayerInfo());
             this.room.removePlayer(this);
             this.socket.removeAllListeners();
         }

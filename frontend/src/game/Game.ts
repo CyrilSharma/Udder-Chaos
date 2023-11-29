@@ -1,10 +1,9 @@
 import { Container, Sprite, ObservablePoint, Text } from 'pixi.js';
 import { Board } from './Board';
-import { ColorEnum, GameConfig, PieceEnum, PlayerInfo} from './Utils';
+import { ColorEnum, GameConfig, PieceEnum, PlayerInfo, defaultGameSettings } from './Utils';
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
-import { Player } from './Player';
 import { GamePanel } from '../ui_components/GamePanel';
 import { PlayerColorIcon } from '../ui_components/PlayerColorIcon';
 import { PlayerGameInfo } from '../ui_components/PlayerGameInfo';
@@ -15,6 +14,7 @@ import { SizedButton } from '../ui_components/SizedButton';
 import server from "../server";
 import { GameSettings, gameSettings } from "./GameSettings";
 import { MoveQueue } from './MoveQueue';
+import { SoundHandler } from './SoundHandler';
 
 // This seems a little redundant right now,
 // But it will house the cards as well,
@@ -42,7 +42,6 @@ export class Game extends Container {
     private playerColorIcon!: PlayerColorIcon;
     private dayCounter: DayCounter;
     private scoreCounter: ScoreCounter;
-    public players: Player[] = [];
     public player1: PlayerGameInfo;         // This is not great, need to change this @Ethan
     public player2: PlayerGameInfo;
     public player3: PlayerGameInfo;
@@ -64,6 +63,8 @@ export class Game extends Container {
         this.timerInterval = this.initTimer();
         this.moveQueue = new MoveQueue(this);
 
+        this.startBGM();
+
         this.leftPanel = new GamePanel(0.11275, 0.5, 0.2, 1, 200, 1000, 0xffffff);
         this.rightPanel = new GamePanel(0.88725, 0.5, 0.2, 1, 200, 1000, 0x5f5f5f);
         this.boardPanel = new GamePanel(0.5, 0.4, 0.56, 0.6, 500, 500, 0xcc0000);
@@ -78,6 +79,9 @@ export class Game extends Container {
         this.player3 = new PlayerGameInfo(2);
         this.player4 = new PlayerGameInfo(3);
         this.playerAI = new PlayerGameInfo(-1);
+
+        this.player1.toggleTimer(true);
+
         this.playerAI.changeText("AI")
         this.dayCounter = new DayCounter(7);
         this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
@@ -107,7 +111,7 @@ export class Game extends Container {
         this.addChild(this.cards);
 
     }
-
+    
     public setup(config: GameConfig) {
         this.config = config;
         this.board.setup(config);
@@ -119,12 +123,6 @@ export class Game extends Container {
         this.playerColorIcon = new PlayerColorIcon(color - 1);
         this.leftPanel.addChild(this.playerColorIcon);
         this.playerColorIcon.changeColor(color - 1);
-    }
-
-    public setPlayers(playerList: PlayerInfo[]) {
-        playerList.forEach((player) => {
-            this.players.push(new Player(player))
-        });
     }
 
     public updateTurn() {
@@ -146,27 +144,39 @@ export class Game extends Container {
         switch (this.turn) {
             case 1:
                 this.playerAI.removeShadow();
+                this.playerAI.toggleTimer(false);
                 this.player1.addShadow();
+                this.player1.toggleTimer(true);
                 break;
             case 2:
                 this.player1.removeShadow();
+                this.player1.toggleTimer(false);
                 this.player2.addShadow();
+                this.player2.toggleTimer(true);
                 break;
             case 3:
                 this.player2.removeShadow();
+                this.player2.toggleTimer(false);
                 this.playerAI.addShadow();
+                this.playerAI.toggleTimer(true);
                 break;
             case 4:
                 this.playerAI.removeShadow();
+                this.playerAI.toggleTimer(false);
                 this.player3.addShadow();
+                this.player3.toggleTimer(true);
                 break;
             case 5:
                 this.player3.removeShadow();
+                this.player3.toggleTimer(false);
                 this.player4.addShadow();
+                this.player4.toggleTimer(true);
                 break;
             case 6:
                 this.player4.removeShadow();
+                this.player4.toggleTimer(false);
                 this.playerAI.addShadow();
+                this.playerAI.toggleTimer(true);
                 break;
         }
         this.turnCount += 1;
@@ -198,14 +208,14 @@ export class Game extends Container {
     // reset when a new game is setup rather than when the old one finishes
     public endGame(success: boolean, message: string) {
         //console.log(message);
-
+        this.stopBGM();
         this.board.endGame(success, message);
         this.gameOver = true;
         clearInterval(this.timerInterval);
     }
 
     public ourTurn() {
-        //return !this.gameOver && !this.animating; // debug always allow current player to move
+        return !this.gameOver && !this.animating; // debug always allow current player to move
         return !this.gameOver && !this.animating &&
             this.playerColor == 1 && this.turn == 1 || 
             this.playerColor == 2 && this.turn == 2 || 
@@ -223,10 +233,21 @@ export class Game extends Container {
             this.timer -= 1;
             //Update the timer here
             console.log("current time: " + this.timer);
+            // if (this.timer <= 0) {
             if (this.timer <= 0 && this.ourTurn()) {
+                console.log("out of time");
                 server.outOfTime();
             }
+            this.updatePlayerInfoTimers();
         }
+    }
+
+    public updatePlayerInfoTimers() {
+        this.player1.updateTimer(this.timer, defaultGameSettings.timer_length);
+        this.player2.updateTimer(this.timer, defaultGameSettings.timer_length);
+        this.player3.updateTimer(this.timer, defaultGameSettings.timer_length);
+        this.player4.updateTimer(this.timer, defaultGameSettings.timer_length);
+        this.playerAI.updateTimer(this.timer, defaultGameSettings.timer_length);
     }
 
     public scorePoints(points: number) {
@@ -268,13 +289,21 @@ export class Game extends Container {
         this.buyButton.y = this.scoreCounter.y + 70;
         this.cards.y = 0;
         this.cards.x = 0;
-        this.upNext.y = -310//this.rightPanel.y - (this.rightPanel.getBox()[1] - this.rightPanel.getBox()[0]) + this.upNext.height * 0.5;
+        this.upNext.y = -310;
         this.codeDisplay.y = 200;
 
-        this.cards.placeCards();
+        this.cards.placeCards(false);
 
         this.board.winScreen.resize(this.board.getWidth(), this.board.getHeight());
         this.board.loseScreen.resize(this.board.getWidth(), this.board.getHeight());
 
+    }
+
+    private startBGM() {
+        SoundHandler.playBGM("game-music.mp3");
+    }
+
+    private stopBGM() {
+        SoundHandler.stopBGM();
     }
 }
