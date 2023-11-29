@@ -51,11 +51,17 @@ class Server {
             createGameScreen.getLobbyList().addPlayer(playerInfo);
         });
 
+        this.socket.on("remove-player", (playerInfo: PlayerInfo) => {
+            console.log(playerInfo);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.getLobbyList().removePlayer(playerInfo);
+        });
+
         this.socket.on("update-player-info", (playerInfo: PlayerInfo) => {
             console.log(playerInfo);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
             createGameScreen.getLobbyList().updatePlayer(playerInfo);
-        })
+        });
 
         this.socket.on("kick-player", () => {
             this.socket.emit("leave-room");
