@@ -385,10 +385,10 @@ Step | Directions | Expected Output
 ## User Story 13.1 - Music switching
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Create a game | Lobby music plays
-2 | Leave the game | Menu music plays and lobby music stops playing
-3 | Enter the join game screen and then return to main menu | Menu music continues to play and does not start over
-4 | Join a lobby then leave | Menu music starts over 
+1 | Open the webpage and click the window | Menu music plays
+2 | Create a game | Lobby music plays
+3 | Leave the game lobby | Menu music plays from the beginning and lobby music stops playing
+4 | Enter the join game screen and then return to main menu | Menu music continues to play and does not start over
 5 | Create and start a game | In-game music plays
 
 ## User Story 13.2 - Music looping

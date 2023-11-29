@@ -23,7 +23,7 @@ export class MoveQueue {
                 case MoveType.RotateCard: {
                     let moveData = playerMove.moveData as RotateData;
                     let card = this.game.cards.findCardInHand(moveData["index"], playerMove.color);
-                    await card.rotateCard(moveData["rotation"] - card.cardRotation);
+                    await card.rotateCard(moveData["rotation"]);
                     break;
                 }
                 case MoveType.PurchaseUFO: {
