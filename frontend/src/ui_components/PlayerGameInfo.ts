@@ -1,6 +1,14 @@
 import { Container, ObservablePoint, Text, TextStyle, Graphics, Sprite, Color } from "pixi.js";
 import { Button, FancyButton } from "@pixi/ui";
+import * as PIXI from "pixi.js";
+import { gsap } from "gsap";
+import { PixiPlugin } from "gsap/PixiPlugin";
 
+// register the plugin
+gsap.registerPlugin(PixiPlugin);
+
+// give the plugin a reference to the PIXI object
+PixiPlugin.registerPIXI(PIXI);
 
 export class PlayerGameInfo extends Container {
 
@@ -109,11 +117,18 @@ export class PlayerGameInfo extends Container {
     }
 
     public updateTimer(time: number, max_time: number) {
-        if (time >= 0) {
-            this.timer.width = this.displayArea.width * time / max_time;
-        } else {
-            this.timer.width = 0;
+        if (time < 0) {
+            time = 0;
         }
+        const newWidth = this.displayArea.width * (time / max_time);
+
+        // gsap.to(this.timer, {
+        //     pixi: { width: newWidth },
+        //     duration: 0.1,
+        //     ease: "none"
+        // });
+
+        this.timer.width = newWidth;
     }
 
     public changeText(text: string) {

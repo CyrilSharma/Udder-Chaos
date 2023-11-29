@@ -216,6 +216,7 @@ export class Game extends Container {
         }
         this.turnCount += 1;
         this.timer = this.gameSettings.getValue("timer_length");
+        this.updatePlayerInfoTimers();
         this.board.spawnCows(this.turnCount);
     }
 
@@ -275,11 +276,11 @@ export class Game extends Container {
     }
 
     public updatePlayerInfoTimers() {
-        this.player1.updateTimer(this.timer, defaultGameSettings.timer_length);
-        this.player2.updateTimer(this.timer, defaultGameSettings.timer_length);
-        this.player3.updateTimer(this.timer, defaultGameSettings.timer_length);
-        this.player4.updateTimer(this.timer, defaultGameSettings.timer_length);
-        this.playerAI.updateTimer(this.timer, defaultGameSettings.timer_length);
+        this.player1.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.player2.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.player3.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.player4.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.playerAI.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
     }
 
     public scorePoints(points: number) {
