@@ -23,6 +23,7 @@ import {
 } from './Utils';
 import { EndGameScreen } from '../ui_components/EndGameScreen';
 import server from "../server";
+import { SoundHandler } from './SoundHandler';
 
 /**
  * Board class
@@ -148,16 +149,29 @@ export class Board extends Container {
     }
 
     public normal_move(action: PieceAction, animated: boolean) {
+        
         let piece = action.piece;
         let dest = action.move;
+        if (getTeam(piece.type) == TeamEnum.Player) {
+            SoundHandler.playSFX("ufo-move.ogg");
+        } else {
+            SoundHandler.playSFX("plane-move.ogg");
+        }
         this.setPieceLocation(piece, dest, animated);
     }
 
     public obstructed_move(action: PieceAction, animated: boolean) {
+        
         // Do an animation toward the destination but fail.
         let piece = action.piece;
         let dest = action.move;
         
+        if (getTeam(piece.type) == TeamEnum.Player) {
+            SoundHandler.playSFX("ufo-move.ogg");
+        } else {
+            SoundHandler.playSFX("plane-move.ogg");
+        }
+
         let xShift = dest.column - piece.column;
         let yShift = dest.row - piece.row;
 
@@ -184,9 +198,10 @@ export class Board extends Container {
         }
         await target.animateDestroy(animated);
         this.removePiece(target);
-
+        
         // Remove a piece from this player
         if (getTeam(target.type) == TeamEnum.Player) {
+            SoundHandler.playSFX("ufo-destroyed.mp3");
             this.playerPieces[target.type] -= 1;
             switch (target.type) {
                 case 0:
@@ -212,12 +227,17 @@ export class Board extends Container {
             if (this.playerPieces[target.type] == 0) {
                 this.game.endGame(false, "All of your UFOs were wiped out.");
             }
+        } else {
+            // enemy piece destroyed
+            SoundHandler.playSFX("ufo-laser.ogg");
         }
     }
 
     // Player killing a cow piece
     // TODO: change cow to be not a piece...
     public async abduct_action(action: PieceAction, animated: boolean) {
+        SoundHandler.playSFX("ufo-abduction.ogg");
+        SoundHandler.playSFX("cow-moo.mp3");
         let piece = action.piece;
         let dest = action.move;
 
@@ -464,5 +484,7 @@ export class Board extends Container {
     public purchaseUFO(position: Position, color: number) {
         this.game.scorePoints(-1);
         this.createPiece(position, color);
+        SoundHandler.playSFX("ufo-purchased.ogg");
+
     }
 }
