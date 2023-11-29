@@ -10,7 +10,7 @@ import { Slides } from "../ui_components/Slides";
 const NUM_IMG = 5;
 
 export class TutorialScreen extends Container {
-
+    public SCREEN_ID = 'tutorial';
     private background: Background;
     private menuContainer: MenuContainer;
     private backButton: BackButton;

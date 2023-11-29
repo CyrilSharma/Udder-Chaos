@@ -1,4 +1,4 @@
-import { Container, Graphics } from "pixi.js";
+import { Container } from "pixi.js";
 import { MenuContainer } from "./MenuContainer";
 import { BackButton } from "./BackButton";
 import { SizedButton } from "./SizedButton";
@@ -110,7 +110,7 @@ export class CustomScreenUI extends Container {
     public getCowRespawnRate() : number {
         return this.cowsRespawn.getValue();
     }
-    
+
     public setCowRespawnRate(val: number) {
         this.cowsRespawn.setValue(val);
     }

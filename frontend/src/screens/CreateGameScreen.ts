@@ -58,7 +58,6 @@ export class CreateGameScreen extends Container {
 
         this.customizeButton = new SizedButton(0.82, 0.9, 0.25, 0.11, "Customize", this.menuContainer.width, this.menuContainer.height, 30, 0x50aadc);
         this.customizeButton.onPress.connect(() => {
-            //this.menuContainer.visible = false;
             this.customScreen.visible = true;
         });
         this.menuContainer.addChild(this.customizeButton);
