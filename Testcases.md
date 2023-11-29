@@ -359,14 +359,17 @@ Step | Directions | Expected Output
 4 | 
 5 |
 
-## User Story 11
+## User Story 11.1 Board animation synchronization
 Step | Directions | Expected Output
 --- | --- | ---
-1 | 
-2 |
-3 |
-4 | 
-5 |
+1 | Enter a game with two tabs and play a card in one tab | The movement is synced across the other tab
+
+## User Story 11.2 Card animations
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Enter a game and play a card | The card moves to the center of the screen and the to the queue after a delay
+2 | ^ | The queue visibly moves upwards to accomodate the new card
+3 | ^ |The first card in the queue moves to the old position of the played card
 
 ## User Story 12.1 - Movement oriented sound effects
 Step | Directions | Expected Output
