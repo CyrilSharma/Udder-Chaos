@@ -40,13 +40,13 @@ export class SoundHandler {
         }
         console.log(SoundHandler.bgm.paused);
         if (SoundHandler.bgm.paused) {
-            try {
-                SoundHandler.bgm.play();
-            } catch (error) {
-                // this is supposed to be for browsers that block autoplay but i don't know how to 
-                // console.log("playback blocked, autoplay set");
-                // SoundHandler.bgm.autoplay = true;
-            }
+            // thank you to
+            // https://stackoverflow.com/questions/68594620/automatically-play-audio-object-in-javascript
+            SoundHandler.bgm.play().catch(e => {
+                window.addEventListener('click', () => {
+                SoundHandler.bgm.play()
+                }, { once: true })
+            })
         }
     }    
 

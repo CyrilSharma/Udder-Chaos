@@ -301,11 +301,11 @@ Start in the Game
 
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Enter the game and play one day (all players make 1 turn) | Notice that the timer moves to the current player's playerInfo indicator
+1 | Enter the game with a 10 second turn time limit and play one day (all players make 1 turn) | Notice that the timer moves to the current player's playerInfo indicator
 2 | Make a move | Notice that the timer resets to a full bar when the turn switches
 3 | Let the timer reach zero | Notice that a card is played from the hand automatically without player input
 
-## User Story 5.1
+## User Story 5
 Step | Directions | Expected Output
 --- | --- | ---
 1 | 
