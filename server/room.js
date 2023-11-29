@@ -15,8 +15,8 @@ const COLOR = {
 
 
 // 4 represents AI, all 0-3 are player colors
-const PLAYER_ORDER = [0,1,4]
-//const PLAYER_ORDER = [0,1,4,2,3,4]
+//const PLAYER_ORDER = [0,1,4]
+const PLAYER_ORDER = [0,1,4,2,3,4]
 
 const MAX_PLAYERS = 4;
 
@@ -291,6 +291,7 @@ class Player {
             if (this.host) {
                 this.socket.to(this.room.roomCode).emit("kick-player");
             }
+            this.socket.to(this.room.roomCode).emit("remove-player", this.getPlayerInfo());
             this.room.removePlayer(this);
             this.socket.removeAllListeners();
         }
