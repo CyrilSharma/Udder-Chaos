@@ -58,7 +58,7 @@ export class Game extends Container {
 
         this.board = new Board(this);
         this.cards = new CardQueue(this);
-        this.buyButton = new BuyButton(0, 0);
+        this.buyButton = new BuyButton(0, 0, this);
         this.timer = this.gameSettings.getValue("timer_length");
         this.timerInterval = this.initTimer();
         this.moveQueue = new MoveQueue(this);
@@ -104,9 +104,9 @@ export class Game extends Container {
         this.rightPanel.addChild(this.upNext);
         this.rightPanel.addChild(this.playerAI);
 
+        this.addChild(this.boardPanel);
         this.addChild(this.leftPanel);
         this.addChild(this.rightPanel);
-        this.addChild(this.boardPanel);
         this.addChild(this.bottomPanel);
         this.addChild(this.cards);
 

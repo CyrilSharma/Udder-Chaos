@@ -94,7 +94,7 @@ export class Board extends Container {
             this.respawnCounter[tile].alpha = 0;
             this.respawnCounter[tile].on('mouseover', () => {
                 this.respawnCounter[tile].alpha = 1;
-                if (this.getPieceByPosition({row: Math.floor(tile/16), column: tile % 16})?.type == TeamEnum.Player) {
+                if (this.getPiecesByPosition({row: Math.floor(tile/16), column: tile % 16})[0]?.type == TeamEnum.Player) {
                     this.respawnCounter[tile].alpha = 0;
                 } // 8 10 11 14 15
             });
@@ -185,7 +185,17 @@ export class Board extends Container {
         let piece = action.piece;
         let dest = action.move;
         
-        const target = this.getPieceByPosition(dest)!;
+        // Get kill target from list of pieces at position
+        const targets = this.getPiecesByPosition(dest);
+        if (targets.length == 0) throw new Error("No pieces at kill move destination");
+        let target = targets[0];
+
+        // Search for first player or enemy piece
+        let index = 0;
+        while (getTeam(target.type) != TeamEnum.Player && getTeam(target.type) != TeamEnum.Enemy) {
+            if (index + 1 == targets.length) throw new Error("No killable pieces at kill move destination");
+            target = targets[++index];
+        }
         await target.animateDestroy(animated);
         this.removePiece(target);
         
@@ -231,7 +241,9 @@ export class Board extends Container {
         let piece = action.piece;
         let dest = action.move;
 
-        const target = this.getPieceByPosition(dest, TeamEnum.Cow)!;
+        const targets = this.getPiecesByPosition(dest, TeamEnum.Cow);
+        if (targets.length == 0) throw new Error("No cows at abduct action destination");
+        let target = targets[0];
         await target.animateAbducted(this.tileSize, animated);
         this.removePiece(target);
         piece.addScore();
@@ -277,7 +289,7 @@ export class Board extends Container {
                 let position = { row: r, column: c };
                 this.createTile(position, grid[r][c]);
                 if (grid[r][c] == TileEnum.Pasture) {
-                    if (this.getPieceByPosition(position) != null) continue;
+                    if (this.getPiecesByPosition(position).length != 0) continue;
                     this.createPiece(position, PieceEnum.Cow);
                 } else if (TileEnum.Red_Spawn <= grid[r][c] && grid[r][c] <= TileEnum.Purple_Spawn) {
                     // If it's a UFO spawn, spawn the corresponding enemy type
@@ -308,7 +320,7 @@ export class Board extends Container {
                 // If drag onto a tile, and able to purchase a ufo on that location
                 if (this.game.totalScore > 0 && 
                     this.colorAtMatchingDestination(position, this.game.playerColor) &&
-                    this.getPieceByPosition(position) == null) {
+                    this.getPiecesByPosition(position).length == 0) {
                         server.purchaseUFO(position, this.game.playerColor);
                         this.game.moveQueue.enqueue({"moveType": MoveType.PurchaseUFO, "moveData": position, "color": this.game.playerColor, "animated": true})
                     }
@@ -374,18 +386,18 @@ export class Board extends Container {
     }
 
     /** 
-     * Return piece at a certain position, or null if there isn't one
+     * Return a list of all pieces at a position
      * Optional argument for team type.
      */
-    public getPieceByPosition(position: Position, team: number = -1) {
+    public getPiecesByPosition(position: Position, team: number = -1) {
         // console.log(`Getting piece at ${[position.row, position.column]}`);
+        let pieceList = [];
         for (const piece of this.pieces) {
-            if (piece.row === position.row && piece.column === position.column && 
-                (team == -1 || team == getTeam(piece.type))) {
-                return piece;
+            if (piece.row === position.row && piece.column === position.column && (team == -1 || team == getTeam(piece.type))) {
+                pieceList.push(piece);
             }
         }
-        return null;
+        return pieceList;
     }
 
     /** Get the visual width of the board */
@@ -445,7 +457,7 @@ export class Board extends Container {
     public spawnEnemies() {
         for (let i = 0; i < 4; i++) {
             this.enemyRegen[i].forEach((tilePosition) => {
-                if (this.getPieceByPosition(tilePosition) == null) {
+                if (this.getPiecesByPosition(tilePosition).length == 0) {
                     this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
                 }
             });

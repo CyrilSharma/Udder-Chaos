@@ -276,7 +276,11 @@ Step | Directions | Expected Output
 3 | Click on the previous button designated by a "<" on any page but the first | Notice the page switches and the page count decreases
 4 | Click on the back button designated by an "X" | Notice that you are now on the Main Menu
 
-## User Story 2
+## User Story 2.1
+Step | Directions | Expected Output
+--- | --- | ---
+
+## User Story 2.2
 Step | Directions | Expected Output
 --- | --- | ---
 
@@ -301,26 +305,112 @@ Step | Directions | Expected Output
 2 | Make a move | Notice that the timer resets to a full bar when the turn switches
 3 | Let the timer reach zero | Notice that a card is played from the hand automatically without player input
 
-## User Story 5
+## User Story 5.1
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
 
 ## User Story 6
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
 
 ## User Story 7
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
 
 ## User Story 8
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
 
 ## User Story 9
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
 
 ## User Story 10
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
+
+## User Story 11
+Step | Directions | Expected Output
+--- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
+
+## User Story 12.1 - Movement oriented sound effects
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Enter a game and move a UFO | A ufo move sound plays 
+2 | Capture a cow with a UFO | An abduction sound plays
+3 | Capture an enemy with a UFO | An enemy capture sound plays
+4 | Get captured by an enemy | An ally capture sound plays
+
+## User Story 12.2 - Other sound effects
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Enter a game and gain some score, then buy a UFO | UFO purchase sound effect is played
+2 | Play a card | A card sound is played
+
+## User Story 13.1 - Music switching
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Create a game | Lobby music plays
+2 | Leave the game | Menu music plays and lobby music stops playing
+3 | Enter the join game screen and then return to main menu | Menu music continues to play and does not start over
+4 | Join a lobby then leave | Menu music starts over 
+5 | Create and start a game | In-game music plays
+
+## User Story 13.2 - Music looping
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Interact with the game to make the menu music play, then wait | The music restarts after it finishes
+2 | Repeat above with game and lobby music as desired | Same result as above
+
+## User Story 14
+Step | Directions | Expected Output
+--- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
+
+## User Story 15
+Step | Directions | Expected Output
+--- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |

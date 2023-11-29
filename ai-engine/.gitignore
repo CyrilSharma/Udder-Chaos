@@ -5,5 +5,5 @@
 cpp/boost*/
 cpp/socket.io*/
 node_modules
-*.o
-*.gcda
+cpp/*.o
+cpp/*.gcda

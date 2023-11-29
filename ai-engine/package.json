@@ -3,7 +3,8 @@
     "version": "0.0.1",
     "description": "ai engine to make moves",
     "scripts": {
-        "dev": "cross-env NODE_ENV=development node main.js",
+        "dev": "cross-env NODE_ENV=development nodemon main.js",
+        "devrandom": "cross-env NODE_ENV=development nodemon random-ai.js",
         "start": "cross-env NODE_ENV=production node main.js",
         "test": "jest --runInBand"
     },
