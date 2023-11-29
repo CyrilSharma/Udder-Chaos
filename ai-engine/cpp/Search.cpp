@@ -51,6 +51,12 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
     
     if (fixedDepth && dbg) cerr << "Doing fixed depth search of depth " << max_depth << endl;
 
+    int sign = 1;
+    int turn = game.turn;
+    if (game.is_enemy_turn(turn) != game.is_enemy_turn(turn + 1)) {
+      sign = -1;
+    }
+
     vector<int> score(moves.size());
     int depth = (fixedDepth) ? max_depth : 1;
     for (; depth <= max_depth; depth++) {
@@ -62,8 +68,7 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
       for (size_t i = 0; i < moves.size(); i++) {
         auto move = moves[i];
         p.alpha = best_score_d;
-        // This works IFF it is the AIs turn.
-        int sc = -alphaBeta(p, move, depth - 1);
+        int sc = sign * alphaBeta(p, move, depth - 1);
         score[i] = sc;
         if (sc > best_score_d) {
           best_score_d = sc;
