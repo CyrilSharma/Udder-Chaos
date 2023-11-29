@@ -285,6 +285,7 @@ export class Board extends Container {
         tile.eventMode = 'static';
         tile.on('pointerup', () => {
             if (this.game.buyButton.dragging && this.game.ourTurn()) {
+                // If drag onto a tile, and able to purchase a ufo on that location
                 if (this.game.totalScore > 0 && 
                     this.colorAtMatchingDestination(position, this.game.playerColor) &&
                     this.getPieceByPosition(position) == null) {
