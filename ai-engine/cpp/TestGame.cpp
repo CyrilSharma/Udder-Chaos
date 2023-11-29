@@ -434,12 +434,14 @@ TEST_CASE("Test Scoring") {
   }
 
   CHECK(game.viewPieces()[0].score == 1);
+  CHECK(game.cows_collected == 0);
   CHECK(game.total_score == 0);
   for (int i = 0; i < 10; i++) {
     game.play_player_movement(Direction::DOWN);
   }
 
-  CHECK(game.total_score == 1);
+  CHECK(game.cows_collected == 1);
+  CHECK(game.total_score == 0);
 }
 
 /*

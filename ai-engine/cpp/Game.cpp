@@ -82,7 +82,6 @@ Game::Game(GameConfig config):
     }
   }
 
-
   auto heatmap = [&](vector<int> &hm, int p) {
     queue<tuple<int, int, int>> q;
     vector<bool> visited(width * height);
@@ -154,7 +153,10 @@ int Game::is_jover() {
   for (int i = 0; i < 4; i++) {
     if (!players[i].count()) return -1;
   }
-  if (total_score >= cows_to_win) return 1;
+  if ((total_score + cows_collected) >= cows_to_win) return 1;
+  if (turn && (turn % (6 * round_length) == 0)) {
+    if (cows_collected < 5) return -1;
+  }
   return 0;
 } /* is_jover() */
 
@@ -170,7 +172,7 @@ void Game::make_move(Move move) {
   cows |= cow_respawn[turn % round_length];
   // Each day is 2 AI moves and 4 Player Moves.
   // After round_length days, we spawn more enemies.
-  if (turn && (turn % (6 * round_length))) {
+  if (turn && (turn % (6 * round_length) == 0)) {
     for (int c = 0; c < 4; c++) {
       for (auto [x, y]: enemy_spawns[c]) {
         int idx = y * width + x;
@@ -182,6 +184,8 @@ void Game::make_move(Move move) {
         enemy.deads[c].push_back(0);
       }
     }
+    total_score += cows_collected;
+    cows_collected = 0;
   }
   if (move.type == MoveType::NORMAL) {
     if (is_enemy_turn()) enemy_move(move.card, move.color);
@@ -254,6 +258,7 @@ void Game::player_buy(int x, int y) {
   player.ss[player_id].push_back(0);
   player.deads[player_id].push_back(0);
   player_id = (player_id + 1) & 0b11;
+  cows_collected -= 1;
   turn += 1;
 } /* player_buy() */
 
@@ -505,7 +510,7 @@ void Game::play_player_movement(Direction d) {
     player.ss[player_id][i] += cows[idx];
     int delta = player.ss[player_id][i] * score_tiles[idx];
     player.ss[player_id][i] -= delta;
-    total_score += delta;
+    cows_collected += delta;
     mask.set(idx, 1);
     playereval += playerhm[idx];
   }

@@ -3,13 +3,6 @@
 
 #define debug(x) std::cerr << #x << ": " << x << std::endl
 
-void init_int(void *view) {
-  *(int *)view = -inf;
-}
-void min_int(void *left, void *right) {
-  *(int *)left = min(*(int *)left, *(int *)right);
-}
-
 Search::Search(GameConfig gc, uint64_t to, int md):
     game(gc), scorer(gc), timeout(to), max_depth(md) {}
   
@@ -137,6 +130,16 @@ int Search::alphaBeta(Position &prev, Move move, int depth) {
     bool cutoff = false;
     Position cur = { prev.game, prev.alpha, prev.beta };
     cur.game.make_move(move);
+    // This is taking too long to get working :/
+    // int status = cur.game.is_jover();
+    // if (status != 0) {
+    //   int e = cur.game.is_enemy_turn();
+    //   int ewin = (status == -1);
+    //   int sign = (e == ewin) ? 1 : -1;
+    //   cerr << "ret: " << (1e6 * sign * status) << endl;
+    //   cerr << "score: " << scorer.score(cur.game) << endl;
+    //   return -1e6 * status;
+    // }
     if (depth <= 0) return scorer.score(cur.game);
     if (cur.game.is_enemy_turn() != prev.game.is_enemy_turn()) {
       cur.alpha = -prev.beta;
@@ -170,10 +173,6 @@ int Search::alphaBeta(Position &prev, Move move, int depth) {
     else return best_score;
 }
 
-// I'm just going to assume the spawn locations are fixed because I don't want to generate them right now
-const int spawnPos[4][4][2] = {{{0, 0}, {0, 1}, {1, 0}, {1, 1}}, {{0, 14}, {0, 15}, {1, 14}, {1, 15}}, 
-                                {{14, 0}, {14, 1}, {15, 0}, {15, 1}}, {{14, 14}, {14, 15}, {15, 14}, {15, 15}}};
-
 void Search::gen_moves(vector<Move> &moves, int player) {
   if (player) {
     for (int card = 0; card < (int) game.cm.handsize; ++card) {
@@ -181,9 +180,9 @@ void Search::gen_moves(vector<Move> &moves, int player) {
       for (int angle = 1; angle <= 3; ++angle)
         moves.push_back(Move(MoveType::ROTATE, card, angle));
     }
-    if (game.total_score > 0)
-      for (auto xy : spawnPos[game.player_id])
-        moves.push_back(Move(MoveType::BUY, xy[0], xy[1]));
+    if (game.cows_collected > 0)
+      for (auto [x, y]: game.player_spawns[game.player_id])
+        moves.push_back(Move(MoveType::BUY, x, y));
   } else {
     for (int card = 0; card < (int) game.cm.handsize; ++card) {
       for (int color = 0; color < 4; ++color) {

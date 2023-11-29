@@ -18,6 +18,7 @@ struct Game {
   uint64_t turn = 0;
   uint64_t round = 0;
   uint64_t total_score = 0;
+  uint64_t cows_collected = 0;
   uint64_t player_id = 0;
 
   CardManager cm;

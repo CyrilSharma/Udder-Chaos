@@ -39,6 +39,6 @@ int Scorer::evaluator(Game &game) {
     int ebeval = (epct) ? (game.enemyeval / (epct)) : 0;
     int pbeval = (ppct) ? (game.playereval / (ppct)) : 0;
     scoreSum += (ebeval - pbeval);
-    scoreSum *= (-1 + 2 * e);
+    if (!e) scoreSum *= -1;
     return scoreSum;
 } /* evaluator() */

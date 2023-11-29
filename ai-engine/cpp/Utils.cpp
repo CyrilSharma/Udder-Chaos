@@ -65,7 +65,7 @@ tuple<vector<vector<Tile>>, vector<Piece>> load_setup(ifstream &file) {
       int v; file >> v;
       board[i][j] = Tile::from(v);
       if (v >= 7) pieces.push_back(
-        Piece(i, j, !board[i][j].player * 4 + board[i][j].color)
+        Piece(i, j, 1 + (!board[i][j].player * 4 + board[i][j].color))
       );
     }
   }

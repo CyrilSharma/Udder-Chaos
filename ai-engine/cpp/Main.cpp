@@ -87,16 +87,31 @@ struct Handler {
       exit(1);
     }
 
+    cerr << "1\n";
     auto [board, pieces] = load_setup();
+    for (size_t i = 0; i < board.size(); i++) {
+      for (size_t j = 0; j < board[0].size(); j++) {
+        cerr << board[i][j].category;
+      }
+      cerr << endl;
+    }
+    for (auto p: pieces) cerr << p << endl;
+    cerr << "2\n";
+
     auto cards = load_cards(stoll(params["ncards"]));
+    for (auto card: cards) cerr << card << endl;
+    cerr << "3\n";
     auto gc = GameConfig(
       board, pieces, cards,
       stoll(params["hand_size"]),
       stoll(params["round_length"]),
       params["game_id"]
     );
+    cerr << "4\n";
     auto game_id = params["game_id"];
-    searches.try_emplace(game_id, Search(gc));
+    cerr << "5\n";
+    searches.insert({game_id, Search(gc)});
+    cerr << "6\n";
     cerr << searches.at(game_id).game << endl;
     cout << "SUCCESS" << endl;
   } /* init() */

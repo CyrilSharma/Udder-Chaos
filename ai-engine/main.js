@@ -50,8 +50,6 @@ socket.on("init-ai", async (room_code, seed, cards) => {
     ai.stdin.write(`seed: ${seed}\n`);
     ai.stdin.write(`ncards: ${cards.length}\n`);
     ai.stdin.write(`END\n`);
-    console.log(`cards.length: ${cards.length}\n`);
-    console.log(`cards[0].length: ${cards[0].length}\n`);
     for (let card of cards) {
         for (let dir of card) {
             ai.stdin.write(`${dir} `);
