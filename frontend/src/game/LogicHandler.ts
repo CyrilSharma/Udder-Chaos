@@ -1,6 +1,6 @@
 import { Container } from "pixi.js";
 import { Piece } from "./Piece";
-import { DirectionEnum, GameConfig, Grid, PieceAction, Position, TileEnum, dx, dy, getTeam, TeamEnum, canMoveOver, checkActionType, ActionType } from "./Utils";
+import { DirectionEnum, GameConfig, Grid, PieceAction, Position, TileEnum, dx, dy, getTeam, TeamEnum, canMoveOver, checkActionType, ActionType, PieceEnum } from "./Utils";
 import { Game } from "./Game";
 import { Card } from "./Card";
 
@@ -122,7 +122,7 @@ export class LogicHandler {
         }
 
         // If moving onto a destination tile, add score action.
-        if (this.game.board.getTileAtPosition(dest) == TileEnum.Destination && piece.score > 0) {
+        if (piece.score > 0 && this.game.board.colorAtMatchingDestination(dest, piece.type)) {
             post_actions.push({ action: ActionType.Score_Action, piece: piece, move: dest });
         }
 
