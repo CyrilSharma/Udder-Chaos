@@ -26,7 +26,7 @@ class Server {
             console.log(error);
         });
 
-        this.socket.on("load-room", async (roomCode, playerList: PlayerInfo[]) => {
+        this.socket.on("load-room", async (roomCode, playerList: PlayerInfo[], settingsData: gameSettingsData) => {
             console.log(playerList);
             console.log(this.socket.id);
 
@@ -38,6 +38,10 @@ class Server {
             playerList.forEach((player) => {
                 createGameScreen.getLobbyList().addPlayer(player);
             });
+
+            if (settingsData != null) {
+                gameSettings.save(settingsData);
+            }
         });
         
         this.socket.on("join-error", (error) => {
@@ -55,11 +59,16 @@ class Server {
             console.log(playerInfo);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
             createGameScreen.getLobbyList().updatePlayer(playerInfo);
-        })
+        });
 
         this.socket.on("kick-player", () => {
             this.socket.emit("leave-room");
             navigation.showScreen(HomeScreen);
+        });
+
+        this.socket.on("share-game-settings", (settingsData: gameSettingsData) => {
+            console.log(gameSettings);
+            gameSettings.save(settingsData);
         });
 
         this.socket.on("start-game-error", (error) => {
@@ -135,6 +144,10 @@ class Server {
 
     public async updatePlayerColor(color: number) {
         this.socket.emit("update-color", color);
+    }
+
+    public async updateGameSettings(gameSettings: gameSettingsData) {
+        this.socket.emit("update-game-settings", gameSettings);
     }
 
     public async startGame() {

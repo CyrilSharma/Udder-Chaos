@@ -39,7 +39,7 @@ export class CreateGameScreen extends Container {
 
         this.startButton = new SizedButton(0.5, 0.9, 0.3, 0.15, "Start Game", this.menuContainer.width, this.menuContainer.height, 40, 0x6060fc);
         this.startButton.onPress.connect(() => {
-            server.startGame(/*this.seedBox.seed.value*/);
+            server.startGame();
         });
         this.menuContainer.addChild(this.startButton);
 
@@ -59,6 +59,7 @@ export class CreateGameScreen extends Container {
         this.customizeButton = new SizedButton(0.82, 0.9, 0.25, 0.11, "Customize", this.menuContainer.width, this.menuContainer.height, 30, 0x50aadc);
         this.customizeButton.onPress.connect(() => {
             this.customScreen.visible = true;
+            this.customScreen.loadGameSettings();
         });
         this.menuContainer.addChild(this.customizeButton);
 

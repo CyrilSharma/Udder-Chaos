@@ -17,7 +17,7 @@ export class SliderUI extends Container {
 
     private pBounds: Array<number>;
 
-    constructor(x: number, y: number, width: number, height: number, parentW: number, parentH: number, label: string, min: number, max: number, initial: number, fontSize: number, bounds: Array<number>) {
+    constructor(x: number, y: number, width: number, height: number, parentW: number, parentH: number, label: string, min: number, max: number, fontSize: number, bounds: Array<number>) {
         super();
 
         this.slide = new SizedButton(x, y, width, height / 3, "", parentW, parentH, 10, 0x50a0d0);
@@ -28,7 +28,7 @@ export class SliderUI extends Container {
 
         this.min = min;
         this.max = max;
-        this.value = initial;
+        this.value = min;
 
         this.label = new Text(label, new TextStyle({
             fontFamily: "Concert One",
@@ -77,7 +77,6 @@ export class SliderUI extends Container {
         });
 
         this.pBounds = bounds;
-        this.setValue(initial);
     }
 
     public getValue() {
