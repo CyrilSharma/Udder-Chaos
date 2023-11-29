@@ -17,6 +17,7 @@ import * as PIXI from "pixi.js";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { PixiPlugin } from "gsap/PixiPlugin";
+import { SoundHandler } from './SoundHandler';
 
 // register the plugin
 gsap.registerPlugin(PixiPlugin);
@@ -99,6 +100,7 @@ export class CardQueue extends Container {
 
     /** Called when a card in the cardqueue is clicked */
     public async playCard(input: Card, color: number, animated: boolean) {
+        
         // Get correct team
         var hand;
         if (getTeam(color) == TeamEnum.Player) {
@@ -112,7 +114,11 @@ export class CardQueue extends Container {
         for (let i = 0; i < hand.length; i++) {
             let card = hand[i];
             if (card != input) continue;
+            
+            // found card
+            SoundHandler.playSFX("card-play.ogg");
 
+            // animate card
             const midX = this.game.boardPanel.x;
             const midY = this.game.boardPanel.y;
 

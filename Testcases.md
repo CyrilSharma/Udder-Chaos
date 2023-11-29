@@ -258,3 +258,69 @@ Step | Directions | Expected Output
 4 | Play until the day counter fills up | A sacrifice is made, reducing abducted cows by 3
 5 | See above | Jets are spawned at the center of the board if those tiles are empty
 6 | See above | The day counter will be reset.
+# Sprint 3
+## User Story 1.1
+Start on the Main Menu
+
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Click on the Tutorial Button | The tutorial screen appears
+2 | View the image in the center of the screen | Important imformation on how to play the game is readable
+3 | Click on the previous button designated by a "<" | Notice it doesn't work on the first page only
+
+## User Story 1.2
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Navigate to the end of the tutorial slides | Notice the page counter increments as the pages are navigated through
+2 | Click the next button designated by a ">" | Notice it doesn't work on the last page only, and upon reaching the last page, the tutorial indicates that the tutorial is over and to go back to the main page
+3 | Click on the previous button designated by a "<" on any page but the first | Notice the page switches and the page count decreases
+4 | Click on the back button designated by an "X" | Notice that you are now on the Main Menu
+
+## User Story 2
+Step | Directions | Expected Output
+--- | --- | ---
+
+## User Story 3
+Step | Directions | Expected Output
+--- | --- | ---
+
+## User Story 4.1
+Start in the Game
+
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Enter the Game | Notice that there is a timer in the form of a vignette over the current player's name
+2 | Note the timer | Notice that the timer "counts down" by slowly decreasing the fill level of the current players playerInfo indicator
+
+## User Story 4.2
+Start in the Game
+
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Enter the game and play one day (all players make 1 turn) | Notice that the timer moves to the current player's playerInfo indicator
+2 | Make a move | Notice that the timer resets to a full bar when the turn switches
+3 | Let the timer reach zero | Notice that a card is played from the hand automatically without player input
+
+## User Story 5
+Step | Directions | Expected Output
+--- | --- | ---
+
+## User Story 6
+Step | Directions | Expected Output
+--- | --- | ---
+
+## User Story 7
+Step | Directions | Expected Output
+--- | --- | ---
+
+## User Story 8
+Step | Directions | Expected Output
+--- | --- | ---
+
+## User Story 9
+Step | Directions | Expected Output
+--- | --- | ---
+
+## User Story 10
+Step | Directions | Expected Output
+--- | --- | ---

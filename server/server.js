@@ -14,6 +14,7 @@ const io = new Server(server, {
     cors: { origin: "*" }
 });
 
+var mode = process.env.NODE_ENV;
 // Ship frontend to clients.
 if (mode != 'development') {
     app.use('/assets', express.static(path.join(__dirname, 'assets')));
@@ -25,7 +26,6 @@ if (mode != 'development') {
 }
 
 // Handles connections.
-var mode = process.env.NODE_ENV;
 console.log(mode);
 const server_port = (mode == 'development') ? 3000 : 5000;
 server.listen(server_port, () => {
