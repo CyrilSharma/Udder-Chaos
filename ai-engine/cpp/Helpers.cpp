@@ -111,14 +111,22 @@ string typeOfMove(MoveType t) {
   }
 }
 
-
 GameConfig::GameConfig(
   vector<vector<Tile>> board,
   vector<Piece> pieces,
   vector<Card> cards,
   int hand_size,
   int round_length,
+  int cow_sacrifice,
+  int cow_regen_rate,
+  int days_per_round,
+  int score_goal,
   string id
 ): board(board), pieces(pieces),
    cards(cards), hand_size(hand_size),
-   round_length(round_length), id(id)  {}
+   round_length(round_length),
+   cow_sacrifice(cow_sacrifice),
+   cow_regen_rate(cow_regen_rate),
+   days_per_round(days_per_round),
+   score_goal(score_goal),
+   id(id)  {}

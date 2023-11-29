@@ -50,10 +50,13 @@ struct Handler {
 
   map<string, string> load_params() {
     map<string, string> params;
-    params["timeout"] = "1000";
     params["hand_size"] = "3";
     params["round_length"] = "6";
     params["ncards"] = "15";
+    params["score_goal"] = "10";
+    params["days_per_round"] = "5";
+    params["cow_sacrifice"] = "15";
+    params["timer_length"] = "1000";
     string param, value, line;
     while (getline(cin, line)) {
       if (line == "END") break;
@@ -105,6 +108,10 @@ struct Handler {
       board, pieces, cards,
       stoll(params["hand_size"]),
       stoll(params["round_length"]),
+      stoll(params["cow_sacrifice"]),
+      stoll(params["cow_regen_rate"]),
+      stoll(params["days_per_round"]),
+      stoll(params["score_goal"]),
       params["game_id"]
     );
     cerr << "4\n";

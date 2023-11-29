@@ -26,6 +26,10 @@ Game::Game(GameConfig config):
   width(config.board[0].size()),
   height(config.board.size()),
   round_length(config.round_length),
+  cow_sacrifice(config.cow_sacrifice),
+  cow_regen_rate(config.cow_regen_rate),
+  days_per_round(config.days_per_round),
+  cows_to_win(config.score_goal),
   cm(config.cards, config.hand_size),
   impassible(area(), 0),
   cows(area(), 0),
@@ -39,8 +43,10 @@ Game::Game(GameConfig config):
     pattacked[i] = 0;
     eattacked[i] = 0;
   }
-  for (uint32_t i = 0; i < round_length; i++) {
-    cow_respawn[i] = dynamic_bitset(area(), 0);
+
+  cow_respawn.resize(cow_regen_rate);
+  for (uint32_t i = 0; i < cow_regen_rate; i++) {
+    cow_respawn.push_back(dynamic_bitset(area(), 0));
   }
 
   for (auto p: config.pieces) {
@@ -96,9 +102,9 @@ Game::Game(GameConfig config):
       // Players Heatseek towards cows.
       for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
-          if (!cows[i * width + height]) continue;
+          if (!cows[i * width + j]) continue;
           q.push({j, i, 0});
-          visited[i * width + height] = 1;
+          visited[i * width + j] = 1;
         }
       }
     }
@@ -151,10 +157,10 @@ Game::Game(GameConfig config):
 
 int Game::is_jover() {
   for (int i = 0; i < 4; i++) {
-    if (!players[i].count()) return -1;
+    if (player.deads[i].size() == 0) return -1;
   }
   if ((total_score + cows_collected) >= cows_to_win) return 1;
-  if (turn && (turn % (6 * round_length) == 0)) {
+  if (turn && (turn % (days_per_round * 6) == 0)) {
     if (cows_collected < 5) return -1;
   }
   return 0;
@@ -169,10 +175,10 @@ bool Game::is_enemy_turn(int t) const {
 // general move making function
 void Game::make_move(Move move) {
   assert(move.type != MoveType::NONE);
-  cows |= cow_respawn[turn % round_length];
+  cows |= cow_respawn[turn % cow_regen_rate];
   // Each day is 2 AI moves and 4 Player Moves.
   // After round_length days, we spawn more enemies.
-  if (turn && (turn % (6 * round_length) == 0)) {
+  if (turn && (turn % (days_per_round * 6) == 0)) {
     for (int c = 0; c < 4; c++) {
       for (auto [x, y]: enemy_spawns[c]) {
         int idx = y * width + x;
@@ -530,7 +536,7 @@ void Game::play_player_movement(Direction d) {
   }
 
   cows &= ~mask;
-  cow_respawn[turn % round_length] &= cows & mask;
+  cow_respawn[turn % cow_regen_rate] &= cows & mask;
   players[player_id] = mask;
 } /* play_player_movement() */
 

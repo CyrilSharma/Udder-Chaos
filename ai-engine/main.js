@@ -42,12 +42,26 @@ socket.on("connect", () => {
     socket.emit("init-connection", false);
 });
 
-socket.on("init-ai", async (room_code, seed, cards) => {
+// ---- Game Settings ---- //
+// export const defaultGameSettings = {
+//     seed: 0,
+//     score_goal: 10,
+//     days_per_round: 5,
+//     cow_regen_rate: 15,
+//     cow_sacrifice: 5,
+//     card_deck_size: 15,
+//     timer_length: 1000
+// }
+
+socket.on("init-ai", async (room_code, settings, cards) => {
     console.log("AI Initialized!");
-    console.log(`Seed: ${seed}`);
     ai.stdin.write('INIT\n');
     ai.stdin.write(`game_id: ${room_code}\n`);
-    ai.stdin.write(`seed: ${seed}\n`);
+    ai.stdin.write(`score_goal: ${settings.seed}\n`);
+    ai.stdin.write(`days_per_round: ${settings.days_per_round}\n`);
+    ai.stdin.write(`cow_regen_rate: ${settings.cow_regen_rate}\n`);
+    ai.stdin.write(`cow_sacrifice: ${settings.cow_sacrifice}\n`);
+    ai.stdin.write(`seed: ${settings.card_deck_size}\n`);
     ai.stdin.write(`ncards: ${cards.length}\n`);
     ai.stdin.write(`END\n`);
     for (let card of cards) {

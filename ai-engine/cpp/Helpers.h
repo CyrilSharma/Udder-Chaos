@@ -72,6 +72,10 @@ struct GameConfig {
   vector<Card> cards;
   int hand_size;
   int round_length;
+  int cow_sacrifice;
+  int cow_regen_rate;
+  int days_per_round;
+  int score_goal;
   string id;
   GameConfig(
     vector<vector<Tile>> board,
@@ -79,6 +83,10 @@ struct GameConfig {
     vector<Card> cards,
     int hand_size = 3,
     int round_length = 6,
+    int cow_sacrifice = 5,
+    int cow_regen_rate = 15,
+    int days_per_round = 5,
+    int score_goal = 10,
     string id = ""
   );
 };

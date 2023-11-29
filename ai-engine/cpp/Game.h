@@ -13,8 +13,13 @@ struct Game {
   string id;
   uint8_t width;
   uint8_t height;
+
   uint64_t round_length;
-  uint64_t cows_to_win = 10; // Hardcode for now...
+  uint64_t cow_sacrifice;
+  uint64_t cow_regen_rate;
+  uint64_t days_per_round;
+  uint64_t cows_to_win;
+
   uint64_t turn = 0;
   uint64_t round = 0;
   uint64_t total_score = 0;
@@ -22,7 +27,7 @@ struct Game {
   uint64_t player_id = 0;
 
   CardManager cm;
-  array<dynamic_bitset, 6> cow_respawn;
+  vector<dynamic_bitset> cow_respawn;
   array<bool, 4> pattacked;
   array<bool, 4> eattacked;
   array<dynamic_bitset, 4> players;
