@@ -10,14 +10,17 @@ export class SoundHandler {
                                             "ufo-laser.ogg", "ufo-move.ogg", "ufo-purchased.ogg"];
     private static allBGMFiles = ["game-music.mp3", "lobby-music.mp3", "menu-music.mp3"];
 
+    private static SFXlist: { [key: string] : HTMLAudioElement } = {}
+    private static BGMlist: { [key: string] : HTMLAudioElement } = {}
+
     // Load all audio files into cache
     public static preloadAudio() {
         console.log("Loading audio files");
         for (let file of SoundHandler.allSFXFiles) {
-            let tmp = new Audio(SoundHandler.sfxPath + file);
+            SoundHandler.SFXlist[file] = new Audio(SoundHandler.sfxPath + file);
         }
         for (let file of SoundHandler.allBGMFiles) {
-            let tmp = new Audio(SoundHandler.bgmPath + file);
+            SoundHandler.BGMlist[file] = new Audio(SoundHandler.bgmPath + file);
         }
     }
 
@@ -30,7 +33,7 @@ export class SoundHandler {
             SoundHandler.bgm.pause();
             SoundHandler.bgm.currentTime = 0;
             
-            SoundHandler.bgm = new Audio(SoundHandler.bgmPath + file);
+            SoundHandler.bgm = SoundHandler.BGMlist[file];
             SoundHandler.bgm.loop = true;
             SoundHandler.bgm.volume = this.bgmVolume;
             SoundHandler.currentBgm = file;
@@ -66,7 +69,7 @@ export class SoundHandler {
     }
 
     public static playSFX(file: string) {
-        let tmpAudio = new Audio(SoundHandler.sfxPath + file);
+        let tmpAudio = SoundHandler.SFXlist[file];
         tmpAudio.volume = SoundHandler.sfxVolume;
         tmpAudio.play();
     }
