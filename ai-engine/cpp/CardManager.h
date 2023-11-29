@@ -56,7 +56,7 @@ struct CardManager {
     };
     int index = phand[choice];
     for (Direction &move: cards[index].moves) {
-      move = dirs[(4 + move - rotation) & 0b11];
+      move = dirs[(4 + move + rotation) & 0b11];
     }
   }
 };
