@@ -22,7 +22,6 @@ export class SeedBox extends FancyButton {
         this.percentWidth = pW;
         this.percentHeight = pH;
 
-        // this.background = new SizedButton(pX, pY, pW, pH, text, menuContainer.width, menuContainer.height, 40, 0xffffff);
         this.background = new SizedButton(pX, pY, pW, pH, "", menuContainer.width, menuContainer.height, 40, 0xffffff);
 
         this.addChild(this.background);
@@ -41,16 +40,7 @@ export class SeedBox extends FancyButton {
             })
         });
         this.seed.alpha = 1;
-        this.seed.onChange.connect(() => {
-            // this.background.changeText(this.seed.value);
-            // this.seed.x = this.background.x - this.seed.width * 0.5;
-        });
-        this.seed.onEnter.connect(() => {
-            // console.log('owo im ehre');
-            // this.seed.value = "";
-        })
         
-        // this.seed.value = text;
         this.seed.y = this.background.y - this.background.height * 0.5;
         this.seed.x = this.background.x - this.seed.width * 0.5;
 
