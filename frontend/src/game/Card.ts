@@ -127,16 +127,18 @@ export class Card extends Container {
     };
 
     private onPointerLeave = (e: FederatedPointerEvent) => {
-        this.unscale();
+        // If not rotating card, unscale the card
+        if (this.dragStartPos == null) {
+            this.unscale();
+        }
         //this.queue.placeCards();
-        this.onDragEnd(e);
     };
 
     private onDragStart = (e: FederatedPointerEvent) => {
         if (this.queue.game.ourTurn() && this.queue.checkCardInHand(this, this.queue.game.playerColor)) {
 
             this.dragStartPos = this.toLocal(e.global) as Point;
-            this.graphics.on('pointermove', this.onDragMove);
+            this.graphics.on('globalpointermove', this.onDragMove);
 
             this.dragStartTime = Date.now();
         } else {
@@ -160,6 +162,7 @@ export class Card extends Container {
             this.graphics.off('pointermove', this.onDragMove);
             this.dragStartPos = null;
             let trueAngle = mod(this.graphics.angle, 360);
+            this.unscale();
 
             // If the rotation is very small, ignore rotation and tap if the time was short
             if (this.cardRotation * 90 - ALLOWED_POS_OFFSET <= trueAngle && trueAngle <= this.cardRotation * 90 + ALLOWED_POS_OFFSET) {
