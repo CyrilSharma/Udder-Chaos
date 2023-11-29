@@ -94,6 +94,12 @@ export function getTeam(piece_type: number) {
     }
     return Error('Invalid Piece Type');
 }
+export function canMoveOverAll(attacker: number, pieces: Piece[]) {
+    for (let piece of pieces) {
+        if (!canMoveOver(attacker, piece.type)) return false;
+    }
+    return true;
+}
 export function canMoveOver(attacker: number, defender: number) {
     // If on differing teams, i.e, moving into cow space, jet kills ufo, ufo kills jet.
     return (getTeam(defender) != getTeam(attacker))
