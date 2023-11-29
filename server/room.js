@@ -222,7 +222,7 @@ class Player {
         })
 
         this.socket.on("init-ai", (cards) => {
-            ai_socket.emit('init-ai', this.room.roomCode, this.room.gameSettings.seed, cards);
+            ai_socket.emit('init-ai', this.room.roomCode, this.room.gameSettings, cards);
         });
 
         this.socket.on("leave-room", () => {
