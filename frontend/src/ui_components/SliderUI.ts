@@ -1,4 +1,4 @@
-import { Container, FederatedPointerEvent, Text, TextStyle } from "pixi.js";
+import { Container, Text, TextStyle } from "pixi.js";
 import { SizedButton } from "./SizedButton";
 
 export class SliderUI extends Container {
@@ -85,18 +85,29 @@ export class SliderUI extends Container {
     
     public setValue(value: number) {
 
+        this.resize(this.pBounds);
+
+        if (value < this.min) {
+            value = this.min;
+        } else if (value > this.max) {
+            value = this.max;
+        }
+
         let index = value - this.min;
         let increment = (this.slide.width - this.slider.width) / (this.max - this.min);
         let tmp = (index * increment) + (this.slide.x - this.slide.width / 2 + this.slider.width / 2);
         let tmpX = tmp - this.pBounds[2];
         tmpX /= (this.pBounds[3] - this.pBounds[2]);
+        this.value = value;
         this.slider.setX(tmpX, this.pBounds);
-        this.value = this.min + index;
         this.updateValue();
 
     }
 
     private setSlide(x: number) {
+
+        this.resize(this.pBounds);
+
         let increment = (this.slide.width - this.slider.width) / (this.max - this.min);
         let dist = 100000;
         let index = 0;

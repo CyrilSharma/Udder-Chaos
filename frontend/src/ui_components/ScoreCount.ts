@@ -9,11 +9,14 @@ export class ScoreCounter extends FancyButton {
     private percentY: number;
     private percentWidth: number;
     private percentHeight: number;
+    private goal: number;
     public label: Text;
 
-    constructor(x: number, y: number, width: number, height: number, text: string, parentW: number, parentH: number, fontSize: number, color: number) {
+    constructor(x: number, y: number, width: number, height: number, text: string, parentW: number, parentH: number, fontSize: number, color: number, goal: number) {
         super();
         
+        this.goal = goal;
+
         this.label = new Text(text, new TextStyle({
             fontFamily: "Concert One",
             fontSize: fontSize,
@@ -39,7 +42,7 @@ export class ScoreCounter extends FancyButton {
     }
 
     public updateScore(score: string) {
-        this.label.text = score + "of 10";
+        this.label.text = score + "of " + this.goal;
     }
 
     public getText() : string {

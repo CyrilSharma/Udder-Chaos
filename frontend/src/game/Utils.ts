@@ -8,7 +8,7 @@ import '@pixi/math-extras';
 export const defaultGameSettings = {
     seed: 0,
     score_goal: 10,
-    days_per_round: 5,
+    days_per_round: 4,
     cow_regen_rate: 15,
     cow_sacrifice: 5,
     card_deck_size: 15,

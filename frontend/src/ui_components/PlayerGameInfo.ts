@@ -132,6 +132,10 @@ export class PlayerGameInfo extends Container {
         this.timer.width = newWidth;
     }
 
+    public getUnits() : number {
+        return Number(this.units.text);
+    }
+
     public setUnits(units: number) {
         this.units.text = units;
     }

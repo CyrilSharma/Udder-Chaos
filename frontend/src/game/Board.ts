@@ -229,6 +229,9 @@ export class Board extends Container {
             }
         } else {
             // enemy piece destroyed
+    
+            this.game.playerAI.setUnits(this.game.playerAI.getUnits() - 1);
+
             SoundHandler.playSFX("ufo-laser.ogg");
         }
     }
@@ -459,6 +462,7 @@ export class Board extends Container {
             this.enemyRegen[i].forEach((tilePosition) => {
                 if (this.getPiecesByPosition(tilePosition).length == 0) {
                     this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
+                    this.game.playerAI.setUnits(this.game.playerAI.getUnits() + 1);
                 }
             });
         }

@@ -5,9 +5,10 @@ import { SizedButton } from "./SizedButton";
 import { SeedBox } from '../ui_components/SeedBox';
 import { SliderUI } from './SliderUI';
 import { Background } from "./Background";
-import { GameSettings, gameSettings } from "../game/GameSettings";
+import { gameSettings } from "../game/GameSettings";
 import { gameSettingsData } from "../game/Utils";
 import server from '../server';
+import { defaultGameSettings } from "../game/Utils";
 
 export class CustomScreenUI extends Container {
 
@@ -39,24 +40,24 @@ export class CustomScreenUI extends Container {
         this.menuContainer.addChild(this.backButton);
         this.backButton.onPress.connect(() => {
             this.visible = false;
-            const newSettings = {
-                seed: Number(this.getSeed()),
-                score_goal: this.getCowsForWin(),
-                days_per_round: this.getDaysPerRound(),
-                cow_regen_rate: this.getCowRespawnRate(),
-                cow_sacrifice: this.getCowSacrificeAmt(),
-                card_deck_size: this.getDeckSize(),
-                timer_length: gameSettings.getValue("timer_length"),
-                difficulty: this.getDifficulty(),
-            }
-            gameSettings.save(newSettings);
-            server.updateGameSettings(newSettings);
+            // const newSettings = {
+            //     seed: Number(this.getSeed()),
+            //     score_goal: this.getCowsForWin(),
+            //     days_per_round: this.getDaysPerRound(),
+            //     cow_regen_rate: this.getCowRespawnRate(),
+            //     cow_sacrifice: this.getCowSacrificeAmt(),
+            //     card_deck_size: this.getDeckSize(),
+            //     timer_length: gameSettings.getValue("timer_length"),
+            //     difficulty: this.getDifficulty(),
+            // }
+            // gameSettings.save(newSettings);
+            // server.updateGameSettings(newSettings);
         });
 
         this.customLabel = new SizedButton(0.32, 0.12, 0.5, 0.2, "Customize Game", this.menuContainer.width, this.menuContainer.height, 50, 0xffcc66);
         this.menuContainer.addChild(this.customLabel);
 
-        this.seedBox = new SeedBox(this.menuContainer, 0.78, 0.12, 0.3, 0.15, " ", 6);
+        this.seedBox = new SeedBox(this.menuContainer, 0.78, 0.12, 0.3, 0.15, "0", 6);
         this.menuContainer.addChild(this.seedBox);
 
         this.deckSize = new SliderUI(0.25, 0.35, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Deck Size", 10, 20, 20, this.menuContainer.getBox());
@@ -80,23 +81,38 @@ export class CustomScreenUI extends Container {
         this.timerLength = new SliderUI(0.25, 0.86, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Move Timer Length", 10, 60, 20, this.menuContainer.getBox());
         this.menuContainer.addChild(this.timerLength);
 
-        this.loadGameSettings();
+        //this.loadGameSettings();
+        /* Set Default Settings */
+        
+        this.setSeed(defaultGameSettings.seed);
+        this.setCowsForWin(defaultGameSettings.score_goal);
+        this.setDaysPerRound(defaultGameSettings.days_per_round);
+        this.setCowRespawnRate(defaultGameSettings.cow_regen_rate);
+        this.setCowSacrificeAmt(defaultGameSettings.cow_sacrifice);
+        this.setDeckSize(defaultGameSettings.card_deck_size);
+        this.setDifficulty(defaultGameSettings.difficulty);
+
         this.resize(window.innerWidth, window.innerHeight);
     }
 
-    public loadGameSettings() {
-        const settingsData: gameSettingsData = gameSettings.load();
-        this.setSeed(settingsData.seed);
-        this.setCowsForWin(settingsData.score_goal);
-        this.setDaysPerRound(settingsData.days_per_round);
-        this.setCowRespawnRate(settingsData.cow_regen_rate);
-        this.setCowSacrificeAmt(settingsData.cow_sacrifice);
-        this.setDeckSize(settingsData.card_deck_size);
-        this.setDifficulty(settingsData.difficulty);
-        this.setDifficulty(500);
-    }
+    // public loadGameSettings() {
+    //     const settingsData: gameSettingsData = gameSettings.load();
+    //     console.log(`Seed is ${settingsData.seed}`);
+    //     console.log(`Score Goal is ${settingsData.score_goal}`);
+
+    //     this.setSeed(settingsData.seed);
+    //     this.setCowsForWin(settingsData.score_goal);
+    //     this.setDaysPerRound(settingsData.days_per_round);
+    //     this.setCowRespawnRate(settingsData.cow_regen_rate);
+    //     this.setCowSacrificeAmt(settingsData.cow_sacrifice);
+    //     this.setDeckSize(settingsData.card_deck_size);
+    //     this.setDifficulty(settingsData.difficulty);
+    // }
 
     public getSeed() {
+        if (this.seedBox.seed.value == "") {
+            return 0;
+        }
         return this.seedBox.seed.value;
     }
 

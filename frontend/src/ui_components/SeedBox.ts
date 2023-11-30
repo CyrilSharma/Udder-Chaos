@@ -1,5 +1,5 @@
-import { Container, Graphics, Text, TextStyle, Sprite, Color } from 'pixi.js';
-import { FancyButton, Button, Input } from '@pixi/ui';
+import { TextStyle } from 'pixi.js';
+import { FancyButton, Input } from '@pixi/ui';
 import { SizedButton } from './SizedButton';
 import { MenuContainer } from './MenuContainer';
 
@@ -22,7 +22,7 @@ export class SeedBox extends FancyButton {
         this.percentWidth = pW;
         this.percentHeight = pH;
 
-        this.background = new SizedButton(pX, pY, pW, pH, "", menuContainer.width, menuContainer.height, 40, 0xffffff);
+        this.background = new SizedButton(pX, pY, pW, pH, text, menuContainer.width, menuContainer.height, 40, 0xffffff);
 
         this.addChild(this.background);
 
@@ -52,8 +52,24 @@ export class SeedBox extends FancyButton {
     }
 
     public changeSeed(seed: string) {
-        this.background.changeText(seed);
-        this.seed.x = this.background.x - this.seed.width * 0.5;
+
+        // Empty String
+        if (seed.length === 0) {
+            this.background.changeText(seed);
+            this.seed.x = this.background.x - this.seed.width * 0.5;
+            return;
+        }
+
+        // Check if new char is numeric
+        let c = seed[seed.length - 1];
+        if (c >= '0' && c <= '9') {
+            this.background.changeText(seed);
+            this.seed.x = this.background.x - this.seed.width * 0.5;
+            return;
+        }
+
+        this.seed.value = this.seed.value.slice(0, seed.length - 1);
+        
     }
 
     public resize(bounds: Array<number>) {
@@ -62,6 +78,7 @@ export class SeedBox extends FancyButton {
         this.y = bounds[0] + (bounds[1] - bounds[0]) * this.percentY;
         this.width = (bounds[3] - bounds[2]) * this.percentWidth;
         this.height = (bounds[1] - bounds[0]) * this.percentHeight;
+        console.log(this.seed.value);
     }
 
 }
