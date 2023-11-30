@@ -18,8 +18,6 @@ export class GameScreen extends Container {
         this.addChild(this.game);
     }
 
-    
-
     public prepare() {
         // Temporary workaround until we can load maps.
 

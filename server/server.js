@@ -16,6 +16,7 @@ const io = new Server(server, {
 
 var mode = process.env.NODE_ENV;
 // Ship frontend to clients.
+var mode = process.env.NODE_ENV;
 if (mode != 'development') {
     app.use('/assets', express.static(path.join(__dirname, 'assets')));
     app.use('/images', express.static(path.join(__dirname, 'images')));

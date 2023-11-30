@@ -15,6 +15,8 @@ import server from "../server";
 import { GameSettings, gameSettings } from "./GameSettings";
 import { MoveQueue } from './MoveQueue';
 import { SoundHandler } from './SoundHandler';
+import { PauseIcon } from '../ui_components/PauseIcon';
+import { PauseMenu } from '../ui_components/PauseMenu';
 
 // This seems a little redundant right now,
 // But it will house the cards as well,
@@ -52,6 +54,8 @@ export class Game extends Container {
     public animating: boolean = false;
     public upNext: SizedButton;
     public codeDisplay: SizedButton;
+    public pauseButton: PauseIcon;
+    public pauseMenu: PauseMenu;
 
     constructor() {
         super();
@@ -108,6 +112,17 @@ export class Game extends Container {
         this.addChild(this.rightPanel);
         this.addChild(this.bottomPanel);
         this.addChild(this.cards);
+
+        this.pauseButton = new PauseIcon();
+        this.addChild(this.pauseButton);
+
+        this.pauseMenu = new PauseMenu();
+        this.pauseButton.myHitArea.onPress.connect(() => {
+            this.pauseMenu.visible = true;
+        });
+        this.addChild(this.pauseMenu);
+        this.resize(window.innerWidth, window.innerHeight);
+
     }
     
     public setup(config: GameConfig) {
@@ -197,6 +212,7 @@ export class Game extends Container {
         }
         this.turnCount += 1;
         this.timer = this.gameSettings.getValue("timer_length");
+        this.updatePlayerInfoTimers();
         this.board.spawnCows(this.turnCount);
     }
 
@@ -258,11 +274,11 @@ export class Game extends Container {
     }
 
     public updatePlayerInfoTimers() {
-        this.player1.updateTimer(this.timer, defaultGameSettings.timer_length);
-        this.player2.updateTimer(this.timer, defaultGameSettings.timer_length);
-        this.player3.updateTimer(this.timer, defaultGameSettings.timer_length);
-        this.player4.updateTimer(this.timer, defaultGameSettings.timer_length);
-        this.playerAI.updateTimer(this.timer, defaultGameSettings.timer_length);
+        this.player1.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.player2.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.player3.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.player4.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        this.playerAI.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
     }
 
     public scorePoints(points: number) {
@@ -304,8 +320,10 @@ export class Game extends Container {
         this.buyButton.y = this.scoreCounter.y + 70;
         this.cards.y = 0;
         this.cards.x = 0;
-        this.upNext.y = -310;
+        this.upNext.y = this.rightPanel.height * -0.5 + 0.5 * this.upNext.height//-310;
         this.codeDisplay.y = 200;
+        this.pauseButton.resize();
+        this.pauseMenu.resize(width, height);
 
         this.cards.placeCards(false);
 

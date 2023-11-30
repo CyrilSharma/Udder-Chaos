@@ -5,7 +5,7 @@ import { MenuContainer } from './MenuContainer';
 
 export class SeedBox extends FancyButton {
 
-    private background: SizedButton;
+    public background: SizedButton;
     public seed: Input;
 
     private percentX: number;
@@ -40,12 +40,20 @@ export class SeedBox extends FancyButton {
             })
         });
         this.seed.alpha = 1;
+
+        this.seed.onChange.connect(() => {
+            this.changeSeed(this.seed.value);
+        });
         
         this.seed.y = this.background.y - this.background.height * 0.5;
         this.seed.x = this.background.x - this.seed.width * 0.5;
 
         this.addChild(this.seed);
+    }
 
+    public changeSeed(seed: string) {
+        this.background.changeText(seed);
+        this.seed.x = this.background.x - this.seed.width * 0.5;
     }
 
     public resize(bounds: Array<number>) {
