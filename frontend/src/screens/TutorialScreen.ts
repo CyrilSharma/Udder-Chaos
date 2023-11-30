@@ -93,7 +93,7 @@ export class TutorialScreen extends Container {
         this.nextButton.resize(this.menuContainer.getBox());
         this.prevButton.resize(this.menuContainer.getBox());
         this.slides.resize(this.menuContainer.getBox());
-        this.text.x = this.menuContainer.getBox()[2] + this.menuContainer.width * 0.05;
+        this.text.x = this.menuContainer.getBox()[2] + this.menuContainer.width * 0.02;
         this.text.y = this.menuContainer.getBox()[0] + this.menuContainer.height * 0.05;
 
     }
