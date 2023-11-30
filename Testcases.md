@@ -321,50 +321,55 @@ Step | Directions | Expected Output
 2 | Make a move | Notice that the timer resets to a full bar when the turn switches
 3 | Let the timer reach zero | Notice that a card is played from the hand automatically without player input
 
-## User Story 5
+## User Story 5 - AI Game state fixes (from Sprint 2)
+Start a game and open the AI console
 Step | Directions | Expected Output
 --- | --- | ---
-1 | 
-2 |
-3 |
-4 | 
-5 |
+1 | Note the states of the game and in the AI | The states match
+2 | Play a move | ^
+3 | Rotate a card | ^
+4 | Purchase a UFO | ^
+5 | Capture a piece | ^
+6 | Lose a piece | ^
+
 
 ## User Story 6 - AI Fixes (from Sprint 2)
+Start on the AI console
 Step | Directions | Expected Output
 --- | --- | ---
-1 | 
-2 |
-3 |
-4 | 
-5 |
+1 | Run all testcases | There are at least 10 testcases
+2 | Note that we can run all testcases in one file and that they are automated | -
 
 ## User Story 7
 Step | Directions | Expected Output
 --- | --- | ---
-1 | 
+1 | TODO CYRIL
 2 |
 3 |
 4 | 
 5 |
 
-## User Story 8
+## User Story 8.1 - Search correctness
+Start in the AI console
 Step | Directions | Expected Output
 --- | --- | ---
-1 | 
-2 |
-3 |
-4 | 
-5 |
+1 | Test a single-threaded search | It passes all test cases
+2 | Test a multi-threaded search | It passes all test cases
+3 | Note that we can change the threading with an argument | -
 
-## User Story 9
+## User Story 8.2 - Search speed
+Complete 8.1
 Step | Directions | Expected Output
 --- | --- | ---
-1 | 
-2 |
-3 |
-4 | 
-5 |
+1 | Scroll up in the console and note the times for tests | The multi-threading search completes all tests at least 2x faster than single-threaded
+
+## User Story 9.1 - Unit number display (from Sprint 2)
+Start in a new game
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Note the UFO count display | It matches the player's UFO count 
+2 | Buy a UFO | The UFO count display correctly increases
+3 | Lose a UFO | The UFO count display correctly decreases
 
 ## User Story 10.1 - Customization menu functionality
 Start on the main menu
@@ -391,12 +396,16 @@ Step | Directions | Expected Output
 --- | --- | ---
 1 | Set a new cow respawn time, (low) cow win goal, and AI difficulty | The menu interacts as expected; note the values
 2 | Start the game and note the cow win goal | It matches the value set in step 1
+3 | Capture a cow and note the respawn time | It matches the value set in step 1
+4 | Play a move and note the time it takes for the AI to respond | It matches the time set in step 1
+5 | Win if time allows | The players should win upon reaching the custom cow win goal
 
 ## User Story 10.4 - Customization in game (part 3)
 Start on the customization screen, as described in steps 1 and 2 in 10.1
 Step | Directions | Expected Output
 --- | --- | ---
-
+1 | Set a custom seed and start the game | Note the map and cards that generate
+2 | Exit the game and create a new game with the same seed; start it | Note the map and cards are the same
 
 ## User Story 11.1 Board animation synchronization
 Start a game with 2 tabs
