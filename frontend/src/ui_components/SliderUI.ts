@@ -84,18 +84,16 @@ export class SliderUI extends Container {
     }
     
     public setValue(value: number) {
-        if (value < this.min) {
-            this.value = this.min;
-        } else if (value > this.max) {
-            this.value = this.max;
-        } else {
-            this.value = value;
-        }
-        this.valueLabel.text = this.value;
+
+        let index = value - this.min;
         let increment = (this.slide.width - this.slider.width) / (this.max - this.min);
-        let diff = this.value - this.min;
-        this.slider.setX((this.slide.x - this.slide.width / 2) / (this.pBounds[3] - this.pBounds[2]), this.pBounds);
-        //this.slider.setX(((this.slide.x - this.slide.width / 2) + (diff * increment) - this.slider.width) / (this.pBounds[3] - this.pBounds[2]), this.pBounds);
+        let tmp = (index * increment) + (this.slide.x - this.slide.width / 2 + this.slider.width / 2);
+        let tmpX = tmp - this.pBounds[2];
+        tmpX /= (this.pBounds[3] - this.pBounds[2]);
+        this.slider.setX(tmpX, this.pBounds);
+        this.value = this.min + index;
+        this.updateValue();
+
     }
 
     private setSlide(x: number) {
