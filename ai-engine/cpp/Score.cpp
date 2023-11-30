@@ -24,18 +24,16 @@ int Scorer::score(Game &game) {
  */
 
 int Scorer::evaluator(Game &game) {
+    int scoreSum = 0;
     int e = game.is_enemy_turn();
     int ppct = game.count_players();
     int epct = game.count_enemies();
-    // I dislike not knowing what the weight is
-    // Just by looking at the code
-    // int ppscore = ppwt * ppct;
-    // int epscore = epwt * epct;
     int scale = (game.width + game.height);
     int ppscore = -5 * ppct * scale;
     int epscore = 5 * epct * scale;
-    int scoreSum = ppscore + epscore;
-    // Each can be upto 1 unit of Scale.
+    scoreSum += (ppscore + epscore);
+    scoreSum += -1 * (game.count_held_cows());
+    scoreSum += -2 * (game.cows_collected);
     int ebeval = (epct) ? (game.enemyeval / (epct)) : 0;
     int pbeval = (ppct) ? (game.playereval / (ppct)) : 0;
     scoreSum += (ebeval - pbeval);

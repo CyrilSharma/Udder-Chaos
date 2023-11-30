@@ -57,6 +57,7 @@ struct Game {
   int is_jover();
   bool is_enemy_turn(int t=-1) const;
   int count_players();
+  int count_held_cows();
   int count_enemies();
   int count_pieces();
   void make_move(Move move);

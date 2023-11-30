@@ -136,7 +136,7 @@ Game::Game(GameConfig config):
 
   playerhm.resize(area());
   enemyhm.resize(area());
-  heatmap(playerhm, 1);
+  // heatmap(playerhm, 1);
   heatmap(enemyhm, 0);
 
   // Initialize evaluations.
@@ -161,7 +161,7 @@ int Game::is_jover() {
   }
   if ((total_score + cows_collected) >= cows_to_win) return 1;
   if (turn && (turn % (days_per_round * 6) == 0)) {
-    if (cows_collected < 5) return -1;
+    if (cows_collected < cow_sacrifice) return -1;
   }
   return 0;
 } /* is_jover() */
@@ -211,6 +211,14 @@ int Game::count_players() {
   for (int i = 0; i < 4; i++)
     ppct += player.deads[i].size();
   return ppct;
+}
+
+int Game::count_held_cows() {
+  int cows = 0;
+  for (int i = 0; i < 4; i++)
+    for (size_t j = 0; j < player.ss[i].size(); j++)
+      cows += player.ss[i][j];
+  return cows;
 }
 
 int Game::count_enemies() {
