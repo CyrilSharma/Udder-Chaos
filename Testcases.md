@@ -284,9 +284,23 @@ Step | Directions | Expected Output
 Step | Directions | Expected Output
 --- | --- | ---
 
-## User Story 3
+## User Story 3.1 - Settings menu
 Step | Directions | Expected Output
 --- | --- | ---
+1 | Start on the main menu, click the settings button | The settings page opens
+2 | Exit the settings page and create and start a game | -
+3 | Click the pause button | A menu opens with a settings and an exit button
+4 | Click the settings button | The settings page from before opens
+5 | Exit the settings page and click the exit button from the pause menu | The game returns to the main menu screen
+
+## User Story 3.2 - Settings functionality
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Start on the settings page and turn the BGM volume to 0 | The BGM turns off
+2 | Turn the BGM volume higher | The BGM volume increases
+3 | Enter a game with sound effect volume on | -
+4 | Play a card | Sound effects are on
+5 | Enter the game settings menu and turn off sound effect volume | Sound effects no longer play
 
 ## User Story 4.1
 Start in the Game
