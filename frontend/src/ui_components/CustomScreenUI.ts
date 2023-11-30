@@ -22,6 +22,7 @@ export class CustomScreenUI extends Container {
     private cowSacrificeAmt: SliderUI;
     private cowsWin: SliderUI;
     private cowsRespawn: SliderUI;
+    private timerLength: SliderUI;
 
     constructor() {
         super();
@@ -58,23 +59,26 @@ export class CustomScreenUI extends Container {
         this.seedBox = new SeedBox(this.menuContainer, 0.78, 0.12, 0.3, 0.15, "Seed", 6);
         this.menuContainer.addChild(this.seedBox);
 
-        this.deckSize = new SliderUI(0.25, 0.4, 0.45, 0.2, this.menuContainer.width, this.menuContainer.height, "Deck Size", 10, 20, 30, this.menuContainer.getBox());
+        this.deckSize = new SliderUI(0.25, 0.35, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Deck Size", 10, 20, 20, this.menuContainer.getBox());
         this.menuContainer.addChild(this.deckSize);
 
-        this.difficulty = new SliderUI(0.25, 0.6, 0.45, 0.2, this.menuContainer.width, this.menuContainer.height, "AI Difficulty", 1, 5, 30, this.menuContainer.getBox());
+        this.difficulty = new SliderUI(0.25, 0.52, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "AI Difficulty", 100, 1000, 20, this.menuContainer.getBox());
         this.menuContainer.addChild(this.difficulty);
 
-        this.daysPerRound = new SliderUI(0.25, 0.8, 0.45, 0.2, this.menuContainer.width, this.menuContainer.height, "Days Per Round", 4, 18, 30, this.menuContainer.getBox());
+        this.daysPerRound = new SliderUI(0.25, 0.69, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Days Per Round", 4, 18, 20, this.menuContainer.getBox());
         this.menuContainer.addChild(this.daysPerRound);
 
-        this.cowSacrificeAmt = new SliderUI(0.75, 0.4, 0.45, 0.2, this.menuContainer.width, this.menuContainer.height, "Cows per Sacrifice", 1, 20, 30, this.menuContainer.getBox());
+        this.cowSacrificeAmt = new SliderUI(0.75, 0.35, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Cows per Sacrifice", 1, 20, 20, this.menuContainer.getBox());
         this.menuContainer.addChild(this.cowSacrificeAmt);
 
-        this.cowsWin = new SliderUI(0.75, 0.6, 0.45, 0.2, this.menuContainer.width, this.menuContainer.height, "Cows Needed For Win", 1, 50, 30, this.menuContainer.getBox());
+        this.cowsWin = new SliderUI(0.75, 0.52, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Cows Needed For Win", 1, 50, 20, this.menuContainer.getBox());
         this.menuContainer.addChild(this.cowsWin);
 
-        this.cowsRespawn = new SliderUI(0.75, 0.8, 0.45, 0.2, this.menuContainer.width, this.menuContainer.height, "Cow Respawn Time", 1, 30, 30, this.menuContainer.getBox());
+        this.cowsRespawn = new SliderUI(0.75, 0.69, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Cow Respawn Time", 1, 30, 20, this.menuContainer.getBox());
         this.menuContainer.addChild(this.cowsRespawn);
+
+        this.timerLength = new SliderUI(0.25, 0.86, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Move Timer Length", 10, 60, 20, this.menuContainer.getBox());
+        this.menuContainer.addChild(this.timerLength);
 
         this.loadGameSettings();
     }
@@ -146,6 +150,14 @@ export class CustomScreenUI extends Container {
         this.cowsRespawn.setValue(val);
     }
 
+    public getTimerLength() : number {
+        return this.timerLength.getValue();
+    }
+
+    public setTimerLength(val: number) {
+        this.timerLength.setValue(val);
+    }
+
     public resize(width: number, height: number) {
         this.vignette.resize(width, height);
         this.menuContainer.resize(width, height);
@@ -159,6 +171,7 @@ export class CustomScreenUI extends Container {
         this.cowSacrificeAmt.resize(this.menuContainer.getBox());
         this.cowsWin.resize(this.menuContainer.getBox());
         this.cowsRespawn.resize(this.menuContainer.getBox());
+        this.timerLength.resize(this.menuContainer.getBox());
     }
 
 

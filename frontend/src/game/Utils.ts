@@ -24,7 +24,7 @@ export const defaultGameSettings = {
     cow_sacrifice: 5,
     card_deck_size: 15,
     timer_length: 30,
-    difficulty: 3,
+    difficulty: 500,
 }
 
 export type gameSettingsData = typeof defaultGameSettings;
