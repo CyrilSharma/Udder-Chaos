@@ -125,47 +125,49 @@ export class CardQueue extends Container {
             const newX = this.game.rightPanel.x;
             const newY = this.game.rightPanel.y - this.game.rightPanel.height * 0.29 + (this.queue.length) * this.queue[i].size * 0.7;
             
-            gsap.to(card, {
-                pixi: {x: midX, y: midY, scale: 2},
-                duration: 0.25,
-                ease: "power2.out"
-            })
-            gsap.to(card, {
-                pixi: {rotation: 20},
-                duration: 0.05,
-                ease: "sine.out",
-                delay: 0.2
-            })
-            gsap.to(card, {
-                pixi: {rotation: -20},
-                duration: 0.1,
-                ease: "sine.inOut",
-                delay: 0.25
-            })
-            gsap.to(card, {
-                pixi: {rotation: 10},
-                duration: 0.1,
-                ease: "sine.inOut",
-                delay: 0.35
-            })
-            gsap.to(card, {
-                pixi: {rotation: -5},
-                duration: 0.1,
-                ease: "sine.inOut",
-                delay: 0.45
-            })
-            await gsap.to(card, {
-                pixi: {rotation: 0},
-                duration: 0.1,
-                ease: "sine.inOut",
-                delay: 0.55
-            })
-            gsap.to(card, {
-                pixi: {x: newX, y: newY, scale: 1},
-                duration: 0.5,
-                ease: "power2.in",
-                delay: 0.35
-            })
+            if (animated) {
+                gsap.to(card, {
+                    pixi: {x: midX, y: midY, scale: 2},
+                    duration: 0.25,
+                    ease: "power2.out"
+                })
+                gsap.to(card, {
+                    pixi: {rotation: 20},
+                    duration: 0.05,
+                    ease: "sine.out",
+                    delay: 0.2
+                })
+                gsap.to(card, {
+                    pixi: {rotation: -20},
+                    duration: 0.1,
+                    ease: "sine.inOut",
+                    delay: 0.25
+                })
+                gsap.to(card, {
+                    pixi: {rotation: 10},
+                    duration: 0.1,
+                    ease: "sine.inOut",
+                    delay: 0.35
+                })
+                gsap.to(card, {
+                    pixi: {rotation: -5},
+                    duration: 0.1,
+                    ease: "sine.inOut",
+                    delay: 0.45
+                })
+                await gsap.to(card, {
+                    pixi: {rotation: 0},
+                    duration: 0.1,
+                    ease: "sine.inOut",
+                    delay: 0.55
+                })
+                gsap.to(card, {
+                    pixi: {x: newX, y: newY, scale: 1},
+                    duration: 0.5,
+                    ease: "power2.in",
+                    delay: 0.35
+                })
+            }
 
             // Remove card from hand and add to queue
             this.queue.push(card);
@@ -174,7 +176,7 @@ export class CardQueue extends Container {
             hand[i] = this.queue.shift()!;
             
             // Fix card hands and queue, rerender
-            await this.placeCards(true);
+            await this.placeCards(animated);
             this.reindexCards();
             
             // Use logic handler to process movement logic
