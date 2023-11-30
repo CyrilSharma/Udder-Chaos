@@ -407,13 +407,13 @@ Step | Directions | Expected Output
 1 | Set a custom seed and start the game | Note the map and cards that generate
 2 | Exit the game and create a new game with the same seed; start it | Note the map and cards are the same
 
-## User Story 11.1 Board animation synchronization
+## User Story 11.1 - Board animation synchronization
 Start a game with 2 tabs
 Step | Directions | Expected Output
 --- | --- | ---
 1 | Play a card in one tab | The movement is synced across the other tab
 
-## User Story 11.2 Card animations
+## User Story 11.2 - Card animations
 Start in a game
 Step | Directions | Expected Output
 --- | --- | ---
