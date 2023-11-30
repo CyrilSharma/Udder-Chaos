@@ -6,6 +6,7 @@ import { SliderUI } from "../ui_components/SliderUI";
 import { SizedButton } from "../ui_components/SizedButton";
 import { globalSettingsData } from "../game/Utils";
 import { globalSettings } from "../game/Settings";
+import { SoundHandler } from "../game/SoundHandler";
 
 export class SettingsScreen extends Container {
 
@@ -46,17 +47,30 @@ export class SettingsScreen extends Container {
         this.sfxVol = new SliderUI(0.5, 0.47, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "SFX Volume", 0, 100, 30, this.menuContainer.getBox());
         this.menuContainer.addChild(this.sfxVol);
         this.sfxVol.eventMode = "static";
-
+        this.sfxVol.on("pointerup", () => {
+            SoundHandler.changeSFXVolume(this.getSFXVol() / 100);
+        });
         this.sfxVol.on("pointerupoutside", () => {
-            console.log("change the sfx volume!")
+            SoundHandler.changeSFXVolume(this.getSFXVol() / 100);
         });
 
         this.musicVol = new SliderUI(0.5, 0.77, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "Music Volume", 0, 100, 30, this.menuContainer.getBox());
         this.menuContainer.addChild(this.musicVol);
-
-        this.musicVol.on("pointerupoutside", () => {
-            console.log("change the music volume!")
+        this.musicVol.eventMode = "static";
+        this.musicVol.on("pointerup", () => {
+            SoundHandler.changeBGMVolume(this.getMusicVol() / 100);
         });
+        this.musicVol.on("pointerupoutside", () => {
+            SoundHandler.changeBGMVolume(this.getMusicVol() / 100);
+        });
+
+        this.loadGlobalSettings();
+    }
+
+    public loadGlobalSettings() {
+        const settingsData: globalSettingsData = globalSettings.load();
+        this.setSFXVol(Math.floor(settingsData.sound_effect_volume * 100));
+        this.setMusicVol(Math.floor(settingsData.music_volume * 100));
     }
 
     public getSFXVol() : number {
