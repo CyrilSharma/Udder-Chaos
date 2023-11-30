@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     close(read_child1[0]);
     dup2(write_child1[0], 0);
     dup2(read_child1[1], 1);
-    // dup2(dev_null, 2);
+    dup2(dev_null, 2);
     execlp(argv[1], argv[1], nullptr);
     cerr << "Error executing child 1." << endl;
     return 1;
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
     close(read_child2[0]);
     dup2(write_child2[0], 0);
     dup2(read_child2[1], 1);
-    // dup2(dev_null, 2);
+    dup2(dev_null, 2);
     execlp(argv[2], argv[2], nullptr);
     cerr << "Error executing child 2." << endl;
     return 1;
