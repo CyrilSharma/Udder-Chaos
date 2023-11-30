@@ -156,6 +156,10 @@ export class Game extends Container {
         }
     }
 
+    public setRoomCode(code: string) {
+        this.codeDisplay.changeText("Code:\n" + code);
+    }
+
     public updateTurn() {
         if (this.gameOver) {
             return;
@@ -263,7 +267,7 @@ export class Game extends Container {
         if (!this.animating) {
             this.timer -= 1;
             //Update the timer here
-            console.log("current time: " + this.timer);
+            // console.log("current time: " + this.timer);
             // if (this.timer <= 0) {
             if (this.timer <= 0 && this.ourTurn()) {
                 console.log("out of time");

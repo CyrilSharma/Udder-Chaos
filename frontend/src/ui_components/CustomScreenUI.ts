@@ -110,8 +110,11 @@ export class CustomScreenUI extends Container {
     // }
 
     public getSeed() {
+        console.log(this.seedBox.seed.value);
         if (this.seedBox.seed.value == "") {
             return 0;
+            // return a random seed if no seed is specified
+            // return Math.floor(Math.random() * 2000000000);
         }
         return this.seedBox.seed.value;
     }
