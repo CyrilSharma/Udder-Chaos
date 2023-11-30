@@ -92,18 +92,20 @@ export class Board extends Container {
                 text: ""
             });
             this.respawnCounter[tile].alpha = 0;
-            this.respawnCounter[tile].on('mouseover', () => {
-            
-                if (!this.getPiecesByPosition({row: Math.floor(tile/16), column: tile % 16})[0]) {
+            this.respawnCounter[tile].on('mouseenter', () => {
+                console.log(`respawn counter mouseover: ${tile}`);
+                if (tile == 255) return; // I'm not sure why but the last one is always in the top left corner??
+                if (this.getPiecesByPosition({row: Math.floor(tile/16), column: tile % 16}).length == 0) {
                     this.respawnCounter[tile].alpha = 1;
                 } else {// 8 10 11 14 15 
                     this.respawnCounter[tile].visible = false;
                 }
             });
-            this.respawnCounter[tile].on('mouseout', () => {
+            this.respawnCounter[tile].on('mouseleave', () => {
                 this.respawnCounter[tile].alpha = 0;
                 this.respawnCounter[tile].visible = true;
-            });            
+            });
+            // this.respawnCounter[tile].zIndex = -1;            
             this.addChild(this.respawnCounter[tile]);
         }
     }

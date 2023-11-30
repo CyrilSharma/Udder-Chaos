@@ -127,7 +127,7 @@ export class Room {
                     return;
                 }
             }
-            this.io.to(this.roomCode).emit('start-game', this.gameSettings, this.getPlayerInfo());
+            this.io.to(this.roomCode).emit('start-game', this.gameSettings, this.getPlayerInfo(), this.roomCode);
             this.inGame = true;
         }
         else {

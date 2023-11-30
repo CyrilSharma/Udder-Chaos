@@ -81,7 +81,7 @@ class Server {
             console.log(error);
         });
 
-        this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[]) => {
+        this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[], roomCode: string) => {
             localStorage.setItem("saved-id", this.socket.id);
 
             initSeed(settingsData.seed);
@@ -104,6 +104,8 @@ class Server {
             playerList.forEach((player: PlayerInfo) => {
                 gameScreen.game.setPlayerName(player.name, player.color + 1);
             });
+
+            gameScreen.game.setRoomCode(roomCode);
 
             let cards = []
             let arrays = [
