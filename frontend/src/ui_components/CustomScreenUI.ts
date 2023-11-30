@@ -56,7 +56,7 @@ export class CustomScreenUI extends Container {
         this.customLabel = new SizedButton(0.32, 0.12, 0.5, 0.2, "Customize Game", this.menuContainer.width, this.menuContainer.height, 50, 0xffcc66);
         this.menuContainer.addChild(this.customLabel);
 
-        this.seedBox = new SeedBox(this.menuContainer, 0.78, 0.12, 0.3, 0.15, "Seed", 6);
+        this.seedBox = new SeedBox(this.menuContainer, 0.78, 0.12, 0.3, 0.15, " ", 6);
         this.menuContainer.addChild(this.seedBox);
 
         this.deckSize = new SliderUI(0.25, 0.35, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Deck Size", 10, 20, 20, this.menuContainer.getBox());
@@ -81,6 +81,7 @@ export class CustomScreenUI extends Container {
         this.menuContainer.addChild(this.timerLength);
 
         this.loadGameSettings();
+        this.resize(window.innerWidth, window.innerHeight);
     }
 
     public loadGameSettings() {
@@ -92,6 +93,7 @@ export class CustomScreenUI extends Container {
         this.setCowSacrificeAmt(settingsData.cow_sacrifice);
         this.setDeckSize(settingsData.card_deck_size);
         this.setDifficulty(settingsData.difficulty);
+        this.setDifficulty(500);
     }
 
     public getSeed() {
@@ -99,7 +101,7 @@ export class CustomScreenUI extends Container {
     }
 
     public setSeed(val: number) {
-        this.seedBox.seed.value = String(val);
+        this.seedBox.changeSeed(String(val));
     }
 
     public getDeckSize() : number {

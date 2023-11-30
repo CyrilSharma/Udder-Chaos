@@ -94,7 +94,8 @@ export class SliderUI extends Container {
         this.valueLabel.text = this.value;
         let increment = (this.slide.width - this.slider.width) / (this.max - this.min);
         let diff = this.value - this.min;
-        this.slider.setX(((this.slide.x - this.slide.width / 2) + (diff * increment) - this.slider.width) / (this.pBounds[3] - this.pBounds[2]), this.pBounds);
+        this.slider.setX((this.slide.x - this.slide.width / 2) / (this.pBounds[3] - this.pBounds[2]), this.pBounds);
+        //this.slider.setX(((this.slide.x - this.slide.width / 2) + (diff * increment) - this.slider.width) / (this.pBounds[3] - this.pBounds[2]), this.pBounds);
     }
 
     private setSlide(x: number) {
