@@ -26,14 +26,6 @@ struct Tile {
   Tile();
 };
 
-enum MoveType {
-  NONE = -1,
-  NORMAL = 0,
-  ROTATE = 1,
-  BUY = 2
-};
-string typeOfMove(MoveType t);
-
 struct Card {
   std::vector<Direction> moves;
   bool operator==(const Card& other) const;
@@ -55,6 +47,15 @@ struct Piece {
 };
 ostream& operator<<(ostream& os, const Piece& p);
 
+
+enum MoveType {
+  NONE = -1,
+  NORMAL = 0,
+  ROTATE = 1,
+  BUY = 2
+};
+
+string typeOfMove(MoveType t);
 
 struct Move {
   MoveType type;

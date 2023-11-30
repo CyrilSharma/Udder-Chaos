@@ -9,25 +9,10 @@ Search::Search(GameConfig gc, uint64_t to, int md):
 Search::Search(GameConfig gc, Scorer sc, uint64_t to, int md):
     game(gc), scorer(sc), timeout(to), max_depth(md) {}
 
-
-// In the future making moves may also update the internal state of the search.
-// Hence, we make wrapper methods.
-void Search::makePlayerMove(int move) {
-    game.player_move(move);
+// Wrapper method to advance the internal state of the game.
+void Search::make_move(Move move) {
+    game.make_move(move);
 }
-
-void Search::rotatePlayerCard(int index, int rotation) {
-    game.player_rotate_card(index, rotation);
-}
-
-void Search::purchaseUFO(int row, int column) {
-    game.player_buy(column, row);
-}
-
-void Search::makeAIMove(int move, int color) {
-    game.enemy_move(move, color);
-}
-
 
 /*
  * brand new search function that will work in the _future_ !
@@ -197,28 +182,3 @@ void Search::gen_moves(vector<Move> &moves, int player) {
     }
   }
 }
-
-/* todo list
-# INCLUDE SCORING AND WINNING IN SEARCH
-We don't do quiescence search for now because this game 
-doesn't really have "capture-backs" like chess
-in the future might add some adapted version.
-
-improve move ordering heuristic
-    if a move increases player banked score search it first
-    rotations and buying are...
-improve move evaluation heuristic
-    if a side wins it's +- inf and shortcircuit
-    otherwise
-    piece count score - ~100
-    piece cow score - ~30
-    piece location from center - ~5 per tile
-    player actual score - ~50 
-    player score from win target - 10 * piece value * banked score / (target score squared * (target score - banked score))
-        Function that is 0 at 0 score and ~infinite at target score 
-        https://www.desmos.com/calculator/g33apvmq8c
-probably not quiescence searching because our game is a bit complex
-order the previous best move first such that we can use partial results
-look into transposition table possible usages
-look into search extensions (perhaps for piece capture possibilities)
-*/

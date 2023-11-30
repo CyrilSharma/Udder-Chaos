@@ -39,11 +39,7 @@ struct Search {
     Search(GameConfig gc, uint64_t to=1000, int md=inf);
     Search(GameConfig gc, Scorer sc, uint64_t to=1000, int md=inf);
     
-    void makePlayerMove(int move);
-    void rotatePlayerCard(int index, int rotation);
-    void purchaseUFO(int row, int column);
-    void makeAIMove(int move, int color);
-
+    void make_move(Move move);
     void gen_moves(vector<Move> &moves, int player);
     Move beginSearch(int dbgVerbosity = 0, bool fixedDepth = false);
     int alphaBeta(Position &prev, Move move, int depth);

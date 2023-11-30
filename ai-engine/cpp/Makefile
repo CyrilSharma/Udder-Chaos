@@ -29,7 +29,7 @@ $(info CXX is $(CXX))
 all: debug
 
 debug: CXXFLAGS += -g -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
-debug: Main TestGame TestSearch TestGamePerf
+debug: Main TestGame TestSearch TestGamePerf Arena
 
 # GCC profiling optimization generation
 profile: CXXFLAGS += -fprofile-generate
@@ -43,13 +43,12 @@ useprofile: build
 
 # default build
 build: CXXFLAGS += -O3
-build: Main TestGame TestSearch TestGamePerf
-
-
-$(EXECUTABLES): %: %.o $(SOURCES:.cpp=.o)
-	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+build: Main TestGame TestSearch TestGamePerf Arena
 
 Main: Main.o $(SOURCES:.cpp=.o)
+	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
+
+Arena: Arena.o $(SOURCES:.cpp=.o)
 	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
 TestGame: TestGame.o $(SOURCES:.cpp=.o)

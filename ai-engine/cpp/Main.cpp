@@ -1,4 +1,3 @@
-#include <bits/stdc++.h>
 #include "Helpers.h"
 #include "Search.h"
 #include "Utils.h"
@@ -25,7 +24,7 @@ struct Handler {
     if (request == "INIT") return Request::INIT;
     if (request == "GET")  return Request::GET;
     if (request == "MOVE") return Request::MOVE;
-    cout << "FAILURE: Invalid Request" << endl;
+    cerr << "FAILURE: Invalid Request" << endl;
     exit(1);
   } /* get_request() */
 
@@ -90,7 +89,6 @@ struct Handler {
       exit(1);
     }
 
-    cerr << "1\n";
     auto [board, pieces] = load_setup();
     for (size_t i = 0; i < board.size(); i++) {
       for (size_t j = 0; j < board[0].size(); j++) {
@@ -99,11 +97,9 @@ struct Handler {
       cerr << endl;
     }
     for (auto p: pieces) cerr << p << endl;
-    cerr << "2\n";
 
     auto cards = load_cards(stoll(params["ncards"]));
     for (auto card: cards) cerr << card << endl;
-    cerr << "3\n";
     auto gc = GameConfig(
       board, pieces, cards,
       stoll(params["hand_size"]),
@@ -114,13 +110,9 @@ struct Handler {
       stoll(params["score_goal"]),
       params["game_id"]
     );
-    cerr << "4\n";
     auto game_id = params["game_id"];
-    cerr << "5\n";
     searches.insert({game_id, Search(gc)});
-    cerr << "6\n";
     cerr << searches.at(game_id).game << endl;
-    cout << "SUCCESS" << endl;
   } /* init() */
 
   /*
@@ -133,11 +125,20 @@ struct Handler {
     auto game_id = params["game_id"];
     if (searches.count(game_id)) {
       auto res = searches.at(game_id).beginSearch();
-      searches.at(game_id).makeAIMove(res.card, res.color);
+      cerr << "I made it here 1!" << endl;
+      searches.at(game_id).make_move(res);
+      cerr << "I made it here 2!" << endl;
       cerr << searches.at(game_id).game << endl;
-      cerr << res.card << "\n" << (res.color + 5) << endl;
-      cout << res.card << "\n" << (res.color + 5) << endl;
-      cout << "SUCCESS" << endl;
+      if (res.type == NORMAL) {
+        cout << res.type << "\n" << res.card << "\n" << res.color << endl;
+        cerr << res.type << "\n" << res.card << "\n" << res.color << endl;
+      } else if (res.type == ROTATE) {
+        cout << res.type << "\n" << res.card << "\n" << res.angle << endl;
+        cerr << res.type << "\n" << res.card << "\n" << res.angle << endl;
+      } else if (res.type == BUY) {
+        cout << res.type << "\n" << res.x << "\n" << res.y << endl;
+        cerr << res.type << "\n" << res.x << "\n" << res.y << endl;
+      }
     } else {
       cerr << "Invalid Game ID!" << endl;
       exit(1);
@@ -152,32 +153,28 @@ struct Handler {
   void move() {
     auto params = load_params();
     auto game_id = params["game_id"];
-    auto mv = params["movetype"];
+    auto mv = stoi(params["movetype"]);
     cerr << "MoveType: " << mv << endl;
     if (searches.count(game_id)) {
-      if (mv == "PlayCard") {
+      if (mv == MoveType::NORMAL) {
         auto idx = stoi(params["index"]);
-        searches.at(game_id).makePlayerMove(idx);
-      } else if (mv == "RotateCard") {
+        auto color = stoi(params["color"]);
+        searches.at(game_id).make_move(Move(MoveType::NORMAL, idx, color));
+      } else if (mv == MoveType::ROTATE) {
         auto idx = stoi(params["index"]);
         auto rotation = stoi(params["rotation"]);
-        searches.at(game_id).rotatePlayerCard(
-          idx, rotation
-        );
-      } else if (mv == "PurchaseUFO") {
-        auto row = stoi(params["row"]);
-        auto column = stoi(params["column"]);
-        searches.at(game_id).purchaseUFO(
-          row, column
-        );
+        searches.at(game_id).make_move(Move(MoveType::ROTATE, idx, rotation));
+      } else if (mv == MoveType::BUY) {
+        auto x = stoi(params["x"]);
+        auto y = stoi(params["y"]);
+        searches.at(game_id).make_move(Move(MoveType::BUY, x, y));
       } else {
         cout << "Unknown Move Type!" << endl;
         exit(1);
       }
       cerr << searches.at(game_id).game << endl;
-      cout << "SUCCESS" << endl;
     } else {
-      cout << "Game ID not found" << endl;
+      cerr << "Game ID not found" << endl;
       exit(1);
     }
   } /* move() */

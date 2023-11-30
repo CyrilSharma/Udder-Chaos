@@ -81,7 +81,7 @@ TEST_CASE("Testing Good Moves") {
 
     // I moved the debug values to the top of the file
     const Move move = search.beginSearch(verbosity, doFixedDepthSearch);
-    search.makeAIMove(move.card, move.color);
+    search.make_move(move);
     cerr << typeOfMove(move.type) << " | card: " << move.card << " | color: " << move.color << endl;
     cerr << search.game << "\n";
 

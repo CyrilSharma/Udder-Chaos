@@ -27,16 +27,14 @@ const rl = readline.createInterface({
 });
 const it = rl[Symbol.asyncIterator]();
 
-// Handles connections.
 var mode = process.env.NODE_ENV;
-// console.log(`mode=${mode}`)
 const url =
     (mode == 'development') ?
     'http://localhost:3000':
     'http://udder-chaos.org:5000';
 
-const socket = io(url)
 
+const socket = io(url)
 socket.on("connect", () => {
     console.log(`You connected with id: ${socket.id}`)
     socket.emit("init-connection", false);
@@ -52,6 +50,13 @@ socket.on("connect", () => {
 //     card_deck_size: 15,
 //     timer_length: 1000
 // }
+
+exitmove = () => {
+    socket.emit(
+        "make-move", room_code,
+        MoveType.PlayCard, {"index": 0}, 5
+    );
+}
 
 socket.on("init-ai", async (room_code, settings, cards) => {
     console.log("AI Initialized!");
@@ -71,46 +76,64 @@ socket.on("init-ai", async (room_code, settings, cards) => {
         ai.stdin.write('\n');
     }
     console.log("Sent commands to AI...");
-    const output = (await it.next()).value;
-    console.log(`Output: ${output}`)
 });
 
 socket.on("query-move", async (room_code) => {
-    console.log("query-move");
+    if (exited) { exitmove(); return; }
+    console.log("\nquery-move");
     ai.stdin.write('GET\n');
     ai.stdin.write(`game_id: ${room_code}\n`);
     ai.stdin.write(`END\n`);
+    const type = (await it.next()).value;
     const move = (await it.next()).value;
     const color = (await it.next()).value;
-    const status = (await it.next()).value;
-    console.log(`Receieved: (${move}, ${color}, ${status})`);
-    socket.emit("make-move", room_code, MoveType.PlayCard, {"index": move}, color);
+    console.log(`Receieved: (${type}, ${move}, ${color})`);
+    if (exited) { exitmove(); return; }
+
+    // We do color + 5 to match up with frontend's expectations
+    // For what an AI move should look like.
+    if (type == MoveType.PlayCard) {
+        moveData = { "index": parseInt(move) };
+        socket.emit(
+            "make-move", room_code, MoveType.PlayCard,
+            moveData, parseInt(color) + 5
+        );
+    } else if (type == MoveType.RotateCard) {
+        // What on earth is color supposed to be for rotations?
+        moveData = { "index": parseInt(move), "rotation": color };
+        socket.emit(
+            "make-move", room_code, MoveType.RotateCard,
+            moveData, parseInt(color) + 5
+        );
+    }
 });
 
 socket.on("share-move-ai", async (game_id, moveType, moveData, color) => {
-    console.log("share-move-ai");
+    if (exited) return;
+    console.log("\nshare-move-ai");
     console.log(`game_id: ${game_id}`);
     console.log(`moveType: ${moveType}`);
     ai.stdin.write('MOVE\n');
     ai.stdin.write(`game_id: ${game_id}\n`);
     if (moveType == MoveType.PlayCard) {
-        ai.stdin.write(`moveType: PlayCard\n`);
+        // Colors are 1-indexed on frontend
+        ai.stdin.write(`moveType: 0\n`);
         ai.stdin.write(`index: ${moveData["index"]}\n`);
-        console.log(`index: ${moveData["index"]}`)
+        ai.stdin.write(`color: ${parseInt(color)}\n`);
+        console.log(`index: ${moveData["index"]}`);
+        console.log(`color: ${color}`);
     } else if (moveType == MoveType.RotateCard) {
-        ai.stdin.write(`moveType: RotateCard\n`);
+        ai.stdin.write(`moveType: 1\n`);
         ai.stdin.write(`index: ${moveData["index"]}\n`);
         ai.stdin.write(`rotation: ${moveData["rotation"]}\n`);
-        console.log(`index: ${moveData["index"]}`)
-        console.log(`rotation: ${moveData["rotation"]}`)
+        console.log(`index: ${moveData["index"]}`);
+        console.log(`rotation: ${moveData["rotation"]}`);
     } else if (moveType == MoveType.PurchaseUFO) {
-        ai.stdin.write(`moveType: PurchaseUFO\n`);
-        ai.stdin.write(`row: ${moveData["row"]}\n`);
-        ai.stdin.write(`column: ${moveData["column"]}\n`);
-        console.log(`row: ${moveData["row"]}`)
-        console.log(`column: ${moveData["column"]}`)
+        ai.stdin.write(`moveType: 2\n`);
+        ai.stdin.write(`x: ${moveData["column"]}\n`);
+        ai.stdin.write(`y: ${moveData["row"]}\n`);
+        console.log(`x: ${moveData["column"]}`);
+        console.log(`y: ${moveData["row"]}`);
     }
     ai.stdin.write(`END\n`);
-    const status = (await it.next()).value;
-    console.log(`Status: ${status}`);
 });
