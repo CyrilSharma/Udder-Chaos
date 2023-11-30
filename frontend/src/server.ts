@@ -90,6 +90,10 @@ class Server {
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
 
+            playerList.forEach((player: PlayerInfo) => {
+                gameScreen.game.setPlayerName(player.name, player.color + 1);
+            });
+
             let cards = []
             let arrays = [
                 gameScreen.game.cards.player_hand,

@@ -82,7 +82,7 @@ export class Game extends Container {
 
         this.player1.toggleTimer(true);
 
-        this.playerAI.changeText("AI")
+        this.playerAI.setName("AI")
         this.dayCounter = new DayCounter(7);
         this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
 
@@ -90,7 +90,6 @@ export class Game extends Container {
         this.codeDisplay = new SizedButton(0, 0, 0.92, 0.04, "Code:\nABCD", this.rightPanel.width, this.rightPanel.height, 15, 0xffcc66);
         this.codeDisplay.changeText("Code:\nCODE");
         this.rightPanel.addChild(this.codeDisplay);
-
 
         this.boardPanel.addChild(this.board);
         this.leftPanel.addChild(this.player1);
@@ -109,7 +108,6 @@ export class Game extends Container {
         this.addChild(this.rightPanel);
         this.addChild(this.bottomPanel);
         this.addChild(this.cards);
-
     }
     
     public setup(config: GameConfig) {
@@ -123,6 +121,24 @@ export class Game extends Container {
         this.playerColorIcon = new PlayerColorIcon(color - 1);
         this.leftPanel.addChild(this.playerColorIcon);
         this.playerColorIcon.changeColor(color - 1);
+    }
+
+    public setPlayerName(name: string, index: number) {
+        if (index < 1 || index > 4) throw new Error("Invalid index in set player name");
+        switch(index) {
+            case 1:
+                this.player1.setName(name);
+                break;
+            case 2:
+                this.player2.setName(name);
+                break;
+            case 3:
+                this.player3.setName(name);
+                break;
+            case 4:
+                this.player4.setName(name);
+                break;  
+        }
     }
 
     public updateTurn() {

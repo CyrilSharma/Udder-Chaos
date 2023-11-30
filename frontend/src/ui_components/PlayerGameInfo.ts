@@ -4,6 +4,7 @@ import { Button, FancyButton } from "@pixi/ui";
 
 export class PlayerGameInfo extends Container {
 
+    public name: string = "Player name";
     private displayArea: FancyButton;
     private playerName: Text;
     private ufo: Sprite;
@@ -43,13 +44,13 @@ export class PlayerGameInfo extends Container {
         });
         this.addChild(this.displayArea);
 
-        this.playerName = new Text("Player name", new TextStyle({
+        this.playerName = new Text(this.name, new TextStyle({
             fontFamily: "Concert One",
             fontSize: 40,
             fill: "#000000",
             align: "left",
         }));
-        this.playerNameShad = new Text("Player name", new TextStyle({
+        this.playerNameShad = new Text(this.name, new TextStyle({
             fontFamily: "Concert One",
             fontSize: 50,
             fill: "#000000",
@@ -116,11 +117,6 @@ export class PlayerGameInfo extends Container {
         }
     }
 
-    public changeText(text: string) {
-        this.playerName.text = text;
-        this.playerNameShad.text = text;
-    }
-
     public setUnits(units: number) {
         this.units.text = units;
     }
@@ -152,7 +148,7 @@ export class PlayerGameInfo extends Container {
             )).view,
             anchor: 0.5
         });
-        this.playerNameShad = new Text("Player name", new TextStyle({
+        this.playerNameShad = new Text(this.name, new TextStyle({
             fontFamily: "Concert One",
             fontSize: 40,
             fill: "#000000",
@@ -162,6 +158,12 @@ export class PlayerGameInfo extends Container {
             dropShadowBlur: 0.2,
             dropShadowColor: this.color
         }));
+    }
+
+    public setName(name: string) {
+        this.name = name;
+        this.playerName.text = name;
+        this.playerNameShad.text = name;
     }
 
     public resize(width: number) {

@@ -314,7 +314,7 @@ Step | Directions | Expected Output
 4 | 
 5 |
 
-## User Story 6
+## User Story 6 - AI Fixes from sprint 2
 Step | Directions | Expected Output
 --- | --- | ---
 1 | 
