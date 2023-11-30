@@ -69,23 +69,12 @@ export class Piece extends Container {
         this.addChild(this.scoreDisplay);
         this.image.eventMode = 'static';
         this.image.on('mouseenter', () => {
-            console.log("piece mouseenter");
             if (getTeam(this.type) != TeamEnum.Player) return;
             this.scoreText.text = this.score;
             this.scoreDisplay.visible = true;
         });
         this.image.on('mouseleave', (event) => {
-            // if (event.clientX < this.image.x && this.image.width)
-            console.log(event.pageX);
-            console.log(event.pageY);
-            console.log(this.getBounds());
-
-            // set invisible iff mouse leave outside of image
-            let boundsEps = 10;
-            let bounds = this.getBounds();
-            if (event.pageX < bounds.x + boundsEps || event.pageY < bounds.y + boundsEps || 
-                event.pageX > bounds.x + bounds.width - boundsEps || event.pageY > bounds.y + bounds.height - boundsEps) 
-                this.scoreDisplay.visible = false;
+            this.scoreDisplay.visible = false;
         });
     }
 
