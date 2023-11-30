@@ -4,6 +4,8 @@ import { MenuContainer } from "../ui_components/MenuContainer";
 import { BackButton } from "../ui_components/BackButton";
 import { SliderUI } from "../ui_components/SliderUI";
 import { SizedButton } from "../ui_components/SizedButton";
+import { globalSettingsData } from "../game/Utils";
+import { globalSettings } from "../game/Settings";
 
 export class SettingsScreen extends Container {
 
@@ -31,6 +33,11 @@ export class SettingsScreen extends Container {
         this.menuContainer.addChild(this.backButton);
         this.backButton.onPress.connect(() => {
             this.visible = false;
+            const newSettings: globalSettingsData = {
+                music_volume: this.getMusicVol() / 100,
+                sound_effect_volume: this.getSFXVol() / 100,
+            }
+            globalSettings.save(newSettings);
         });
 
         this.settingsLabel = new SizedButton(0.5, 0.16, 0.5, 0.25, "Settings", this.menuContainer.width, this.menuContainer.height, 50, 0xffcc66);
@@ -38,9 +45,18 @@ export class SettingsScreen extends Container {
 
         this.sfxVol = new SliderUI(0.5, 0.47, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "SFX Volume", 0, 100, 30, this.menuContainer.getBox());
         this.menuContainer.addChild(this.sfxVol);
+        this.sfxVol.eventMode = "static";
+
+        this.sfxVol.on("pointerupoutside", () => {
+            console.log("change the sfx volume!")
+        });
 
         this.musicVol = new SliderUI(0.5, 0.77, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "Music Volume", 0, 100, 30, this.menuContainer.getBox());
         this.menuContainer.addChild(this.musicVol);
+
+        this.musicVol.on("pointerupoutside", () => {
+            console.log("change the music volume!")
+        });
     }
 
     public getSFXVol() : number {
@@ -67,6 +83,4 @@ export class SettingsScreen extends Container {
         this.sfxVol.resize(this.menuContainer.getBox());
         this.musicVol.resize(this.menuContainer.getBox());
     }
-
-
 }

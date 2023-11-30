@@ -26,8 +26,13 @@ export const defaultGameSettings = {
     timer_length: 30,
     difficulty: 500,
 }
-
 export type gameSettingsData = typeof defaultGameSettings;
+
+export const defaultGlobalSettings = {
+    music_volume: 0.5,
+    sound_effect_volume: 0.5,
+}
+export type globalSettingsData = typeof defaultGlobalSettings;
 
 //-----Menu-----//
 export type PlayerInfo = {
