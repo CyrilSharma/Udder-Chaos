@@ -8,6 +8,7 @@ import { SizedButton } from '../ui_components/SizedButton';
 import { LobbyList } from '../ui_components/LobbyList';
 import { SeedBox } from '../ui_components/SeedBox';
 import { BackButton } from '../ui_components/BackButton';
+import { SoundHandler } from '../game/SoundHandler';
 import { CustomScreenUI } from '../ui_components/CustomScreenUI';
 
 /** Screen shows upon opening the website */
@@ -65,8 +66,10 @@ export class CreateGameScreen extends Container {
 
         this.addChild(this.menuContainer);
 
+        SoundHandler.playBGM("lobby-music.mp3");
         this.customScreen = new CustomScreenUI();
         this.addChild(this.customScreen);
+
     }
 
     public async addGameCode(code: string) {

@@ -3,7 +3,10 @@ import { navigation } from './utils/navigation';
 import { HomeScreen } from './screens/HomeScreen';
 import { GameScreen } from './screens/GameScreen';
 import server from "./server";
+import { SoundHandler } from './game/SoundHandler';
 
+//localStorage.clear();
+SoundHandler.preloadAudio();
 
 /** The PixiJS app Application instance, shared across the project */
 export const app = new PIXI.Application<HTMLCanvasElement>({

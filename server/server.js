@@ -14,6 +14,7 @@ const io = new Server(server, {
     cors: { origin: "*" }
 });
 
+var mode = process.env.NODE_ENV;
 // Ship frontend to clients.
 var mode = process.env.NODE_ENV;
 if (mode != 'development') {

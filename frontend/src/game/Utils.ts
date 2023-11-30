@@ -4,21 +4,10 @@ import MersenneTwister from 'mersenne-twister';
 import { Point } from 'pixi.js';
 import '@pixi/math-extras';
 
-// Constants
-// export const SCORE_GOAL = 30;
-// export const DAYS_PER_ROUND = 7;
-
-// export const COW_REGEN_RATE = DAYS_PER_ROUND * 3;
-// export const COW_SACRIFICE = 5;
-
-// export const CARD_DECK_SIZE = 15;
-
-// export const TIMER_LENGTH = 10;
-
 // ---- Game Settings ---- //
 export const defaultGameSettings = {
     seed: 0,
-    score_goal: 30,
+    score_goal: 10,
     days_per_round: 5,
     cow_regen_rate: 15,
     cow_sacrifice: 5,
@@ -41,11 +30,18 @@ export const TileEnum = {
     Plain: 0,
     Pasture: 1,
     Impassible: 2,
-    Destination: 3,
-    Red_Enemy_Spawn: 4,
-    Yellow_Enemy_Spawn: 5,
-    Blue_Enemy_Spawn: 6,
-    Purple_Enemy_Spawn: 7,
+    Red_Destination: 3,
+    Yellow_Destination: 4,
+    Blue_Destination: 5,
+    Purple_Destination: 6,
+    Red_Spawn: 7,
+    Yellow_Spawn: 8,
+    Blue_Spawn: 9,
+    Purple_Spawn: 10,
+    Red_Enemy_Spawn: 11,
+    Yellow_Enemy_Spawn: 12,
+    Blue_Enemy_Spawn: 13,
+    Purple_Enemy_Spawn: 14,
 };
 // Weighting of tiles when generating a random board
 export const TileWeights = {
@@ -98,6 +94,12 @@ export function getTeam(piece_type: number) {
         return Error('Invalid Piece Type: ' + piece_type);
     }
     return Error('Invalid Piece Type');
+}
+export function canMoveOverAll(attacker: number, pieces: Piece[]) {
+    for (let piece of pieces) {
+        if (!canMoveOver(attacker, piece.type)) return false;
+    }
+    return true;
 }
 export function canMoveOver(attacker: number, defender: number) {
     // If on differing teams, i.e, moving into cow space, jet kills ufo, ufo kills jet.
@@ -182,7 +184,6 @@ export type Position = {
 // Information needed for rendering.
 export type GameConfig = {
     grid: Grid;
-    starts: Position[][];
     tileSize: number;
 };
 
@@ -221,18 +222,18 @@ export function loadMap(seed: number) {
     return grid;
 }
 
-export function createRandomGrid(rows = 16, cols = 16) {
-    const grid: Grid = [];
-    const tiles = [TileEnum.Plain, TileEnum.Pasture, TileEnum.Impassible, TileEnum.Destination];
-    for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-            let idx = Math.floor(random() * tiles.length);
-            if (!grid[r]) grid[r] = [];
-            grid[r][c] = tiles[idx];
-        }
-    }
-    return grid;
-};
+// export function createRandomGrid(rows = 16, cols = 16) {
+//     const grid: Grid = [];
+//     const tiles = [TileEnum.Plain, TileEnum.Pasture, TileEnum.Impassible, TileEnum.Destination];
+//     for (let r = 0; r < rows; r++) {
+//         for (let c = 0; c < cols; c++) {
+//             let idx = Math.floor(random() * tiles.length);
+//             if (!grid[r]) grid[r] = [];
+//             grid[r][c] = tiles[idx];
+//         }
+//     }
+//     return grid;
+// };
 
 // Create a CSV string from an input Grid
 function createCSV(grid: Grid) {

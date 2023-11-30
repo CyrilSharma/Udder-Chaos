@@ -55,6 +55,12 @@ class Server {
             createGameScreen.getLobbyList().addPlayer(playerInfo);
         });
 
+        this.socket.on("remove-player", (playerInfo: PlayerInfo) => {
+            console.log(playerInfo);
+            let createGameScreen = navigation.currentScreen as CreateGameScreen;
+            createGameScreen.getLobbyList().removePlayer(playerInfo);
+        });
+
         this.socket.on("update-player-info", (playerInfo: PlayerInfo) => {
             console.log(playerInfo);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
@@ -76,6 +82,8 @@ class Server {
         });
 
         this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[]) => {
+            localStorage.setItem("saved-id", this.socket.id);
+
             initSeed(settingsData.seed);
 
             let color = 1;
@@ -92,7 +100,10 @@ class Server {
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
-            gameScreen.game.setPlayers(playerList);
+
+            playerList.forEach((player: PlayerInfo) => {
+                gameScreen.game.setPlayerName(player.name, player.color + 1);
+            });
 
             let cards = []
             let arrays = [
@@ -152,7 +163,7 @@ class Server {
 
     public async startGame() {
         this.socket.emit("start-game", gameSettings.load());
-        localStorage.setItem("saved-id", this.socket.id)
+        localStorage.setItem("saved-id", this.socket.id);
     }
 
     public async playCard(cardIndex: number, color: number) {
@@ -170,6 +181,7 @@ class Server {
     }
 
     public async outOfTime() {
+        console.log("Out of time!!!")
         this.socket.emit("out-of-time");
     }
 
