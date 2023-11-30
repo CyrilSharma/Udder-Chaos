@@ -73,6 +73,8 @@ class Server {
         });
 
         this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[]) => {
+            localStorage.setItem("saved-id", this.socket.id);
+
             initSeed(settingsData.seed);
 
             let color = 1;
@@ -148,7 +150,7 @@ class Server {
 
     public async startGame() {
         this.socket.emit("start-game", gameSettings.load());
-        localStorage.setItem("saved-id", this.socket.id)
+        localStorage.setItem("saved-id", this.socket.id);
     }
 
     public async playCard(cardIndex: number, color: number) {
