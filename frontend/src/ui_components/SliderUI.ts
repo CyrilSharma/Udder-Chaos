@@ -65,13 +65,13 @@ export class SliderUI extends Container {
         this.slider.onDown.connect(() => {
             const sliderUI = this;
 
-            document.addEventListener("pointermove", moveSlider, false);
+            this.slider.addEventListener("globalpointermove", moveSlider, false);
             function moveSlider(e: PointerEvent) {
                 sliderUI.setSlide(e.x);
             }
 
             this.slider.onUp.connect(() => {
-                document.removeEventListener("pointermove", moveSlider, false);
+                this.slider.removeEventListener("globalpointermove", moveSlider, false);
             });
             
         });
