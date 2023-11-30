@@ -269,6 +269,7 @@ Step | Directions | Expected Output
 3 | Click on the previous button designated by a "<" | Notice it doesn't work on the first page only
 
 ## User Story 1.2
+Start in the tutorial screen
 Step | Directions | Expected Output
 --- | --- | ---
 1 | Navigate to the end of the tutorial slides | Notice the page counter increments as the pages are navigated through
@@ -277,27 +278,30 @@ Step | Directions | Expected Output
 4 | Click on the back button designated by an "X" | Notice that you are now on the Main Menu
 
 ## User Story 2.1 - Settings menu
+Start on the main menu
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Start on the main menu, click the settings button | The settings page opens
+1 | Click the settings button | The settings page opens
 2 | Exit the settings page and create and start a game | -
 3 | Click the pause button | A menu opens with a settings and an exit button
 4 | Click the settings button | The settings page from before opens
 5 | Exit the settings page and click the exit button from the pause menu | The game returns to the main menu screen
 
 ## User Story 2.2 - Settings functionality
+Start on the settings page in the main menu
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Start on the settings page and turn the BGM volume to 0 | The BGM turns off
+1 | Turn the BGM volume to 0 | The BGM turns off
 2 | Turn the BGM volume higher | The BGM volume increases
 3 | Enter a game with sound effect volume on | -
 4 | Play a card | Sound effects are on
 5 | Enter the game settings menu and turn off sound effect volume | Sound effects no longer play
 
-## User Story 3.1 - Player names (From sprint 2)
+## User Story 3.1 - Player names (from Sprint 2)
+Start on the create game screen
 Step | Directions | Expected Output
 --- | --- | ---
-1 | On the create game screen, enter a name | The name is displayed
+1 | Enter a name | The name is displayed
 2 | Start the game | The name is shown correspondingly on the game screen player list
 
 ## User Story 4.1
@@ -326,7 +330,7 @@ Step | Directions | Expected Output
 4 | 
 5 |
 
-## User Story 6 - AI Fixes from sprint 2
+## User Story 6 - AI Fixes (from Sprint 2)
 Step | Directions | Expected Output
 --- | --- | ---
 1 | 
@@ -362,70 +366,104 @@ Step | Directions | Expected Output
 4 | 
 5 |
 
-## User Story 10
+## User Story 10.1 - Customization menu functionality
+Start on the main menu
 Step | Directions | Expected Output
 --- | --- | ---
-1 | 
-2 |
-3 |
-4 | 
-5 |
+1 | Enter the create game screen | There is a customization button
+2 | Click the customization button | The user enters a customization screen
+3 | Drag a slider | The slider moves and changes value - note the value
+4 | Click the back button | The user is returned to the create game screen
+5 | Re-enter the customization screen | The moved slider from step 3 retains its position
+
+## User Story 10.2 - Customization in game (part 1)
+Start on the customization screen, as described in steps 1 and 2 in 10.1
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Set a new deck size, (lower) days per round, and cows per sacrifice | The menu interacts as expected; note the values
+2 | Start the game and note the deck size | It corresponds to the custom value set in step 1
+3 | Note the days per round indicator | It matches the values set in step 1 
+4 | Capture enough cows to complete a round, note how many cows are sacrificed | It matches the custom value set in step 1
+
+## User Story 10.3 - Customization in game (part 2)
+Start on the customization screen, as described in steps 1 and 2 in 10.1
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Set a new cow respawn time, (low) cow win goal, and AI difficulty | The menu interacts as expected; note the values
+2 | Start the game and note the cow win goal | It matches the value set in step 1
+
+## User Story 10.4 - Customization in game (part 3)
+Start on the customization screen, as described in steps 1 and 2 in 10.1
+Step | Directions | Expected Output
+--- | --- | ---
+
 
 ## User Story 11.1 Board animation synchronization
+Start a game with 2 tabs
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Enter a game with two tabs and play a card in one tab | The movement is synced across the other tab
+1 | Play a card in one tab | The movement is synced across the other tab
 
 ## User Story 11.2 Card animations
+Start in a game
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Enter a game and play a card | The card moves to the center of the screen and the to the queue after a delay
+1 | Play a card | The card moves to the center of the screen and the to the queue after a delay
 2 | ^ | The queue visibly moves upwards to accomodate the new card
 3 | ^ |The first card in the queue moves to the old position of the played card
 
 ## User Story 12.1 - Movement oriented sound effects
+Start in a game
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Enter a game and move a UFO | A ufo move sound plays 
+1 | Move a UFO | A ufo move sound plays 
 2 | Capture a cow with a UFO | An abduction sound plays
 3 | Capture an enemy with a UFO | An enemy capture sound plays
 4 | Get captured by an enemy | An ally capture sound plays
 
 ## User Story 12.2 - Other sound effects
+Start in a game
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Enter a game and gain some score, then buy a UFO | UFO purchase sound effect is played
+1 | Gain some score, then buy a UFO | UFO purchase sound effect is played
 2 | Play a card | A card sound is played
 
 ## User Story 13.1 - Music switching
+Start on the web page
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Open the webpage and click the window | Menu music plays
+1 | Click the window | Menu music plays
 2 | Create a game | Lobby music plays
 3 | Leave the game lobby | Menu music plays from the beginning and lobby music stops playing
 4 | Enter the join game screen and then return to main menu | Menu music continues to play and does not start over
 5 | Create and start a game | In-game music plays
 
 ## User Story 13.2 - Music looping
+Start on the web page
 Step | Directions | Expected Output
 --- | --- | ---
 1 | Interact with the game to make the menu music play, then wait | The music restarts after it finishes
 2 | Repeat above with game and lobby music as desired | Same result as above
 
-## User Story 14
+## User Story 14.1 - Disconnection
+Start in a game
 Step | Directions | Expected Output
 --- | --- | ---
-1 | 
-2 |
-3 |
-4 | 
-5 |
+1 | There exists a room code | The room code corresponds to the one shown in the create game screen
+2 | Have a player leave the game by closing the tab, then wait for their turn timer to expire | A move is automatically played for them
 
-## User Story 15
+## User Story 14.2 - Reconnection
+Do all steps in 14.1
 Step | Directions | Expected Output
 --- | --- | ---
-1 | 
-2 |
-3 |
-4 | 
-5 |
+1 | The player who disconnected now reopens the webpage | They are sent to the main menu
+2 | While the game is ongoing, have the player re-enter the game code in the Join Game screen | They are able to rejoin the game and play normally
+3 | Have a player leave again, then wait for the game to end | -
+4 | The player attempts to rejoin as in step 3 | They are not able to rejoin the game 
+
+## User Story 15.1 - Hosting (from Sprint 2)
+Start on a web browser
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Access and load the web page | Visually the main menu looks the same as a locally hosted version
+2 | Play a game online | The game plays identically to a locally hosted version
