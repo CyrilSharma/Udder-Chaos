@@ -259,7 +259,7 @@ Step | Directions | Expected Output
 5 | See above | Jets are spawned at the center of the board if those tiles are empty
 6 | See above | The day counter will be reset.
 # Sprint 3
-## User Story 1.1
+## User Story 1.1 - Tutorial navigation
 Start on the Main Menu
 
 Step | Directions | Expected Output
@@ -268,7 +268,7 @@ Step | Directions | Expected Output
 2 | View the image in the center of the screen | Important imformation on how to play the game is readable
 3 | Click on the previous button designated by a "<" | Notice it doesn't work on the first page only
 
-## User Story 1.2
+## User Story 1.2 - Tutorial functionality
 Start in the tutorial screen
 Step | Directions | Expected Output
 --- | --- | ---
@@ -304,20 +304,20 @@ Step | Directions | Expected Output
 1 | Enter a name | The name is displayed
 2 | Start the game | The name is shown correspondingly on the game screen player list
 
-## User Story 4.1
-Start in the Game
+## User Story 4.1 - Timer visuals
+Start in a game
 
 Step | Directions | Expected Output
 --- | --- | ---
 1 | Enter the Game | Notice that there is a timer in the form of a vignette over the current player's name
 2 | Note the timer | Notice that the timer "counts down" by slowly decreasing the fill level of the current players playerInfo indicator
 
-## User Story 4.2
-Start in the Game
+## User Story 4.2 - Timer functionality
+Start in a game with a 10 second time limit
 
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Enter the game with a 10 second turn time limit and play one day (all players make 1 turn) | Notice that the timer moves to the current player's playerInfo indicator
+1 | Play one day (all players make 1 turn) | Notice that the timer moves to the current player's playerInfo indicator
 2 | Make a move | Notice that the timer resets to a full bar when the turn switches
 3 | Let the timer reach zero | Notice that a card is played from the hand automatically without player input
 
