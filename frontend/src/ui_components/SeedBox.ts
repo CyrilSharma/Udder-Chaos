@@ -8,12 +8,14 @@ export class SeedBox extends FancyButton {
     public background: SizedButton;
     public seed: Input;
 
+    private numeric: boolean;
+
     private percentX: number;
     private percentY: number;
     private percentWidth: number;
     private percentHeight: number;
 
-    constructor(menuContainer: MenuContainer,  pX: number, pY: number, pW: number, pH: number, text: string, maxL: number) {
+    constructor(menuContainer: MenuContainer,  pX: number, pY: number, pW: number, pH: number, text: string, maxL: number, numeric: boolean) {
         super();
 
         /* Set up properties */
@@ -21,6 +23,8 @@ export class SeedBox extends FancyButton {
         this.percentY = pY;
         this.percentWidth = pW;
         this.percentHeight = pH;
+
+        this.numeric = numeric;
 
         this.background = new SizedButton(pX, pY, pW, pH, text, menuContainer.width, menuContainer.height, 40, 0xffffff);
 
@@ -53,22 +57,29 @@ export class SeedBox extends FancyButton {
 
     public changeSeed(seed: string) {
 
-        // Empty String
-        if (seed.length === 0) {
-            this.background.changeText(seed);
-            this.seed.x = this.background.x - this.seed.width * 0.5;
-            return;
-        }
+        if (this.numeric) {
+            // Empty String
+            if (seed.length === 0) {
+                this.background.changeText(seed);
+                this.seed.x = this.background.x - this.seed.width * 0.5;
+                return;
+            }
 
-        // Check if new char is numeric
-        let c = seed[seed.length - 1];
-        if (c >= '0' && c <= '9') {
-            this.background.changeText(seed);
-            this.seed.x = this.background.x - this.seed.width * 0.5;
-            return;
-        }
+            // Check if new char is numeric
+            let c = seed[seed.length - 1];
+            if (c >= '0' && c <= '9') {
+                this.background.changeText(seed);
+                this.seed.x = this.background.x - this.seed.width * 0.5;
+                return;
+            }
 
-        this.seed.value = this.seed.value.slice(0, seed.length - 1);
+            this.seed.value = this.seed.value.slice(0, seed.length - 1);
+
+        } else {
+            this.background.changeText(seed);
+            this.seed.value = seed;
+            this.seed.x = this.background.x - this.seed.width * 0.5;
+        }
         
     }
 

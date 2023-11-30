@@ -7,7 +7,7 @@ import '@pixi/math-extras';
 // ---- Game Settings ---- //
 export const defaultGameSettings = {
     seed: 0,
-    score_goal: 10,
+    score_goal: 1,
     days_per_round: 4,
     cow_regen_rate: 15,
     cow_sacrifice: 5,
