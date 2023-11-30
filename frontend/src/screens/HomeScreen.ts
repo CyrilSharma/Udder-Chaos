@@ -7,6 +7,7 @@ import { JoinGameScreen } from './JoinGameScreen';
 import { MenuButton } from '../ui_components/MenuButton';
 import { TestingScreen } from './TestingScreen';
 import { TutorialScreen } from './TutorialScreen';
+import { SoundHandler } from '../game/SoundHandler';
 
 /** Screen shows upon opening the website */
 export class HomeScreen extends Container {
@@ -18,6 +19,7 @@ export class HomeScreen extends Container {
     private tutorialButton: MenuButton;
     private settingsScreen: SettingsScreen;
     private logo: Sprite;
+    private bgm: HTMLAudioElement = new Audio("sounds/bgm/menu-music.mp3");
 
     constructor() {
         super();
@@ -56,6 +58,7 @@ export class HomeScreen extends Container {
         });
         this.addChild(this.tutorialButton.getButton());
 
+        SoundHandler.playBGM("menu-music.mp3");
         // Settings Screen/Vignette
         this.settingsScreen = new SettingsScreen();
         this.settingsButton.getButton().onPress.connect(() => {

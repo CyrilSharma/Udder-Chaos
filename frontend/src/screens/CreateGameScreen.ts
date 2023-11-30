@@ -8,6 +8,7 @@ import { SizedButton } from '../ui_components/SizedButton';
 import { LobbyList } from '../ui_components/LobbyList';
 import { SeedBox } from '../ui_components/SeedBox';
 import { BackButton } from '../ui_components/BackButton';
+import { SoundHandler } from '../game/SoundHandler';
 import { CustomScreenUI } from '../ui_components/CustomScreenUI';
 
 /** Screen shows upon opening the website */
@@ -40,6 +41,7 @@ export class CreateGameScreen extends Container {
         this.startButton = new SizedButton(0.5, 0.9, 0.3, 0.15, "Start Game", this.menuContainer.width, this.menuContainer.height, 40, 0x6060fc);
         this.startButton.onPress.connect(() => {
             server.startGame();
+            server.startGame();
         });
         this.menuContainer.addChild(this.startButton);
 
@@ -64,6 +66,8 @@ export class CreateGameScreen extends Container {
         this.menuContainer.addChild(this.customizeButton);
 
         this.addChild(this.menuContainer);
+        
+        SoundHandler.playBGM("lobby-music.mp3");
 
         this.customScreen = new CustomScreenUI();
         this.addChild(this.customScreen);

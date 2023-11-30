@@ -12,6 +12,7 @@ export class MoveQueue {
     public async startQueue() {
         while (this.queueData.length > 0) {
             let playerMove = this.queueData[0];
+            this.game.animating = true;
             switch (playerMove.moveType) {
                 case MoveType.PlayCard: {
                     let moveData = playerMove.moveData as PlayData;
@@ -22,7 +23,7 @@ export class MoveQueue {
                 case MoveType.RotateCard: {
                     let moveData = playerMove.moveData as RotateData;
                     let card = this.game.cards.findCardInHand(moveData["index"], playerMove.color);
-                    await card.rotateCard(moveData["rotation"] - card.cardRotation);
+                    await card.rotateCard(moveData["rotation"]);
                     break;
                 }
                 case MoveType.PurchaseUFO: {
@@ -30,6 +31,7 @@ export class MoveQueue {
                     break;
                 }
             }
+            this.game.animating = false;
             this.game.updateTurn();
             this.dequeue();
         }

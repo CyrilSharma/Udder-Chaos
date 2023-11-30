@@ -4,7 +4,6 @@ import { ColorEnum, GameConfig, PieceEnum, PlayerInfo, defaultGameSettings } fro
 import { app } from '../main';
 import { CardQueue } from './CardQueue';
 import { GameUpdate } from './GameUpdate';
-import { Player } from './Player';
 import { GamePanel } from '../ui_components/GamePanel';
 import { PlayerColorIcon } from '../ui_components/PlayerColorIcon';
 import { PlayerGameInfo } from '../ui_components/PlayerGameInfo';
@@ -15,6 +14,7 @@ import { SizedButton } from '../ui_components/SizedButton';
 import server from "../server";
 import { GameSettings, gameSettings } from "./GameSettings";
 import { MoveQueue } from './MoveQueue';
+import { SoundHandler } from './SoundHandler';
 import { PauseIcon } from '../ui_components/PauseIcon';
 import { PauseMenu } from '../ui_components/PauseMenu';
 
@@ -44,7 +44,6 @@ export class Game extends Container {
     private playerColorIcon!: PlayerColorIcon;
     private dayCounter: DayCounter;
     private scoreCounter: ScoreCounter;
-    public players: Player[] = [];
     public player1: PlayerGameInfo;         // This is not great, need to change this @Ethan
     public player2: PlayerGameInfo;
     public player3: PlayerGameInfo;
@@ -63,10 +62,12 @@ export class Game extends Container {
 
         this.board = new Board(this);
         this.cards = new CardQueue(this);
-        this.buyButton = new BuyButton(0, 0);
+        this.buyButton = new BuyButton(0, 0, this);
         this.timer = this.gameSettings.getValue("timer_length");
         this.timerInterval = this.initTimer();
         this.moveQueue = new MoveQueue(this);
+
+        this.startBGM();
 
         this.leftPanel = new GamePanel(0.11275, 0.5, 0.2, 1, 200, 1000, 0xffffff);
         this.rightPanel = new GamePanel(0.88725, 0.5, 0.2, 1, 200, 1000, 0x5f5f5f);
@@ -85,7 +86,7 @@ export class Game extends Container {
 
         this.player1.toggleTimer(true);
 
-        this.playerAI.changeText("AI")
+        this.playerAI.setName("AI")
         this.dayCounter = new DayCounter(7);
         this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
 
@@ -93,7 +94,6 @@ export class Game extends Container {
         this.codeDisplay = new SizedButton(0, 0, 0.92, 0.04, "Code:\nABCD", this.rightPanel.width, this.rightPanel.height, 15, 0xffcc66);
         this.codeDisplay.changeText("Code:\nCODE");
         this.rightPanel.addChild(this.codeDisplay);
-
 
         this.boardPanel.addChild(this.board);
         this.leftPanel.addChild(this.player1);
@@ -107,9 +107,9 @@ export class Game extends Container {
         this.rightPanel.addChild(this.upNext);
         this.rightPanel.addChild(this.playerAI);
 
+        this.addChild(this.boardPanel);
         this.addChild(this.leftPanel);
         this.addChild(this.rightPanel);
-        this.addChild(this.boardPanel);
         this.addChild(this.bottomPanel);
         this.addChild(this.cards);
 
@@ -124,7 +124,7 @@ export class Game extends Container {
         this.resize(window.innerWidth, window.innerHeight);
 
     }
-
+    
     public setup(config: GameConfig) {
         this.config = config;
         this.board.setup(config);
@@ -138,26 +138,22 @@ export class Game extends Container {
         this.playerColorIcon.changeColor(color - 1);
     }
 
-    public setPlayers(playerList: PlayerInfo[]) {
-        let count = 0;
-        playerList.forEach((player) => {
-            this.players.push(new Player(player));
-            switch (count) {
-                case 0:
-                    this.player1.changeText(player.name);
-                    break;
-                case 1:
-                    this.player2.changeText(player.name);
-                    break;
-                case 2:
-                    this.player3.changeText(player.name);
-                    break;
-                case 3:
-                    this.player4.changeText(player.name);
-                    break;
-            }
-            count++;
-        });
+    public setPlayerName(name: string, index: number) {
+        if (index < 1 || index > 4) throw new Error("Invalid index in set player name");
+        switch(index) {
+            case 1:
+                this.player1.setName(name);
+                break;
+            case 2:
+                this.player2.setName(name);
+                break;
+            case 3:
+                this.player3.setName(name);
+                break;
+            case 4:
+                this.player4.setName(name);
+                break;  
+        }
     }
 
     public updateTurn() {
@@ -243,14 +239,14 @@ export class Game extends Container {
     // reset when a new game is setup rather than when the old one finishes
     public endGame(success: boolean, message: string) {
         //console.log(message);
-
+        this.stopBGM();
         this.board.endGame(success, message);
         this.gameOver = true;
         clearInterval(this.timerInterval);
     }
 
     public ourTurn() {
-        //return !this.gameOver && !this.animating; // debug always allow current player to move
+        return !this.gameOver && !this.animating; // debug always allow current player to move
         return !this.gameOver && !this.animating &&
             this.playerColor == 1 && this.turn == 1 || 
             this.playerColor == 2 && this.turn == 2 || 
@@ -268,7 +264,9 @@ export class Game extends Container {
             this.timer -= 1;
             //Update the timer here
             console.log("current time: " + this.timer);
+            // if (this.timer <= 0) {
             if (this.timer <= 0 && this.ourTurn()) {
+                console.log("out of time");
                 server.outOfTime();
             }
             this.updatePlayerInfoTimers();
@@ -327,10 +325,18 @@ export class Game extends Container {
         this.pauseButton.resize();
         this.pauseMenu.resize(width, height);
 
-        this.cards.placeCards();
+        this.cards.placeCards(false);
 
         this.board.winScreen.resize(this.board.getWidth(), this.board.getHeight());
         this.board.loseScreen.resize(this.board.getWidth(), this.board.getHeight());
 
+    }
+
+    private startBGM() {
+        SoundHandler.playBGM("game-music.mp3");
+    }
+
+    private stopBGM() {
+        SoundHandler.stopBGM();
     }
 }

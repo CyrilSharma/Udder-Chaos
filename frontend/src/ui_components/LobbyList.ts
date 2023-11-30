@@ -152,50 +152,36 @@ export class LobbyList extends FancyButton {
     }
 
     public removePlayer(player: PlayerInfo) {
-
+        console.log("removing: " + player.name)
         // get index of player in list
         let index = -1;
         for (let i = 0; i < this.players.length; i++) {
-            if (this.players[i].name == player.name) {
-                index = i;
+            if (this.players[i].id === player.id) {
+                index = i
             }
         }
-
         // reutrn if player not in game
         if (index == -1) {
             return;
         }
 
+        console.log(index);
+        // If player is before you, then update current player
+        if (this.currentPlayerNumber > index) {
+            this.setCurrentPlayer(this.currentPlayerNumber - 1);
+        }
+
         // update the order of the players list
         let tmp = this.players[index];
-        for (let i = 0; i < this.players.length; i++) {
-            if (i > index) {
-                this.players[i-1] = this.players[i];
-            }
+        for (let i = index + 1; i < this.players.length; i++) {
+            this.players[i-1] = this.players[i];
+            this.setPlayerColor(this.players[i-1], i-1);
+            this.setPlayerName(this.players[i-1], i-1);
         }
         this.players[this.players.length - 1] = tmp;
-
-        // update UI
-        this.playersList.forEach(button => {
-            for (let i = 0; i < this.players.length; i++) {
-                if (button.label.text == this.players[i].name) {
-                    button.y = -90 + 60 * i;
-                }
-                if (button.label.text == this.playersList[this.currentPlayerNumber].label.text) {
-                    this.nameInput.y = button.y - 25;
-                }
-            }
-        });
-
-        for (let i = 0; i < 4; i++) {
-            this.colorSelectors[i].y = this.playersList[i].y;
-        }
-        
-        for (let i = 0; i < 4; i++) {
-            if (this.playersList[i].label.text == this.players[this.players.length - 1].name) {
-                this.playersList[i].changeText("");
-            }
-        }
+        const emptyPlayer: PlayerInfo = {name: "", color: 4, id: ""};
+        this.setPlayerColor(emptyPlayer, this.players.length - 1);
+        this.setPlayerName(emptyPlayer, this.players.length - 1);
 
         this.players.pop();
     }
@@ -203,9 +189,9 @@ export class LobbyList extends FancyButton {
     public updatePlayer(player: PlayerInfo) {
         for (let i = 0; i < this.players.length; i++) {
             if (this.players[i].id === player.id) {
-                console.log("change color")
                 this.setPlayerColor(player, i);
                 this.setPlayerName(player, i);
+                this.players[i] = player;
             }
         }
     }

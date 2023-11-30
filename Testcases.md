@@ -276,13 +276,29 @@ Step | Directions | Expected Output
 3 | Click on the previous button designated by a "<" on any page but the first | Notice the page switches and the page count decreases
 4 | Click on the back button designated by an "X" | Notice that you are now on the Main Menu
 
-## User Story 2
+## User Story 2.1 - Settings menu
 Step | Directions | Expected Output
 --- | --- | ---
+1 | Start on the main menu, click the settings button | The settings page opens
+2 | Exit the settings page and create and start a game | -
+3 | Click the pause button | A menu opens with a settings and an exit button
+4 | Click the settings button | The settings page from before opens
+5 | Exit the settings page and click the exit button from the pause menu | The game returns to the main menu screen
 
-## User Story 3
+## User Story 2.2 - Settings functionality
 Step | Directions | Expected Output
 --- | --- | ---
+1 | Start on the settings page and turn the BGM volume to 0 | The BGM turns off
+2 | Turn the BGM volume higher | The BGM volume increases
+3 | Enter a game with sound effect volume on | -
+4 | Play a card | Sound effects are on
+5 | Enter the game settings menu and turn off sound effect volume | Sound effects no longer play
+
+## User Story 3.1 - Player names (From sprint 2)
+Step | Directions | Expected Output
+--- | --- | ---
+1 | On the create game screen, enter a name | The name is displayed
+2 | Start the game | The name is shown correspondingly on the game screen player list
 
 ## User Story 4.1
 Start in the Game
@@ -297,30 +313,119 @@ Start in the Game
 
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Enter the game and play one day (all players make 1 turn) | Notice that the timer moves to the current player's playerInfo indicator
+1 | Enter the game with a 10 second turn time limit and play one day (all players make 1 turn) | Notice that the timer moves to the current player's playerInfo indicator
 2 | Make a move | Notice that the timer resets to a full bar when the turn switches
 3 | Let the timer reach zero | Notice that a card is played from the hand automatically without player input
 
 ## User Story 5
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
 
-## User Story 6
+## User Story 6 - AI Fixes from sprint 2
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
 
 ## User Story 7
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
 
 ## User Story 8
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
 
 ## User Story 9
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
 
 ## User Story 10
 Step | Directions | Expected Output
 --- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
+
+## User Story 11.1 Board animation synchronization
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Enter a game with two tabs and play a card in one tab | The movement is synced across the other tab
+
+## User Story 11.2 Card animations
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Enter a game and play a card | The card moves to the center of the screen and the to the queue after a delay
+2 | ^ | The queue visibly moves upwards to accomodate the new card
+3 | ^ |The first card in the queue moves to the old position of the played card
+
+## User Story 12.1 - Movement oriented sound effects
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Enter a game and move a UFO | A ufo move sound plays 
+2 | Capture a cow with a UFO | An abduction sound plays
+3 | Capture an enemy with a UFO | An enemy capture sound plays
+4 | Get captured by an enemy | An ally capture sound plays
+
+## User Story 12.2 - Other sound effects
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Enter a game and gain some score, then buy a UFO | UFO purchase sound effect is played
+2 | Play a card | A card sound is played
+
+## User Story 13.1 - Music switching
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Open the webpage and click the window | Menu music plays
+2 | Create a game | Lobby music plays
+3 | Leave the game lobby | Menu music plays from the beginning and lobby music stops playing
+4 | Enter the join game screen and then return to main menu | Menu music continues to play and does not start over
+5 | Create and start a game | In-game music plays
+
+## User Story 13.2 - Music looping
+Step | Directions | Expected Output
+--- | --- | ---
+1 | Interact with the game to make the menu music play, then wait | The music restarts after it finishes
+2 | Repeat above with game and lobby music as desired | Same result as above
+
+## User Story 14
+Step | Directions | Expected Output
+--- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |
+
+## User Story 15
+Step | Directions | Expected Output
+--- | --- | ---
+1 | 
+2 |
+3 |
+4 | 
+5 |

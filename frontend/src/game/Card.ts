@@ -25,10 +25,12 @@ export class Card extends Container {
     public index: number;
     public scaled = false;
     public cardRotation: number = 0;
+    public size: number = 0;
     constructor(queue: CardQueue, options: CardOptions, index: number) {
         super();
         this.queue = queue;
         this.index = index;
+        this.size = options.size;
         this.graphics = new Graphics();
         this.graphics.beginFill(0xFFFFFF);
         this.dirs = options.dirs;
@@ -120,21 +122,23 @@ export class Card extends Container {
     }
 
     private onPointerEnter = (e: FederatedPointerEvent) => {
-        this.queue.bringCardToTop(this);
+        //this.queue.bringCardToTop(this);
         this.upscale();
     };
 
     private onPointerLeave = (e: FederatedPointerEvent) => {
-        this.unscale();
-        this.queue.placeCards();
-        this.onDragEnd(e);
+        // If not rotating card, unscale the card
+        if (this.dragStartPos == null) {
+            this.unscale();
+        }
+        //this.queue.placeCards();
     };
 
     private onDragStart = (e: FederatedPointerEvent) => {
         if (this.queue.game.ourTurn() && this.queue.checkCardInHand(this, this.queue.game.playerColor)) {
 
             this.dragStartPos = this.toLocal(e.global) as Point;
-            this.graphics.on('pointermove', this.onDragMove);
+            this.graphics.on('globalpointermove', this.onDragMove);
 
             this.dragStartTime = Date.now();
         } else {
@@ -154,25 +158,35 @@ export class Card extends Container {
 
     private onDragEnd = (e: FederatedPointerEvent) => {
         if (this.dragStartPos != null) {
-
+            // Find the rotation of the card in degrees
             this.graphics.off('pointermove', this.onDragMove);
             this.dragStartPos = null;
             let trueAngle = mod(this.graphics.angle, 360);
+            this.unscale();
 
+            // If the rotation is very small, ignore rotation and tap if the time was short
             if (this.cardRotation * 90 - ALLOWED_POS_OFFSET <= trueAngle && trueAngle <= this.cardRotation * 90 + ALLOWED_POS_OFFSET) {
                 let endTime = Date.now();
                 if (endTime - this.dragStartTime < ALLOWED_TIME_OFFSET) {
                     this.tapCard();
                 }
+                this.rotateCard(0);
                 return;
             }
 
-            let rotation = Math.floor((trueAngle + 45) / 90);
+            let rotation = mod(Math.floor((trueAngle + 45) / 90), 4);
 
-            server.rotateCard(this.index, rotation, this.queue.game.playerColor);
-            this.queue.game.moveQueue.enqueue({"moveType": MoveType.RotateCard, "moveData": {"index": this.index, "rotation": rotation}, "color": this.queue.game.playerColor, "animated": true});
+            // If rotation takes card to same position, ignore move
+            if (rotation == this.cardRotation) {
+                this.rotateCard(0);
+                return;
+            }
+
+            let rotateAmount = mod(rotation - this.cardRotation + 4, 4);
+
+            server.rotateCard(this.index, rotateAmount, this.queue.game.playerColor);
+            this.queue.game.moveQueue.enqueue({"moveType": MoveType.RotateCard, "moveData": {"index": this.index, "rotation": rotateAmount}, "color": this.queue.game.playerColor, "animated": true});
         }
-        //console.log(`end drag: ${e.offsetX} ${e.offsetY}`)
     }
 
     private upscale = () => {
@@ -190,6 +204,7 @@ export class Card extends Container {
     };
 
     public rotateCard(rotation: number) {
+        // Rotate the card's directions by the new rotation
         for (let i = 0; i < this.dirs.length; i++) {
             this.dirs[i] = mod((this.dirs[i] - rotation), 4);
         }
