@@ -1,6 +1,7 @@
-#include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <fcntl.h>
+#include <iostream>
 #include <unistd.h>
 
 #include "Game.h"
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]) {
   int writes[2] = { write_child1[1], write_child2[1] };
   int reads[2]  = { read_child1[0],  read_child2[0]  };
 
-
+  int dev_null = open("/dev/null", O_WRONLY);
   // Fork the first child
   pid_t child1_pid = fork();
   if (child1_pid == -1) {
@@ -48,6 +49,7 @@ int main(int argc, char* argv[]) {
     close(read_child1[0]);
     dup2(write_child1[0], 0);
     dup2(read_child1[1], 1);
+    // dup2(dev_null, 2);
     execlp(argv[1], argv[1], nullptr);
     cerr << "Error executing child 1." << endl;
     return 1;
@@ -64,62 +66,104 @@ int main(int argc, char* argv[]) {
     close(write_child1[0]);
     close(write_child1[1]);
 
-    close(write_child1[1]);
-    close(read_child1[0]);
+    close(write_child2[1]);
+    close(read_child2[0]);
     dup2(write_child2[0], 0);
     dup2(read_child2[1], 1);
+    // dup2(dev_null, 2);
     execlp(argv[2], argv[2], nullptr);
     cerr << "Error executing child 2." << endl;
     return 1;
   }
 
   auto [board, pieces] = load_setup();
+  struct { 
+    int p1wins = 0;
+    int p2wins = 0;
+  } stats;
   for (int i = 0; i < count; i++) {
+    cout << "Round " << i << endl;
+    cout << "---------------------" << endl;
     auto cards = random_cards(3, 15);
     auto gc = GameConfig(board, pieces, cards);
     auto game = Game(gc);
     for (int d = 0; d < 2; d++) {
-      dprintf(d, "INIT\n");
-      dprintf(d, "ncards: %zu\n", cards.size());
-      dprintf(d, "game_id: %d\n", i);
-      dprintf(d, "END\n");
+      dprintf(writes[d], "INIT\n");
+      dprintf(writes[d], "ncards: %zu\n", cards.size());
+      dprintf(writes[d], "game_id: %d\n", i);
+      dprintf(writes[d], "seed: %d\n", 0);
+      dprintf(writes[d], "timer_length: %d\n", 100);
+      dprintf(writes[d], "END\n");
       for (auto card: cards) {
         for (auto dir: card.moves) {
-          dprintf(d, "%d ", dir);
+          dprintf(writes[d], "%d ", dir);
         }
-        dprintf(d, "\n");
+        dprintf(writes[d], "\n");
       }
     }
 
-    int idx = rand() % 2;
+    cout << "Games initialized" << endl;
+    int turn_count = 0;
+    int player = rand() % 2;
+    int idx = player;
     while (!game.is_jover()) {
+      cout << "turn-count: " << turn_count << endl;
       dprintf(writes[idx], "GET\n");
       dprintf(writes[idx], "game_id: %d\n", i);
       dprintf(writes[idx], "END\n");
       
       int type = 0, card = 0, color = 0;
-      char buf[200] = { 0 };
-      read(reads[idx], buf, 200);
-      sscanf(buf, "%d\n%d\n%d\n", &type, &card, &color);
-      game.make_move(Move(static_cast<MoveType>(type), card, color));
 
-      idx = !idx;
-      dprintf(writes[idx], "MOVE\n");
-      dprintf(writes[idx], "game_id: %d\n", i);
-      if (type == MoveType::NORMAL) {
-        dprintf(writes[idx], "moveType: PlayCard\n");
-        dprintf(writes[idx], "index: %d\n", card);
-        dprintf(writes[idx], "color: %d\n", color);
-      } else if (type == MoveType::ROTATE) {
-        dprintf(writes[idx], "moveType: RotateCard\n");
-        dprintf(writes[idx], "index: %d\n", card);
-        dprintf(writes[idx], "rotation: %d\n", color);
-      } else if (type == MoveType::BUY) {
-        dprintf(writes[idx], "moveType: PurchaseUFO\n");
-        dprintf(writes[idx], "x: %d\n", card);
-        dprintf(writes[idx], "y: %d\n", color);
+
+      int len = 0;
+      int newlines = 0;
+      char buf[200] = { 0 };
+      while (newlines < 3) {
+        int bytes_read = read(reads[idx], &buf[len], 1);
+        if (bytes_read == 0) {
+          cerr << "AI did not send data!\n";
+          exit(1);
+        }
+        cerr << buf[len];
+        if (buf[len] == '\n') newlines++;
+        len++;
       }
-      dprintf(writes[idx], "END\n");
+      cerr << "\n";
+
+      sscanf(buf, "%d\n%d\n%d\n", &type, &card, &color);
+
+      int e1 = game.is_enemy_turn();
+      game.make_move(Move(static_cast<MoveType>(type), card, color));
+      int e2 = game.is_enemy_turn();
+
+      dprintf(writes[!idx], "MOVE\n");
+      dprintf(writes[!idx], "game_id: %d\n", i);
+      if (type == MoveType::NORMAL) {
+        dprintf(writes[!idx], "movetype: %d\n", type);
+        dprintf(writes[!idx], "index: %d\n", card);
+        dprintf(writes[!idx], "color: %d\n", color);
+      } else if (type == MoveType::ROTATE) {
+        dprintf(writes[!idx], "movetype: %d\n", type);
+        dprintf(writes[!idx], "index: %d\n", card);
+        dprintf(writes[!idx], "rotation: %d\n", color);
+      } else if (type == MoveType::BUY) {
+        dprintf(writes[!idx], "movetype: %d\n", type);
+        dprintf(writes[!idx], "x: %d\n", card);
+        dprintf(writes[!idx], "y: %d\n", color);
+      }
+      dprintf(writes[!idx], "END\n");
+
+      // Swap turn iff p -> e or e -> p
+      if (e1 != e2) idx = !idx;
+      turn_count += 1;
+    }
+
+    if (player == 0) {
+      stats.p1wins += (game.is_jover() == 1);
+      stats.p2wins += (game.is_jover() == -1);
+    } else {
+       stats.p1wins += (game.is_jover() == -1);
+      stats.p2wins += (game.is_jover() == 1);
     }
   }
 
@@ -132,5 +176,12 @@ int main(int argc, char* argv[]) {
   close(read_child2[1]);
   close(write_child1[0]);
   close(write_child2[1]);
+  waitpid(child1_pid, NULL, 0);
+  waitpid(child2_pid, NULL, 0);
+
+  cerr << "STATS\n";
+  cerr << "-------------\n";
+  cerr << argv[1] << " wins: " << stats.p1wins << endl;
+  cerr << argv[2] << " wins: " << stats.p2wins << endl;
   return 0;
 }

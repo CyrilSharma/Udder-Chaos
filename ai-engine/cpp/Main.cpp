@@ -49,13 +49,15 @@ struct Handler {
 
   map<string, string> load_params() {
     map<string, string> params;
-    params["hand_size"] = "3";
     params["round_length"] = "6";
-    params["ncards"] = "15";
-    params["score_goal"] = "10";
+    params["cow_sacrifice"] = "5";
+    params["cow_regen_rate"] = "15";
     params["days_per_round"] = "5";
-    params["cow_sacrifice"] = "15";
+    params["score_goal"] = "10";
+    params["hand_size"] = "3";
+    params["ncards"] = "15";
     params["timer_length"] = "1000";
+
     string param, value, line;
     while (getline(cin, line)) {
       if (line == "END") break;
@@ -82,10 +84,10 @@ struct Handler {
     cerr << "ncards:  " << params["ncards"] << endl;
     cerr << "game_id: " << params["game_id"] << endl;
     if (!params.count("seed")) {
-      cout << "FAILURE: Seed not provided" << endl;
+      cerr << "FAILURE: Seed not provided" << endl;
       exit(1);
     } else if (!params.count("game_id")) {
-      cout << "FAILURE: Game ID not provided" << endl;
+      cerr << "FAILURE: Game ID not provided" << endl;
       exit(1);
     }
 
@@ -97,9 +99,9 @@ struct Handler {
       cerr << endl;
     }
     for (auto p: pieces) cerr << p << endl;
-
     auto cards = load_cards(stoll(params["ncards"]));
     for (auto card: cards) cerr << card << endl;
+
     auto gc = GameConfig(
       board, pieces, cards,
       stoll(params["hand_size"]),
@@ -111,7 +113,9 @@ struct Handler {
       params["game_id"]
     );
     auto game_id = params["game_id"];
-    searches.insert({game_id, Search(gc)});
+    searches.insert({
+      game_id, Search(gc, stoll(params["timer_length"]))
+    });
     cerr << searches.at(game_id).game << endl;
   } /* init() */
 
@@ -125,19 +129,23 @@ struct Handler {
     auto game_id = params["game_id"];
     if (searches.count(game_id)) {
       auto res = searches.at(game_id).beginSearch();
-      cerr << "I made it here 1!" << endl;
       searches.at(game_id).make_move(res);
-      cerr << "I made it here 2!" << endl;
       cerr << searches.at(game_id).game << endl;
       if (res.type == NORMAL) {
         cout << res.type << "\n" << res.card << "\n" << res.color << endl;
-        cerr << res.type << "\n" << res.card << "\n" << res.color << endl;
+        cerr << "type: "  << res.type << "\n"
+             << "card: "  << res.card << "\n"
+             << "color: " << res.color << endl;
       } else if (res.type == ROTATE) {
         cout << res.type << "\n" << res.card << "\n" << res.angle << endl;
-        cerr << res.type << "\n" << res.card << "\n" << res.angle << endl;
+        cerr << "type: "  << res.type << "\n"
+             << "card: "  << res.card << "\n"
+             << "angle: " << res.angle << endl;
       } else if (res.type == BUY) {
         cout << res.type << "\n" << res.x << "\n" << res.y << endl;
-        cerr << res.type << "\n" << res.x << "\n" << res.y << endl;
+         cerr << "type: " << res.type << "\n"
+              << "x: "    << res.x << "\n"
+              << "y: "    << res.y << endl;
       }
     } else {
       cerr << "Invalid Game ID!" << endl;
