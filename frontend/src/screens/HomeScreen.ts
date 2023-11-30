@@ -17,6 +17,7 @@ export class HomeScreen extends Container {
     private joinGameButton: MenuButton;
     private settingsButton: MenuButton;
     private tutorialButton: MenuButton;
+    private settingsScreen: SettingsScreen;
     private logo: Sprite;
     private bgm: HTMLAudioElement = new Audio("sounds/bgm/menu-music.mp3");
 
@@ -46,29 +47,27 @@ export class HomeScreen extends Container {
         });
         this.addChild(this.joinGameButton.getButton());
 
-        // Settings
+        // Settings Button
         this.settingsButton = new MenuButton("Settings", 0.58, 0.8, 0xF4C418, 4, 0.075, 30);
-        this.settingsButton.getButton().onPress.connect(() => {
-            navigation.showScreen(TestingScreen);
-            //navigation.showScreen(SettingsScreen);
-        });
         this.addChild(this.settingsButton.getButton());
 
         // Tutorial
         this.tutorialButton = new MenuButton("Tutorial", 0.42, 0.8, 0xF4C418, 4, 0.075, 30);
         this.tutorialButton.getButton().onPress.connect(() => {
             navigation.showScreen(TutorialScreen);
-            //navigation.showScreen(TestingScreen);
         });
         this.addChild(this.tutorialButton.getButton());
 
         SoundHandler.playBGM("menu-music.mp3");
-    }
 
-    public async show() {
-    }
+        // Settings Screen/Vignette
+        this.settingsScreen = new SettingsScreen();
+        this.settingsButton.getButton().onPress.connect(() => {
+            this.settingsScreen.visible = true;
+        });
+        this.addChild(this.settingsScreen);
 
-    public async hide() {
+        this.resize(window.innerWidth, window.innerHeight);
     }
 
     public resize(width: number, height: number) {
@@ -82,6 +81,7 @@ export class HomeScreen extends Container {
         this.settingsButton.resize(width, height);
         this.background.resize(width, height);
         this.tutorialButton.resize(width, height);
+        this.settingsScreen.resize(width, height);
     }
 
 }

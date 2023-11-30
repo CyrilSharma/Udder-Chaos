@@ -62,7 +62,7 @@ export class LogicHandler {
             // let canMove: boolean = canMoveOverAll(piece.type, this.game.board.getPiecesByPosition(dest));
             let canMove: boolean = false;
             let check: Position = cur;
-            console.log("can't move over all :0");
+            // console.log("can't move over all :0");
 
             friendlyCheck:
             do { 

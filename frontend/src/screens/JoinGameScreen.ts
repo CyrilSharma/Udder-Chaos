@@ -48,7 +48,7 @@ export class JoinGameScreen extends Container {
         });
 
         // Room Code Input
-        this.seedBox = new SeedBox(this.menuContainer, 0.5, 0.5, 0.5, 0.25, "Code", 4);
+        this.seedBox = new SeedBox(this.menuContainer, 0.5, 0.5, 0.5, 0.25, "Code", 4, false);
         this.menuContainer.addChild(this.seedBox);
 
         this.errorPopup = new FancyButton({

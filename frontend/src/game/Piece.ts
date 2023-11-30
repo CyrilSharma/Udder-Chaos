@@ -68,12 +68,12 @@ export class Piece extends Container {
         this.scoreDisplay.visible = false;
         this.addChild(this.scoreDisplay);
         this.image.eventMode = 'static';
-        this.image.on('mouseover', () => {
+        this.image.on('mouseenter', () => {
             if (getTeam(this.type) != TeamEnum.Player) return;
             this.scoreText.text = this.score;
             this.scoreDisplay.visible = true;
         });
-        this.image.on('mouseout', () => {
+        this.image.on('mouseleave', (event) => {
             this.scoreDisplay.visible = false;
         });
     }

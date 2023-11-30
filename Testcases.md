@@ -291,7 +291,7 @@ Step | Directions | Expected Output
 Start on the settings page in the main menu
 Step | Directions | Expected Output
 --- | --- | ---
-1 | Turn the BGM volume to 0 | The BGM turns off
+1 | Start on the settings page and turn the background music (BGM) volume to 0 | The BGM turns off
 2 | Turn the BGM volume higher | The BGM volume increases
 3 | Enter a game with sound effect volume on | -
 4 | Play a card | Sound effects are on

@@ -92,15 +92,21 @@ export class Board extends Container {
                 text: ""
             });
             this.respawnCounter[tile].alpha = 0;
-            this.respawnCounter[tile].on('mouseover', () => {
-                this.respawnCounter[tile].alpha = 1;
-                if (this.getPiecesByPosition({row: Math.floor(tile/16), column: tile % 16})[0]?.type == TeamEnum.Player) {
-                    this.respawnCounter[tile].alpha = 0;
-                } // 8 10 11 14 15
+            this.respawnCounter[tile].on('mouseenter', () => {
+                console.log(`respawn counter mouseover: ${tile}`);
+                if (tile == 255) return; // I'm not sure why but the last one is always in the top left corner??
+                // Block showing respawn counter if any players or cows are on this tile
+                if (this.getPiecesByPosition({row: Math.floor(tile/16), column: tile % 16}, TeamEnum.Player).length == 0 &&
+                this.getPiecesByPosition({row: Math.floor(tile/16), column: tile % 16}, TeamEnum.Cow).length == 0) {
+                    this.respawnCounter[tile].alpha = 1;
+                } else {
+                    this.respawnCounter[tile].visible = false; // Hide this respawn counter until the pieces on this tile move off
+                }
             });
-            this.respawnCounter[tile].on('mouseout', () => {
+            this.respawnCounter[tile].on('mouseleave', () => {
                 this.respawnCounter[tile].alpha = 0;
-            });            
+            });
+            // this.respawnCounter[tile].zIndex = -1;            
             this.addChild(this.respawnCounter[tile]);
         }
     }
@@ -229,6 +235,9 @@ export class Board extends Container {
             }
         } else {
             // enemy piece destroyed
+    
+            this.game.playerAI.setUnits(this.game.playerAI.getUnits() - 1);
+
             SoundHandler.playSFX("ufo-laser.ogg");
         }
     }
@@ -447,6 +456,7 @@ export class Board extends Container {
                 let view = this.getViewPosition(tilePosition);
                 let tile = tilePosition.row * 16 + tilePosition.column;
                 //console.log(`Tile num: ${tile}`);
+                this.respawnCounter[tile].visible = true;
                 this.respawnCounter[tile].text = days;
                 this.respawnCounter[tile].x = view.x + this.tileSize * 0.5;
                 this.respawnCounter[tile].y = view.y + this.tileSize * 0.5;         
@@ -459,6 +469,7 @@ export class Board extends Container {
             this.enemyRegen[i].forEach((tilePosition) => {
                 if (this.getPiecesByPosition(tilePosition).length == 0) {
                     this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
+                    this.game.playerAI.setUnits(this.game.playerAI.getUnits() + 1);
                 }
             });
         }
