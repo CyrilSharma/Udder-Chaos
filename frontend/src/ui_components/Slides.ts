@@ -1,21 +1,17 @@
 import { Sprite, ObservablePoint } from "pixi.js";
 
-const NUM_IMG = 5;
+const NUM_IMG = 15;
 
 export class Slides extends Sprite {
 
     private slides: Array<Sprite>;
     private percentX: number;
     private percentY: number;
-    private percentWidth: number;
-    private percentHeight: number;
     private slideNum: number;
 
-    constructor(x: number, y: number, width: number, height: number, parentW: number, parentH: number) {
+    constructor(x: number, y: number, parentW: number, parentH: number) {
         super();
 
-        this.percentWidth = width;
-        this.percentHeight = height;
         this.percentX = x;
         this.percentY = y;
         this.slideNum = 0;
@@ -24,7 +20,7 @@ export class Slides extends Sprite {
 
         this.slides = [];
         for (let i = 1; i <= NUM_IMG; i++) {
-            this.slides[i - 1] = Sprite.from("../../images/tutorial_slides/" + i + ".jpg");
+            this.slides[i - 1] = Sprite.from("../../images/tutorial_slides/" + i + ".png");
             this.slides[i - 1].visible = false;
             this.addChild(this.slides[i - 1]);
             this.slides[i - 1].anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
@@ -36,7 +32,7 @@ export class Slides extends Sprite {
     public nextImg() {
         this.slides[this.slideNum].visible = false;
         this.slideNum++;
-        this.slideNum %= 5;
+        this.slideNum %= NUM_IMG;
         this.slides[this.slideNum].visible = true;
     }
 
@@ -53,12 +49,12 @@ export class Slides extends Sprite {
         // Top, bottom, left, right
         this.x = bounds[2] + (bounds[3] - bounds[2]) * this.percentX;
         this.y = bounds[0] + (bounds[1] - bounds[0]) * this.percentY;
-        this.width = (bounds[3] - bounds[2]) * this.percentWidth;
-        this.height = (bounds[1] - bounds[0]) * this.percentHeight;
+        this.width = (bounds[3] - bounds[2]);
+        this.height = (bounds[1] - bounds[0]);
         
         this.slides.forEach(img => {
-            img.width = this.width / window.innerWidth;
-            img.height = this.height / window.innerHeight;
+            img.width = 0.7//this.width// / window.innerWidth;
+            img.height = 0.7//this.height// / window.innerHeight;
         });
     }
 
