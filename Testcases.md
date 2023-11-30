@@ -276,15 +276,7 @@ Step | Directions | Expected Output
 3 | Click on the previous button designated by a "<" on any page but the first | Notice the page switches and the page count decreases
 4 | Click on the back button designated by an "X" | Notice that you are now on the Main Menu
 
-## User Story 2.1
-Step | Directions | Expected Output
---- | --- | ---
-
-## User Story 2.2
-Step | Directions | Expected Output
---- | --- | ---
-
-## User Story 3.1 - Settings menu
+## User Story 2.1 - Settings menu
 Step | Directions | Expected Output
 --- | --- | ---
 1 | Start on the main menu, click the settings button | The settings page opens
@@ -293,7 +285,7 @@ Step | Directions | Expected Output
 4 | Click the settings button | The settings page from before opens
 5 | Exit the settings page and click the exit button from the pause menu | The game returns to the main menu screen
 
-## User Story 3.2 - Settings functionality
+## User Story 2.2 - Settings functionality
 Step | Directions | Expected Output
 --- | --- | ---
 1 | Start on the settings page and turn the BGM volume to 0 | The BGM turns off
@@ -301,6 +293,12 @@ Step | Directions | Expected Output
 3 | Enter a game with sound effect volume on | -
 4 | Play a card | Sound effects are on
 5 | Enter the game settings menu and turn off sound effect volume | Sound effects no longer play
+
+## User Story 3.1 - Player names (From sprint 2)
+Step | Directions | Expected Output
+--- | --- | ---
+1 | On the create game screen, enter a name | The name is displayed
+2 | Start the game | The name is shown correspondingly on the game screen player list
 
 ## User Story 4.1
 Start in the Game
