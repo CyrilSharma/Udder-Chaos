@@ -122,13 +122,13 @@ int Search::alphaBeta(Position &prev, Move move, int depth) {
     cur.game.make_move(move);
 
     // This is taking too long to get working :/
-    int status = cur.game.is_jover();
-    if (status != 0) {
-      int e = cur.game.is_enemy_turn();
-      int ewin = (status == -1);
-      int sign = (e == ewin) ? 1 : -1;
-      return 1e6 * sign;
-    }
+    // int status = cur.game.is_jover();
+    // if (status != 0) {
+    //   int e = cur.game.is_enemy_turn();
+    //   int ewin = (status == -1);
+    //   int sign = (e == ewin) ? 1 : -1;
+    //   return 1e6 * sign;
+    // }
 
     if (depth <= 0) return scorer.score(cur.game);
     if (cur.game.is_enemy_turn() != prev.game.is_enemy_turn()) {
@@ -170,9 +170,11 @@ void Search::gen_moves(vector<Move> &moves, int player) {
       for (int angle = 1; angle <= 3; ++angle)
         moves.push_back(Move(MoveType::ROTATE, card, angle));
     }
-    if (game.cows_collected > 0)
-      for (auto [x, y]: game.player_spawns[game.player_id])
+    if (game.cows_collected > 0) {
+      for (auto [x, y]: game.player_spawns[game.player_id]) {
         moves.push_back(Move(MoveType::BUY, x, y));
+      }
+    }
   } else {
     for (int card = 0; card < (int) game.cm.handsize; ++card) {
       for (int color = 0; color < 4; ++color) {
