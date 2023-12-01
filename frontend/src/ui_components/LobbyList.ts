@@ -30,6 +30,7 @@ export class LobbyList extends FancyButton {
         this.percentY = pY;
         this.percentWidth = pW;
         this.percentHeight = pH;
+        this.currentPlayerNumber = currentPlayerNumber;
 
         /* Set up the background */
         this.listContainer = new SizedButton(pX, pY, pW, pH, "", menuContainer.width, menuContainer.height, 40, 0xffffff);
@@ -37,7 +38,7 @@ export class LobbyList extends FancyButton {
 
         /* Set up the color selector */
         this.available = [true, true, true, true, true];
-        this.currentPlayerNumber = currentPlayerNumber;
+
         this.colorSelectors = new Array<ColorSelector>;
         for (let i = 0; i < 4; i++) {
             this.colorSelectors[i] = new ColorSelector();
@@ -47,6 +48,7 @@ export class LobbyList extends FancyButton {
             this.colorSelectors[i].y = -90 + i * 60;
             this.listContainer.addChild(this.colorSelectors[i]);
             this.colorSelectors[i].onPress.connect(() => {
+                console.log(`${i}, ${this.currentPlayerNumber}`);   
                 if (i == this.currentPlayerNumber) {
                     this.swapColor(i);
                 }
@@ -58,11 +60,7 @@ export class LobbyList extends FancyButton {
         this.players = new Array<PlayerInfo>;
         this.playersList = new Array<SizedButton>;
         for (let i = 0; i < 4; i++) {
-            if (i != this.currentPlayerNumber) {
-                 this.playersList[i] = new SizedButton(0.5, 0.5, 0.8, 0.2, "        ", this.listContainer.width, this.listContainer.height, 40, 0xffffff);
-            } else {
-                this.playersList[i] = new SizedButton(0.5, 0.5, 0.8, 0.2, "        ", this.listContainer.width, this.listContainer.height, 40, 0xfff2b4);
-            }
+            this.playersList[i] = new SizedButton(0.5, 0.5, 0.8, 0.2, "        ", this.listContainer.width, this.listContainer.height, 40, 0xffffff);
             this.playersList[i].x = 28;
             this.playersList[i].y = i * 60 - 90;
             this.listContainer.addChild(this.playersList[i]);
@@ -168,9 +166,6 @@ export class LobbyList extends FancyButton {
             return;
         }
 
-        console.log(this.players);
-
-        console.log(index);
         // If player is before you, then update current player
         if (this.currentPlayerNumber > index) {
             this.setCurrentPlayer(this.currentPlayerNumber - 1);
@@ -179,7 +174,6 @@ export class LobbyList extends FancyButton {
 
         // update the order of the players list
         let tmp = this.players[index];
-        console.log(tmp);
         for (let i = index + 1; i < this.players.length; i++) {
             this.players[i-1] = this.players[i];
             this.setPlayerColor(this.players[i-1], i-1);
@@ -190,7 +184,6 @@ export class LobbyList extends FancyButton {
         this.setPlayerColor(emptyPlayer, this.players.length - 1);
         this.setPlayerName(emptyPlayer, this.players.length - 1);
 
-        console.log(this.players.length);
         this.colorSelectors[this.players.length - 1].reset();
 
         this.players.pop();
@@ -207,8 +200,10 @@ export class LobbyList extends FancyButton {
     }
 
     public setCurrentPlayer(playerNum: number) {
+        this.playersList[this.currentPlayerNumber].setColor(0xffffff);
         this.currentPlayerNumber = playerNum;
         this.nameInput.y = this.playersList[playerNum].y - 25;
+        this.playersList[playerNum].setColor(0xfff2b4);
     }
 
     public setPlayerName(player: PlayerInfo, i: number) {
