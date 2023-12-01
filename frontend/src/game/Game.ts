@@ -216,6 +216,7 @@ export class Game extends Container {
         }
         this.turnCount += 1;
         this.timer = this.gameSettings.getValue("timer_length");
+        console.log(this.timer);
         this.updatePlayerInfoTimers();
         this.board.spawnCows(this.turnCount);
     }
@@ -267,10 +268,9 @@ export class Game extends Container {
         if (!this.animating) {
             this.timer -= 1;
             //Update the timer here
-            // console.log("current time: " + this.timer);
+            console.log("current time: " + this.timer);
             // if (this.timer <= 0) {
             if (this.timer <= 0 && this.ourTurn()) {
-                console.log("out of time");
                 server.outOfTime();
             }
             this.updatePlayerInfoTimers();

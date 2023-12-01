@@ -73,8 +73,6 @@ export class SizedButton extends FancyButton {
         this.y = bounds[0] + (bounds[1] - bounds[0]) * this.percentY;
         this.width = (bounds[3] - bounds[2]) * this.percentWidth;
         this.height = (bounds[1] - bounds[0]) * this.percentHeight;
-
-        // console.log(bounds);
     }
 
     public setColor(color: number) {

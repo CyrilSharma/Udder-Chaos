@@ -20,7 +20,6 @@ const PLAYER_ORDER = [0,1,4]
 
 const MAX_PLAYERS = 2;
 
-
 const HAND_SIZE = 3;
 
 /*
