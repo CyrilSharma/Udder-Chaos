@@ -24,7 +24,7 @@ export class GameSettings {
     }
 
     public load() {
-        let settings = localStorage.getItem(KEY_GAME_SETTINGS);
+        let settings = sessionStorage.getItem(KEY_GAME_SETTINGS);
         if (!settings) {
             return defaultGameSettings;
         }
@@ -42,7 +42,7 @@ export class GameSettings {
 
     public save(data: gameSettingsData) {
         this.settingsData = data;
-        localStorage.setItem(KEY_GAME_SETTINGS, JSON.stringify(data));
+        sessionStorage.setItem(KEY_GAME_SETTINGS, JSON.stringify(data));
     }
 }
 

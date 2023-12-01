@@ -84,7 +84,7 @@ class Server {
         });
 
         this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[], roomCode: string) => {
-            localStorage.setItem("saved-id", this.socket.id);
+            sessionStorage.setItem("saved-id", this.socket.id);
 
             initSeed(settingsData.seed);
 
@@ -152,7 +152,7 @@ class Server {
     }
 
     public async joinRoom(roomCode: string) {
-        this.socket.emit("join-room", roomCode.toUpperCase(), localStorage.getItem("saved-id"));
+        this.socket.emit("join-room", roomCode.toUpperCase(), sessionStorage.getItem("saved-id"));
     }
     
     public async updatePlayerName(name: string) {
@@ -171,7 +171,7 @@ class Server {
     public async startGame() {
         console.log(gameSettings.load());
         this.socket.emit("start-game", gameSettings.load());
-        localStorage.setItem("saved-id", this.socket.id);
+        sessionStorage.setItem("saved-id", this.socket.id);
     }
 
     public async playCard(cardIndex: number, color: number) {

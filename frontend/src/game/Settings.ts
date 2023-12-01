@@ -23,7 +23,7 @@ export class GlobalSettings {
     }
 
     public load() {
-        let settings = localStorage.getItem(KEY_GLOBAL_SETTINGS);
+        let settings = sessionStorage.getItem(KEY_GLOBAL_SETTINGS);
         if (!settings) {
             return defaultGlobalSettings;
         }
@@ -41,7 +41,7 @@ export class GlobalSettings {
 
     public save(data: globalSettingsData) {
         this.settingsData = data;
-        localStorage.setItem(KEY_GLOBAL_SETTINGS, JSON.stringify(data));
+        sessionStorage.setItem(KEY_GLOBAL_SETTINGS, JSON.stringify(data));
     }
 }
 
