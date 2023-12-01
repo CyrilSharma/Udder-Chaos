@@ -25,15 +25,16 @@ export class GameSettings {
 
     public load() {
         let settings = sessionStorage.getItem(KEY_GAME_SETTINGS);
-        if (!settings) {
-            return defaultGameSettings;
-        }
+        if (!settings) { return defaultGameSettings; }
         try {
             let parsed = JSON.parse(settings);
-            if (typeof parsed != "object") {
-                return defaultGameSettings;
+            console.log(parsed);
+            if ((typeof parsed === "object")
+             && (parsed !== null) 
+             && (Object.keys(parsed).every((key) => key in defaultGameSettings))) {
+                return parsed;
             }
-            return JSON.parse(settings);
+            return defaultGameSettings;
         } catch (e) {
             console.warn(e);
             return defaultGameSettings;
