@@ -149,6 +149,9 @@ export class LobbyList extends FancyButton {
         for (let i = 0; i < 4; i++) {
             this.colorSelectors[i].y = this.playersList[i].y;
         }
+
+        console.log(this.players);
+
     }
 
     public removePlayer(player: PlayerInfo) {
@@ -165,23 +168,30 @@ export class LobbyList extends FancyButton {
             return;
         }
 
+        console.log(this.players);
+
         console.log(index);
         // If player is before you, then update current player
         if (this.currentPlayerNumber > index) {
             this.setCurrentPlayer(this.currentPlayerNumber - 1);
         }
+        
 
         // update the order of the players list
         let tmp = this.players[index];
+        console.log(tmp);
         for (let i = index + 1; i < this.players.length; i++) {
             this.players[i-1] = this.players[i];
             this.setPlayerColor(this.players[i-1], i-1);
             this.setPlayerName(this.players[i-1], i-1);
         }
         this.players[this.players.length - 1] = tmp;
-        const emptyPlayer: PlayerInfo = {name: "", color: 4, id: ""};
+        const emptyPlayer: PlayerInfo = {name: "", color: -1, id: ""};
         this.setPlayerColor(emptyPlayer, this.players.length - 1);
         this.setPlayerName(emptyPlayer, this.players.length - 1);
+
+        console.log(this.players.length);
+        this.colorSelectors[this.players.length - 1].reset();
 
         this.players.pop();
     }
@@ -202,7 +212,6 @@ export class LobbyList extends FancyButton {
     }
 
     public setPlayerName(player: PlayerInfo, i: number) {
-        console.log(player.name);
         this.playersList[i].changeText(player.name);
     }
 

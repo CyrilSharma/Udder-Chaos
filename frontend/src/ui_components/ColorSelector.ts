@@ -38,7 +38,7 @@ export class ColorSelector extends FancyButton {
 
     public reset() : number {
         let tmp = this.color;
-        this.color = 4;
+        this.setColor(4);
         return tmp;
     }
 

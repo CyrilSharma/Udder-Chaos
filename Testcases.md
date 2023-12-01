@@ -452,7 +452,7 @@ Start on the web page
 Step | Directions | Expected Output
 --- | --- | ---
 1 | Interact with the game to make the menu music play, then wait | The music restarts after it finishes
-2 | Repeat above with game and lobby music as desired | Same result as above
+2 | Repeat above with game and lobby music as desired, if time allows | Same result as above
 
 ## User Story 14.1 - Disconnection
 Start in a game
