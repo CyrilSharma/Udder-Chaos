@@ -84,16 +84,7 @@ export class CustomScreenUI extends Container {
         this.timerLength = new SliderUI(0.25, 0.86, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Move Timer Length", 10, 60, 20, this.menuContainer.getBox());
         this.menuContainer.addChild(this.timerLength);
 
-        //this.loadGameSettings();
-        /* Set Default Settings */
-        
-        this.setSeed(defaultGameSettings.seed);
-        this.setCowsForWin(defaultGameSettings.score_goal);
-        this.setDaysPerRound(defaultGameSettings.days_per_round);
-        this.setCowRespawnRate(defaultGameSettings.cow_regen_rate);
-        this.setCowSacrificeAmt(defaultGameSettings.cow_sacrifice);
-        this.setDeckSize(defaultGameSettings.card_deck_size);
-        this.setDifficulty(defaultGameSettings.difficulty);
+        this.loadGameSettings();
 
         this.resize(window.innerWidth, window.innerHeight);
     }
@@ -110,6 +101,7 @@ export class CustomScreenUI extends Container {
         this.setCowSacrificeAmt(settingsData.cow_sacrifice);
         this.setDeckSize(settingsData.card_deck_size);
         this.setDifficulty(settingsData.difficulty);
+        this.setTimerLength(settingsData.timer_length);
     }
 
     public getSeed() {
