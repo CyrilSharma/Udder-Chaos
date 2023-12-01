@@ -21,6 +21,7 @@ var mode = process.env.NODE_ENV;
 if (mode != 'development') {
     app.use('/assets', express.static(path.join(__dirname, 'assets')));
     app.use('/images', express.static(path.join(__dirname, 'images')));
+    app.use('/sounds', express.static(path.join(__dirname, 'sounds')));
     app.get('/', (req, res) => {
         res.sendFile(path.join(__dirname, '/index.html'));
     })
