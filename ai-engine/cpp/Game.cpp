@@ -159,9 +159,9 @@ int Game::is_jover() {
   for (int i = 0; i < 4; i++) {
     if (player.deads[i].size() == 0) return -1;
   }
-  if ((total_score + cows_collected) >= cows_to_win) return 1;
+  if ((total_score + cows_collected) >= ((int64_t) cows_to_win)) return 1;
   if (turn && (turn % (days_per_round * 6) == 0)) {
-    if (cows_collected < (int64_t) cow_sacrifice) return -1;
+    if (cows_collected < ((int64_t) cow_sacrifice)) return -1;
   }
   return 0;
 } /* is_jover() */

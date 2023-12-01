@@ -60,13 +60,15 @@ exitmove = (room_code) => {
 
 socket.on("init-ai", async (room_code, settings, cards) => {
     console.log("AI Initialized!");
+    console.log(settings);
     ai.stdin.write('INIT\n');
     ai.stdin.write(`game_id: ${room_code}\n`);
-    ai.stdin.write(`score_goal: ${settings.seed}\n`);
+    ai.stdin.write(`seed: ${settings.seed}\n`);
+    ai.stdin.write(`score_goal: ${settings.score_goal}\n`);
     ai.stdin.write(`days_per_round: ${settings.days_per_round}\n`);
     ai.stdin.write(`cow_regen_rate: ${settings.cow_regen_rate}\n`);
     ai.stdin.write(`cow_sacrifice: ${settings.cow_sacrifice}\n`);
-    ai.stdin.write(`seed: ${settings.card_deck_size}\n`);
+    ai.stdin.write(`difficulty: ${settings.difficulty}\n`);
     ai.stdin.write(`ncards: ${cards.length}\n`);
     ai.stdin.write(`END\n`);
     for (let card of cards) {

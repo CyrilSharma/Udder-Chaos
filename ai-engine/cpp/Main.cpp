@@ -56,7 +56,8 @@ struct Handler {
     params["score_goal"] = "10";
     params["hand_size"] = "3";
     params["ncards"] = "15";
-    params["timer_length"] = "1000";
+    params["timer_length"] = "30";
+    params["difficulty"] = "1000";
 
     string param, value, line;
     while (getline(cin, line)) {
@@ -68,6 +69,8 @@ struct Handler {
       std::transform(param.begin(), param.end(), param.begin(),
         [](char c){ return tolower(c); }
       );
+      cerr << "Param: " << param << endl;
+      cerr << "Value: " << value << endl;
       params[param] = value;
     }
     return params;
@@ -102,6 +105,13 @@ struct Handler {
     auto cards = load_cards(stoll(params["ncards"]));
     for (auto card: cards) cerr << card << endl;
 
+    cerr << " 1: " << params["hand_size"] << endl;
+    cerr << " 2: " << params["round_length"] << endl;
+    cerr << " 3: " << params["cow_sacrifice"] << endl;
+    cerr << " 4: " << params["cow_regen_rate"] << endl;
+    cerr << " 5: " << params["days_per_round"] << endl;
+    cerr << " 6: " << params["score_goal"] << endl;
+
     auto gc = GameConfig(
       board, pieces, cards,
       stoll(params["hand_size"]),
@@ -114,7 +124,7 @@ struct Handler {
     );
     auto game_id = params["game_id"];
     searches.insert({
-      game_id, Search(gc, stoll(params["timer_length"]))
+      game_id, Search(gc, stoll(params["difficulty"]))
     });
     cerr << searches.at(game_id).game << endl;
   } /* init() */

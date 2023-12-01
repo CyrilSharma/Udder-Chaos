@@ -47,7 +47,7 @@ export class Room {
             let player = new Player(socket, TEAM.ALIEN, this, host);
             this.players.push(player);
 
-            player.joinRoom();
+            player.joinRoom(host);
             socket.to(this.roomCode).emit("add-player", player.getPlayerInfo());
             console.log(socket.id + " joined the room: " + this.roomCode);
         }
@@ -118,18 +118,6 @@ export class Room {
         return ids;
     }
 
-    setSettings(gameSettings) {
-        let seed = gameSettings.seed === "" ? gameSettings.seed : this.roomCode;
-        let numSeed = 0;
-
-        for (let i = 0; i < seed.length; i++) {
-            numSeed += seed.charCodeAt(i);
-        }
-
-        gameSettings.seed = numSeed;
-        this.gameSettings = gameSettings;
-    }
-
     startGame(host) {
         if (this.players.length == MAX_PLAYERS) {
             for (let i = 0; i < MAX_PLAYERS; i++) {
@@ -139,7 +127,7 @@ export class Room {
                     return;
                 }
             }
-            this.io.to(this.roomCode).emit('start-game', this.gameSettings, this.getPlayerInfo());
+            this.io.to(this.roomCode).emit('start-game', this.gameSettings, this.getPlayerInfo(), this.roomCode);
             this.inGame = true;
         }
         else {
@@ -214,8 +202,13 @@ class Player {
             this.room.updatePlayer(this);
         });
 
+        this.socket.on("update-game-settings", (gameSettings) => {
+            this.room.gameSettings = gameSettings;
+            this.socket.to(this.room.roomCode).emit("share-game-settings", gameSettings);
+        });
+
         this.socket.on("start-game", (gameSettings) => {
-            this.room.setSettings(gameSettings);
+            this.room.gameSettings = gameSettings
             this.room.startGame(this.socket);
         });
 
@@ -229,7 +222,7 @@ class Player {
         })
 
         this.socket.on("init-ai", (cards) => {
-            console.log("init-ai!!!!!!!!!!!!!!");
+            console.log(`Settings: ${JSON.stringify(this.room.gameSettings, null, 4)}`);
             ai_socket.emit('init-ai', this.room.roomCode, this.room.gameSettings, cards);
         });
 
@@ -248,9 +241,9 @@ class Player {
         return {"id": this.socket.id, "name": this.name, "color": this.color};
     }
 
-    joinRoom() {
+    joinRoom(host) {
         this.socket.join(this.room.roomCode);
-        this.socket.emit("load-room", this.room.roomCode, this.room.getPlayerInfo());
+        this.socket.emit("load-room", this.room.roomCode, this.room.getPlayerInfo(), host ? null : this.room.gameSettings);
         this.socket.emit("receive-message", "joined the room");
     }
 

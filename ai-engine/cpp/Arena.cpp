@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
       dprintf(writes[d], "ncards: %zu\n", cards.size());
       dprintf(writes[d], "game_id: %d\n", i);
       dprintf(writes[d], "seed: %d\n", 0);
-      dprintf(writes[d], "timer_length: %d\n", 100);
+      dprintf(writes[d], "difficulty: %d\n", 100);
       dprintf(writes[d], "END\n");
       for (auto card: cards) {
         for (auto dir: card.moves) {

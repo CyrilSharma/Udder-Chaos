@@ -26,7 +26,7 @@ class Server {
             console.log(error);
         });
 
-        this.socket.on("load-room", async (roomCode, playerList: PlayerInfo[]) => {
+        this.socket.on("load-room", async (roomCode, playerList: PlayerInfo[], settingsData: gameSettingsData) => {
             console.log(playerList);
             console.log(this.socket.id);
 
@@ -38,6 +38,10 @@ class Server {
             playerList.forEach((player) => {
                 createGameScreen.getLobbyList().addPlayer(player);
             });
+
+            if (settingsData != null) {
+                gameSettings.save(settingsData);
+            }
         });
         
         this.socket.on("join-error", (error) => {
@@ -68,11 +72,18 @@ class Server {
             navigation.showScreen(HomeScreen);
         });
 
+        this.socket.on("share-game-settings", (settingsData: gameSettingsData) => {
+            console.log(gameSettings);
+            gameSettings.save(settingsData);
+        });
+
         this.socket.on("start-game-error", (error) => {
             console.log(error);
         });
 
-        this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[]) => {
+        this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[], roomCode: string) => {
+            localStorage.setItem("saved-id", this.socket.id);
+
             initSeed(settingsData.seed);
 
             let color = 1;
@@ -89,6 +100,12 @@ class Server {
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
+
+            playerList.forEach((player: PlayerInfo) => {
+                gameScreen.game.setPlayerName(player.name, player.color + 1);
+            });
+
+            gameScreen.game.setRoomCode(roomCode);
 
             let cards = []
             let arrays = [
@@ -143,9 +160,13 @@ class Server {
         this.socket.emit("update-color", color);
     }
 
+    public async updateGameSettings(gameSettings: gameSettingsData) {
+        this.socket.emit("update-game-settings", gameSettings);
+    }
+
     public async startGame() {
         this.socket.emit("start-game", gameSettings.load());
-        localStorage.setItem("saved-id", this.socket.id)
+        localStorage.setItem("saved-id", this.socket.id);
     }
 
     public async playCard(cardIndex: number, color: number) {

@@ -55,6 +55,7 @@ export class CustomScreenUI extends Container {
             gameSettings.save(newSettings);
             server.updateGameSettings(newSettings);
         });
+        server.updateGameSettings(defaultGameSettings);
 
         this.customLabel = new SizedButton(0.32, 0.12, 0.5, 0.2, "Customize Game", this.menuContainer.width, this.menuContainer.height, 50, 0xffcc66);
         this.menuContainer.addChild(this.customLabel);
