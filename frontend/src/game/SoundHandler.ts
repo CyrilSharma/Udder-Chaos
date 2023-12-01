@@ -1,3 +1,6 @@
+import { globalSettings } from "./Settings";
+import { globalSettingsData } from "./Utils";
+
 export class SoundHandler {
     public static currentBgm: string = "game-music.mp3";
     private static bgmVolume: number = 0.2;
@@ -22,6 +25,10 @@ export class SoundHandler {
         for (let file of SoundHandler.allBGMFiles) {
             SoundHandler.BGMlist[file] = new Audio(SoundHandler.bgmPath + file);
         }
+        const settingsData: globalSettingsData = globalSettings.load();
+
+        this.changeBGMVolume(settingsData.music_volume);
+        this.changeSFXVolume(settingsData.sound_effect_volume);
     }
 
     public static playBGM(file?: string) {
