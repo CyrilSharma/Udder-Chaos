@@ -66,7 +66,7 @@ export class Room {
             }
             console.log("Reconnect!" + player);
             player.reconnectPlayer(socket);
-            socket.emit('start-game', this.gameSettings, this.getPlayerInfo());
+            socket.emit('start-game', this.gameSettings, this.getPlayerInfo(), this.roomCode);
             socket.emit('share-move-list', this.moveList);
         }
     }

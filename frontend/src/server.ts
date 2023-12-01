@@ -107,6 +107,7 @@ class Server {
                 gameScreen.game.setPlayerName(player.name, player.color + 1);
             });
 
+            console.log(roomCode);
             gameScreen.game.setRoomCode(roomCode);
 
             let cards = []
