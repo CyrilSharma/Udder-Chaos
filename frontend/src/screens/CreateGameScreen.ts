@@ -66,11 +66,11 @@ export class CreateGameScreen extends Container {
         this.menuContainer.addChild(this.customizeButton);
 
         this.addChild(this.menuContainer);
-        
-        SoundHandler.playBGM("lobby-music.mp3");
 
+        SoundHandler.playBGM("lobby-music.mp3");
         this.customScreen = new CustomScreenUI();
         this.addChild(this.customScreen);
+
     }
 
     public async addGameCode(code: string) {

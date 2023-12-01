@@ -81,7 +81,7 @@ class Server {
             console.log(error);
         });
 
-        this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[]) => {
+        this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[], roomCode: string) => {
             localStorage.setItem("saved-id", this.socket.id);
 
             initSeed(settingsData.seed);
@@ -105,11 +105,13 @@ class Server {
                 gameScreen.game.setPlayerName(player.name, player.color + 1);
             });
 
+            gameScreen.game.setRoomCode(roomCode);
+
             let cards = []
             let arrays = [
-                gameScreen.game.cards.player_hand,
-                gameScreen.game.cards.enemy_hand,
                 gameScreen.game.cards.queue,
+                gameScreen.game.cards.player_hand,
+                gameScreen.game.cards.enemy_hand
             ]
             for (let array of arrays) {
                 for (let card of array) {
@@ -120,12 +122,13 @@ class Server {
                     cards.push(dirs)
                 }
             }
+
             if (playerList[0].id == this.socket.id) {
                 this.socket.emit("init-ai", cards);
             }
         });
 
-        this.socket.on("share-move", (moveType, moveData, color) => {
+        this.socket.on("share-move", async (moveType, moveData, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
 
             gameScreen.game.moveQueue.enqueue({"moveType": moveType, "moveData": moveData, "color": color, "animated": true});

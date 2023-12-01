@@ -5,9 +5,10 @@ import { SizedButton } from "./SizedButton";
 import { SeedBox } from '../ui_components/SeedBox';
 import { SliderUI } from './SliderUI';
 import { Background } from "./Background";
-import { GameSettings, gameSettings } from "../game/GameSettings";
+import { gameSettings } from "../game/GameSettings";
 import { gameSettingsData } from "../game/Utils";
 import server from '../server';
+import { defaultGameSettings } from "../game/Utils";
 
 export class CustomScreenUI extends Container {
 
@@ -46,17 +47,20 @@ export class CustomScreenUI extends Container {
                 cow_regen_rate: this.getCowRespawnRate(),
                 cow_sacrifice: this.getCowSacrificeAmt(),
                 card_deck_size: this.getDeckSize(),
-                timer_length: gameSettings.getValue("timer_length"),
+                timer_length: this.getTimerLength(),
                 difficulty: this.getDifficulty(),
             }
+            console.log("back button save settings");
+            console.log(newSettings);
             gameSettings.save(newSettings);
             server.updateGameSettings(newSettings);
         });
+        server.updateGameSettings(defaultGameSettings);
 
         this.customLabel = new SizedButton(0.32, 0.12, 0.5, 0.2, "Customize Game", this.menuContainer.width, this.menuContainer.height, 50, 0xffcc66);
         this.menuContainer.addChild(this.customLabel);
 
-        this.seedBox = new SeedBox(this.menuContainer, 0.78, 0.12, 0.3, 0.15, "Seed", 6);
+        this.seedBox = new SeedBox(this.menuContainer, 0.78, 0.12, 0.3, 0.15, "0", 6, true);
         this.menuContainer.addChild(this.seedBox);
 
         this.deckSize = new SliderUI(0.25, 0.35, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Deck Size", 10, 20, 20, this.menuContainer.getBox());
@@ -80,11 +84,25 @@ export class CustomScreenUI extends Container {
         this.timerLength = new SliderUI(0.25, 0.86, 0.45, 0.15, this.menuContainer.width, this.menuContainer.height, "Move Timer Length", 10, 60, 20, this.menuContainer.getBox());
         this.menuContainer.addChild(this.timerLength);
 
-        this.loadGameSettings();
+        //this.loadGameSettings();
+        /* Set Default Settings */
+        
+        this.setSeed(defaultGameSettings.seed);
+        this.setCowsForWin(defaultGameSettings.score_goal);
+        this.setDaysPerRound(defaultGameSettings.days_per_round);
+        this.setCowRespawnRate(defaultGameSettings.cow_regen_rate);
+        this.setCowSacrificeAmt(defaultGameSettings.cow_sacrifice);
+        this.setDeckSize(defaultGameSettings.card_deck_size);
+        this.setDifficulty(defaultGameSettings.difficulty);
+
+        this.resize(window.innerWidth, window.innerHeight);
     }
 
     public loadGameSettings() {
         const settingsData: gameSettingsData = gameSettings.load();
+        console.log(`Seed is ${settingsData.seed}`);
+        console.log(`Score Goal is ${settingsData.score_goal}`);
+
         this.setSeed(settingsData.seed);
         this.setCowsForWin(settingsData.score_goal);
         this.setDaysPerRound(settingsData.days_per_round);
@@ -95,11 +113,17 @@ export class CustomScreenUI extends Container {
     }
 
     public getSeed() {
+        console.log(this.seedBox.seed.value);
+        if (this.seedBox.seed.value == "") {
+            return 0;
+            // return a random seed if no seed is specified
+            // return Math.floor(Math.random() * 2000000000);
+        }
         return this.seedBox.seed.value;
     }
 
     public setSeed(val: number) {
-        this.seedBox.seed.value = String(val);
+        this.seedBox.changeSeed(String(val));
     }
 
     public getDeckSize() : number {
@@ -173,6 +197,7 @@ export class CustomScreenUI extends Container {
         this.cowsRespawn.resize(this.menuContainer.getBox());
         this.timerLength.resize(this.menuContainer.getBox());
     }
+
 
 
 }

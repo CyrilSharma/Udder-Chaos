@@ -1,10 +1,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include <bits/stdc++.h>
-#include "CardQueue.h"
+#include "CardManager.h"
 #include "Game.h"
 #include "Utils.h"
-#include "Search.h"
 
 using namespace std;
 
@@ -15,6 +14,7 @@ using namespace std;
 
 TEST_CASE("Testing the Creation Function") {
   const int width = 16;
+  
   const int height = 16;
   auto board = random_board(width, height);
 
@@ -63,7 +63,7 @@ TEST_CASE("Testing Player Movement") {
     Direction::LEFT, Direction::DOWN,
   };
   const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width));
+  vector<vector<Tile>> board(height, vector<Tile>(width));
 
   const int ndirs = 3, ncards = 16;
   auto cards = random_cards(ndirs, ncards);
@@ -155,15 +155,18 @@ TEST_CASE("Testing Player Movement") {
       pieces[i].i = ys[i];
       pieces[i].j = xs[i];
     }
-    vector<vector<int>> checkers(height, vector<int>(width));
+
+    vector<vector<Tile>> checkers(height, vector<Tile>(width));
     for (int i = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
         checkers[i][j] = (((i + j) % 2) == 0) 
           ? TileType::IMPASSIBLE : TileType::PLAIN;
       }
     }
+
     config = { checkers, pieces, cards };
     auto g2 = Game(config);
+    cout << g2 << endl;
     for (int i = 0; i < 12; i++) {
       auto dir = dirs[rand() % 4];
       g2.play_player_movement(dir);
@@ -181,6 +184,9 @@ TEST_CASE("Testing Player Movement") {
     }
     config = { board, pieces, cards };
     auto g3 = Game(config);
+    cout << g3 << endl;
+    printv(pieces);
+    printv(g3.viewPieces());
     for (int d = 0; d < 4; d++) {
       for (int i = 0; i < 25; i++) {
         g3.play_player_movement(dirs[d]);
@@ -228,14 +234,12 @@ TEST_CASE("Testing Player Movement") {
 TEST_CASE("Test Cow Capturing") {
   const int width = 16, height = 16;
 
-  int ncows = 0;
-  vector<vector<int>> board(height, vector<int>(width));
+  vector<vector<Tile>> board(height, vector<Tile>(width));
   // Lazy way to make cows not spawn where units already are.
   for (int i = 1; i < 11; i++) {
     for (int j = 1; j < 11; j++) {
       if (rand() % 4 == 0) {
-        board[i][j] = TileType::COW;
-        ncows += 1;
+        board[i][j].category = TileType::COW;
       }
     }
   }
@@ -270,8 +274,8 @@ TEST_CASE("Test Cow Capturing") {
       p.i = ni, p.j = nj;
       if (board[ni][nj] == TileType::COW) {
         // sus way to say the cow is gone now.
-        board[ni][nj] = 0;
-        pieces[i].score |= 1;
+        board[ni][nj].category = TileType::PLAIN;
+        pieces[i].score += 1;
       }
     }
   };
@@ -300,7 +304,12 @@ TEST_CASE("Test Cow Capturing") {
   for (auto &p: pieces) {
     total_score += p.score;
   }
-  REQUIRE((ncows - total_score) == game.cows.count());
+
+  int game_cows = 0;
+  for (auto &p : game.viewPieces()) {
+    game_cows += p.score;
+  }
+  REQUIRE(game_cows == total_score);
 }
 
 /*
@@ -310,7 +319,7 @@ TEST_CASE("Test Cow Capturing") {
 
 TEST_CASE("Test Unit Killing") {
   const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width));
+  vector<vector<Tile>> board(height, vector<Tile>(width));
 
   vector<Piece> pieces = {
     Piece(5, 5, 1),
@@ -326,6 +335,8 @@ TEST_CASE("Test Unit Killing") {
 
   auto config = GameConfig(board, pieces, cards);
   auto game = Game(config);
+
+  cerr << game << endl;
   Direction dirs[4] = {
     Direction::RIGHT, Direction::UP,
     Direction::LEFT, Direction::DOWN,
@@ -334,10 +345,10 @@ TEST_CASE("Test Unit Killing") {
   for (int i = 0; i < 4; i++) {
     game.play_player_movement(dirs[i]);
     game.play_player_movement(dirs[(i + 2) & 0b11]);
-    REQUIRE(game.viewPieces().size() == 4 - i);
+    CHECK(game.viewPieces().size() == 4 - i);
   }
 
-  REQUIRE(game.viewPieces()[0].tp == 1);
+  CHECK(game.viewPieces()[0].tp == 1);
 }
 
 /*
@@ -348,12 +359,7 @@ TEST_CASE("Test Unit Killing") {
 
 TEST_CASE("Test Enemy Movement / Logic") {
   const int width = 16, height = 16;
-  vector<vector<int>> board(height, vector<int>(width));
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
-      board[i][j] = rand() % 2;
-    }
-  }
+  auto board = random_board(width, height);
 
   const int npieces = 4;
   vector<Piece> player_pieces(npieces);
@@ -399,32 +405,90 @@ TEST_CASE("Test Enemy Movement / Logic") {
 }
 
 /*
- * Ensure the card queue works as intended
+ * Test Scoring.
+ * Ensure Pieces can actually score.
+ * 
  */
 
-TEST_CASE("Test Cards") {
-  const int reserve = 6;
-  const int nelements = 16;
-  const int nbits_per = 64 - __builtin_clzll(nelements - 1);
-  CardQueue queue(nelements, nbits_per, reserve);
-  for (int i = 0; i < nelements; i++) {
-    queue.set(i, i);
-  } 
-  SUBCASE("Test GET") {
-    for (int i = 0; i < nelements; i++) {
-      CHECK(queue.get(i) == i);
-    } 
+TEST_CASE("Test Scoring") {
+  const int width = 16, height = 16;
+  vector<vector<Tile>> board(height, vector<Tile>(width));
+  board[0][0] = Tile(TileType::SPAWN, 1, 1);
+  board[7][0] = Tile(TileType::COW);
+  board[8][0] = Tile(TileType::IMPASSIBLE);
+
+  vector<Piece> player_pieces = { Piece(1, 0, 1) };
+
+  const int ndirs = 3;
+  const int ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
+  auto config_p = GameConfig(board, player_pieces, cards);
+  auto game = Game(config_p);
+  cout << game << endl;
+
+  auto game_p = Game(config_p);
+  for (int i = 0; i < 10; i++) {
+    game.play_player_movement(Direction::UP);
+    cout << player_pieces[0] << endl;
+    cout << game << endl;
   }
+
+  CHECK(game.viewPieces()[0].score == 1);
+  CHECK(game.cows_collected == 0);
+  CHECK(game.total_score == 0);
+  for (int i = 0; i < 10; i++) {
+    game.play_player_movement(Direction::DOWN);
+  }
+
+  CHECK(game.cows_collected == 1);
+  CHECK(game.total_score == 0);
+}
+
+/*
+ * Test Game Jover.
+ * Ensure Game Actually can end.
+ */
+
+TEST_CASE("Test Game JOVER") {
+  const int width = 16, height = 16;
+  vector<vector<Tile>> board(height, vector<Tile>(width));
+
+  vector<Piece> pieces1 = { };
+  const int ndirs = 3;
+  const int ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
+  auto config1 = GameConfig(board, pieces1, cards);
+
+  auto game1 = Game(config1);
+  CHECK(game1.is_jover() == -1);
+
+  vector<Piece> pieces2 = {
+    Piece(0, 0, 1), Piece(0, 1, 2),
+    Piece(1, 0 , 3), Piece(1, 1, 4)
+  };
+  auto config2 = GameConfig(board, pieces2, cards);
+  auto game2 = Game(config2);
+  game2.total_score = 1e9;
+  CHECK(game2.is_jover() == 1);
+}
+
+/*
+ * Ensure the card manager works as intended
+ */
+
+TEST_CASE("Test CardManager") {
+  const int handsize = 3, ndirs = 3, ncards = 16;
+  auto cards = random_cards(ndirs, ncards);
+  CardManager cm(cards, handsize);
   SUBCASE("Test Choose") {
-    for (int i = reserve - 1; i < nelements; i++) {
-      CHECK(queue.choose(reserve - 1) == i);
+    int qsize = (ncards - 2 * handsize);
+    cm.pchoose(0);
+    for (int i = 0; i < qsize; i++) {
+      CHECK(cm.pchoose(0) == cm.cards[i]);
     }
-    for (int i = 0; i < nelements; i++) {
-      queue.set(i, i);
-    }
-    queue.choose(reserve - 2);
-    for (int i = reserve; i < nelements - 1; i++) {
-      CHECK(queue.choose(reserve - 2) == i);
+    cm.echoose(0);
+    for (int i = 0; i < qsize; i++) {
+      CHECK(cm.echoose(0) == cm.cards[i]);
     }
   }
 }

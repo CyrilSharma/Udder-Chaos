@@ -1,0 +1,50 @@
+7 7 8 8 3
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 0 0 0 0 0 0
+0 6 1 0
+6 0 2 0
+2 2 3 0
+6 6 4 0
+3 3 5 0
+3 4 6 0
+4 3 7 0
+4 4 8 0 
+2 2 3
+0 0 0
+1 1 0
+3 0 0
+3 3 0
+1 1 1
+2 2 2
+2 3 3
+60000 7
+
+0 = R, 1 = U, 2 = L, 3 = D
+Queue, Player, Enemy
+
+The player is threatening to take 2 enemy pieces on the next turn, so the best move is to move one out of the way rather than
+to take the hanging piece in the bottom right
+======P
+=======
+==P====
+===EE==
+=======
+====EE=
+P=====P
+Queue  <= Card: LLD
+Queue  <= Card: RRR
+Player <= Card: UUR
+Player <= Card: DRR
+Player <= Card: DDR
+Enemy  <= Card: UUU
+Enemy  <= Card: LLL
+Enemy  <= Card: DLD
+turn: 2
+hand size: 3
+player pieces: 4
+enemy pieces: 4

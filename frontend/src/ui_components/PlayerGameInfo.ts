@@ -80,7 +80,6 @@ export class PlayerGameInfo extends Container {
 
         this.playerName.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.playerName.x = -70;
-        // this.timer.anchor = new ObservablePoint(() => {}, null, 0, 0.5);
         this.timer.x = this.displayArea.x - this.timer.width * 0.5;
         this.timer.y = this.displayArea.y - this.timer.height * 0.5;
         this.timer.visible = false;
@@ -91,7 +90,11 @@ export class PlayerGameInfo extends Container {
         this.addChild(this.timer);
         this.playerNameShad.visible = false;
 
-        this.ufo = Sprite.from('../../images/black_ufo.png');
+        if (color === -1) {
+            this.ufo = Sprite.from('../../images/black_jet.png');
+        } else {
+            this.ufo = Sprite.from('../../images/black_ufo.png');
+        }
         this.ufo.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.ufo.x = 150;
         this.ufo.scale.x = 0.25;
@@ -130,6 +133,10 @@ export class PlayerGameInfo extends Container {
         // });
 
         this.timer.width = newWidth;
+    }
+
+    public getUnits() : number {
+        return Number(this.units.text);
     }
 
     public setUnits(units: number) {

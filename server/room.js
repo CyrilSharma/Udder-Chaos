@@ -128,7 +128,7 @@ export class Room {
                     return;
                 }
             }
-            this.io.to(this.roomCode).emit('start-game', this.gameSettings, this.getPlayerInfo());
+            this.io.to(this.roomCode).emit('start-game', this.gameSettings, this.getPlayerInfo(), this.roomCode);
             this.inGame = true;
         }
         else {
@@ -146,7 +146,7 @@ export class Room {
             socket = this.io;
         }
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
-        socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveData["index"], color);
+        socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveType, moveData, color);
         
         let curColor = PLAYER_ORDER[this.moveList.length % PLAYER_ORDER.length];
         if (curColor == 4) {
@@ -223,6 +223,7 @@ class Player {
         })
 
         this.socket.on("init-ai", (cards) => {
+            console.log(`Settings: ${JSON.stringify(this.room.gameSettings, null, 4)}`);
             ai_socket.emit('init-ai', this.room.roomCode, this.room.gameSettings, cards);
         });
 

@@ -7,7 +7,7 @@ import { HomeScreen } from "./HomeScreen";
 import { NavButton } from "../ui_components/NavButton";
 import { Slides } from "../ui_components/Slides";
 
-const NUM_IMG = 5;
+const NUM_IMG = 15;
 
 export class TutorialScreen extends Container {
     public SCREEN_ID = 'tutorial';
@@ -42,11 +42,11 @@ export class TutorialScreen extends Container {
         this.nextButton = new NavButton(0.94, 0.9, 0.1, ">", this.menuContainer.width, this.menuContainer.height, 40, 0x5F00FF);
         this.menuContainer.addChild(this.nextButton);
         this.nextButton.onPress.connect(() => {
+            if (this.slideNum >= NUM_IMG) {
+                return;
+            }
             this.slides.nextImg();
             this.slideNum++;
-            if (this.slideNum > NUM_IMG) {
-                this.slideNum = 1;
-            }
             this.updateText();
         });
 
@@ -54,16 +54,16 @@ export class TutorialScreen extends Container {
         this.prevButton = new NavButton(0.16, 0.9, 0.1, "<", this.menuContainer.width, this.menuContainer.height, 40, 0x5F00FF);
         this.menuContainer.addChild(this.prevButton);
         this.prevButton.onPress.connect(() => {
+            if (this.slideNum <= 1) {
+                return;
+            }
             this.slides.prevImg();
             this.slideNum--;
-            if (this.slideNum < 1) {
-                this.slideNum = NUM_IMG;
-            }
             this.updateText();
         });
 
         // Slide Deck
-        this.slides = new Slides(0.5, 0.5, 0.8, 0.9, this.menuContainer.width, this.menuContainer.height);
+        this.slides = new Slides(0.5, 0.4, this.menuContainer.width, this.menuContainer.height);
         this.menuContainer.addChild(this.slides);
 
         // Slide Num
@@ -93,7 +93,7 @@ export class TutorialScreen extends Container {
         this.nextButton.resize(this.menuContainer.getBox());
         this.prevButton.resize(this.menuContainer.getBox());
         this.slides.resize(this.menuContainer.getBox());
-        this.text.x = this.menuContainer.getBox()[2] + this.menuContainer.width * 0.05;
+        this.text.x = this.menuContainer.getBox()[2] + this.menuContainer.width * 0.02;
         this.text.y = this.menuContainer.getBox()[0] + this.menuContainer.height * 0.05;
 
     }

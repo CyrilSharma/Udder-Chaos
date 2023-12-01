@@ -1,0 +1,29 @@
+INIT
+game_id: 0
+hand_size: 3
+round_length: 5
+ncards: 12
+map: 5
+seed: 2
+turn: 2
+END
+1 0 0
+1 0 0
+3 2 3
+1 0 1
+1 2 1
+3 2 3
+3 2 2
+3 2 2
+2 1 2
+3 3 0
+3 3 3
+1 0 0
+GET
+verbosity: 1
+timeout: 1000
+max_it: 5000
+game_id: 0
+answer_card: 1
+answer_color: 1
+END

@@ -59,6 +59,7 @@ export class HomeScreen extends Container {
         this.addChild(this.tutorialButton.getButton());
 
         SoundHandler.playBGM("menu-music.mp3");
+
         // Settings Screen/Vignette
         this.settingsScreen = new SettingsScreen();
         this.settingsButton.getButton().onPress.connect(() => {

@@ -16,8 +16,11 @@ export class SliderUI extends Container {
     private valueLabel: Text;
 
     private pBounds: Array<number>;
+    // optional callback for parent to update with a value whenever slider is changed
+    // see SettingsScreen.ts for an example with sound sliders
+    private parentUpdate!: (value: any) => void;
 
-    constructor(x: number, y: number, width: number, height: number, parentW: number, parentH: number, label: string, min: number, max: number, fontSize: number, bounds: Array<number>) {
+    constructor(x: number, y: number, width: number, height: number, parentW: number, parentH: number, label: string, min: number, max: number, fontSize: number, bounds: Array<number>, parentUpdate?: (value:any)=>void) {
         super();
 
         this.slide = new SizedButton(x, y, width, height / 3, "", parentW, parentH, 10, 0x50a0d0);
@@ -63,20 +66,18 @@ export class SliderUI extends Container {
         this.addChild(this.valueLabel);
 
         this.slider.onDown.connect(() => {
-            const sliderUI = this;
-
-            document.addEventListener("pointermove", moveSlider, false);
-            function moveSlider(e: PointerEvent) {
-                sliderUI.setSlide(e.x);
-            }
-
-            this.slider.onUp.connect(() => {
-                document.removeEventListener("pointermove", moveSlider, false);
-            });
-            
+            this.slider.on("globalpointermove", this.setSlide, this);
         });
 
+        this.slider.onUp.connect(() => {
+            this.slider.removeEventListener("globalpointermove", this.setSlide)
+        })
+
         this.pBounds = bounds;
+
+        if (typeof parentUpdate !== 'undefined') { 
+            this.parentUpdate = parentUpdate;
+        }
     }
 
     public getValue() {
@@ -84,20 +85,33 @@ export class SliderUI extends Container {
     }
     
     public setValue(value: number) {
+
+        this.resize(this.pBounds);
+
         if (value < this.min) {
-            this.value = this.min;
+            value = this.min;
         } else if (value > this.max) {
-            this.value = this.max;
-        } else {
-            this.value = value;
+            value = this.max;
         }
-        this.valueLabel.text = this.value;
+
+        let index = value - this.min;
         let increment = (this.slide.width - this.slider.width) / (this.max - this.min);
-        let diff = this.value - this.min;
-        this.slider.setX(((this.slide.x - this.slide.width / 2) + (diff * increment) - this.slider.width) / (this.pBounds[3] - this.pBounds[2]), this.pBounds);
+        let tmp = (index * increment) + (this.slide.x - this.slide.width / 2 + this.slider.width / 2);
+        let tmpX = tmp - this.pBounds[2];
+        tmpX /= (this.pBounds[3] - this.pBounds[2]);
+        this.value = value;
+        this.slider.setX(tmpX, this.pBounds);
+        this.updateValue();
+
     }
 
-    private setSlide(x: number) {
+    private setSlide(e: FederatedPointerEvent) {
+
+        this.resize(this.pBounds);
+
+        const localPos = this.toLocal(e.global);
+        let x = localPos.x + this.pBounds[2] - this.slider.width;
+
         let increment = (this.slide.width - this.slider.width) / (this.max - this.min);
         let dist = 100000;
         let index = 0;
@@ -116,6 +130,9 @@ export class SliderUI extends Container {
         this.slider.setX(tmpX, this.pBounds);
         this.value = this.min + index;
         this.updateValue();
+        if (typeof this.parentUpdate !== 'undefined') {
+            this.parentUpdate(this.value);
+        }
     }
 
     private updateValue() {
