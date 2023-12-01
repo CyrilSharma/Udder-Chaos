@@ -11,6 +11,10 @@ export class MoveQueue {
 
     public async startQueue() {
         while (this.queueData.length > 0) {
+            if (this.game.gameOver) {
+                this.queueData = [];
+                return;
+            }
             let playerMove = this.queueData[0];
             this.game.animating = true;
             switch (playerMove.moveType) {
