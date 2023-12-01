@@ -110,7 +110,8 @@ export class SliderUI extends Container {
         this.resize(this.pBounds);
 
         const localPos = this.toLocal(e.global);
-        let x = localPos.x + this.pBounds[2] - this.slider.width;
+        // let x = localPos.x + this.pBounds[2] - this.slider.width;
+        let x = e.screenX + this.pBounds[2]  - this.parent.getBounds().left;
 
         let increment = (this.slide.width - this.slider.width) / (this.max - this.min);
         let dist = 100000;
