@@ -73,10 +73,12 @@ export class SizedButton extends FancyButton {
         this.y = bounds[0] + (bounds[1] - bounds[0]) * this.percentY;
         this.width = (bounds[3] - bounds[2]) * this.percentWidth;
         this.height = (bounds[1] - bounds[0]) * this.percentHeight;
+
+        console.log(bounds);
     }
 
     public setColor(color: number) {
-        console.log("setcolor");
+        // console.log("setcolor");
         this.removeChild(this.button);
 
         this.label = new Text(this.text, new TextStyle({
@@ -93,12 +95,13 @@ export class SizedButton extends FancyButton {
                         .drawRoundedRect(0, 0, this.myWidth * this.parentW, this.myHeight * this.parentH, 0.025 * (this.parentW + this.parentH))
             )).view,
             anchor: 0.5,
-            text: this.label
+            text: this.label,
         });
+        
+        // this.resize([this.y, this.y + this.myHeight * this.parentH, this.x, this.x + this.myWidth * this.parentW,]);
 
-        // this.button;
         this.addChild(this.button);
-        // this.alpha = 1;
+
     }
 
 }
