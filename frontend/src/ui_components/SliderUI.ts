@@ -16,7 +16,7 @@ export class SliderUI extends Container {
     private valueLabel: Text;
 
     private pBounds: Array<number>;
-    // optional callback for parent to update with a value
+    // optional callback for parent to update with a value whenever slider is changed
     // see SettingsScreen.ts for an example with sound sliders
     private parentUpdate!: (value: any) => void;
 
