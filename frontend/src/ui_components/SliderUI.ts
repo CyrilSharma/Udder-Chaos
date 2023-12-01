@@ -16,6 +16,8 @@ export class SliderUI extends Container {
     private valueLabel: Text;
 
     private pBounds: Array<number>;
+    // optional callback for parent to update with a value
+    // see SettingsScreen.ts for an example with sound sliders
     private parentUpdate!: (value: any) => void;
 
     constructor(x: number, y: number, width: number, height: number, parentW: number, parentH: number, label: string, min: number, max: number, fontSize: number, bounds: Array<number>, parentUpdate?: (value:any)=>void) {
