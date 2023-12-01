@@ -1,4 +1,4 @@
-import { Container, Text, TextStyle } from "pixi.js";
+import { Container, FederatedPointerEvent, Text, TextStyle } from "pixi.js";
 import { SizedButton } from "./SizedButton";
 
 export class SliderUI extends Container {
@@ -66,18 +66,12 @@ export class SliderUI extends Container {
         this.addChild(this.valueLabel);
 
         this.slider.onDown.connect(() => {
-            const sliderUI = this;
-
-            this.slider.addEventListener("globalpointermove", moveSlider, false);
-            function moveSlider(e: PointerEvent) {
-                sliderUI.setSlide(e.x);
-            }
-
-            this.slider.onUp.connect(() => {
-                this.slider.removeEventListener("globalpointermove", moveSlider, false);
-            });
-            
+            this.slider.on("globalpointermove", this.setSlide, this);
         });
+
+        this.slider.onUp.connect(() => {
+            this.slider.removeEventListener("globalpointermove", this.setSlide)
+        })
 
         this.pBounds = bounds;
 
@@ -111,9 +105,12 @@ export class SliderUI extends Container {
 
     }
 
-    private setSlide(x: number) {
+    private setSlide(e: FederatedPointerEvent) {
 
         this.resize(this.pBounds);
+
+        const localPos = this.toLocal(e.global);
+        let x = localPos.x + this.pBounds[2] - this.slider.width;
 
         let increment = (this.slide.width - this.slider.width) / (this.max - this.min);
         let dist = 100000;
