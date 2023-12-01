@@ -19,8 +19,7 @@ export class GameScreen extends Container {
     }
 
     public prepare() {
-        // Temporary workaround until we can load maps.
-
+        // Get rid of this!!!
         const config: GameConfig = {
             grid: loadMap(Math.floor(random()*MAPS.length)),
             tileSize: 40,

@@ -107,7 +107,7 @@ export class Card extends Container {
     }    
 
     /** Card behavior when clicked (when played) */
-    private tapCard() {
+    private async tapCard() {
         // Make sure it is out turn
         if (this.queue.game.ourTurn() && this.queue.checkCardInHand(this, this.queue.game.playerColor)) {
 
@@ -156,7 +156,7 @@ export class Card extends Container {
         //console.log(`end drag: ${e.offsetX} ${e.offsetY}`)
     }
 
-    private onDragEnd = (e: FederatedPointerEvent) => {
+    private onDragEnd = async (e: FederatedPointerEvent) => {
         if (this.dragStartPos != null) {
             // Find the rotation of the card in degrees
             this.graphics.off('pointermove', this.onDragMove);
@@ -168,7 +168,7 @@ export class Card extends Container {
             if (this.cardRotation * 90 - ALLOWED_POS_OFFSET <= trueAngle && trueAngle <= this.cardRotation * 90 + ALLOWED_POS_OFFSET) {
                 let endTime = Date.now();
                 if (endTime - this.dragStartTime < ALLOWED_TIME_OFFSET) {
-                    this.tapCard();
+                    await this.tapCard();
                 }
                 this.rotateCard(0);
                 return;

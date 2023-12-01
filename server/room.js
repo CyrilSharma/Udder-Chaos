@@ -15,10 +15,10 @@ const COLOR = {
 
 
 // 4 represents AI, all 0-3 are player colors
-const PLAYER_ORDER = [0,1,4]
-//const PLAYER_ORDER = [0,1,4,2,3,4]
+// const PLAYER_ORDER = [0,1,4]
+const PLAYER_ORDER = [0,1,4,2,3,4]
+const MAX_PLAYERS = 4;
 
-const MAX_PLAYERS = 2;
 
 const HAND_SIZE = 3;
 
@@ -145,7 +145,7 @@ export class Room {
             socket = this.io;
         }
         socket.to(this.roomCode).emit("share-move", moveType, moveData, color);
-        socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveData["index"], color);
+        socket.to(this.roomCode).emit("share-move-ai", this.roomCode, moveType, moveData, color);
         
         let curColor = PLAYER_ORDER[this.moveList.length % PLAYER_ORDER.length];
         if (curColor == 4) {
@@ -222,6 +222,7 @@ class Player {
         })
 
         this.socket.on("init-ai", (cards) => {
+            console.log(`Settings: ${JSON.stringify(this.room.gameSettings, null, 4)}`);
             ai_socket.emit('init-ai', this.room.roomCode, this.room.gameSettings, cards);
         });
 

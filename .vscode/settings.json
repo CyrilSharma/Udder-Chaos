@@ -101,6 +101,19 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "*.inc": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "tensor": "cpp",
+        "slist": "cpp",
+        "format": "cpp",
+        "span": "cpp",
+        "ranges": "cpp",
+        "stacktrace": "cpp",
+        "rope": "cpp",
+        "latch": "cpp",
+        "expected": "cpp",
+        "source_location": "cpp",
+        "spanstream": "cpp",
+        "syncstream": "cpp",
+        "strstream": "cpp"
     }
 }
