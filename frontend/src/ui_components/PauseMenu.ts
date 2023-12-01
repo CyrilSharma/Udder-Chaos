@@ -7,6 +7,7 @@ import { SettingsScreen } from "../screens/SettingsScreen";
 import server from "../server";
 import { navigation } from "../utils/navigation";
 import { HomeScreen } from "../screens/HomeScreen";
+import { GameScreen } from "../screens/GameScreen";
 
 export class PauseMenu extends Container {
 
@@ -46,6 +47,8 @@ export class PauseMenu extends Container {
         this.exitGame = new SizedButton(0.5, 0.75, 0.55, 0.2, "Exit Game", this.menuContainer.width, this.menuContainer.height, 50, 0x9933aa);
         this.exitGame.onPress.connect(() => {
             server.leaveRoom();
+            let gameScreen = navigation.currentScreen as GameScreen;
+            gameScreen.game.endGame(false, "");
             this.visible = false;
             navigation.showScreen(HomeScreen);
         });

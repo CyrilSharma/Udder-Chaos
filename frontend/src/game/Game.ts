@@ -87,7 +87,7 @@ export class Game extends Container {
         this.player1.toggleTimer(true);
 
         this.playerAI.setName("AI")
-        this.dayCounter = new DayCounter(4);
+        this.dayCounter = new DayCounter(this.gameSettings.getValue("days_per_round"));
         this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
 
         this.scoreCounter = new ScoreCounter(0, 0, 0.5, 0.5, `0 of ${this.gameSettings.getValue('score_goal')}`, this.leftPanel.width, this.leftPanel.height, 40, 0xffffff, this.gameSettings.getValue('score_goal'));

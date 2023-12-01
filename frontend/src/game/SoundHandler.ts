@@ -28,7 +28,7 @@ export class SoundHandler {
         // console.log(SoundHandler.currentBgm);
         // console.log(file);
         if (typeof file !== 'undefined' && file != SoundHandler.currentBgm) {
-            console.log("new sound");
+            // console.log("new sound");
             // stop old sound
             SoundHandler.bgm.pause();
             SoundHandler.bgm.currentTime = 0;
@@ -38,7 +38,7 @@ export class SoundHandler {
             SoundHandler.bgm.volume = this.bgmVolume;
             SoundHandler.currentBgm = file;
         }
-        console.log(SoundHandler.bgm.paused);
+        // console.log(SoundHandler.bgm.paused);
         if (SoundHandler.bgm.paused) {
             // thank you to
             // https://stackoverflow.com/questions/68594620/automatically-play-audio-object-in-javascript

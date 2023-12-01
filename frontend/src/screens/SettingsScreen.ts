@@ -43,8 +43,8 @@ export class SettingsScreen extends Container {
         this.musicVol = new SliderUI(0.5, 0.77, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "Music Volume", 0, 100, 30, this.menuContainer.getBox(), this.changeBGMVolume);
         this.menuContainer.addChild(this.musicVol);
 
-        this.setSFXVol(SoundHandler.getSFXVolume() * 100);
-        this.setMusicVol(SoundHandler.getBGMVolume() * 100);
+        this.setSFXVol(Math.round(SoundHandler.getSFXVolume() * 100));
+        this.setMusicVol(Math.round(SoundHandler.getBGMVolume() * 100));
     }
 
     public getSFXVol() : number {
