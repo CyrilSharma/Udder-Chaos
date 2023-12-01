@@ -65,6 +65,7 @@ dynamic_bitset& dynamic_bitset::operator=(const dynamic_bitset& other) {
 }
 
 dynamic_bitset& dynamic_bitset::operator|=(const dynamic_bitset& other) {
+  // cerr << size << " " << other.size << endl;
   for (uint32_t i = 0; i < NBLOCKS; i++) {
     blocks[i] |= other.blocks[i];
   }

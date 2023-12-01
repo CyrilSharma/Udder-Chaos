@@ -46,7 +46,7 @@ Game::Game(GameConfig config):
 
   cow_respawn.resize(cow_regen_rate);
   for (uint32_t i = 0; i < cow_regen_rate; i++) {
-    cow_respawn.push_back(dynamic_bitset(area(), 0));
+    cow_respawn[i] = (dynamic_bitset(area(), 0));
   }
 
   for (auto p: config.pieces) {
@@ -175,6 +175,9 @@ bool Game::is_enemy_turn(int t) const {
 // general move making function
 void Game::make_move(Move move) {
   assert(move.type != MoveType::NONE);
+  // cout << endl << turn << endl;
+  // cout << cow_regen_rate << endl;
+  // cout << cow_respawn.size() << endl;
   cows |= cow_respawn[turn % cow_regen_rate];
   // Each day is 2 AI moves and 4 Player Moves.
   // After round_length days, we spawn more enemies.
@@ -303,7 +306,10 @@ void Game::purge(int choice, int p) {
   vector<int> idxs;
   idxs.reserve(s.deads[choice].size());
   for (size_t i = 0; i < s.deads[choice].size(); i++) {
-    if (s.deads[choice][i]) continue;
+    if (s.deads[choice][i]) {
+      cows_collected -= s.ss[choice][i];
+      continue;
+    }
     idxs.push_back(i);
   }
   for (size_t i = 0; i < idxs.size(); i++) {
@@ -696,5 +702,7 @@ ostream& operator<<(ostream& os, Game& game) {
   os << "hand size: " << game.cm.handsize << '\n';
   os << "player pieces: " << game.count_players() << '\n';
   os << "enemy pieces: " << game.count_enemies() << '\n';
+  os << "cows collected: " << game.cows_collected << "\n";
+  os << "total_score: " << game.total_score << "\n";
   return os;
 }

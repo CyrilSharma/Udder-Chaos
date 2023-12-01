@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     close(read_child1[0]);
     dup2(write_child1[0], 0);
     dup2(read_child1[1], 1);
-    dup2(dev_null, 2);
+    // dup2(dev_null, 2);
     execlp(argv[1], argv[1], nullptr);
     cerr << "Error executing child 1." << endl;
     return 1;
@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
     int player = rand() % 2;
     int idx = player;
     while (!game.is_jover()) {
-      cout << "turn-count: " << turn_count << endl;
+      cout << "turn: " << turn_count << endl;
       dprintf(writes[idx], "GET\n");
       dprintf(writes[idx], "game_id: %d\n", i);
       dprintf(writes[idx], "END\n");
@@ -124,11 +124,9 @@ int main(int argc, char* argv[]) {
           cerr << "AI did not send data!\n";
           exit(1);
         }
-        cerr << buf[len];
         if (buf[len] == '\n') newlines++;
         len++;
       }
-      cerr << "\n";
 
       sscanf(buf, "%d\n%d\n%d\n", &type, &card, &color);
 
@@ -158,6 +156,7 @@ int main(int argc, char* argv[]) {
       turn_count += 1;
     }
 
+    cerr << "Status: " << game.is_jover() << endl;
     if (player == 0) {
       stats.p1wins += (game.is_jover() == 1);
       stats.p2wins += (game.is_jover() == -1);

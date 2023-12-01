@@ -49,7 +49,7 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
       int best_score_d = -inf;
       Move best_move_d = moves[0];
       if (dbg >= 2) cerr << "Initiating search of depth " << depth << endl;
-      Position p = { game, -inf, inf };
+      Position p = { game, inf * sign, -inf * sign };
       for (size_t i = 0; i < moves.size(); i++) {
         auto move = moves[i];
         p.alpha = best_score_d;
@@ -120,16 +120,16 @@ int Search::alphaBeta(Position &prev, Move move, int depth) {
     bool cutoff = false;
     Position cur = { prev.game, prev.alpha, prev.beta };
     cur.game.make_move(move);
+
     // This is taking too long to get working :/
-    // int status = cur.game.is_jover();
-    // if (status != 0) {
-    //   int e = cur.game.is_enemy_turn();
-    //   int ewin = (status == -1);
-    //   int sign = (e == ewin) ? 1 : -1;
-    //   cerr << "ret: " << (1e6 * sign * status) << endl;
-    //   cerr << "score: " << scorer.score(cur.game) << endl;
-    //   return -1e6 * status;
-    // }
+    int status = cur.game.is_jover();
+    if (status != 0) {
+      int e = cur.game.is_enemy_turn();
+      int ewin = (status == -1);
+      int sign = (e == ewin) ? 1 : -1;
+      return 1e6 * sign;
+    }
+
     if (depth <= 0) return scorer.score(cur.game);
     if (cur.game.is_enemy_turn() != prev.game.is_enemy_turn()) {
       cur.alpha = -prev.beta;
