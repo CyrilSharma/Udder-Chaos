@@ -1,9 +1,18 @@
 import { Container, ObservablePoint, Text, TextStyle, Graphics, Sprite, Color } from "pixi.js";
 import { Button, FancyButton } from "@pixi/ui";
+import * as PIXI from "pixi.js";
+import { gsap } from "gsap";
+import { PixiPlugin } from "gsap/PixiPlugin";
 
+// register the plugin
+gsap.registerPlugin(PixiPlugin);
+
+// give the plugin a reference to the PIXI object
+PixiPlugin.registerPIXI(PIXI);
 
 export class PlayerGameInfo extends Container {
 
+    public name: string = "Player name";
     private displayArea: FancyButton;
     private playerName: Text;
     private ufo: Sprite;
@@ -43,13 +52,13 @@ export class PlayerGameInfo extends Container {
         });
         this.addChild(this.displayArea);
 
-        this.playerName = new Text("Player name", new TextStyle({
+        this.playerName = new Text(this.name, new TextStyle({
             fontFamily: "Concert One",
             fontSize: 40,
             fill: "#000000",
             align: "left",
         }));
-        this.playerNameShad = new Text("Player name", new TextStyle({
+        this.playerNameShad = new Text(this.name, new TextStyle({
             fontFamily: "Concert One",
             fontSize: 50,
             fill: "#000000",
@@ -71,7 +80,6 @@ export class PlayerGameInfo extends Container {
 
         this.playerName.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.playerName.x = -70;
-        // this.timer.anchor = new ObservablePoint(() => {}, null, 0, 0.5);
         this.timer.x = this.displayArea.x - this.timer.width * 0.5;
         this.timer.y = this.displayArea.y - this.timer.height * 0.5;
         this.timer.visible = false;
@@ -82,7 +90,11 @@ export class PlayerGameInfo extends Container {
         this.addChild(this.timer);
         this.playerNameShad.visible = false;
 
-        this.ufo = Sprite.from('../../images/black_ufo.png');
+        if (color === -1) {
+            this.ufo = Sprite.from('../../images/black_jet.png');
+        } else {
+            this.ufo = Sprite.from('../../images/black_ufo.png');
+        }
         this.ufo.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.ufo.x = 150;
         this.ufo.scale.x = 0.25;
@@ -109,16 +121,22 @@ export class PlayerGameInfo extends Container {
     }
 
     public updateTimer(time: number, max_time: number) {
-        if (time >= 0) {
-            this.timer.width = this.displayArea.width * time / max_time;
-        } else {
-            this.timer.width = 0;
+        if (time < 0) {
+            time = 0;
         }
+        const newWidth = this.displayArea.width * (time / max_time);
+
+        // gsap.to(this.timer, {
+        //     pixi: { width: newWidth },
+        //     duration: 0.1,
+        //     ease: "none"
+        // });
+
+        this.timer.width = newWidth;
     }
 
-    public changeText(text: string) {
-        this.playerName.text = text;
-        this.playerNameShad.text = text;
+    public getUnits() : number {
+        return Number(this.units.text);
     }
 
     public setUnits(units: number) {
@@ -152,7 +170,7 @@ export class PlayerGameInfo extends Container {
             )).view,
             anchor: 0.5
         });
-        this.playerNameShad = new Text("Player name", new TextStyle({
+        this.playerNameShad = new Text(this.name, new TextStyle({
             fontFamily: "Concert One",
             fontSize: 40,
             fill: "#000000",
@@ -162,6 +180,12 @@ export class PlayerGameInfo extends Container {
             dropShadowBlur: 0.2,
             dropShadowColor: this.color
         }));
+    }
+
+    public setName(name: string) {
+        this.name = name;
+        this.playerName.text = name;
+        this.playerNameShad.text = name;
     }
 
     public resize(width: number) {

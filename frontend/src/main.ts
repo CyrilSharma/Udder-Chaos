@@ -5,7 +5,7 @@ import { GameScreen } from './screens/GameScreen';
 import server from "./server";
 import { SoundHandler } from './game/SoundHandler';
 
-localStorage.clear();
+//localStorage.clear();
 SoundHandler.preloadAudio();
 
 /** The PixiJS app Application instance, shared across the project */

@@ -18,8 +18,6 @@ export class GameScreen extends Container {
         this.addChild(this.game);
     }
 
-    
-
     public prepare() {
         // Get rid of this!!!
         const config: GameConfig = {

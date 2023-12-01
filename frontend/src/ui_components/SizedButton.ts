@@ -38,6 +38,16 @@ export class SizedButton extends FancyButton {
         this.addChild(this.button);
     }
 
+    public setX(x: number, bounds: Array<number>) {
+        this.percentX = x;
+        this.resize(bounds);
+    }
+
+    public setY(y: number, bounds: Array<number>) {
+        this.percentY = y;
+        this.resize(bounds);
+    }
+
     public changeText(str: string) {
         this.label.text = str;
     }

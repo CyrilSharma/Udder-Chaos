@@ -1,75 +1,84 @@
-import { Container, Graphics } from "pixi.js";
-import { FancyButton, Button } from "@pixi/ui";
-import { navigation } from "../utils/navigation";
-import { HomeScreen } from "./HomeScreen";
+import { Container } from "pixi.js";
 import { Background } from "../ui_components/Background";
-import { ButtonBox } from "../ui_components/ButtonBox";
-import { MenuButton } from "../ui_components/MenuButton";
+import { MenuContainer } from "../ui_components/MenuContainer";
+import { BackButton } from "../ui_components/BackButton";
+import { SliderUI } from "../ui_components/SliderUI";
+import { SizedButton } from "../ui_components/SizedButton";
+import { SoundHandler } from "../game/SoundHandler";
 
 export class SettingsScreen extends Container {
-    public SCREEN_ID = 'settings';
-    private background: Background;
-    private container: ButtonBox;
-    private backButton: FancyButton;
-    private settingsLabel: MenuButton;
+
+    private vignette: Background;
+    private menuContainer: MenuContainer;
+    private backButton: BackButton;
+
+    private settingsLabel: SizedButton;
+
+    private sfxVol: SliderUI;
+    private musicVol: SliderUI;
 
     constructor() {
         super();
 
-        this.background = new Background();
-        this.addChild(this.background);
+        this.visible = false;
 
-        this.container = new ButtonBox(1, 0.87, 10);
-        this.addChild(this.container);
+        this.vignette = new Background();
+        this.addChild(this.vignette);
 
-        this.settingsLabel = new MenuButton("Settings", 0, 0, 0xffcc66, 4, 0.8, 10);
-        this.container.addChild(this.settingsLabel);
+        this.menuContainer = new MenuContainer();
+        this.addChild(this.menuContainer);
 
-        // this.settingsLabel = new MenuButton("Settings", 0.5, 0.2, 0xffcc66, 4, 0.2, 30);
-        // this.addChild(this.settingsLabel);
-
-        this.backButton = new FancyButton({
-            defaultView: (new Button(
-                new Graphics()
-                        .beginFill(0xff0000, 0.5)
-                        .drawCircle(30, 30, 30)
-            )).view,
-            text: "X",
-            padding: 0,
-            anchor: 0.5,
-        });
-
+        this.backButton = new BackButton(0.985, 0.015, this.menuContainer.width, this.menuContainer.height);
+        this.menuContainer.addChild(this.backButton);
         this.backButton.onPress.connect(() => {
-            navigation.showScreen(HomeScreen);
+            this.visible = false;
         });
-        
-        this.addChild(this.backButton);
+
+        this.settingsLabel = new SizedButton(0.5, 0.16, 0.5, 0.25, "Settings", this.menuContainer.width, this.menuContainer.height, 50, 0xffcc66);
+        this.menuContainer.addChild(this.settingsLabel);
+
+        this.sfxVol = new SliderUI(0.5, 0.47, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "SFX Volume", 0, 100, 30, this.menuContainer.getBox(), this.changeSFXVolume);
+        this.menuContainer.addChild(this.sfxVol);
+
+        this.musicVol = new SliderUI(0.5, 0.77, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "Music Volume", 0, 100, 30, this.menuContainer.getBox(), this.changeBGMVolume);
+        this.menuContainer.addChild(this.musicVol);
+
+        this.setSFXVol(Math.round(SoundHandler.getSFXVolume() * 100));
+        this.setMusicVol(Math.round(SoundHandler.getBGMVolume() * 100));
     }
 
-    public async show() {
+    public getSFXVol() : number {
+        return this.sfxVol.getValue();
     }
 
-    public async hide() {
+    public setSFXVol(val: number) {
+        this.sfxVol.setValue(val);
+    }
+
+    public changeSFXVolume(val: number) {
+        SoundHandler.changeSFXVolume(val / 100);
+    }
+
+    public getMusicVol() : number {
+        return this.musicVol.getValue();
+    }
+
+    public setMusicVol(val: number) {
+        this.musicVol.setValue(val);
+    }
+
+    public changeBGMVolume(val: number) {
+        SoundHandler.changeBGMVolume(val / 100);
     }
 
     public resize(width: number, height: number) {
-        // this.background.resize(width, height);
-
-
-        // this.container.resize(width, height);
-        // this.settingsLabel.resize(width, height);
-
-        // console.log(`Settings label parent x = ${this.settingsLabel.parent.x}`);
-        // this.settingsLabel.resize(this.container.width, this.container.height);
-
-        
-
-        // this.backButton.view.x = this.container.getBox().view.x + this.container.getBox().view.width * 0.5;
-        // this.backButton.view.y = this.container.getBox().view.y - this.container.getBox().view.height * 0.5;
-        // this.backButton.height = this.container.getBox().view.height * 0.1;
-
-        // console.log(this.container);
-        // console.log(`X = ${this.container.x}`);
-        // console.log(`Y = ${this.container.y}`);
+        this.vignette.resize(width, height);
+        this.menuContainer.resize(width, height);
+        this.backButton.resize(this.menuContainer.getBox());
+        this.settingsLabel.resize(this.menuContainer.getBox());
+        this.sfxVol.resize(this.menuContainer.getBox());
+        this.musicVol.resize(this.menuContainer.getBox());
     }
+
+
 }
