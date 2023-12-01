@@ -43,7 +43,7 @@ useprofile: build
 
 # default build
 build: CXXFLAGS += -O3
-build: Main TestGame TestSearch TestGamePerf Arena
+build: Main TestGame TestSearch TestGamePerf# Arena
 
 Main: Main.o $(SOURCES:.cpp=.o)
 	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
