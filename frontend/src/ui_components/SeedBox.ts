@@ -56,6 +56,7 @@ export class SeedBox extends FancyButton {
     }
 
     public changeSeed(seed: string) {
+        this.seed.value = seed;
 
         if (this.numeric) {
             // Empty String
