@@ -1,7 +1,7 @@
 export class SoundHandler {
     public static currentBgm: string = "game-music.mp3";
-    private static bgmVolume: number = 0.0;
-    private static sfxVolume: number = 0.0;
+    private static bgmVolume: number = 0.5;
+    private static sfxVolume: number = 0.5;
     private static bgmPath: string = "sounds/bgm/";
     private static sfxPath: string = "sounds/sound-effects/";
     private static bgm: HTMLAudioElement = new Audio(SoundHandler.bgmPath + "menu-music.mp3");
