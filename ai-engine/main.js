@@ -51,7 +51,7 @@ socket.on("connect", () => {
 //     timer_length: 1000
 // }
 
-exitmove = () => {
+exitmove = (room_code) => {
     socket.emit(
         "make-move", room_code,
         MoveType.PlayCard, {"index": 0}, 5
@@ -79,7 +79,7 @@ socket.on("init-ai", async (room_code, settings, cards) => {
 });
 
 socket.on("query-move", async (room_code) => {
-    if (exited) { exitmove(); return; }
+    if (exited) { exitmove(room_code); return; }
     console.log("\nquery-move");
     ai.stdin.write('GET\n');
     ai.stdin.write(`game_id: ${room_code}\n`);
@@ -88,7 +88,7 @@ socket.on("query-move", async (room_code) => {
     const move = (await it.next()).value;
     const color = (await it.next()).value;
     console.log(`Receieved: (${type}, ${move}, ${color})`);
-    if (exited) { exitmove(); return; }
+    if (exited) { exitmove(room_code); return; }
 
     // We do color + 5 to match up with frontend's expectations
     // For what an AI move should look like.
