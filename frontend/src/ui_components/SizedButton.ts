@@ -9,6 +9,11 @@ export class SizedButton extends FancyButton {
     private percentY: number;
     private percentWidth: number;
     private percentHeight: number;
+    private myWidth: number;
+    private parentW: number;
+    private myHeight: number;
+    private parentH: number;
+    private fontSize: number;
     public label: Text;
 
     constructor(x: number, y: number, width: number, height: number, text: string, parentW: number, parentH: number, fontSize: number, color: number) {
@@ -24,6 +29,12 @@ export class SizedButton extends FancyButton {
         this.percentHeight = height;
         this.percentX = x;
         this.percentY = y;
+
+        this.myWidth = width;
+        this.myHeight = height;
+        this.parentW = parentW;
+        this.parentH = parentH;
+        this.fontSize = fontSize;
 
         this.button = new FancyButton({
             defaultView: (new Button(
@@ -62,6 +73,32 @@ export class SizedButton extends FancyButton {
         this.y = bounds[0] + (bounds[1] - bounds[0]) * this.percentY;
         this.width = (bounds[3] - bounds[2]) * this.percentWidth;
         this.height = (bounds[1] - bounds[0]) * this.percentHeight;
+    }
+
+    public setColor(color: number) {
+        console.log("setcolor");
+        this.removeChild(this.button);
+
+        this.label = new Text(this.text, new TextStyle({
+            fontFamily: "Concert One",
+            fontSize: this.fontSize,
+            fill: "#000000",
+            align: "center",
+        }));
+
+        this.button = new FancyButton({
+            defaultView: (new Button(
+                new Graphics()
+                        .beginFill(color)
+                        .drawRoundedRect(0, 0, this.myWidth * this.parentW, this.myHeight * this.parentH, 0.025 * (this.parentW + this.parentH))
+            )).view,
+            anchor: 0.5,
+            text: this.label
+        });
+
+        // this.button;
+        this.addChild(this.button);
+        // this.alpha = 1;
     }
 
 }
