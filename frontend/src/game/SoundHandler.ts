@@ -68,6 +68,10 @@ export class SoundHandler {
         SoundHandler.bgm.volume = vol;
     }
 
+    public static getBGMVolume() {
+        return SoundHandler.bgmVolume;
+    }
+
     public static playSFX(file: string) {
         let tmpAudio = SoundHandler.SFXlist[file];
         tmpAudio.volume = SoundHandler.sfxVolume;
@@ -76,5 +80,9 @@ export class SoundHandler {
 
     public static changeSFXVolume(vol: number) {
         SoundHandler.sfxVolume = vol;
+    }
+
+    public static getSFXVolume() {
+        return SoundHandler.sfxVolume;
     }
 }

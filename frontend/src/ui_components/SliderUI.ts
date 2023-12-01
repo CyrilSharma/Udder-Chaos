@@ -16,8 +16,9 @@ export class SliderUI extends Container {
     private valueLabel: Text;
 
     private pBounds: Array<number>;
+    private parentUpdate!: (value: any) => void;
 
-    constructor(x: number, y: number, width: number, height: number, parentW: number, parentH: number, label: string, min: number, max: number, fontSize: number, bounds: Array<number>) {
+    constructor(x: number, y: number, width: number, height: number, parentW: number, parentH: number, label: string, min: number, max: number, fontSize: number, bounds: Array<number>, parentUpdate?: (value:any)=>void) {
         super();
 
         this.slide = new SizedButton(x, y, width, height / 3, "", parentW, parentH, 10, 0x50a0d0);
@@ -77,6 +78,10 @@ export class SliderUI extends Container {
         });
 
         this.pBounds = bounds;
+
+        if (typeof parentUpdate !== 'undefined') { 
+            this.parentUpdate = parentUpdate;
+        }
     }
 
     public getValue() {
@@ -126,6 +131,9 @@ export class SliderUI extends Container {
         this.slider.setX(tmpX, this.pBounds);
         this.value = this.min + index;
         this.updateValue();
+        if (typeof this.parentUpdate !== 'undefined') {
+            this.parentUpdate(this.value);
+        }
     }
 
     private updateValue() {
