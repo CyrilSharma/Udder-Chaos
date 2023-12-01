@@ -29,6 +29,12 @@ class Server {
         this.socket.on("load-room", async (roomCode, playerList: PlayerInfo[], settingsData: gameSettingsData) => {
             console.log(playerList);
             console.log(this.socket.id);
+            console.log(settingsData);
+
+            if (settingsData != null) {
+                console.log("here!")
+                gameSettings.save(settingsData);
+            }
 
             await navigation.showScreen(CreateGameScreen);
             let createGameScreen = navigation.currentScreen as CreateGameScreen;
@@ -38,10 +44,6 @@ class Server {
             playerList.forEach((player) => {
                 createGameScreen.getLobbyList().addPlayer(player);
             });
-
-            if (settingsData != null) {
-                gameSettings.save(settingsData);
-            }
         });
         
         this.socket.on("join-error", (error) => {
@@ -161,10 +163,12 @@ class Server {
     }
 
     public async updateGameSettings(gameSettings: gameSettingsData) {
+        console.log('update-game-settings!')
         this.socket.emit("update-game-settings", gameSettings);
     }
 
     public async startGame() {
+        console.log(gameSettings.load());
         this.socket.emit("start-game", gameSettings.load());
         localStorage.setItem("saved-id", this.socket.id);
     }
