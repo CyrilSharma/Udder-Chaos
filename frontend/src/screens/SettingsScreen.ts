@@ -49,13 +49,6 @@ export class SettingsScreen extends Container {
 
         this.musicVol = new SliderUI(0.5, 0.77, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "Music Volume", 0, 100, 30, this.menuContainer.getBox(), this.changeBGMVolume);
         this.menuContainer.addChild(this.musicVol);
-        this.musicVol.eventMode = "static";
-        this.musicVol.on("pointerup", () => {
-            SoundHandler.changeBGMVolume(this.getMusicVol() / 100);
-        });
-        this.musicVol.on("pointerupoutside", () => {
-            SoundHandler.changeBGMVolume(this.getMusicVol() / 100);
-        });
 
         this.loadGlobalSettings();
     }
