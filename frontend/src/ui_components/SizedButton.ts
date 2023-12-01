@@ -1,5 +1,5 @@
 import { Button, FancyButton } from '@pixi/ui';
-import { Container, Graphics, TextStyleAlign } from 'pixi.js';
+import { Container, Graphics, ObservablePoint, TextStyleAlign } from 'pixi.js';
 import { Text, TextStyle } from 'pixi.js';
 
 export class SizedButton extends FancyButton {
@@ -79,28 +79,33 @@ export class SizedButton extends FancyButton {
 
     public setColor(color: number) {
         // console.log("setcolor");
-        this.removeChild(this.button);
+        //this.removeChild(this.button);
 
-        this.label = new Text(this.text, new TextStyle({
-            fontFamily: "Concert One",
-            fontSize: this.fontSize,
-            fill: "#000000",
-            align: "center",
-        }));
+        this.button.defaultView?.destroy();
+        this.button.defaultView = new Graphics()
+            .beginFill(color)
+            .drawRoundedRect(0, 0, this.myWidth * this.parentW, this.myHeight * this.parentH, 0.025 * (this.parentW + this.parentH));
 
-        this.button = new FancyButton({
-            defaultView: (new Button(
-                new Graphics()
-                        .beginFill(color)
-                        .drawRoundedRect(0, 0, this.myWidth * this.parentW, this.myHeight * this.parentH, 0.025 * (this.parentW + this.parentH))
-            )).view,
-            anchor: 0.5,
-            text: this.label,
-        });
+        // this.label = new Text(this.text, new TextStyle({
+        //     fontFamily: "Concert One",
+        //     fontSize: this.fontSize,
+        //     fill: "#000000",
+        //     align: "center",
+        // }));
+
+        // this.button = new FancyButton({
+        //     defaultView: (new Button(
+        //         new Graphics()
+        //                 .beginFill(color)
+        //                 .drawRoundedRect(0, 0, this.myWidth * this.parentW, this.myHeight * this.parentH, 0.025 * (this.parentW + this.parentH))
+        //     )).view,
+        //     text: this.label,
+        //     anchor: 0.5,
+        // });
         
         // this.resize([this.y, this.y + this.myHeight * this.parentH, this.x, this.x + this.myWidth * this.parentW,]);
 
-        this.addChild(this.button);
+        //this.addChild(this.button);
 
     }
 
