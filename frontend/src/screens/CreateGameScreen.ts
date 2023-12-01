@@ -70,6 +70,8 @@ export class CreateGameScreen extends Container {
         this.customScreen = new CustomScreenUI();
         this.addChild(this.customScreen);
 
+        this.resize(window.innerWidth, window.innerHeight);
+
     }
 
     public async addGameCode(code: string) {

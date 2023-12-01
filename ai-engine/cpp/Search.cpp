@@ -117,6 +117,8 @@ void Search::wrapper(Position &cur, Move move, int depth,
  */
 
 int Search::alphaBeta(Position &prev, Move move, int depth) {
+    if (curTime() > begin_time + timeout) return -inf;
+
     bool cutoff = false;
     Position cur = { prev.game, prev.alpha, prev.beta };
     cur.game.make_move(move);

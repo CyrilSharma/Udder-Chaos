@@ -5,7 +5,6 @@ import { GameScreen } from './screens/GameScreen';
 import server from "./server";
 import { SoundHandler } from './game/SoundHandler';
 
-//localStorage.clear();
 SoundHandler.preloadAudio();
 
 /** The PixiJS app Application instance, shared across the project */
@@ -72,7 +71,6 @@ async function init() {
     // Trigger the first resize
     resize();
     
-    localStorage.clear();
     await navigation.showScreen(HomeScreen);
 
     // Show initial loading screen

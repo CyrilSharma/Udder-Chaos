@@ -343,11 +343,9 @@ Step | Directions | Expected Output
 ## User Story 7
 Step | Directions | Expected Output
 --- | --- | ---
-1 | TODO CYRIL
-2 |
-3 |
-4 | 
-5 |
+1 | Run Arena | Notice the ability to compare any executables
+2 | Note the test statistics reported by the Arena.
+3 | Note that you can compare a tester against all versions, via all command.
 
 ## User Story 8.1 - Search correctness
 Start in the AI console

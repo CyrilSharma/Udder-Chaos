@@ -5,6 +5,8 @@ import { BackButton } from "../ui_components/BackButton";
 import { SliderUI } from "../ui_components/SliderUI";
 import { SizedButton } from "../ui_components/SizedButton";
 import { SoundHandler } from "../game/SoundHandler";
+import { globalSettingsData } from "../game/Utils";
+import { globalSettings } from "../game/Settings";
 
 export class SettingsScreen extends Container {
 
@@ -32,6 +34,11 @@ export class SettingsScreen extends Container {
         this.menuContainer.addChild(this.backButton);
         this.backButton.onPress.connect(() => {
             this.visible = false;
+            const newSettings: globalSettingsData = {
+                music_volume: this.getMusicVol() / 100,
+                sound_effect_volume: this.getSFXVol() / 100,
+            }
+            globalSettings.save(newSettings);
         });
 
         this.settingsLabel = new SizedButton(0.5, 0.16, 0.5, 0.25, "Settings", this.menuContainer.width, this.menuContainer.height, 50, 0xffcc66);
@@ -43,8 +50,13 @@ export class SettingsScreen extends Container {
         this.musicVol = new SliderUI(0.5, 0.77, 0.8, 0.3, this.menuContainer.width, this.menuContainer.height, "Music Volume", 0, 100, 30, this.menuContainer.getBox(), this.changeBGMVolume);
         this.menuContainer.addChild(this.musicVol);
 
-        this.setSFXVol(Math.round(SoundHandler.getSFXVolume() * 100));
-        this.setMusicVol(Math.round(SoundHandler.getBGMVolume() * 100));
+        this.loadGlobalSettings();
+    }
+
+    public loadGlobalSettings() {
+        const settingsData: globalSettingsData = globalSettings.load();
+        this.setSFXVol(Math.floor(settingsData.sound_effect_volume * 100));
+        this.setMusicVol(Math.floor(settingsData.music_volume * 100));
     }
 
     public getSFXVol() : number {
@@ -79,6 +91,4 @@ export class SettingsScreen extends Container {
         this.sfxVol.resize(this.menuContainer.getBox());
         this.musicVol.resize(this.menuContainer.getBox());
     }
-
-
 }
