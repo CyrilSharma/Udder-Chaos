@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     close(read_child1[0]);
     dup2(write_child1[0], 0);
     dup2(read_child1[1], 1);
-    // dup2(dev_null, 2);
+    dup2(dev_null, 2);
     execlp(argv[1], argv[1], nullptr);
     cerr << "Error executing child 1." << endl;
     return 1;
@@ -81,6 +81,7 @@ int main(int argc, char* argv[]) {
     int p1wins = 0;
     int p2wins = 0;
   } stats;
+
   for (int i = 0; i < count; i++) {
     cout << "Round " << i << endl;
     cout << "---------------------" << endl;
@@ -114,6 +115,14 @@ int main(int argc, char* argv[]) {
       
       int type = 0, card = 0, color = 0;
 
+      int status = -10;
+      pid_t result1 = waitpid(child1_pid, &status, WNOHANG);
+      pid_t result2 = waitpid(child1_pid, &status, WNOHANG);
+      if (result1 == 0 && result2 == 0) {}
+      else {
+        cerr << "One or more children have exited!";
+        exit(1);
+      }
 
       int len = 0;
       int newlines = 0;
@@ -161,7 +170,7 @@ int main(int argc, char* argv[]) {
       stats.p1wins += (game.is_jover() == 1);
       stats.p2wins += (game.is_jover() == -1);
     } else {
-       stats.p1wins += (game.is_jover() == -1);
+      stats.p1wins += (game.is_jover() == -1);
       stats.p2wins += (game.is_jover() == 1);
     }
   }
