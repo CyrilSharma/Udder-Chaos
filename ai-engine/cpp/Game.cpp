@@ -161,7 +161,7 @@ int Game::is_jover() {
   }
   if ((total_score + cows_collected) >= cows_to_win) return 1;
   if (turn && (turn % (days_per_round * 6) == 0)) {
-    if (cows_collected < cow_sacrifice) return -1;
+    if (cows_collected < (int64_t) cow_sacrifice) return -1;
   }
   return 0;
 } /* is_jover() */
@@ -549,9 +549,9 @@ void Game::play_player_movement(Direction d) {
     purge(color, 0);
   }
 
-  cows &= ~mask;
-  cow_respawn[turn % cow_regen_rate] &= cows & mask;
+  cow_respawn[turn % cow_regen_rate] = cows & mask;
   players[player_id] = mask;
+  cows &= ~mask;
 } /* play_player_movement() */
 
 /*------ Debug + Testing ----------*/

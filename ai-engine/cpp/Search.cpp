@@ -122,13 +122,13 @@ int Search::alphaBeta(Position &prev, Move move, int depth) {
     cur.game.make_move(move);
 
     // This is taking too long to get working :/
-    // int status = cur.game.is_jover();
-    // if (status != 0) {
-    //   int e = cur.game.is_enemy_turn();
-    //   int ewin = (status == -1);
-    //   int sign = (e == ewin) ? 1 : -1;
-    //   return 1e6 * sign;
-    // }
+    int status = cur.game.is_jover();
+    if (status != 0) {
+      int e = cur.game.is_enemy_turn();
+      int ewin = (status == -1);
+      int sign = (e == ewin) ? 1 : -1;
+      return 1e6 * sign;
+    }
 
     if (depth <= 0) return scorer.score(cur.game);
     if (cur.game.is_enemy_turn() != prev.game.is_enemy_turn()) {
