@@ -31,8 +31,8 @@ class Server {
             console.log(this.socket.id);
             console.log(settingsData);
 
-            if (settingsData != null) {
-                console.log("here!")
+            if (settingsData !== null) {
+                console.log(settingsData);
                 gameSettings.save(settingsData);
             }
 
@@ -75,8 +75,10 @@ class Server {
         });
 
         this.socket.on("share-game-settings", (settingsData: gameSettingsData) => {
-            console.log(gameSettings);
-            gameSettings.save(settingsData);
+            if (settingsData !== null) {
+                console.log(settingsData);
+                gameSettings.save(settingsData);
+            }
         });
 
         this.socket.on("start-game-error", (error) => {
@@ -97,8 +99,10 @@ class Server {
             });
 
             await navigation.showScreen(GameScreen);
-
-            gameSettings.save(settingsData);
+            
+            if (settingsData !== null) {
+                gameSettings.save(settingsData);
+            }
 
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
