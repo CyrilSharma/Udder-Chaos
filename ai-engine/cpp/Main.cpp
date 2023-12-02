@@ -1,3 +1,5 @@
+#include <csignal>
+
 #include "Helpers.h"
 #include "Search.h"
 #include "Utils.h"
@@ -198,7 +200,17 @@ struct Handler {
   } /* move() */
 };
 
+// void handler(int signo) {
+//   fprintf(stderr, "got signal=%d\n", signo);
+//   while (1) { }
+// }
+
 int main() {
+  // for (int signum = 1; signum < NSIG; ++signum) {
+  //     if (signal(signum, handler) == SIG_ERR) {
+  //         std::cerr << "Failed to set up signal handler for signal " << signum << std::endl;
+  //     }
+  // }
   auto handler = Handler();
   handler.run();
 }

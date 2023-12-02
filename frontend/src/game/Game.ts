@@ -266,7 +266,7 @@ export class Game extends Container {
 
     public updateTimer() {
         if (!this.animating) {
-            this.timer -= 1;
+            this.timer = Math.max(this.timer - 1, 0);
             //Update the timer here
             console.log("current time: " + this.timer);
             // if (this.timer <= 0) {

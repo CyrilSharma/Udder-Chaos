@@ -114,6 +114,7 @@
         "source_location": "cpp",
         "spanstream": "cpp",
         "syncstream": "cpp",
-        "strstream": "cpp"
+        "strstream": "cpp",
+        "filesystem": "cpp"
     }
 }

@@ -22,11 +22,11 @@ struct Game {
 
   uint64_t turn = 0;
   uint64_t round = 0;
+  bool failed_sacrifice = false;
 
   // If we make even one mistake
   // These could cause segfaults.
   // So I'm making them signed.
-  int64_t total_score = 0;
   int64_t cows_collected = 0;
 
   uint64_t player_id = 0;

@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     close(read_child1[0]);
     dup2(write_child1[0], 0);
     dup2(read_child1[1], 1);
-    dup2(dev_null, 2);
+    // dup2(dev_null, 2);
     execlp(argv[1], argv[1], nullptr);
     cerr << "Error executing child 1." << endl;
     return 1;
@@ -86,12 +86,26 @@ int main(int argc, char* argv[]) {
     cout << "Round " << i << endl;
     cout << "---------------------" << endl;
     auto cards = random_cards(3, 15);
-    auto gc = GameConfig(board, pieces, cards);
+    auto gc = GameConfig(
+      board, pieces, cards,
+      /* hand_size */ 3,
+      /* round_length */ 6,
+      /* cow_sacrifice */ 3,
+      /* cow_regen_rate */ 15,
+      /* days_per_round */ 5,
+      /* score_goal */ 7
+    );
     auto game = Game(gc);
     for (int d = 0; d < 2; d++) {
       dprintf(writes[d], "INIT\n");
       dprintf(writes[d], "ncards: %zu\n", cards.size());
       dprintf(writes[d], "game_id: %d\n", i);
+      dprintf(writes[d], "hand_size: %d\n", gc.hand_size);
+      dprintf(writes[d], "round_length: %d\n", gc.round_length);
+      dprintf(writes[d], "cow_sacrifice: %d\n", gc.cow_sacrifice);
+      dprintf(writes[d], "cow_regen_rate: %d\n", gc.cow_regen_rate);
+      dprintf(writes[d], "days_per_round: %d\n", gc.days_per_round);
+      dprintf(writes[d], "score_goal: %d\n", gc.score_goal);
       dprintf(writes[d], "seed: %d\n", 0);
       dprintf(writes[d], "difficulty: %d\n", 100);
       dprintf(writes[d], "END\n");
@@ -105,19 +119,16 @@ int main(int argc, char* argv[]) {
 
     cout << "Games initialized" << endl;
     int turn_count = 0;
-    int player = rand() % 2;
+    int player = i % 2;
     int idx = player;
-    while (!game.is_jover()) {
-      cout << "turn: " << turn_count << endl;
+    while (game.is_jover() == 0) {
       dprintf(writes[idx], "GET\n");
       dprintf(writes[idx], "game_id: %d\n", i);
       dprintf(writes[idx], "END\n");
-      
-      int type = 0, card = 0, color = 0;
 
       int status = -10;
       pid_t result1 = waitpid(child1_pid, &status, WNOHANG);
-      pid_t result2 = waitpid(child1_pid, &status, WNOHANG);
+      pid_t result2 = waitpid(child2_pid, &status, WNOHANG);
       if (result1 == 0 && result2 == 0) {}
       else {
         cerr << "One or more children have exited!";
@@ -128,6 +139,10 @@ int main(int argc, char* argv[]) {
       int newlines = 0;
       char buf[200] = { 0 };
       while (newlines < 3) {
+        if (len == sizeof(buf)) {
+          cerr << "AI did not send properly formatted data!\n";
+          exit(1);
+        }
         int bytes_read = read(reads[idx], &buf[len], 1);
         if (bytes_read == 0) {
           cerr << "AI did not send data!\n";
@@ -137,10 +152,12 @@ int main(int argc, char* argv[]) {
         len++;
       }
 
+      int type = 0, card = 0, color = 0;
       sscanf(buf, "%d\n%d\n%d\n", &type, &card, &color);
 
       int e1 = game.is_enemy_turn();
       game.make_move(Move(static_cast<MoveType>(type), card, color));
+      // cerr << game << endl;
       int e2 = game.is_enemy_turn();
 
       dprintf(writes[!idx], "MOVE\n");
@@ -162,7 +179,6 @@ int main(int argc, char* argv[]) {
 
       // Swap turn iff p -> e or e -> p
       if (e1 != e2) idx = !idx;
-      turn_count += 1;
     }
 
     cerr << "Status: " << game.is_jover() << endl;

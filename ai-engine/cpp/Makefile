@@ -28,7 +28,7 @@ $(info CXX is $(CXX))
 # Default target
 all: debug
 
-debug: CXXFLAGS += -g -fsanitize=address -fsanitize=undefined -fno-sanitize-recover
+debug: CXXFLAGS += -g -fsanitize=address -fsanitize=undefined -fno-sanitize-recover # -fsanitize=cilk
 debug: Main TestGame TestSearch TestGamePerf Arena
 
 # GCC profiling optimization generation
@@ -43,7 +43,7 @@ useprofile: build
 
 # default build
 build: CXXFLAGS += -O3
-build: Main TestGame TestSearch TestGamePerf# Arena
+build: Main TestGame TestSearch TestGamePerf Arena
 
 Main: Main.o $(SOURCES:.cpp=.o)
 	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
