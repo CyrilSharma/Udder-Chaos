@@ -29,9 +29,10 @@ export class GameSettings {
         try {
             let parsed = JSON.parse(settings);
             console.log(parsed);
+            console.log(defaultGameSettings);
             if ((typeof parsed === "object")
              && (parsed !== null) 
-             && (Object.keys(parsed).every((key) => key in defaultGameSettings))) {
+             && (Object.keys(defaultGameSettings).every((key) => key in parsed))) {
                 return parsed;
             }
             return defaultGameSettings;
