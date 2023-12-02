@@ -1,12 +1,14 @@
 #pragma once
 #include <cinttypes>
+#include <vector>
+using namespace std;
 struct dynamic_bitset {
   int32_t size = 0;
-  int64_t *blocks = nullptr;
+  vector<int64_t> blocks;
   dynamic_bitset();
   dynamic_bitset(int32_t size, int64_t val=0);
   dynamic_bitset(const dynamic_bitset& other);
-  ~dynamic_bitset();
+  // ~dynamic_bitset();
 
   int count() const;
   bool any() const;

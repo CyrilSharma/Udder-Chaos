@@ -30,7 +30,7 @@ Move Search::beginSearch(int dbg, bool fixedDepth) {
     dbgVerbosity = dbg;
     begin_time = curTime();
     std::vector<Move> moves; moves.reserve(16);
-    gen_moves(moves, !game.is_enemy_turn());
+    gen_moves(game, moves, !game.is_enemy_turn());
     moveOrderer.order(game, moves);
     Move best_move = moves[0];
     
@@ -147,40 +147,47 @@ int Search::alphaBeta(Position &prev, Move move, int depth) {
 
     int best_score = -inf;
     std::vector<Move> moves; moves.reserve(16);
-    gen_moves(moves, !game.is_enemy_turn());
-    moveOrderer.order(game, moves);
+    gen_moves(cur.game, moves, !cur.game.is_enemy_turn());
+    moveOrderer.order(cur.game, moves);
 
     std::mutex mutex;
-    for (size_t i = 0; i < moves.size() && !cutoff; i++) {
-      cilk_spawn wrapper(
-        cur, moves[i], depth - 1,
+    if (moves.size() > 0) {
+      wrapper(
+        cur, moves[0], depth - 1,
         sign, best_score, cutoff, mutex
       );
-      if (i == 0) cilk_sync;
     }
-    cilk_sync;
+
+    cilk_scope {
+      for (size_t i = 1; i < moves.size() && !cutoff; i++) {
+        cilk_spawn wrapper(
+          cur, moves[i], depth - 1,
+          sign, best_score, cutoff, mutex
+        );
+      }
+    }
 
     // Incomplete searches are garbage to us.
     if (curTime() > begin_time + timeout) return -inf;
     else return best_score;
 }
 
-void Search::gen_moves(vector<Move> &moves, int player) {
+void Search::gen_moves(Game &g, vector<Move> &moves, int player) {
   if (player) {
-    for (int card = 0; card < (int) game.cm.handsize; ++card) {
-      moves.push_back(Move(MoveType::NORMAL, card, game.player_id));
+    for (int card = 0; card < (int) g.cm.handsize; ++card) {
+      moves.push_back(Move(MoveType::NORMAL, card, g.player_id));
       for (int angle = 1; angle <= 3; ++angle)
         moves.push_back(Move(MoveType::ROTATE, card, angle));
     }
-    if (game.cows_collected > 0) {
-      for (auto [x, y]: game.player_spawns[game.player_id]) {
+    if (g.cows_collected > 0) {
+      for (auto [x, y]: g.player_spawns[g.player_id]) {
         moves.push_back(Move(MoveType::BUY, x, y));
       }
     }
   } else {
-    for (int card = 0; card < (int) game.cm.handsize; ++card) {
+    for (int card = 0; card < (int) g.cm.handsize; ++card) {
       for (int color = 0; color < 4; ++color) {
-          if (!game.enemy.deads[color].size()) continue;
+          if (!g.enemy.deads[color].size()) continue;
           moves.push_back(Move(MoveType::NORMAL, card, color));
       }
     }

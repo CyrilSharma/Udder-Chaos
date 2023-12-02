@@ -159,9 +159,9 @@ int Game::is_jover() {
   for (int i = 0; i < 4; i++) {
     if (player.deads[i].size() == 0) return -1;
   }
-  if ((total_score + cows_collected) >= ((int64_t) cows_to_win)) return 1;
+  if ((cows_collected) >= ((int64_t) cows_to_win)) return 1;
   if (turn && (turn % (days_per_round * 6) == 0)) {
-    if (cows_collected < ((int64_t) cow_sacrifice)) return -1;
+    if (failed_sacrifice) return -1;
   }
   return 0;
 } /* is_jover() */
@@ -179,6 +179,16 @@ void Game::make_move(Move move) {
   // cout << cow_regen_rate << endl;
   // cout << cow_respawn.size() << endl;
   cows |= cow_respawn[turn % cow_regen_rate];
+  if (move.type == MoveType::NORMAL) {
+    if (is_enemy_turn()) enemy_move(move.card, move.color);
+    else player_move(move.card);
+  } else if (move.type == MoveType::ROTATE) {
+    // Assumed move is player move
+    player_rotate_card(move.card, move.angle);
+  } else if (move.type == MoveType::BUY) {
+    player_buy(move.x, move.y);
+  }
+
   // Each day is 2 AI moves and 4 Player Moves.
   // After round_length days, we spawn more enemies.
   if (turn && (turn % (days_per_round * 6) == 0)) {
@@ -193,19 +203,19 @@ void Game::make_move(Move move) {
         enemy.deads[c].push_back(0);
       }
     }
-    total_score += cows_collected;
-    cows_collected = 0;
-  }
-  if (move.type == MoveType::NORMAL) {
-    if (is_enemy_turn()) enemy_move(move.card, move.color);
-    else player_move(move.card);
-  }
-  // Assumed move is player move
-  else if (move.type == MoveType::ROTATE) {
-    player_rotate_card(move.card, move.angle);
-  }
-  else if (move.type == MoveType::BUY) {
-    player_buy(move.x, move.y);
+
+    if (cows_collected < (int64_t) cow_sacrifice) {
+      // cerr << "You failed the sacrifice!" << endl;
+      // cerr << "cows_collected: " << cows_collected << endl;
+      // cerr << "cows_sacrifice: " << cow_sacrifice << endl;
+      failed_sacrifice = true;
+    } else {
+      // cerr << "You passed the sacrifice!" << endl;
+      // cerr << "cows_collected: " << cows_collected << endl;
+      // cerr << "cows_sacrifice: " << cow_sacrifice << endl;
+      cows_collected -= cow_sacrifice;
+      failed_sacrifice = false;
+    }
   }
 }
 
@@ -306,10 +316,7 @@ void Game::purge(int choice, int p) {
   vector<int> idxs;
   idxs.reserve(s.deads[choice].size());
   for (size_t i = 0; i < s.deads[choice].size(); i++) {
-    if (s.deads[choice][i]) {
-      cows_collected -= s.ss[choice][i];
-      continue;
-    }
+    if (s.deads[choice][i]) { continue; }
     idxs.push_back(i);
   }
   for (size_t i = 0; i < idxs.size(); i++) {
@@ -703,6 +710,5 @@ ostream& operator<<(ostream& os, Game& game) {
   os << "player pieces: " << game.count_players() << '\n';
   os << "enemy pieces: " << game.count_enemies() << '\n';
   os << "cows collected: " << game.cows_collected << "\n";
-  os << "total_score: " << game.total_score << "\n";
   return os;
 }

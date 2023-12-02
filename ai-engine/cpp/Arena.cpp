@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     close(read_child1[0]);
     dup2(write_child1[0], 0);
     dup2(read_child1[1], 1);
-    dup2(dev_null, 2);
+    // dup2(dev_null, 2);
     execlp(argv[1], argv[1], nullptr);
     cerr << "Error executing child 1." << endl;
     return 1;
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 
     cout << "Games initialized" << endl;
     int turn_count = 0;
-    int player = rand() % 2;
+    int player = i % 2;
     int idx = player;
     while (!game.is_jover()) {
       cout << "turn: " << turn_count << endl;
@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
 
       int status = -10;
       pid_t result1 = waitpid(child1_pid, &status, WNOHANG);
-      pid_t result2 = waitpid(child1_pid, &status, WNOHANG);
+      pid_t result2 = waitpid(child2_pid, &status, WNOHANG);
       if (result1 == 0 && result2 == 0) {}
       else {
         cerr << "One or more children have exited!";
@@ -128,6 +128,10 @@ int main(int argc, char* argv[]) {
       int newlines = 0;
       char buf[200] = { 0 };
       while (newlines < 3) {
+        if (len == sizeof(buf)) {
+          cerr << "AI did not send properly formatted data!\n";
+          exit(1);
+        }
         int bytes_read = read(reads[idx], &buf[len], 1);
         if (bytes_read == 0) {
           cerr << "AI did not send data!\n";
