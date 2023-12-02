@@ -470,6 +470,18 @@ TEST_CASE("Test Game JOVER") {
   auto game2 = Game(config2);
   game2.cows_collected = 1e9;
   CHECK(game2.is_jover() == 1);
+
+  auto game3 = Game(config2);
+  game3.cows_collected = game3.cow_sacrifice;
+  game3.turn = (game3.days_per_round * 6 - 1);
+  game3.make_move(Move(MoveType::NORMAL, 0, game3.player_id));
+  CHECK(game3.is_jover() == 0);
+
+  auto game4 = Game(config2);
+  game4.cows_collected = game4.cow_sacrifice - 1;
+  game4.turn = (game4.days_per_round * 6 - 1);
+  game4.make_move(Move(MoveType::NORMAL, 0, game4.player_id));
+  CHECK(game4.is_jover() == -1);
 }
 
 /*

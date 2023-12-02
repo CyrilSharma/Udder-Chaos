@@ -205,15 +205,9 @@ void Game::make_move(Move move) {
     }
 
     if (cows_collected < (int64_t) cow_sacrifice) {
-      // cerr << "You failed the sacrifice!" << endl;
-      // cerr << "cows_collected: " << cows_collected << endl;
-      // cerr << "cows_sacrifice: " << cow_sacrifice << endl;
       failed_sacrifice = true;
     } else {
-      // cerr << "You passed the sacrifice!" << endl;
-      // cerr << "cows_collected: " << cows_collected << endl;
-      // cerr << "cows_sacrifice: " << cow_sacrifice << endl;
-      cows_collected -= cow_sacrifice;
+      cows_collected -= ((int64_t) cow_sacrifice);
       failed_sacrifice = false;
     }
   }
@@ -710,5 +704,6 @@ ostream& operator<<(ostream& os, Game& game) {
   os << "player pieces: " << game.count_players() << '\n';
   os << "enemy pieces: " << game.count_enemies() << '\n';
   os << "cows collected: " << game.cows_collected << "\n";
+  os << "failed sacrifice: " << game.failed_sacrifice << "\n";
   return os;
 }
