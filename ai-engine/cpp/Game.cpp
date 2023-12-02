@@ -175,10 +175,8 @@ bool Game::is_enemy_turn(int t) const {
 // general move making function
 void Game::make_move(Move move) {
   assert(move.type != MoveType::NONE);
-  // cout << endl << turn << endl;
-  // cout << cow_regen_rate << endl;
-  // cout << cow_respawn.size() << endl;
   cows |= cow_respawn[turn % cow_regen_rate];
+  cow_respawn[turn % cow_regen_rate].reset();
   if (move.type == MoveType::NORMAL) {
     if (is_enemy_turn()) enemy_move(move.card, move.color);
     else player_move(move.card);
@@ -550,7 +548,7 @@ void Game::play_player_movement(Direction d) {
     purge(color, 0);
   }
 
-  cow_respawn[turn % cow_regen_rate] = cows & mask;
+  cow_respawn[turn % cow_regen_rate] |= (cows & mask);
   players[player_id] = mask;
   cows &= ~mask;
 } /* play_player_movement() */

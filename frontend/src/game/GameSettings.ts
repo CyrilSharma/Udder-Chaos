@@ -18,9 +18,10 @@ export class GameSettings {
         if (key in this.settingsData) {
             return this.settingsData[key as keyof typeof this.settingsData]
         }
-        console.log("Couldn't find that value, resetting game settings!");
+        console.log(this.settingsData);
+        console.log(`Couldn't find value: ${key}, resetting game settings!`);
         this.save(defaultGameSettings);
-        return 0;
+        return this.settingsData[key as keyof typeof this.settingsData];
     }
 
     public load() {
