@@ -63,7 +63,7 @@ TestGamePerf: TestGamePerf.o $(SOURCES:.cpp=.o)
 DynamicBitset: DynamicBitset.o
 	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 	
-%.o: %.cpp
+%.o: %.cpp $(DEPS)
 	$(RUNNER) $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 # Clean up object files and the executables
