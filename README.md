@@ -26,3 +26,7 @@ cd into the ai-engine folder
 run npm install
 
 run: npm run dev
+
+# Attributions
+Music by Eric Matyas
+www.soundimage.org
