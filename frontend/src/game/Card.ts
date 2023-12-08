@@ -108,14 +108,18 @@ export class Card extends Container {
 
     /** Card behavior when clicked (when played) */
     private async tapCard() {
-        // Make sure it is out turn
-        if (this.queue.game.ourTurn() && this.queue.checkCardInHand(this, this.queue.game.playerColor)) {
-
-            // Play card both locally and on the server
+        // It's our turn, the card is in our hand, and time hasn't run out.
+        if ((this.queue.game.ourTurn())
+         && (this.queue.checkCardInHand(this, this.queue.game.playerColor))
+         && (!this.queue.game.timeout)) {
             this.unscale();
+            // Play card both locally and on the server
             // Server play card must come before queue play card because queue playcard reindexes it :D
             server.playCard(this.index, this.queue.game.playerColor);
-            this.queue.game.moveQueue.enqueue({"moveType": MoveType.PlayCard, "moveData": {"index": this.index}, "color": this.queue.game.playerColor, "animated": true})
+            this.queue.game.moveQueue.enqueue({
+                "moveType": MoveType.PlayCard, "moveData": {"index": this.index},
+                "color": this.queue.game.playerColor, "animated": true
+            })
         } else {
             console.log("Not your turn!!");
         }

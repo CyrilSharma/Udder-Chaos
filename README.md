@@ -26,6 +26,11 @@ cd into the ai-engine folder
 run npm install
 
 run: npm run dev
+test - 
+You may have to run make to build the binaries.
+Run ./TestGame to run the Game Test Suite.
+Run ./TestSearch to run the Search Test Suite.
+Run cpp/Arena cpp/Main cpp/Main to play the AI against itself.
 
 # Attributions
 Music by Eric Matyas

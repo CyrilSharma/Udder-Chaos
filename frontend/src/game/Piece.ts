@@ -93,11 +93,14 @@ export class Piece extends Container {
 
     public async animateMove(newX: number, newY: number, animated: boolean) {
         if (animated) {
-            gsap.to(this, {
+            await gsap.to(this, {
                 pixi: { x: newX, y: newY },
                 duration: 0.5,
                 ease: "power.out"
             });
+            // If the animation gets cancelled, auto-update piece location.
+            this.x = newX;
+            this.y = newY;
         } else {
             this.x = newX;
             this.y = newY;

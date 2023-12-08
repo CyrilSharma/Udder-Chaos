@@ -35,6 +35,7 @@ export class Game extends Container {
     public totalScore: number = 0;
     private timer: number = 0;
     private timerInterval: NodeJS.Timeout;
+    public timeout: boolean = false;
     public gameSettings: GameSettings = gameSettings;
     public moveQueue: MoveQueue;
     public leftPanel: GamePanel;
@@ -44,11 +45,6 @@ export class Game extends Container {
     private playerColorIcon!: PlayerColorIcon;
     private dayCounter: DayCounter;
     private scoreCounter: ScoreCounter;
-    public player1: PlayerGameInfo;         // This is not great, need to change this @Ethan
-    public player2: PlayerGameInfo;
-    public player3: PlayerGameInfo;
-    public player4: PlayerGameInfo;
-    public playerAI: PlayerGameInfo;
     public buyButton: BuyButton;
     public gameOver: boolean = false;
     public animating: boolean = false;
@@ -56,6 +52,8 @@ export class Game extends Container {
     public codeDisplay: SizedButton;
     public pauseButton: PauseIcon;
     public pauseMenu: PauseMenu;
+    public players: PlayerGameInfo[] = [];
+    public AI: PlayerGameInfo;
 
     constructor() {
         super();
@@ -78,15 +76,13 @@ export class Game extends Container {
         this.rightPanel.gamePanel.alpha = 0;
         this.bottomPanel.gamePanel.alpha = 0;
 
-        this.player1 = new PlayerGameInfo(0);
-        this.player2 = new PlayerGameInfo(1);
-        this.player3 = new PlayerGameInfo(2);
-        this.player4 = new PlayerGameInfo(3);
-        this.playerAI = new PlayerGameInfo(-1);
+        for (let i = 0; i < 4; i++) {
+            this.players[i] = new PlayerGameInfo(i);
+        }
+        this.AI = new PlayerGameInfo(-1);
+        this.players[0].toggleTimer(true);
 
-        this.player1.toggleTimer(true);
-
-        this.playerAI.setName("AI")
+        this.AI.setName("AI")
         this.dayCounter = new DayCounter(this.gameSettings.getValue("days_per_round"));
         this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
 
@@ -96,16 +92,15 @@ export class Game extends Container {
         this.rightPanel.addChild(this.codeDisplay);
 
         this.boardPanel.addChild(this.board);
-        this.leftPanel.addChild(this.player1);
-        this.leftPanel.addChild(this.player2);
-        this.leftPanel.addChild(this.player3);
-        this.leftPanel.addChild(this.player4);
+        for (let i = 0; i < 4; i++) {
+            this.leftPanel.addChild(this.players[i]);
+        }
         this.leftPanel.addChild(this.dayCounter);
         this.leftPanel.addChild(this.buyButton);
         this.leftPanel.addChild(this.scoreCounter);
 
         this.rightPanel.addChild(this.upNext);
-        this.rightPanel.addChild(this.playerAI);
+        this.rightPanel.addChild(this.AI);
 
         this.addChild(this.boardPanel);
         this.addChild(this.leftPanel);
@@ -140,20 +135,7 @@ export class Game extends Container {
 
     public setPlayerName(name: string, index: number) {
         if (index < 1 || index > 4) throw new Error("Invalid index in set player name");
-        switch(index) {
-            case 1:
-                this.player1.setName(name);
-                break;
-            case 2:
-                this.player2.setName(name);
-                break;
-            case 3:
-                this.player3.setName(name);
-                break;
-            case 4:
-                this.player4.setName(name);
-                break;  
-        }
+        this.players[index - 1].setName(name);
     }
 
     public setRoomCode(code: string) {
@@ -176,47 +158,29 @@ export class Game extends Container {
             }
             this.totalDayCount++;
         }
-        switch (this.turn) {
-            case 1:
-                this.playerAI.removeShadow();
-                this.playerAI.toggleTimer(false);
-                this.player1.addShadow();
-                this.player1.toggleTimer(true);
-                break;
-            case 2:
-                this.player1.removeShadow();
-                this.player1.toggleTimer(false);
-                this.player2.addShadow();
-                this.player2.toggleTimer(true);
-                break;
-            case 3:
-                this.player2.removeShadow();
-                this.player2.toggleTimer(false);
-                this.playerAI.addShadow();
-                this.playerAI.toggleTimer(true);
-                break;
-            case 4:
-                this.playerAI.removeShadow();
-                this.playerAI.toggleTimer(false);
-                this.player3.addShadow();
-                this.player3.toggleTimer(true);
-                break;
-            case 5:
-                this.player3.removeShadow();
-                this.player3.toggleTimer(false);
-                this.player4.addShadow();
-                this.player4.toggleTimer(true);
-                break;
-            case 6:
-                this.player4.removeShadow();
-                this.player4.toggleTimer(false);
-                this.playerAI.addShadow();
-                this.playerAI.toggleTimer(true);
-                break;
+
+        let idxs = [0, 1, 4, 2, 3, 4];
+        let idx = idxs[(6 + this.turn - 1) % 6];
+        if (idx == 4) {
+            this.AI.addShadow();
+            this.AI.toggleTimer(true);
+        } else {
+            this.players[idx].addShadow();
+            this.players[idx].toggleTimer(true);
         }
+
+        let pidx = idxs[(6 + this.turn - 2) % 6];
+        if (pidx == 4) {
+            this.AI.removeShadow();
+            this.AI.toggleTimer(false);
+        } else {
+            this.players[pidx].removeShadow();
+            this.players[pidx].toggleTimer(false);
+        }
+
         this.turnCount += 1;
         this.timer = this.gameSettings.getValue("timer_length");
-        console.log(this.timer);
+        this.timeout = false;
         this.updatePlayerInfoTimers();
         this.board.spawnCows(this.turnCount);
     }
@@ -271,6 +235,7 @@ export class Game extends Container {
             console.log("current time: " + this.timer);
             // if (this.timer <= 0) {
             if (this.timer <= 0 && this.ourTurn()) {
+                this.timeout = true;
                 server.outOfTime();
             }
             this.updatePlayerInfoTimers();
@@ -278,11 +243,11 @@ export class Game extends Container {
     }
 
     public updatePlayerInfoTimers() {
-        this.player1.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
-        this.player2.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
-        this.player3.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
-        this.player4.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
-        this.playerAI.updateTimer(this.timer, this.gameSettings.getValue("timer_length"));
+        let timelen =  this.gameSettings.getValue("timer_length");
+        for (let i = 0; i < 4; i++) {
+            this.players[i].updateTimer(this.timer, timelen);
+        }
+        this.AI.updateTimer(this.timer, timelen);
     }
 
     public scorePoints(points: number) {
@@ -300,22 +265,28 @@ export class Game extends Container {
         this.boardPanel.resize(width, height);
         this.bottomPanel.resize(width, height);
         this.boardPanel.y = this.bottomPanel.getBox()[1] * 0.5 + (this.bottomPanel.getBox()[0] - this.bottomPanel.getBox()[1]) * 0.5;
-        this.board.resize(this.boardPanel.getBox(), this.leftPanel.getBox()[3], this.rightPanel.getBox()[2], this.bottomPanel.getBox()[0]);
+        this.board.resize(
+            this.boardPanel.getBox(),
+            this.leftPanel.getBox()[3],
+            this.rightPanel.getBox()[2],
+            this.bottomPanel.getBox()[0]
+        );
 
         if (this.playerColorIcon) {
             this.playerColorIcon.y = 300;
         }
-        this.player1.y = 50;
-        this.player2.y = 100;
-        this.player3.y = 150;
-        this.player4.y = 200;
-        this.playerAI.y = 250;
-        this.player1.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
-        this.player2.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
-        this.player3.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
-        this.player4.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
-        this.player1.addShadow();
-        this.playerAI.resize(this.rightPanel.getBox()[3] - this.rightPanel.getBox()[2]);
+
+        for (let i = 0; i < 4; i++) {
+            this.players[i].y = 50 + 50 * i;
+        }
+        this.AI.y = 250;
+        
+        let labelsize = this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2];
+        for (let i = 0; i < 4; i++) {
+            this.players[i].resize(labelsize);
+        }
+        this.AI.resize(labelsize);
+        // this.players[0].addShadow();
 
         this.dayCounter.resize(this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2]);
         this.dayCounter.y = -250;
@@ -324,7 +295,7 @@ export class Game extends Container {
         this.buyButton.y = this.scoreCounter.y + 70;
         this.cards.y = 0;
         this.cards.x = 0;
-        this.upNext.y = this.rightPanel.height * -0.5 + 0.5 * this.upNext.height//-310;
+        this.upNext.y = this.rightPanel.height * -0.5 + 0.5 * this.upNext.height
         this.codeDisplay.y = 200;
         this.pauseButton.resize();
         this.pauseMenu.resize(width, height);
@@ -333,7 +304,6 @@ export class Game extends Container {
 
         this.board.winScreen.resize(this.board.getWidth(), this.board.getHeight());
         this.board.loseScreen.resize(this.board.getWidth(), this.board.getHeight());
-
     }
 
     private startBGM() {

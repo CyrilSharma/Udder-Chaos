@@ -209,35 +209,14 @@ export class Board extends Container {
         if (getTeam(target.type) == TeamEnum.Player) {
             SoundHandler.playSFX("ufo-destroyed.mp3");
             this.playerPieces[target.type] -= 1;
-            switch (target.type) {
-                case 0:
-                    break;
-                case 1:
-                    this.game.player1.setUnits(this.playerPieces[target.type]);
-                    break;
-                case 2:
-                    this.game.player2.setUnits(this.playerPieces[target.type]);
-                    break;
-                case 3:
-                    this.game.player3.setUnits(this.playerPieces[target.type]);
-                    break;
-                case 4:
-                    this.game.player4.setUnits(this.playerPieces[target.type]);
-                    break;
-                default:
-                    //this.game.playerAI.setUnits(this.playerPieces[4]);
-                    break;
-            }
-
-            // If this player has no more pieces end the game
+            this.game.players[(target.type - 1)].setUnits(
+                this.playerPieces[target.type]
+            );
             if (this.playerPieces[target.type] == 0) {
                 this.game.endGame(false, "All of your UFOs were wiped out.");
             }
         } else {
-            // enemy piece destroyed
-    
-            this.game.playerAI.setUnits(this.game.playerAI.getUnits() - 1);
-
+            this.game.AI.setUnits(this.game.AI.getUnits() - 1);
             SoundHandler.playSFX("ufo-laser.ogg");
         }
     }
@@ -352,28 +331,12 @@ export class Board extends Container {
         this.pieces.push(piece);
         this.piecesContainer.addChild(piece);
 
-        if (PieceEnum.Player_Red <= pieceType && pieceType <= PieceEnum.Player_Purple) {
+        if ((PieceEnum.Player_Red <= pieceType)
+         && (pieceType <= PieceEnum.Player_Purple)) {
             this.playerPieces[pieceType] += 1;
-
-            switch (pieceType) {
-                case 0:
-                    break;
-                case 1:
-                    this.game.player1.setUnits(this.playerPieces[pieceType]);
-                    break;
-                case 2:
-                    this.game.player2.setUnits(this.playerPieces[pieceType]);
-                    break;
-                case 3:
-                    this.game.player3.setUnits(this.playerPieces[pieceType]);
-                    break;
-                case 4:
-                    this.game.player4.setUnits(this.playerPieces[pieceType]);
-                    break;
-                default:
-                    //this.game.playerAI.setUnits(this.playerPieces[4]);
-                    break;
-            }
+            this.game.players[pieceType - 1].setUnits(
+                this.playerPieces[pieceType]
+            );
         }
     }
 
@@ -469,7 +432,7 @@ export class Board extends Container {
             this.enemyRegen[i].forEach((tilePosition) => {
                 if (this.getPiecesByPosition(tilePosition).length == 0) {
                     this.createPiece(tilePosition, PieceEnum.Enemy_Red + i);
-                    this.game.playerAI.setUnits(this.game.playerAI.getUnits() + 1);
+                    this.game.AI.setUnits(this.game.AI.getUnits() + 1);
                 }
             });
         }
