@@ -25,6 +25,9 @@ if (mode != 'development') {
     app.get('/', (req, res) => {
         res.sendFile(path.join(__dirname, '/index.html'));
     })
+    app.get('/favicon.ico', (req, res) => {
+        res.sendFile(path.join(__dirname, '/favicon.ico'));
+    })
     app.listen(80)
 }
 

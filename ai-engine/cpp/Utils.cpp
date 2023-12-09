@@ -56,7 +56,7 @@ vector<Card> random_cards(int ndirs, int ncards) {
  * loads board + pieces based on the random seed.
  */
 
-tuple<vector<vector<Tile>>, vector<Piece>> load_setup(ifstream &file) {
+tuple<vector<vector<Tile>>, vector<Piece>> load_setup(istream &file) {
   int h, w; file >> h >> w;
   vector<Piece> pieces;
   vector<vector<Tile>> board(h, vector<Tile>(w));
@@ -69,8 +69,6 @@ tuple<vector<vector<Tile>>, vector<Piece>> load_setup(ifstream &file) {
       );
     }
   }
-
-  file.close();
   return { board, pieces };
 } /* load_setup() */
 
@@ -79,12 +77,14 @@ tuple<vector<vector<Tile>>, vector<Piece>> load_setup(ifstream &file) {
  */
 
 tuple<vector<vector<Tile>>, vector<Piece>> load_setup(int idx) {
-  ifstream file ("Maps/map" + to_string(idx) + ".txt");
+  ifstream file("Maps/map" + to_string(idx) + ".txt");
   if (!file.is_open()) {
     cerr << "FAILURE: Invalid Map Index: " << idx << endl;
     exit(1);
   }
-  return load_setup(file);
+  auto res = load_setup(file);
+  file.close();
+  return res;
 } /* load_setup() */
 
 /*

@@ -96,7 +96,10 @@ struct Handler {
       exit(1);
     }
 
-    auto [board, pieces] = load_setup();
+    auto cards = load_cards(stoll(params["ncards"]));
+    for (auto card: cards) cerr << card << endl;
+
+    auto [board, pieces] = load_setup(cin);
     for (size_t i = 0; i < board.size(); i++) {
       for (size_t j = 0; j < board[0].size(); j++) {
         cerr << board[i][j].category;
@@ -104,15 +107,6 @@ struct Handler {
       cerr << endl;
     }
     for (auto p: pieces) cerr << p << endl;
-    auto cards = load_cards(stoll(params["ncards"]));
-    for (auto card: cards) cerr << card << endl;
-
-    // cerr << " 1: " << params["hand_size"] << endl;
-    // cerr << " 2: " << params["round_length"] << endl;
-    // cerr << " 3: " << params["cow_sacrifice"] << endl;
-    // cerr << " 4: " << params["cow_regen_rate"] << endl;
-    // cerr << " 5: " << params["days_per_round"] << endl;
-    // cerr << " 6: " << params["score_goal"] << endl;
 
     auto gc = GameConfig(
       board, pieces, cards,

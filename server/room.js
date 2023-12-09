@@ -221,9 +221,13 @@ class Player {
             this.makeRandomMove();
         })
 
-        this.socket.on("init-ai", (cards) => {
+        this.socket.on("init-ai", (cards, board) => {
             console.log(`Settings: ${JSON.stringify(this.room.gameSettings, null, 4)}`);
-            ai_socket.emit('init-ai', this.room.roomCode, this.room.gameSettings, cards);
+            ai_socket.emit(
+                'init-ai', this.room.roomCode,
+                this.room.gameSettings, cards,
+                board
+            );
         });
 
         this.socket.on("leave-room", () => {

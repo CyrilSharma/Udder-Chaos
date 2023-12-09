@@ -58,7 +58,7 @@ exitmove = (room_code) => {
     );
 }
 
-socket.on("init-ai", async (room_code, settings, cards) => {
+socket.on("init-ai", async (room_code, settings, cards, board) => {
     console.log("AI Initialized!");
     console.log(settings);
     ai.stdin.write('INIT\n');
@@ -76,6 +76,13 @@ socket.on("init-ai", async (room_code, settings, cards) => {
             ai.stdin.write(`${dir} `);
         }
         ai.stdin.write('\n');
+    }
+    ai.stdin.write(`${board.length} ${board[0].length}\n`);
+    for (let row of board) {
+        for (let entry of row) {
+            ai.stdin.write(`${entry} `);
+        }
+        ai.stdin.write(`\n`);
     }
     console.log("Sent commands to AI...");
 });

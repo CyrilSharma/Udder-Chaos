@@ -96,17 +96,25 @@ export class Board extends Container {
                 console.log(`respawn counter mouseover: ${tile}`);
                 if (tile == 255) return; // I'm not sure why but the last one is always in the top left corner??
                 // Block showing respawn counter if any players or cows are on this tile
-                if (this.getPiecesByPosition({row: Math.floor(tile/16), column: tile % 16}, TeamEnum.Player).length == 0 &&
-                this.getPiecesByPosition({row: Math.floor(tile/16), column: tile % 16}, TeamEnum.Cow).length == 0) {
+                let players_on_tile = this.getPiecesByPosition(
+                    {row: Math.floor(tile/16), column: tile % 16},
+                    TeamEnum.Player
+                );
+                let cows_on_tile = this.getPiecesByPosition(
+                    {row: Math.floor(tile/16), column: tile % 16},
+                    TeamEnum.Cow
+                );
+                if ((players_on_tile.length == 0)
+                 && (cows_on_tile.length == 0)) {
                     this.respawnCounter[tile].alpha = 1;
                 } else {
-                    this.respawnCounter[tile].visible = false; // Hide this respawn counter until the pieces on this tile move off
+                    // Hide this respawn counter until the pieces on this tile move off
+                    this.respawnCounter[tile].visible = false;
                 }
             });
             this.respawnCounter[tile].on('mouseleave', () => {
                 this.respawnCounter[tile].alpha = 0;
-            });
-            // this.respawnCounter[tile].zIndex = -1;            
+            });            
             this.addChild(this.respawnCounter[tile]);
         }
     }
@@ -347,7 +355,11 @@ export class Board extends Container {
         piece.column = position.column;
 
         // Actually display pieces at the right location
-        piece.animateMove(viewPosition.x - 8 * this.tileSize / 4, viewPosition.y - 8 * this.tileSize / 4, animated)
+        piece.animateMove(
+            viewPosition.x - 8 * this.tileSize / 4,
+            viewPosition.y - 8 * this.tileSize / 4,
+            animated
+        )
     }
 
     /**  Return visual piece location on the board */

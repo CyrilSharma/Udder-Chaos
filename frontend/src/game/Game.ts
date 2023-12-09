@@ -84,10 +84,24 @@ export class Game extends Container {
 
         this.AI.setName("AI")
         this.dayCounter = new DayCounter(this.gameSettings.getValue("days_per_round"));
-        this.upNext = new SizedButton(0, 0, 0.7, 0.08, "Up Next", this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2], this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0], 40, 0xffffff);
+        this.upNext = new SizedButton(
+            0, 0, 0.7, 0.08, "Up Next",
+            this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2],
+            this.leftPanel.getBox()[1] - this.leftPanel.getBox()[0],
+            40, 0xffffff
+        );
 
-        this.scoreCounter = new ScoreCounter(0, 0, 0.5, 0.5, `0 of ${this.gameSettings.getValue('score_goal')}`, this.leftPanel.width, this.leftPanel.height, 40, 0xffffff, this.gameSettings.getValue('score_goal'));
-        this.codeDisplay = new SizedButton(0, 0, 0.92, 0.04, "Code:\nABCD", this.rightPanel.width, this.rightPanel.height, 15, 0xffcc66);
+        this.scoreCounter = new ScoreCounter(
+            0, 0, 0.5, 0.5,
+            `0 of ${this.gameSettings.getValue('score_goal')}`,
+            this.leftPanel.width, this.leftPanel.height,
+            40, 0xffffff, this.gameSettings.getValue('score_goal')
+        );
+        this.codeDisplay = new SizedButton(
+            0, 0, 0.92, 0.04, "Code:\nABCD",
+            this.rightPanel.width, this.rightPanel.height,
+            15, 0xffcc66
+        );
         this.codeDisplay.changeText("Code:\nCODE");
         this.rightPanel.addChild(this.codeDisplay);
 
@@ -264,7 +278,8 @@ export class Game extends Container {
         this.rightPanel.resize(width, height);
         this.boardPanel.resize(width, height);
         this.bottomPanel.resize(width, height);
-        this.boardPanel.y = this.bottomPanel.getBox()[1] * 0.5 + (this.bottomPanel.getBox()[0] - this.bottomPanel.getBox()[1]) * 0.5;
+        this.boardPanel.y = this.bottomPanel.getBox()[1] * 0.5
+            + (this.bottomPanel.getBox()[0] - this.bottomPanel.getBox()[1]) * 0.5;
         this.board.resize(
             this.boardPanel.getBox(),
             this.leftPanel.getBox()[3],

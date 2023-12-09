@@ -40,7 +40,9 @@ export class CreateGameScreen extends Container {
 
         this.startButton = new SizedButton(0.5, 0.9, 0.3, 0.15, "Start Game", this.menuContainer.width, this.menuContainer.height, 40, 0x6060fc);
         this.startButton.onPress.connect(() => {
-            server.startGame();
+            if (this.lobbyList.players[0].id == server.socket.id) {
+                server.startGame();
+            }
         });
         this.menuContainer.addChild(this.startButton);
 
@@ -57,10 +59,17 @@ export class CreateGameScreen extends Container {
         });
         this.menuContainer.addChild(this.backButton);
 
-        this.customizeButton = new SizedButton(0.82, 0.9, 0.25, 0.11, "Customize", this.menuContainer.width, this.menuContainer.height, 30, 0x50aadc);
+        this.customizeButton = new SizedButton(
+            0.82, 0.9, 0.25, 0.11, "Customize",
+            this.menuContainer.width,
+            this.menuContainer.height,
+            30, 0x50aadc
+        );
         this.customizeButton.onPress.connect(() => {
-            this.customScreen.visible = true;
-            this.customScreen.loadGameSettings();
+            if (this.lobbyList.players[0].id == server.socket.id) {
+                this.customScreen.visible = true;
+                this.customScreen.loadGameSettings();
+            }
         });
         this.menuContainer.addChild(this.customizeButton);
 

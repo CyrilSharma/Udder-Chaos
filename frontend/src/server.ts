@@ -87,7 +87,6 @@ class Server {
 
         this.socket.on("start-game", async (settingsData: gameSettingsData, playerList: PlayerInfo[], roomCode: string) => {
             sessionStorage.setItem("saved-id", this.socket.id);
-
             initSeed(settingsData.seed);
 
             let color = 1;
@@ -131,7 +130,10 @@ class Server {
             }
 
             if (playerList[0].id == this.socket.id) {
-                this.socket.emit("init-ai", cards);
+                this.socket.emit(
+                    "init-ai", cards,
+                    gameScreen.game.config.grid
+                );
             }
         });
 

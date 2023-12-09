@@ -18,8 +18,7 @@ export const app = new PIXI.Application<HTMLCanvasElement>({
     google: {
         families: ['Concert One', 'Snippet'],
     },
-    active()
-    {
+    active() {
         init();
     },
 };
@@ -72,45 +71,4 @@ async function init() {
     resize();
     
     await navigation.showScreen(HomeScreen);
-
-    // Show initial loading screen
-    /* await navigation.showScreen(LoadScreen);
-
-    // Go to one of the screens if a shortcut is present in url params, otherwise go to home screen
-    if (getUrlParam('game') !== null) {
-        await navigation.showScreen(GameScreen);
-    } else if (getUrlParam('load') !== null) {
-        await navigation.showScreen(LoadScreen);
-    } else if (getUrlParam('result') !== null) {
-        await navigation.showScreen(ResultScreen);
-    } else {
-        await navigation.showScreen(HomeScreen);
-    } */    
-
-    // let screen = new GameScreen();
-    // screen.prepare();
-    // app.stage.addChild(screen);
-
-    let keypress = (e: KeyboardEvent) => {
-        let key = -1;
-        if (e.key === 'ArrowLeft') {
-            console.log('Left arrow key was pressed');
-            key = 2;
-        } else if (e.key === 'ArrowRight') {
-            console.log('Right arrow key was pressed');
-            key = 0;
-        } else if (e.key === 'ArrowUp') {
-           console.log('Up arrow key was pressed');
-           key = 1;
-        } else if (e.key === 'ArrowDown') {
-            console.log('Down arrow key was pressed');
-            key = 3;
-        }
-        if (key == -1) return;
-        navigation?.move(key);
-    };
-    window.addEventListener('keydown', keypress);
 }
-
-// Init everything
-//init();

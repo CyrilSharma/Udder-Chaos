@@ -72,7 +72,7 @@ bool checkvv(vector<vector<T>> a, vector<vector<T>> b) {
 vector<vector<Tile>> random_board(int width, int height);
 vector<Piece> random_pieces(int npieces, int width, int height);
 vector<Card> random_cards(int ndirs, int ncards);
-tuple<vector<vector<Tile>>, vector<Piece>> load_setup(ifstream &file);
+tuple<vector<vector<Tile>>, vector<Piece>> load_setup(istream &file);
 tuple<vector<vector<Tile>>, vector<Piece>> load_setup(int idx = 0);
 vector<Card> load_cards(int ncards);
 uint64_t curTime();
