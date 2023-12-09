@@ -224,62 +224,11 @@ export type RotateData = {
 
 //-----Map Functions-----//
 export function loadMap(seed: number) {
-    const grid: Grid = parseCSVGrid(MAPS[seed]);
+    const grid: Grid = MAPS[seed];
     return grid;
 }
 
-// export function createRandomGrid(rows = 16, cols = 16) {
-//     const grid: Grid = [];
-//     const tiles = [TileEnum.Plain, TileEnum.Pasture, TileEnum.Impassible, TileEnum.Destination];
-//     for (let r = 0; r < rows; r++) {
-//         for (let c = 0; c < cols; c++) {
-//             let idx = Math.floor(random() * tiles.length);
-//             if (!grid[r]) grid[r] = [];
-//             grid[r][c] = tiles[idx];
-//         }
-//     }
-//     return grid;
-// };
-
-// Create a CSV string from an input Grid
-function createCSV(grid: Grid) {
-    let csv_string = ""
-    for (let r = 0; r < grid.length; r++) {
-        for (let c = 0; c < grid[0].length; c++) {
-            csv_string += grid[r][c]
-            if (c < grid[0].length - 1) {
-                csv_string += ","
-            }
-        }
-        if (r < grid.length - 1) {
-            csv_string += "\n"
-        }
-    }
-    return csv_string;
-};
-
-// Create a grid from a CSV string
-function parseCSVGrid(csvString: string) {
-    const grid: Grid = [];
-    const rows = csvString.split("\n");
-
-    for (const row of rows) {
-        const values = row.split(",");
-        const tiles: TileType[] = [];
-        for (const value of values) {
-            const tile: TileType = parseInt(value);
-            // const tile: TileType = 0; // SET NO OBSTACLES FOR DEBUGGING
-            tiles.push(tile);
-        }
-        if (tiles.length > 0) {
-            grid.push(tiles);
-        }
-    }
-    return grid;
-};
-
 // --- Math --- //
-
 export function angleBetween(vectorOne: Point, vectorTwo: Point) {
     let angle = Math.atan2( vectorOne.x*vectorTwo.y - vectorOne.y*vectorTwo.x, vectorOne.x*vectorTwo.x + vectorOne.y*vectorTwo.y);
     if (angle < 0) {
