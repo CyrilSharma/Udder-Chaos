@@ -91,9 +91,9 @@ export class PlayerGameInfo extends Container {
         this.playerNameShad.visible = false;
 
         if (color === -1) {
-            this.ufo = Sprite.from('../../images/black_jet.png');
+            this.ufo = Sprite.from('images/black_jet.png');
         } else {
-            this.ufo = Sprite.from('../../images/black_ufo.png');
+            this.ufo = Sprite.from('images/black_ufo.png');
         }
         this.ufo.anchor = new ObservablePoint(() => {}, null, 0.5, 0.5);
         this.ufo.x = 150;

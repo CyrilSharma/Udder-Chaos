@@ -318,7 +318,10 @@ export class Board extends Container {
                     this.colorAtMatchingDestination(position, this.game.playerColor) &&
                     this.getPiecesByPosition(position).length == 0) {
                         server.purchaseUFO(position, this.game.playerColor);
-                        this.game.moveQueue.enqueue({"moveType": MoveType.PurchaseUFO, "moveData": position, "color": this.game.playerColor, "animated": true})
+                        this.game.moveQueue.enqueue({
+                            "moveType": MoveType.PurchaseUFO, "moveData": position,
+                            "color": this.game.playerColor, "animated": true
+                        })
                     }
             }
         });
@@ -350,6 +353,8 @@ export class Board extends Container {
 
     /**  Moves piece */
     public setPieceLocation(piece: Piece, position: Position, animated: boolean) {
+        // Move it to the top.
+        this.piecesContainer.addChild(piece);
         const viewPosition = this.getViewPosition(position);
         piece.row = position.row;
         piece.column = position.column;
@@ -397,7 +402,10 @@ export class Board extends Container {
     /** Get the tile at a position on the board */
     public getTileAtPosition(position: Position) {
         // handle out of bounds
-        if (position.row < 0 || position.row >= this.rows || position.column < 0 || position.column >= this.columns) return TileEnum.Impassible;
+        if ((position.row < 0 || position.row >= this.rows)
+         || (position.column < 0 || position.column >= this.columns)) {
+            return TileEnum.Impassible;
+        }
         return this.grid[position.row][position.column];
     }
 
@@ -471,6 +479,5 @@ export class Board extends Container {
         this.game.scorePoints(-1);
         this.createPiece(position, color);
         SoundHandler.playSFX("ufo-purchased.ogg");
-
     }
 }
