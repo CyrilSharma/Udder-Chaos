@@ -113,7 +113,7 @@ export class CustomScreenUI extends Container {
         this.timerLength = new SliderUI(
             0.25, 0.86, 0.45, 0.15,
             this.menuContainer.width, this.menuContainer.height,
-            "Move Timer Length", 10, 60, 20,
+            "Move Timer Length", 1, 60, 20,
             this.menuContainer.getBox()
         );
         this.menuContainer.addChild(this.timerLength);

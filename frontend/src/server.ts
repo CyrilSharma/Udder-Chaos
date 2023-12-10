@@ -96,13 +96,14 @@ class Server {
                     color += player.color;
                 }
             });
-
-            await navigation.showScreen(GameScreen);
             
+            console.log("Received - ");
+            console.log(settingsData);
             if (settingsData !== null) {
                 gameSettings.save(settingsData);
             }
 
+            await navigation.showScreen(GameScreen);
             let gameScreen = navigation.currentScreen as GameScreen;
             gameScreen.setPlayerColor(color);
 
@@ -139,8 +140,10 @@ class Server {
 
         this.socket.on("share-move", async (moveType, moveData, color) => {
             let gameScreen = navigation.currentScreen as GameScreen;
-
-            gameScreen.game.moveQueue.enqueue({"moveType": moveType, "moveData": moveData, "color": color, "animated": true});
+            gameScreen.game.moveQueue.enqueue({
+                "moveType": moveType, "moveData": moveData,
+                "color": color, "animated": true
+            });
             console.log("Share move: " + color);
         });
 
@@ -175,7 +178,7 @@ class Server {
     }
 
     public async startGame() {
-        console.log(gameSettings.load());
+        console.log(`Host Settings: ${gameSettings.load()}`);
         this.socket.emit("start-game", gameSettings.load());
         sessionStorage.setItem("saved-id", this.socket.id);
     }

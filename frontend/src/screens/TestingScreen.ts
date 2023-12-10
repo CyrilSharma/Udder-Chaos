@@ -46,7 +46,7 @@ export class TestingScreen extends Container {
 
         this.playerIcon = new PlayerColorIcon(0xFF0000);
 
-        this.dayCounter = new DayCounter(5);
+        this.dayCounter = new DayCounter(5, 3);
         this.dayCounter.scale.x = 0.5;
         this.dayCounter.scale.y = 0.5;
         this.dayCounter.onPress.connect(() => this.dayCounter.cycleDay(this.dayCounter));

@@ -83,7 +83,10 @@ export class Game extends Container {
         this.players[0].toggleTimer(true);
 
         this.AI.setName("AI")
-        this.dayCounter = new DayCounter(this.gameSettings.getValue("days_per_round"));
+        this.dayCounter = new DayCounter(
+            this.gameSettings.getValue("days_per_round"),
+            this.gameSettings.getValue("cow_regen_rate")
+        );
         this.upNext = new SizedButton(
             0, 0, 0.7, 0.08, "Up Next",
             this.leftPanel.getBox()[3] - this.leftPanel.getBox()[2],

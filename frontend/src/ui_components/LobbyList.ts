@@ -60,7 +60,13 @@ export class LobbyList extends FancyButton {
         this.players = new Array<PlayerInfo>;
         this.playersList = new Array<SizedButton>;
         for (let i = 0; i < 4; i++) {
-            this.playersList[i] = new SizedButton(0.5, 0.5, 0.8, 0.2, "        ", this.listContainer.width, this.listContainer.height, 40, 0xffffff);
+            this.playersList[i] = new SizedButton(
+                0.5, 0.5, 0.8, 0.2,
+                "        ",
+                this.listContainer.width,
+                this.listContainer.height,
+                40, 0xffffff
+            );
             this.playersList[i].x = 28;
             this.playersList[i].y = i * 60 - 90;
             this.listContainer.addChild(this.playersList[i]);
@@ -68,9 +74,10 @@ export class LobbyList extends FancyButton {
         }
         
         /* set up name input */
+        let max_size = 20;
         this.nameInput = new Input({
             bg: this.playersList[this.currentPlayerNumber],
-            maxLength: 10,
+            maxLength: max_size,
             textStyle: new TextStyle({
                 fontFamily: "Concert One",
                 fontSize: 40,
@@ -81,8 +88,8 @@ export class LobbyList extends FancyButton {
         this.nameInput.alpha = 0;
         this.nameInput.value = this.playersList[this.currentPlayerNumber].label.text;
         this.nameInput.onChange.connect(() => {
-            if (this.nameInput.value.length > 10) {
-                this.nameInput.value = this.nameInput.value.slice(0, 10);
+            if (this.nameInput.value.length > max_size) {
+                this.nameInput.value = this.nameInput.value.slice(0, max_size);
             }
             this.players.forEach(element => {
                 if (element.name == this.playersList[this.currentPlayerNumber].label.text) {
@@ -140,7 +147,8 @@ export class LobbyList extends FancyButton {
             this.setPlayerColor(player, this.players.length - 1);
         }
 
-        if (this.players.length - 1 == this.currentPlayerNumber && this.playersList[this.currentPlayerNumber].label.text == player.name) {
+        if ((this.players.length - 1 == this.currentPlayerNumber)
+         && (this.playersList[this.currentPlayerNumber].label.text == player.name)) {
             this.nameInput.value = player.name;
         }
 
