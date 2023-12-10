@@ -22,11 +22,15 @@ if (mode != 'development') {
     app.use('/assets', express.static(path.join(__dirname, 'assets')));
     app.use('/images', express.static(path.join(__dirname, 'images')));
     app.use('/sounds', express.static(path.join(__dirname, 'sounds')));
+    // We only allow accessing specific files for security reasons.
     app.get('/', (req, res) => {
         res.sendFile(path.join(__dirname, '/index.html'));
     })
     app.get('/favicon.ico', (req, res) => {
         res.sendFile(path.join(__dirname, '/favicon.ico'));
+    })
+    app.get('/maps.txt', (req, res) => {
+        res.sendFile(path.join(__dirname, '/maps.txt'));
     })
     app.listen(80)
 }
