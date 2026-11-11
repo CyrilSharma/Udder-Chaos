@@ -1,0 +1,1746 @@
+@import './media.css';
+@import '@fontsource-variable/nunito/wght.css';
+@import '@fontsource/concert-one/latin.css';
+:root {
+    font-family: 'Nunito Variable', sans-serif;
+    color: #182b39;
+    background: #9bd5e5;
+    font-synthesis: none;
+    font-size: 15px;
+    --muted: #425a69;
+    --accent: #f4c418;
+    --line: #709cac;
+}
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #9bd5e5 var(--media-background) center bottom / cover fixed no-repeat;
+}
+button,
+input,
+select {
+    font: inherit;
+}
+button {
+    cursor: pointer;
+    border: 3px solid #1b2c35;
+    color: inherit;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-weight: 800;
+    box-shadow: 0 3px 0 #1b2c352b;
+    transition:
+        background 0.15s,
+        transform 0.15s;
+}
+button:hover:not(:disabled) {
+    background: #fff4bd;
+    transform: translateY(-1px);
+}
+button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+}
+.primary {
+    background: var(--accent);
+    color: #172530;
+    border-color: #b98900;
+    font-weight: 700;
+}
+.primary:hover:not(:disabled) {
+    background: #ffda42;
+}
+.quiet {
+    background: transparent;
+    border-color: transparent;
+    color: #34546b;
+}
+.app {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    max-width: 1600px;
+    margin: auto;
+    padding: 0 44px;
+}
+.topbar {
+    flex-shrink: 0;
+    height: 104px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+}
+.wordmark {
+    font-family: 'Concert One', sans-serif;
+    letter-spacing: 2px;
+    font-weight: 700;
+    font-size: 19px;
+    padding: 0;
+    border: 0;
+    background: none;
+}
+.wordmark span {
+    display: block;
+    font:
+        9px 'Nunito Variable',
+        sans-serif;
+    letter-spacing: 5px;
+    margin-top: 6px;
+    text-align: left;
+    padding-left: 25px;
+    color: var(--muted);
+}
+.top-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: #284b61;
+}
+.status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px #f4c41855;
+}
+.top-meta button {
+    font-size: 12px;
+    letter-spacing: 0;
+}
+.landing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    padding: 24px 0 40px;
+}
+.intro {
+    padding: 0;
+    width: 100%;
+    position: relative;
+    overflow: visible;
+}
+.eyebrow {
+    font-family: 'Concert One', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+h1,
+h2,
+h3 {
+    font-family: 'Concert One', sans-serif;
+    font-weight: 400;
+    margin: 0;
+    letter-spacing: -1px;
+}
+h1 {
+    font-size: clamp(50px, 5.5vw, 82px);
+    line-height: 1.05;
+}
+em {
+    font-style: normal;
+    color: var(--accent);
+}
+p {
+    color: var(--muted);
+    line-height: 1.7;
+}
+.hero-art {
+    width: min(52vw, 220px);
+    margin: 0 auto;
+}
+.original-logo {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1251 / 1375;
+    filter: drop-shadow(0 4px 2px #405d4922);
+}
+.menu-panel {
+    border: 3px solid #263e50;
+    border-radius: 24px;
+    background: #ffffffee;
+    box-shadow: 0 7px 0 #24465b22;
+    margin: 0;
+    width: min(100%, 440px);
+    padding: 30px;
+    max-width: 440px;
+}
+.menu-panel h2 {
+    font-size: 30px;
+}
+.menu-panel > p {
+    font-size: 13px;
+    margin-bottom: 32px;
+}
+.menu-panel button,
+.menu-panel form > button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin: 12px 0;
+}
+.site-footer a { color: inherit; }
+.site-footer {
+    font-family: system-ui, sans-serif;
+    font-weight: 400;
+    text-shadow: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    justify-content: space-between;
+    letter-spacing: normal;
+    font-size: 12px;
+    color: #fff;
+    margin-top: auto;
+    flex-shrink: 0;
+    padding: 48px 0 12px;
+}
+label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #294a5e;
+    font-size: 12px;
+    margin: 18px 0;
+}
+input,
+select {
+    color: #182b39;
+    border: 1px solid #769cae;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 5px;
+    width: 100%;
+    accent-color: var(--accent);
+}
+input[type='range'] {
+    padding: 0;
+}
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 38px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23182b39' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px 8px;
+    cursor: pointer;
+    min-width: 0;
+}
+summary {
+    cursor: pointer;
+    color: #254e69;
+    margin: 24px 0;
+    font-size: 13px;
+}
+.options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+}
+.options label {
+    margin: 8px 0;
+}
+.error {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff0e6;
+    border: 1px solid #c43c2d;
+    border-radius: 6px;
+    padding: 12px 20px;
+    margin-top: 16px;
+    color: #7d251d;
+}
+.error button {
+    padding: 0 8px;
+    background: none;
+    border: 0;
+}
+.lobby {
+    width: 100%;
+    max-width: 900px;
+    min-height: 740px;
+    padding: 60px 0;
+    margin: auto;
+}
+.lobby h1 {
+    font-size: 56px;
+}
+.crew-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 32px 0;
+}
+.crew-member {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    gap: 6px;
+    padding: 20px;
+    border: 4px solid var(--crew-color, #2786c6);
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 0 #24465b22;
+}
+.crew-member .crew-icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+}
+.crew-member .crew-name {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+.crew-member input.crew-name {
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    border-radius: 0;
+    background: transparent;
+}
+.crew-member input.crew-name:hover,
+.crew-member input.crew-name:focus-visible {
+    border-bottom-color: var(--crew-color);
+}
+.crew-member .crew-label {
+    grid-column: 2;
+    grid-row: 2;
+}
+.crew-member .crew-status {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
+}
+.mission-settings {
+    padding: 20px 24px;
+    background: #fffffff2;
+    border: 3px solid #263e50;
+    border-radius: 16px;
+    box-shadow: 0 4px 0 #24465b22;
+}
+.mission-settings > summary {
+    margin: 0;
+    font-size: 17px;
+    font-family: 'Concert One', sans-serif;
+}
+.mission-settings[open] > summary {
+    margin-bottom: 18px;
+}
+.mission-settings > button {
+    margin-top: 16px;
+}
+
+.crew-member span:not(.crew-icon),
+.crew-member small {
+    font-size: 12px;
+    color: var(--muted);
+}
+.crew-icon {
+    font-size: 28px;
+}
+.c0 {
+    color: #d52323;
+}
+.c1 {
+    color: #8d6200;
+}
+.c2 {
+    color: #0874c7;
+}
+.c3 {
+    color: #8929c4;
+}
+.lobby-actions {
+    display: flex;
+    gap: 20px;
+    margin-top: 24px;
+}
+.tutorial-copy {
+    min-height: 180px;
+    font-size: 17px;
+    line-height: 1.9;
+}
+.tutorial-nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.tutorial-nav button {
+    width: auto;
+}
+.tutorial-nav span {
+    white-space: nowrap;
+    color: var(--muted);
+}
+.game-layout {
+    --board-size: clamp(300px, calc(100svh - 300px), 520px);
+    display: grid;
+    grid-template-columns: 200px minmax(0, var(--board-size)) 190px;
+    justify-content: center;
+    gap: 24px;
+    padding: 20px 0 45px;
+}
+.play-area {
+    width: 100%;
+    max-width: var(--board-size);
+    margin-inline: auto;
+    justify-self: center;
+}
+.crew-sidebar {
+    padding-top: 18px;
+}
+.crew-row {
+    display: flex;
+    gap: 13px;
+    align-items: center;
+    padding: 17px 10px;
+    margin: 5px 0;
+    border: 4px solid var(--crew-color, #2786c6);
+    background: #fff;
+    border-radius: 14px;
+}
+.crew-row.active {
+    background: #fff;
+    box-shadow:
+        0 0 0 3px #fff,
+        0 0 18px 5px var(--crew-color, #2786c6);
+}
+.crew-row strong {
+    display: block;
+    font-size: 12px;
+}
+.crew-row small {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 4px;
+}
+.score-box {
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+    margin-top: 30px;
+}
+.score-box .eyebrow {
+    color: #335970;
+    margin-bottom: 10px;
+}
+.score-box > strong {
+    font-family: 'Concert One';
+    font-size: 42px;
+    font-weight: 400;
+}
+.score-box small {
+    font-size: 18px;
+    color: #3c596b;
+}
+progress {
+    width: 100%;
+    height: 5px;
+    accent-color: var(--accent);
+    display: block;
+    margin-top: 18px;
+}
+.round-box {
+    margin: 28px 0;
+    font-size: 12px;
+}
+.round-box p {
+    font-size: 11px;
+}
+.crew-sidebar > button {
+    width: 100%;
+    font-size: 11px;
+    padding: 14px 8px;
+    margin-top: 10px;
+}
+.turn-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+.turn-heading .eyebrow {
+    margin-bottom: 8px;
+}
+.turn-heading h2 {
+    font-size: 23px;
+    letter-spacing: -0.7px;
+}
+.turn-clock {
+    font-family: 'Concert One';
+    font-size: 24px;
+    color: var(--accent);
+    min-width: 55px;
+    text-align: right;
+}
+.board {
+    width: 100%;
+    aspect-ratio: 1;
+    display: block;
+    border: 8px solid #000;
+    background: #000;
+    border-radius: 9px;
+    box-shadow: 0 12px 40px #0003;
+}
+.piece {
+    transition: transform 0.35s ease-in-out;
+    pointer-events: visible;
+}
+.hand-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    padding: 18px 0 14px;
+    color: #233e52;
+}
+.hand-label span + span {
+    letter-spacing: 0;
+    color: #33576b;
+}
+.hand {
+    display: flex;
+    gap: 14px;
+}
+.hand-card {
+    flex: 1;
+    min-width: 0;
+}
+.play-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    background: #ffffff;
+    color: #162833;
+    padding: 12px 14px;
+    border: 4px solid #162833;
+    border-radius: 16px;
+}
+.play-card:hover:not(:disabled) {
+    background: #fff8d8;
+    transform: translateY(-4px);
+}
+.play-card:disabled {
+    opacity: 0.8;
+}
+.arrows {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Concert One', sans-serif;
+    font-size: 28px;
+    letter-spacing: -2px;
+}
+.card-step {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.step-number {
+    font-family: system-ui, sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0;
+    opacity: 0.65;
+}
+.step-arrow {
+    line-height: 1.3;
+}
+.card-number {
+    text-align: left;
+    font-size: 9px;
+    opacity: 0.6;
+}
+.play-card .arrows {
+    padding: 15px 0;
+}
+.card-footer {
+    text-align: center;
+    font-size: 8px;
+    letter-spacing: 1.7px;
+    border-top: 1px solid #16283333;
+    padding-top: 10px;
+}
+.rotate-card {
+    width: 100%;
+    font-size: 10px;
+    padding: 9px;
+    border: 0;
+    background: none;
+    color: #264a63;
+}
+.deck-sidebar {
+    border-left: 1px solid var(--line);
+    padding: 18px 0 0 25px;
+}
+.deck-sidebar h3 {
+    font-size: 19px;
+    margin-bottom: 26px;
+}
+.queue {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 34px;
+}
+.queue > div {
+    background: #ffffff;
+    border: 3px solid #1b2c35;
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.queue small {
+    font-size: 8px;
+    color: #3d5a6a;
+    letter-spacing: 1px;
+}
+.queue .arrows {
+    font-size: 20px;
+    gap: 5px;
+}
+.queue .next-card {
+    border-color: #edb300;
+    background: #fff3bd;
+}
+.queue .next-card small {
+    color: var(--accent);
+}
+.farmer-hand > div {
+    border: 3px solid #1b2c35;
+    background: #fff;
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 8px;
+    color: #533f24;
+}
+.farmer-hand .arrows {
+    font-size: 21px;
+}
+.deck-note {
+    font-size: 10px;
+    margin-top: 28px;
+}
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: #23475f99;
+    backdrop-filter: blur(6px);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+.modal {
+    width: 440px;
+    background: #ffffff;
+    border: 4px solid #172b38;
+    padding: 38px;
+    border-radius: 12px;
+    box-shadow: 0 20px 70px #0006;
+}
+.modal h2 {
+    font-size: 30px;
+}
+.modal button {
+    width: 100%;
+    margin-top: 12px;
+}
+.modal p {
+    font-size: 14px;
+}
+@media (max-width: 1100px) {
+    .app {
+        padding: 0 24px;
+    }
+    .game-layout {
+        grid-template-columns: 150px minmax(0, var(--board-size));
+        gap: 20px;
+    }
+    .deck-sidebar {
+        grid-column: 2;
+        border-left: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .deck-sidebar .queue {
+        flex-direction: row;
+        flex-wrap: wrap;
+        grid-column: span 2;
+    }
+    .deck-sidebar h3,
+    .deck-note {
+        display: none;
+    }
+    .deck-sidebar .farmer-hand {
+        display: flex;
+        gap: 8px;
+        grid-column: span 2;
+    }
+}
+@media (max-width: 700px) {
+    .app {
+        padding: 0 18px;
+    }
+    .topbar {
+        height: 85px;
+    }
+    .top-meta {
+        font-size: 8px;
+    }
+    .top-meta .quiet {
+        display: none;
+    }
+    .wordmark {
+        font-size: 15px;
+    }
+    h1 {
+        font-size: 56px;
+    }
+    .crew-list {
+        grid-template-columns: 1fr;
+    }
+    .lobby h1 {
+        font-size: 38px;
+    }
+    .game-layout {
+        display: flex;
+        flex-direction: column;
+        padding-top: 20px;
+    }
+    .crew-sidebar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding: 0;
+    }
+    .crew-sidebar > .eyebrow {
+        display: none;
+    }
+    .crew-row {
+        padding: 8px 5px;
+        margin: 0;
+        gap: 7px;
+        width: calc(50% - 4px);
+    }
+    .crew-row .crew-icon {
+        font-size: 20px;
+    }
+    .score-box {
+        padding: 10px 0 0;
+        margin: 0;
+        border: 0;
+        width: 45%;
+    }
+    .score-box .eyebrow {
+        font-size: 8px;
+        margin: 0;
+    }
+    .score-box > strong {
+        font-size: 25px;
+    }
+    .score-box progress {
+        margin: 4px 0;
+    }
+    .round-box {
+        margin: 8px 0 0;
+        width: 45%;
+        font-size: 10px;
+    }
+    .round-box p {
+        font-size: 9px;
+        margin: 4px 0;
+    }
+    .crew-sidebar > button {
+        width: calc(50% - 4px);
+        margin: 0;
+        padding: 10px;
+    }
+    .turn-heading h2 {
+        font-size: 20px;
+    }
+    .hand {
+        gap: 7px;
+    }
+    .play-card {
+        padding: 9px;
+    }
+    .play-card .arrows {
+        font-size: 23px;
+        gap: 2px;
+    }
+    .card-footer {
+        font-size: 6px;
+        letter-spacing: 1px;
+    }
+    .hand-label {
+        font-size: 7px;
+        letter-spacing: 1px;
+    }
+    .hand-label span + span {
+        font-size: 7px;
+    }
+    .deck-sidebar {
+        display: block;
+        border-top: 1px solid var(--line);
+        padding-top: 20px;
+    }
+    .deck-sidebar .eyebrow {
+        margin-bottom: 12px;
+    }
+    .queue {
+        margin-bottom: 18px;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .queue > div {
+        gap: 10px;
+    }
+    .queue .arrows {
+        font-size: 18px;
+    }
+    .farmer-hand {
+        display: flex;
+        gap: 8px;
+    }
+    .farmer-hand > div {
+        flex: 1;
+    }
+    .modal {
+        padding: 25px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* Familiar original-game chrome around the DOM controls. */
+.brand-ufo {
+    width: 36px;
+    height: 30px;
+    object-fit: contain;
+    vertical-align: middle;
+    margin-right: 7px;
+}
+.wordmark {
+    font-size: 24px;
+    letter-spacing: 0.5px;
+    box-shadow: none;
+}
+.wordmark:hover:not(:disabled) {
+    background: transparent;
+}
+.wordmark span {
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding-left: 48px;
+}
+.topbar {
+    border-bottom: 2px solid #ffffff88;
+}
+.top-meta {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+.quiet {
+    box-shadow: none;
+}
+.eyebrow {
+    color: #235c7f;
+    font-size: 12px;
+}
+em {
+    color: #bd416f;
+}
+.crew-0 {
+    --crew-color: #f22b2b;
+}
+.crew-1 {
+    --crew-color: #f4bc18;
+}
+.crew-2 {
+    --crew-color: #008cff;
+}
+.crew-3 {
+    --crew-color: #a327e4;
+}
+.crew-icon {
+    display: block;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    font-size: 0;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.crew-icon.c0 {
+    background-image: var(--media-red);
+}
+.crew-icon.c1 {
+    background-image: var(--media-yellow);
+}
+.crew-icon.c2 {
+    background-image: var(--media-blue);
+}
+.crew-icon.c3 {
+    background-image: var(--media-purple);
+}
+.crew-row strong {
+    font-family: 'Concert One', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+}
+.score-box,
+.round-box {
+    background: #fff;
+    padding: 18px;
+    border: 3px solid #263e50;
+    border-radius: 16px;
+    box-shadow: 0 4px 0 #24465b22;
+}
+.score-box {
+    margin-top: 24px;
+}
+.round-box {
+    margin: 18px 0;
+}
+.turn-heading {
+    background: #fffffff0;
+    padding: 16px 18px;
+    border: 3px solid #263e50;
+    border-radius: 16px;
+}
+.turn-clock {
+    color: #186a9e;
+}
+.hand-label {
+    color: #182b39;
+    background: #ffffffed;
+    padding: 12px;
+    margin: 14px 0 10px;
+    border-radius: 10px;
+    font-weight: 800;
+}
+.hand-label span + span {
+    color: #425a69;
+}
+.rotate-card {
+    background: #ffffffe8;
+    border-radius: 0 0 10px 10px;
+}
+.deck-sidebar {
+    border-left: 0;
+    padding-left: 0;
+}
+.deck-sidebar > .eyebrow,
+.deck-sidebar > h3 {
+    background: #ffffffec;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+}
+.deck-note {
+    background: #ffffffe6;
+    padding: 12px;
+    border-radius: 10px;
+}
+@media (max-width: 700px) {
+    .wordmark {
+        font-size: 19px;
+    }
+    .brand-ufo {
+        width: 28px;
+        height: 24px;
+        margin-right: 3px;
+    }
+    .wordmark span {
+        padding-left: 35px;
+        font-size: 8px;
+    }
+    .crew-row .crew-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0;
+    }
+    .crew-row strong {
+        font-size: 16px;
+    }
+    .score-box,
+    .round-box {
+        padding: 10px;
+        width: calc(50% - 4px);
+        margin: 8px 0;
+    }
+    .turn-heading {
+        padding: 12px;
+    }
+    .hand-label {
+        font-size: 8px;
+    }
+    .deck-sidebar > .eyebrow {
+        display: inline-block;
+    }
+}
+
+/* The active crew is shown by the shared hand's border, rather than a turn banner. */
+.turn-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 38px;
+    margin-bottom: 12px;
+}
+.turn-status .eyebrow {
+    margin: 0;
+}
+.turn-status .turn-clock {
+    background: #fff;
+    border: 2px solid #263e50;
+    border-radius: 10px;
+    padding: 4px 10px;
+    font-size: 22px;
+    text-align: center;
+}
+.hand:not(.farmer-turn) .play-card {
+    border-color: var(--crew-color);
+    box-shadow:
+        0 0 0 1px var(--crew-color),
+        0 3px 0 #24465b22;
+}
+.farmer-hand.current-farmers > div {
+    border-color: #f4bc18;
+    box-shadow: 0 0 0 1px #f4bc18;
+}
+.board-scene {
+    position: relative;
+    margin-top: 0;
+}
+.cinematic-layer {
+    position: absolute;
+    inset: 8px;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+    overflow: visible;
+    pointer-events: none;
+    z-index: 4;
+}
+.mothership-receiver {
+    fill: #d4ffff;
+    opacity: 0.65;
+}
+.mother-motion.arriving {
+    animation: mothership-descend 1.6s ease-out both;
+}
+.mother-motion.departing {
+    animation: mothership-depart 1.6s ease-in both;
+}
+.transport-beam {
+    animation: beam-flicker 0.5s ease-in-out infinite alternate;
+}
+.destruction-beam {
+    animation: laser-pulse 0.6s steps(2, end) infinite;
+}
+.beamed-cow {
+    animation: cow-beam-up 2.8s ease-in both;
+}
+.ship-panic {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ship-panic 0.3s ease-in-out infinite alternate;
+}
+.ship-destroy {
+    animation: ship-disappear 0.5s 0.25s ease-out both;
+}
+.ship-resolved {
+    opacity: 0;
+}
+.ship-burst {
+    transform-origin: 0 0;
+    opacity: 0;
+    animation: ship-burst 0.9s 0.25s ease-out both;
+}
+@keyframes mothership-descend {
+    from {
+        transform: translateY(-260px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+@keyframes mothership-depart {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-260px);
+        opacity: 0;
+    }
+}
+@keyframes beam-flicker {
+    from {
+        opacity: 0.6;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes laser-pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
+}
+@keyframes cow-beam-up {
+    0% {
+        transform: translateY(0) scale(0.7);
+        opacity: 0;
+    }
+    12% {
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(var(--beam-rise)) scale(0.35);
+        opacity: 0;
+    }
+}
+@keyframes ship-panic {
+    0% {
+        transform: translateX(-3px) rotate(-8deg);
+        filter: hue-rotate(0deg);
+    }
+    100% {
+        transform: translateX(3px) rotate(8deg);
+        filter: hue-rotate(240deg);
+    }
+}
+@keyframes ship-disappear {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.1);
+    }
+}
+@keyframes ship-burst {
+    0% {
+        opacity: 0;
+        transform: scale(0.1);
+    }
+    15% {
+        opacity: 1;
+    }
+    70% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.6);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ship-crash,
+    .ship-uplift,
+    .ship-destroy,
+    .mother-motion.departing {
+        opacity: 0;
+    }
+    .ship-burst {
+        opacity: 1;
+    }
+}
+
+.board {
+    overflow: visible;
+}
+.ship-destroy {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.turn-status {
+    min-height: 42px;
+    margin-bottom: 8px;
+}
+.play-area:has(.cinematic-layer) .turn-status {
+    visibility: hidden;
+}
+.preview-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: min(95vw, 900px);
+    margin: 20px auto;
+    padding: 12px;
+    background: #fffffff0;
+    border: 2px solid #263e50;
+    border-radius: 12px;
+}
+.preview-controls label {
+    margin: 0;
+    min-width: 180px;
+}
+
+.rotate-controls {
+    display: flex;
+    gap: 0;
+}
+.rotate-controls .rotate-card {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+    border: 1px solid #668295;
+    border-radius: 0;
+    font-size: 13px;
+}
+.rotate-controls .rotate-card:first-child {
+    border-radius: 0 0 0 10px;
+}
+.rotate-controls .rotate-card:last-child {
+    border-radius: 0 0 10px 0;
+}
+
+[data-card-id] {
+    position: relative;
+    transform-origin: top left;
+}
+[data-card-id]:has(> .arrows) {
+    overflow: visible;
+}
+
+.music-bop,
+.brand-ufo,
+.original-logo,
+.crew-icon {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    translate: 0 calc(var(--music-bop, 0) * var(--bop-height, -2px));
+    scale: calc(1 - var(--music-bop, 0) * 0.035) calc(1 + var(--music-bop, 0) * 0.06);
+}
+@media (prefers-reduced-motion: reduce) {
+    .music-bop,
+    .brand-ufo,
+    .original-logo,
+    .crew-icon {
+        translate: none;
+        scale: none;
+    }
+}
+
+.hand .play-card {
+    border-radius: 8px 8px 0 0;
+}
+.hand-card {
+    overflow: visible;
+}
+
+.music-bop {
+    --bop-height: -2px;
+}
+.farmer-unit .music-bop {
+    --bop-height: -2px;
+}
+.cow-bop {
+    --bop-height: -2px;
+}
+.music-beat-indicator {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #263e50;
+    border-radius: 50%;
+    background: #ffcf38;
+    opacity: calc(0.35 + var(--music-bop, 0) * 0.65);
+    scale: calc(0.75 + var(--music-bop, 0) * 0.45);
+}
+
+.portal-vortex {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: portal-swirl 7s linear infinite;
+}
+@keyframes portal-swirl {
+    to {
+        transform: rotate(360deg);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .portal-vortex {
+        animation: none;
+    }
+}
+
+.abduct-beam {
+    animation: abduction-beam 1.5s ease-out both;
+}
+.abducted-cow {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: cow-abduct 1.5s ease-in-out both;
+}
+.ship-abduct {
+    animation: ship-abduct 1.5s ease-in-out both;
+}
+.farmer-jab {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: farmer-jab 1.3s ease-in-out both;
+}
+.popped-ufo {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ufo-pitchfork-pop 1.3s ease-out both;
+}
+.pitchfork-jab {
+    animation: pitchfork-jab 1.3s ease-in-out both;
+}
+.capture-pop-burst {
+    animation: capture-pop-burst 1.3s ease-out both;
+}
+@keyframes abduction-beam {
+    0%,
+    14% {
+        opacity: 0;
+    }
+    25%,
+    78% {
+        opacity: 0.85;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+@keyframes cow-abduct {
+    0%,
+    22% {
+        transform: translateY(0) rotate(0) scale(1);
+        opacity: 1;
+    }
+    78% {
+        opacity: 1;
+    }
+    90%,
+    100% {
+        transform: translateY(-22px) rotate(540deg) scale(0.05);
+        opacity: 0;
+    }
+}
+@keyframes ship-abduct {
+    0%,
+    12%,
+    100% {
+        transform: translateY(0);
+    }
+    30%,
+    80% {
+        transform: translateY(-12px);
+    }
+}
+@keyframes farmer-jab {
+    0%,
+    20%,
+    100% {
+        transform: rotate(0);
+    }
+    44% {
+        transform: rotate(-20deg) translateY(-2px);
+    }
+    65% {
+        transform: rotate(7deg);
+    }
+}
+@keyframes pitchfork-jab {
+    0%,
+    20% {
+        transform: translate(-6px, 5px);
+        opacity: 0;
+    }
+    26% {
+        opacity: 1;
+    }
+    44% {
+        transform: translate(-2px, -7px);
+        opacity: 1;
+    }
+    68%,
+    100% {
+        transform: translate(-6px, 5px);
+        opacity: 0;
+    }
+}
+@keyframes ufo-pitchfork-pop {
+    0%,
+    38% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    46% {
+        transform: scale(1.22, 0.8);
+        opacity: 1;
+    }
+    51%,
+    100% {
+        transform: scale(0.05);
+        opacity: 0;
+    }
+}
+@keyframes capture-pop-burst {
+    0%,
+    44% {
+        transform: scale(0.05);
+        opacity: 0;
+    }
+    52% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+    82%,
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+.step-effects-preview .abduct-beam,
+.step-effects-preview .abducted-cow,
+.step-effects-preview .ship-abduct,
+.step-effects-preview .farmer-jab,
+.step-effects-preview .popped-ufo,
+.step-effects-preview .pitchfork-jab,
+.step-effects-preview .capture-pop-burst {
+    animation-play-state: paused;
+    animation-delay: var(--step-preview-time, -0.65s);
+}
+@media (prefers-reduced-motion: reduce) {
+    .ship-abduct,
+    .farmer-jab {
+        animation: none;
+    }
+    .abducted-cow,
+    .popped-ufo,
+    .pitchfork-jab {
+        animation: none;
+        opacity: 0;
+    }
+    .abduct-beam {
+        animation: none;
+        opacity: 0.3;
+    }
+    .capture-pop-burst {
+        animation: none;
+        opacity: 1;
+    }
+}
+
+.deposit-glow {
+    animation: deposit-glow var(--deposit-duration, 1.6s) ease-out both;
+}
+.depositing-cow {
+    animation: cow-deposit 1.6s linear both;
+    animation-delay: var(--deposit-delay, 0s);
+}
+.ship-deposit {
+    animation: ship-deposit var(--deposit-duration, 1.6s) ease-in-out both;
+}
+@keyframes cow-deposit {
+    0%,
+    20% {
+        transform: translate(0, -18px) rotate(-30deg) scale(0.85);
+        opacity: 0;
+    }
+    30% {
+        transform: translate(9px, -10px) rotate(60deg) scale(0.8);
+        opacity: 1;
+    }
+    38% {
+        transform: translate(11px, 1px) rotate(150deg) scale(0.6);
+        opacity: 1;
+    }
+    58% {
+        transform: translate(-6px, 5px) rotate(260deg) scale(0.4);
+        opacity: 1;
+    }
+    78% {
+        transform: translate(-4px, -2px) rotate(420deg) scale(0.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(0, 0) rotate(600deg) scale(0);
+        opacity: 0;
+    }
+}
+@keyframes deposit-glow {
+    0%,
+    8%,
+    100% {
+        opacity: 0;
+    }
+    20%,
+    80% {
+        opacity: 0.8;
+    }
+}
+@keyframes ship-deposit {
+    0%,
+    10%,
+    100% {
+        transform: translateY(0);
+    }
+    25%,
+    85% {
+        transform: translateY(-12px);
+    }
+}
+.step-effects-preview .depositing-cow {
+    animation-play-state: paused;
+    animation-delay: calc(var(--step-preview-time, -0.65s) + var(--deposit-delay, 0s));
+}
+.step-effects-preview .deposit-glow,
+.step-effects-preview .ship-deposit {
+    animation-play-state: paused;
+    animation-delay: var(--step-preview-time, -0.65s);
+}
+@media (prefers-reduced-motion: reduce) {
+    .ship-deposit {
+        animation: none;
+    }
+    .depositing-cow {
+        animation: none;
+        opacity: 0;
+    }
+    .deposit-glow {
+        animation: none;
+        opacity: 0.3;
+    }
+}
+
+.ship-crash {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ship-crash 1.7s ease-in both;
+}
+.ship-wreck {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: translateY(12px) rotate(8deg);
+    filter: grayscale(1) brightness(0.45);
+}
+.ship-uplift {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ship-uplift 2.6s ease-in both;
+}
+@keyframes ship-crash {
+    0%,
+    15% {
+        transform: translateY(-2px);
+    }
+    45% {
+        transform: translate(4px, -8px) rotate(30deg);
+    }
+    65% {
+        transform: translate(-2px, 11px) rotate(-14deg);
+    }
+    80%,
+    100% {
+        transform: translateY(12px) rotate(8deg);
+        filter: grayscale(1) brightness(0.45);
+    }
+}
+@keyframes ship-uplift {
+    0%,
+    8% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    90%,
+    100% {
+        transform: translateY(var(--uplift-distance)) scale(0.15);
+        opacity: 0;
+    }
+}
+.celebration-sparkle {
+    animation: celebration-sparkle 1.2s ease-in-out infinite alternate;
+}
+@keyframes celebration-sparkle {
+    from {
+        opacity: 0.25;
+        scale: 0.7;
+    }
+    to {
+        opacity: 1;
+        scale: 1.15;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ship-crash {
+        animation: none;
+        transform: translateY(12px);
+        filter: grayscale(1) brightness(0.45);
+    }
+    .ship-uplift {
+        animation: none;
+        opacity: 0;
+    }
+    .celebration-sparkle {
+        animation: none;
+    }
+}
+.ship-wreck .music-bop {
+    translate: none;
+    scale: none;
+}
+
+.cinematic-effects-preview .ship-uplift,
+.cinematic-effects-preview .ship-crash {
+    animation-play-state: paused;
+    animation-delay: var(--step-preview-time, -0.65s);
+}
+
+.arrows .active-arrow {
+    color: #182c22;
+    background: #f8df88;
+    box-shadow: 0 2px 0 #a37732;
+    border-radius: 3px;
+}
+
+.route-preview {
+    pointer-events: none;
+}
+.route-light {
+    fill: #fff2a6;
+    fill-opacity: 0.35;
+    stroke: #fff4b4;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 5px #ffe57e);
+}
+.route-light-core {
+    fill: none;
+    stroke: #fffce4;
+    stroke-opacity: 0.9;
+    stroke-width: 1;
+}
+
+
+/* Keep the two-action home menu within the viewport, with the footer in the grass. */
+html:has(.app-home),
+body:has(.app-home) {
+    height: 100%;
+    overflow: hidden;
+}
+.app-home {
+    height: 100svh;
+    min-height: 0;
+    overflow: hidden;
+}
+.app-home .topbar {
+    height: clamp(60px, 12svh, 104px);
+}
+.app-home .landing {
+    flex: 1;
+    min-height: 0;
+    justify-content: center;
+    padding: 12px 0;
+    gap: clamp(8px, 2svh, 18px);
+}
+.app-home .intro {
+    flex: 0 1 240px;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+}
+.app-home .hero-art {
+    height: 100%;
+    width: auto;
+    max-width: 52vw;
+    aspect-ratio: 1251 / 1375;
+}
+.app-home .original-logo {
+    height: 100%;
+    width: 100%;
+}
+.app-home .menu-panel {
+    flex-shrink: 0;
+    padding: clamp(10px, 3svh, 24px);
+}
+.app-home .menu-panel button {
+    margin: 8px 0;
+}
+.app-home .site-footer {
+    padding-top: clamp(8px, 3svh, 24px);
+}
+.solo-switch {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 18px;
+}
+.switch-track {
+    display: flex;
+    align-items: center;
+    width: 42px;
+    height: 24px;
+    padding: 3px;
+    border-radius: 20px;
+    background: #a8b8bf;
+}
+.switch-track > span {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform .15s;
+}
+.solo-switch[aria-checked='true'] .switch-track {
+    background: #4b9453;
+}
+.solo-switch[aria-checked='true'] .switch-track > span {
+    transform: translateX(18px);
+}

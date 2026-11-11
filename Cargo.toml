@@ -1,0 +1,25 @@
+[package]
+name = "udder-chaos"
+version = "0.1.0"
+edition = "2021"
+default-run = "udder-chaos"
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ts-rs = { version = "12", features = ["no-serde-warnings"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["full"] }
+tower-http = { version = "0.6", features = ["fs"] }
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+
+[profile.release]
+lto = "thin"

@@ -1,5 +1,31 @@
 {
+  "name": "udder-chaos",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "server": "wrangler dev --port 3000 --ip 127.0.0.1",
+    "types": "cargo run --bin export-types",
+    "build": "npm run build:web && cargo build --release",
+    "test": "cargo test",
+    "check": "cargo fmt --check && cargo clippy --all-targets -- -D warnings && npm --prefix frontend run build",
+    "format": "prettier --write frontend/src/main.tsx frontend/src/components frontend/src/style.css",
+    "test:animations": "node --experimental-strip-types --test frontend/src/dev/*.test.ts",
+    "preview:animations": "cargo run --example animation_fixtures && npm --prefix frontend run dev",
+    "build:wasm": "sh scripts/build-wasm.sh",
+    "build:web": "npm run types && npm run build:wasm && npm --prefix frontend run build",
+    "rooms:dev": "wrangler dev --port 3000 --ip 127.0.0.1",
+    "deploy": "npm run build:web && wrangler deploy",
+    "test:multiplayer": "node --experimental-strip-types --test hosting/*.test.ts hosting/*.test.mjs && node scripts/test-wasm.mjs",
+    "server:native": "cargo run --release",
+    "types:hosting": "wrangler types hosting/env.d.ts",
+    "check:hosting": "npm run types:hosting && node frontend/node_modules/typescript/bin/tsc -p hosting/tsconfig.json",
+    "monitor:writes": "node scripts/monitor-cloudflare-writes.mjs"
+  },
   "devDependencies": {
-    "prettier": "3.0.3"
-  }
+    "ffmpeg-static": "^5.3.0",
+    "prettier": "3.0.3",
+    "sharp": "^0.35.5",
+    "wrangler": "^4.160.0"
+  },
+  "type": "module"
 }

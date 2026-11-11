@@ -1,9 +1,3 @@
 export default {
-    server: {
-        host: true,
-        port: process.env.PORT || 8000,
-    },
-    define: {
-        APP_VERSION: JSON.stringify(process.env.npm_package_version),
-    },
+  server: { host: '127.0.0.1', port: 8000, proxy: { '/api': 'http://127.0.0.1:3000' } },
 };

@@ -1,0 +1,13 @@
+diff --git a/frontend/src/game/Game.ts b/frontend/src/game/Game.ts
+index 5cf6fea..ee814e6 100644
+--- a/frontend/src/game/Game.ts
++++ b/frontend/src/game/Game.ts
+@@ -85,7 +85,7 @@ export class Game extends Container {
+         this.AI.setName("AI")
+         this.dayCounter = new DayCounter(
+             this.gameSettings.getValue("days_per_round"),
+-            this.gameSettings.getValue("cow_regen_rate")
++            this.gameSettings.getValue("cow_sacrifice")
+         );
+         this.upNext = new SizedButton(
+             0, 0, 0.7, 0.08, "Up Next",

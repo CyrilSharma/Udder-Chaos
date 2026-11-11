@@ -1,27 +1,27 @@
 {
-    "name": "udder-chaos",
-    "version": "0.0.1",
-    "type": "module",
-    "scripts": {
-        "start": "vite dev",
-        "build": "tsc && vite build",
-        "preview": "vite preview --open"
-    },
-    "dependencies": {
-        "@pixi/math": "^7.1.1",
-        "@pixi/math-extras": "^7.1.1",
-        "@pixi/ui": "^0.9.0",
-        "@types/mersenne-twister": "^1.1.6",
-        "@types/node": "^20.8.3",
-        "gsap": "^3.12.2",
-        "mersenne-twister": "^1.1.0",
-        "pixi.js": "^7.1.1",
-        "seedrandom": "^3.0.5",
-        "socket.io-client": "^4.7.2"
-    },
-    "devDependencies": {
-        "@types/seedrandom": "^3.0.6",
-        "typescript": "^5.2.2",
-        "vite": "^4.0.4"
-    }
+  "name": "udder-chaos-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 8000",
+    "start": "npm run dev",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "media": "node ../scripts/build-media.mjs",
+    "predev": "npm run media",
+    "prebuild": "npm run media"
+  },
+  "dependencies": {
+    "@fontsource-variable/nunito": "^5.3.0",
+    "@fontsource/concert-one": "^5.3.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.0"
+  }
 }
